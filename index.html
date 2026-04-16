@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gopes Pinnacle Academy | Structured Online Academy</title>
+
+<style>
+
+/* ===== RESET ===== */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI', sans-serif;
+}
+
+body{
+    background:#f4f7fb;
+    color:#222;
+    line-height:1.6;
+}
+
+/* ===== HEADER ===== */
+.header{
+    background:#0d1b2a;
+    padding:15px 60px;
+    position:sticky;
+    top:0;
+    z-index:1000;
+}
+
+.header-container{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+}
+
+.logo img{
+    height:55px;
+    width:auto;
+    max-width:200px;
+}
+
+.main-nav a{
+    color:white;
+    text-decoration:none;
+    margin-left:30px;
+    font-weight:500;
+}
+
+.main-nav a:hover{
+    color:#ffc300;
+}
+/* ===== LOGIN DROPDOWN ===== */
+
+.main-nav{
+    display:flex;
+    align-items:center;
+    gap:30px;
+}
+
+.dropdown{
+    position:relative;
+    padding-bottom:5px;   /* hover buffer */
+}
+
+.dropbtn{
+    color:white;
+    text-decoration:none;
+    cursor:pointer;
+    font-weight:500;
+}
+
+.dropbtn:hover{
+    color:#ffc300;
+}
+
+.dropdown-content{
+    display:none;
+    position:absolute;
+    top:100%;          /* Attach directly below Login */
+    right:0;
+    background:white;
+    min-width:200px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.15);
+    border-radius:8px;
+    overflow:hidden;
+    z-index:999;
+}
+
+.dropdown-content a{
+    display:block;
+    padding:12px 15px;
+    text-decoration:none;
+    color:#222;
+    font-size:14px;
+    transition:0.2s;
+}
+
+.dropdown-content a:hover{
+    background:#f4f7fb;
+    color:#0d1b2a;
+}
+
+.dropdown:hover .dropdown-content{
+    display:block;
+}
+/* ===== HERO ===== */
+.hero{
+    background:linear-gradient(rgba(0,0,0,0.65),rgba(0,0,0,0.65)),
+    url("online-student.png") center/cover no-repeat;
+    color:white;
+    text-align:center;
+    padding:130px 20px;
+}
+
+.hero h1{
+    font-size:42px;
+    margin-bottom:20px;
+}
+
+.hero p{
+    font-size:18px;
+    margin-bottom:30px;
+}
+
+.hero-points{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:15px;
+    margin-bottom:35px;
+}
+
+.hero-points span{
+    background:rgba(255,255,255,0.15);
+    padding:10px 18px;
+    border-radius:6px;
+}
+
+.btn-primary{
+    background:#ffc300;
+    padding:14px 30px;
+    text-decoration:none;
+    color:black;
+    font-weight:bold;
+    border-radius:6px;
+}
+
+.btn-primary:hover{
+    background:#ffb703;
+}
+
+/* ===== TRUST BAR ===== */
+.trust-bar{
+    display:flex;
+    justify-content:space-around;
+    background:#1b263b;
+    color:white;
+    padding:20px;
+    flex-wrap:wrap;
+    text-align:center;
+}
+
+/* ===== SYSTEM ===== */
+.system{
+    padding:90px 10%;
+    text-align:center;
+}
+
+.system h2{
+    font-size:32px;
+    margin-bottom:50px;
+}
+
+.system-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:25px;
+}
+
+.system-card{
+    background:white;
+    padding:25px;
+    border-radius:10px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
+    transition:0.3s;
+}
+
+.system-card:hover{
+    transform:translateY(-5px);
+}
+
+/* ===== BOARD EXCELLENCE ===== */
+.board-excellence{
+    background:#0d1b2a;
+    color:white;
+    text-align:center;
+    padding:80px 20px;
+}
+
+.board-excellence h2{
+    margin-bottom:20px;
+}
+
+/* ===== COURSES ===== */
+.courses{
+    padding:90px 10%;
+    text-align:center;
+}
+
+.course-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:25px;
+    margin-top:40px;
+}
+
+.course-card{
+    background:white;
+    padding:25px;
+    border-radius:10px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
+}
+
+/* ===== ONLINE SECTION ===== */
+.online-section{
+    background:#e9f1fa;
+    padding:80px 10%;
+    text-align:center;
+}
+
+.online-section h2{
+    margin-bottom:20px;
+}
+
+/* ===== URGENCY ===== */
+.urgent-cta{
+    background:linear-gradient(135deg, #0d1b2a, #1b263b);
+    color:white;
+    text-align:center;
+    padding:90px 20px;
+}
+
+.btn-danger{
+    display:inline-block;
+    margin-top:25px;
+    background:#ffc300;
+    color:#000;
+    padding:15px 30px;
+    font-weight:bold;
+    text-decoration:none;
+    border-radius:8px;
+    transition:0.3s;
+}
+
+.btn-danger:hover{
+    background:#ffb703;
+    transform:scale(1.05);
+}
+
+/* ===== ADMISSION ===== */
+.admission{
+    padding:90px 10%;
+    text-align:center;
+}
+
+.admission-form{
+    max-width:500px;
+    margin:auto;
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+    margin-top:30px;
+}
+
+.admission-form input{
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:6px;
+}
+
+.admission-form button{
+    padding:14px;
+    background:#0d1b2a;
+    color:white;
+    border:none;
+    border-radius:6px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.admission-form button:hover{
+    background:#1b263b;
+}
+
+/* ===== FOOTER ===== */
+footer{
+    background:#0d1b2a;
+    color:white;
+    text-align:center;
+    padding:35px;
+}
+.problem-section{
+    padding:80px 10%;
+    text-align:center;
+    background:#ffffff;
+}
+
+.problem-section h2{
+    font-size:28px;
+    margin-bottom:20px;
+}
+
+.problem-points{
+    margin:30px 0;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+}
+
+.problem-points div{
+    background:#f4f7fb;
+    padding:20px;
+    border-radius:8px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.05);
+}
+.authority-section{
+    background:#e9f1fa;
+    padding:90px 10%;
+    text-align:center;
+}
+
+.authority-section h2{
+    font-size:30px;
+    margin-bottom:25px;
+}
+
+.authority-section p{
+    font-size:18px;
+    line-height:1.8;
+}
+.results-section{
+    padding:90px 10%;
+    text-align:center;
+    background:#ffffff;
+}
+
+.results-section h2{
+    font-size:30px;
+    margin-bottom:50px;
+}
+
+.results-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:25px;
+}
+
+.result-card{
+    background:#f4f7fb;
+    padding:25px;
+    border-radius:10px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.05);
+    font-weight:500;
+    transition:0.3s;
+}
+
+.result-card:hover{
+    transform:translateY(-5px);
+}
+.roadmap-section{
+    background:#e9f1fa;
+    padding:90px 10%;
+    text-align:center;
+}
+
+.roadmap-section h2{
+    font-size:30px;
+    margin-bottom:50px;
+}
+
+.roadmap-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:25px;
+}
+
+.roadmap-step{
+    background:white;
+    padding:25px;
+    border-radius:10px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
+    transition:0.3s;
+}
+
+.roadmap-step h3{
+    color:#0d1b2a;
+    margin-bottom:10px;
+}
+
+.roadmap-step:hover{
+    transform:translateY(-5px);
+}
+.whatsapp-float{
+    position:fixed;
+    bottom:25px;
+    right:25px;
+    background:#25D366;
+    color:white;
+    font-size:28px;
+    width:60px;
+    height:60px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    text-decoration:none;
+    box-shadow:0 8px 20px rgba(0,0,0,0.2);
+    z-index:1000;
+    transition:0.3s;
+}
+
+.whatsapp-float:hover{
+    transform:scale(1.1);
+}
+.founder-section{
+    padding:90px 10%;
+    background:#ffffff;
+    text-align:center;
+}
+
+.founder-content{
+    max-width:800px;
+    margin:auto;
+}
+
+.founder-section h2{
+    margin-bottom:25px;
+    font-size:30px;
+}
+
+.founder-section p{
+    margin-bottom:15px;
+    font-size:18px;
+    line-height:1.7;
+}
+
+.founder-section h4{
+    margin-top:20px;
+    color:#0d1b2a;
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="header-container">
+        <div class="logo">
+    <img src="images/logo.png" alt="Gopes Pinnacle Academy Logo">
+</div>
+        <nav class="main-nav">
+            <a href="#system">Academic System</a>
+            <a href="#courses">Programs</a>
+            <a href="#online">Online Model</a>
+            <a href="#admission">Admission</a>
+            <div class="dropdown">
+    <a href="#" class="dropbtn">Login ▾</a>
+    <div class="dropdown-content">
+        <a href="#">Founder Login</a>
+        <a href="#">Admin Login</a>
+        <a href="#">Teacher Login</a>
+        <a href="#">Student Login</a>
+        <a href="#">Parent Login</a>
+    </div>
+</div>
+        </nav>
+    </div>
+</header>
+
+<section class="hero">
+    <h1>India’s Structured Online Academy for Academic Excellence</h1>
+    <p>Grade 1 – 12 | Concept-Based Learning | Weekly & Monthly Assessments | Board Exam Excellence</p>
+
+    <div class="hero-points">
+        <span>✔ Max 4 Students Per Batch</span>
+        <span>✔ Separate Question Designing Team</span>
+        <span>✔ Daily Oral Testing</span>
+        <span>✔ Homework Tracking</span>
+    </div>
+
+    <a href="#admission" class="btn-primary">Secure Your Child’s Seat Today</a>
+</section>
+<!-- 🔥 PASTE NEW SECTION HERE -->
+
+<section class="problem-section">
+    <h2>Is Your Child Fully Prepared for Real Exam Challenges?</h2>
+    <p>
+        Most students only study book-back questions.
+        But real exams test Concepts, HOTS & Case Study questions.
+    </p>
+
+    <div class="problem-points">
+        <div> Only memorizing textbook answers</div>
+        <div> No structured assessment system</div>
+        <div> No daily oral testing</div>
+        <div> No personalized academic monitoring</div>
+    </div>
+
+    <h3>We Fix This With a Structured Academic System.</h3>
+</section>
+
+<section class="authority-section">
+    <h2>We Don’t Just Teach. We Build Academic Systems.</h2>
+    <p>
+        Separate Question Designing Team.<br>
+        Weekly, Monthly & Periodic Assessments.<br>
+        Daily Oral Testing After Every Class.<br>
+        Homework Monitoring & Performance Tracking.<br>
+        Structured Preparation for Board-Level Excellence.
+    </p>
+</section>
+<section id="system" class="system">
+    <h2>Our 10-Step Academic Excellence Model</h2>
+
+    <div class="system-grid">
+        <div class="system-card">Complete Concept Teaching – Not Just Book Back</div>
+        <div class="system-card">HOTS & Case Study Based Question Practice</div>
+        <div class="system-card">Weekly Assessments</div>
+        <div class="system-card">Monthly Assessments</div>
+        <div class="system-card">Periodic Structured Exams</div>
+        <div class="system-card">Separate Board-Level Question Setting Team</div>
+        <div class="system-card">Daily Oral Testing After Every Class</div>
+        <div class="system-card">Homework Monitoring & Tracking</div>
+        <div class="system-card">Consolidated Learning Structure Based on Level</div>
+        <div class="system-card">Complete Board Exam Support</div>
+    </div>
+</section>
+
+<section class="board-excellence">
+    <h2>Special Foundation Program for Grade 9 – 12</h2>
+    <p>Extra Classes. Extra Assessments. Strong Foundation Building for Board Excellence.</p>
+</section>
+<section class="results-section">
+    <h2>Why Parents Choose Gopes Pinnacle Academy</h2>
+
+    <div class="results-grid">
+        <div class="result-card">
+            ✔ Improved Confidence Within 30 Days
+        </div>
+
+        <div class="result-card">
+            ✔ Clear Concept Understanding
+        </div>
+
+        <div class="result-card">
+            ✔ Exposure to Board-Level Questions
+        </div>
+
+        <div class="result-card">
+            ✔ Maximum 4 Students Per Batch
+        </div>
+
+        <div class="result-card">
+            ✔ Daily Oral Testing & Homework Tracking
+        </div>
+
+        <div class="result-card">
+            ✔ Structured Academic Monitoring System
+        </div>
+    </div>
+</section>
+<section class="roadmap-section">
+    <h2>How Our Academic Model Works</h2>
+
+    <div class="roadmap-grid">
+
+        <div class="roadmap-step">
+            <h3>Step 1</h3>
+            <p>Complete Concept Teaching</p>
+        </div>
+
+        <div class="roadmap-step">
+            <h3>Step 2</h3>
+            <p>Daily Oral Testing</p>
+        </div>
+
+        <div class="roadmap-step">
+            <h3>Step 3</h3>
+            <p>Homework Monitoring</p>
+        </div>
+
+        <div class="roadmap-step">
+            <h3>Step 4</h3>
+            <p>Weekly Assessment</p>
+        </div>
+
+        <div class="roadmap-step">
+            <h3>Step 5</h3>
+            <p>Monthly Performance Report</p>
+        </div>
+
+        <div class="roadmap-step">
+            <h3>Step 6</h3>
+            <p>Periodic Exam Simulation</p>
+        </div>
+
+    </div>
+</section>
+<section id="courses" class="courses">
+    <h2>Academic & Skill Programs</h2>
+
+    <div class="course-grid">
+        <div class="course-card">All Subjects – Grade 1 to 12</div>
+        <div class="course-card">Mathematics | Science | Social | Core Subjects</div>
+        <div class="course-card">Hindi | Tamil | English | French</div>
+        <div class="course-card">Phonics | Vedic Maths | Abacus</div>
+        <div class="course-card">Rubik’s Cube | Drawing | Vocal | Instrumental</div>
+        <div class="course-card">Yoga | Python Programming</div>
+    </div>
+</section>
+
+<section id="online" class="online-section">
+    <h2>Fully Structured Online Academy</h2>
+    <p>Live Interactive Classes with Complete Academic Monitoring & Performance Tracking.</p>
+    <p>One-on-One & Group Classes (Maximum 4 Students Only)</p>
+</section>
+<section class="founder-section">
+    <div class="founder-content">
+         
+        <h2>Message From The Founder</h2>
+        <p>
+            At Gopes Pinnacle Academy, our mission is not just to complete syllabus,
+            but to build strong academic foundations.
+            We believe every child deserves structured guidance,
+            concept clarity, and consistent monitoring.
+        </p>
+        <p>
+            Our system is designed to prepare students not just for exams,
+            but for real academic excellence.
+        </p>
+        <h3 class="founder-name">
+            Mrs. Vishnu Gopeka S, M.E.
+        </h3>
+        <h4>– Founder, Gopes Pinnacle Academy</h4>
+    </div>
+</section>
+<section class="urgent-cta">
+    <h2>Admissions Open – Limited Seats Per Batch</h2>
+    <p>Small Batch System. Once Filled, Registrations Close.</p>
+    <a href="#admission" class="btn-danger">Book Free Demo & Reserve Seat</a>
+</section>
+
+<section id="admission" class="admission">
+    <h2>Secure Admission Now</h2>
+
+    <form class="admission-form">
+        <input type="text" placeholder="Parent Name" required>
+        <input type="text" placeholder="Student Name" required>
+        <input type="text" placeholder="Grade (1 – 12)" required>
+        <input type="tel" placeholder="Mobile Number" required>
+        <button type="submit">Request Admission Call</button>
+    </form>
+</section>
+
+<footer>
+    <p>📞 +91 - 9566911472</p>
+    <p>Online Structured Academic Excellence</p>
+    <p>© 2026 Gopes Pinnacle Academy</p>
+</footer>
+<a href="https://wa.me/919566911472?text=Hello%20I%20would%20like%20to%20know%20more%20about%20Gopes%20Pinnacle%20Academy"
+   class="whatsapp-float"
+   target="_blank">
+   💬
+</a>
+</body>
+</html>

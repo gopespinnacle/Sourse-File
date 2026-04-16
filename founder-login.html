@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Founder Login</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body class="login-page">
+
+
+<div class="login-box">
+
+    <img src="images/logo.png">
+    <h2>Founder Login</h2>
+
+    <div class="input-box">
+        <i class="fa fa-user"></i>
+        <input type="text" id="email" placeholder="Email">
+    </div>
+
+    <div class="input-box">
+        <i class="fa fa-lock"></i>
+        <input type="password" id="password" placeholder="Password">
+    </div>
+
+    <div class="remember">
+        <input type="checkbox"> Remember Me
+    </div>
+
+  <button class="login-btn" id="loginBtn">
+    Log In
+</button>
+<p>
+  Don’t have an account? 
+  <a href="founder-register.html">Register Here</a>
+</p>
+    <div class="links">
+        <a href="#">Forgot Password?</a>
+        <a href="#">Create Account</a>
+    </div>
+
+</div>
+<script>
+    
+    console.log("SCRIPT LOADED ✅");
+async function loginUser() {
+ console.log("LOGIN CLICKED 🔥");
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) {
+        alert("Please enter email and password");
+        return;
+    }
+
+    try {
+    const response = await fetch("https://academy-backend-jpup.onrender.com/api/auth/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+    });
+
+    console.log("STATUS:", response.status);
+
+    const data = await response.json();
+    console.log("DATA:", data);
+
+    if (response.ok) {
+
+    if ((data.role || "").toLowerCase() !== "founder") {
+        alert("Not founder account ❌");
+        return;
+    }
+
+    // Save data
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("role", data.role);
+    localStorage.setItem("name", data.name);
+
+    console.log("Redirecting now...");
+
+    // ✅ ONLY ONE redirect
+    window.location.href = "founder-dashboard.html";
+
+} else {
+    alert("Login failed: " + data.message);
+}
+
+} catch (error) {
+    console.error("ERROR:", error);
+    alert("Server not reachable ❌");
+}
+}
+document.getElementById("loginBtn").addEventListener("click", loginUser);
+</script>
+</body>
+</html>

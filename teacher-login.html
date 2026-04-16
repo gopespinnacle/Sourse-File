@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Teacher Login</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body class="login-page">
+
+<div class="login-box">
+
+    <img src="images/logo.png">
+    <h2>Teacher Login</h2>
+
+    <div class="input-box">
+        <i class="fa fa-user"></i>
+        <input type="text" id="email" placeholder="Teacher Email">
+    </div>
+
+    <div class="input-box">
+        <i class="fa fa-lock"></i>
+        <input type="password" id="password" placeholder="Password">
+    </div>
+<div class="remember">
+    <input type="checkbox"> Remember Me
+</div>
+<button type="button" class="login-btn" onclick="loginTeacher()">Login</button>
+
+</div>
+<script>
+async function loginTeacher() {
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) {
+        alert("Please enter email and password");
+        return;
+    }
+
+    try {
+
+        const response = await fetch("http://academy-backend-jpup.onrender.com/api/auth/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+
+            // 🔐 ROLE CHECK
+            if (data.role !== "teacher") {
+                alert("Access denied. Not a Teacher account.");
+                return;
+            }
+
+         localStorage.setItem("token", data.token);
+localStorage.setItem("role", data.role);
+
+// ✅ FIX STARTS HERE
+localStorage.setItem("teacherId", data.user._id);
+localStorage.setItem("teacherName", data.user.name);
+
+window.location.href = "teacher-dashboard.html";
+
+        } else {
+            alert(data.message || "Login failed");
+        }
+
+    } catch (error) {
+        alert("Server not running");
+    }
+}
+</script>
+</body>
+</html>
