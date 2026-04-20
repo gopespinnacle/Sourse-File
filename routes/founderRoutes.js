@@ -1,5 +1,6 @@
 console.log("FOUNDER ROUTES LOADED");
 console.log("🔥 ADMISSION ROUTE FILE LOADED");
+const TeacherApplication = require("../models/TeacherApplication");
 const Admission = require("../models/Admission");
 const PeriodAssignment = require("../models/PeriodAssignment");
 const express = require("express");
@@ -540,7 +541,7 @@ router.delete("/admission/:id", async (req, res) => {
 // storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "uploads/");
+        cb(null, "uploads/pdf");
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + "-" + file.originalname);
@@ -565,12 +566,9 @@ router.post("/teacher-application", upload.single("resume"), async (req, res) =>
             presentJob: req.body.presentJob,
             timing: req.body.timing,
             resume: req.file ? req.file.filename : "",
-            createdAt: new Date()
         };
 
-        const db = mongoose.connection;
-
-        await db.collection("teacherApplications").insertOne(data);
+        await TeacherApplication.create(data);
 
         res.json({ success: true });
 
