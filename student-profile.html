@@ -83,17 +83,17 @@ async function loadPeriods(){
 try{
 
 const res = await fetch(
-"https://academy-backend-eatl.onrender.com/api/founder/periodassignments"
+"https://academy-backend-eatl.onrender.com/api/founder/schedules"
 );
 
 const data = await res.json();
 
 let html = "";
 
-/* FILTER ONLY THIS STUDENT */
 data.data.forEach(p=>{
 
-if(p.student === studentId){
+// 🔥 IMPORTANT FIX
+if(p.student && p.student.toString() === studentId){
 
 html += `
 <div style="padding:8px;border-bottom:1px solid #ddd;">
