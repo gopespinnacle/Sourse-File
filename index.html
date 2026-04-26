@@ -779,6 +779,42 @@ footer{
     position:relative;
     top:-20px;   /* this matches director image level */
 }
+
+@media (max-width:768px){
+
+    /* SAME for both cards */
+    .leader-card{
+        text-align:center;
+        padding:25px 20px;
+    }
+
+    /* SAME image style */
+    .leader-img{
+        position:static !important;
+        display:block;
+        margin:0 auto 12px;
+        width:70px;
+        height:70px;
+    }
+
+    /* SAME heading */
+    .leader-card h3{
+        margin:10px 0 15px;
+        font-size:18px;
+        text-align:center;
+    }
+
+    /* REMOVE founder special shift */
+    .founder-card h3{
+        margin-left:0 !important;
+    }
+
+    /* SAME paragraph alignment */
+    .leader-card p{
+        text-align:center;
+    }
+
+}
 </style>
 </head>
 
