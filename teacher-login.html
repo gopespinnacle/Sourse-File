@@ -58,32 +58,37 @@ async function loginTeacher() {
 });
 
 console.log("Response received:", response);
-console.log("DATA:", data);
+
         const data = await response.json();
+console.log("DATA:", data);
+       
+// ❌ if response failed
+if (!response.ok) {
+    alert(data.message || "Login failed");
+    return;
+}
 
-        if (response.ok) {
-
-            if (data.role !== "teacher") {
-                alert("Access denied. Not a Teacher account.");
-                return;
-            }
-
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("role", data.role);
-            if (!data.user) {
+// ❌ if user missing
+if (!data.user) {
     alert("Login failed - user data missing");
     console.log("FULL RESPONSE:", data);
     return;
 }
 
+// ❌ if not teacher
+if (data.role !== "teacher") {
+    alert("Access denied. Not a Teacher account.");
+    return;
+}
+
+// ✅ SAVE DATA
+localStorage.setItem("token", data.token);
+localStorage.setItem("role", data.role);
 localStorage.setItem("teacherId", data.user._id);
 localStorage.setItem("teacherName", data.user.name);
 
-            window.location.href = "teacher-dashboard.html";
-
-        } else {
-            alert(data.message || "Login failed");
-        }
+// ✅ REDIRECT
+window.location.href = "teacher-dashboard.html";
 
     } catch (error) {
     console.error(error);
