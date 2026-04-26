@@ -747,6 +747,21 @@ footer{
     flex-wrap:wrap;
     gap:10px;
 }
+
+/* ONLY for founder change */
+.founder-header{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    margin-bottom:15px;
+}
+
+/* override position ONLY for founder image */
+.founder-img{
+    position:static !important;
+    width:60px;
+    height:60px;
+}
 </style>
 </head>
 
@@ -931,10 +946,12 @@ footer{
 <section class="leadership-section">
 
   <!-- Founder -->
-  <div class="leader-card">
-    <img src="images/founder.jpg" class="leader-img">
+  <div class="leader-card founder-card">
 
-    <h3>Message From The Founder</h3>
+    <div class="founder-header">
+        <img src="images/founder.jpg" class="leader-img founder-img">
+        <h3>Message From The Founder</h3>
+    </div>
 
     <p>
     At Gopes Pinnacle Academy, we believe education is not about completing syllabus —
@@ -951,7 +968,8 @@ footer{
 
     <h4>– Mrs. Vishnu Gopeka S, M.E.</h4>
     <span>Founder & Mentor</span>
-  </div>
+
+</div>
 
   <!-- Director -->
   <div class="leader-card">
