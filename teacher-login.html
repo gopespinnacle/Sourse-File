@@ -69,12 +69,13 @@ if (!response.ok) {
 }
 
 // ❌ if user missing
-if (!data.user) {
-    alert("Login failed - user data missing");
+const user = data.user || data.data || data;   // ✅ flexible
+
+if (!user._id) {
+    alert("User data missing");
     console.log("FULL RESPONSE:", data);
     return;
 }
-
 // ❌ if not teacher
 if (data.role !== "teacher") {
     alert("Access denied. Not a Teacher account.");
