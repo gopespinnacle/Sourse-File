@@ -42,13 +42,21 @@ const socket = io("https://academy-backend-eatl.onrender.com");
 
 // ✅ SAME ROOM FOR BOTH
 const params = new URLSearchParams(window.location.search);
-const room = params.get("room");
 
-if(!room){
-    alert("Room missing ❌");
+const className = params.get("className");
+const subject = params.get("subject");
+const day = params.get("day");
+const startTime = params.get("startTime");
+
+if(!className || !subject || !day || !startTime){
+    alert("Missing class details ❌");
 }
 
+// ✅ SAME ROOM FORMAT FOR BOTH
+const room = `${className}-${subject}-${day}-${startTime}`;
+
 socket.emit("joinRoom", room);
+socket.emit("teacherJoined", room);
 
 // CANVAS
 const canvas = document.getElementById("board");

@@ -35,11 +35,18 @@ const socket = io("https://academy-backend-eatl.onrender.com");
 
 // ✅ SAME ROOM
 const params = new URLSearchParams(window.location.search);
-const room = params.get("room");
 
-if(!room){
-    alert("Room missing ❌");
+const className = params.get("className");
+const subject = params.get("subject");
+const day = params.get("day");
+const startTime = params.get("startTime");
+
+if(!className || !subject || !day || !startTime){
+    alert("Missing class details ❌");
 }
+
+// ✅ EXACT SAME ROOM LOGIC
+const room = `${className}-${subject}-${day}-${startTime}`;
 
 socket.emit("joinRoom", room);
 
