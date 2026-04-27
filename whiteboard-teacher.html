@@ -34,16 +34,6 @@ body {
     display:block;
     background:white;
 }
-#pdfCanvas {
-    display:block;
-}
-
-#board {
-    position:absolute;
-    top:0;
-    left:0;
-}
-
 #videoBox {
     position: fixed;
     top: 60px;
@@ -52,10 +42,27 @@ body {
     height: calc(100vh - 60px);
     z-index: 1000;
     background: black;
+    pointer-events: auto; /* ✅ ADD THIS */
 }
 
 #pdfContainer {
     width: 60%;
+    position: relative;
+}
+
+#pdfCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+#board {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;   /* 🔥 VERY IMPORTANT */
+    cursor: crosshair;
 }
 </style>
 
@@ -140,16 +147,27 @@ document.addEventListener("DOMContentLoaded", function(){
     new JitsiMeetExternalAPI(domain, options);
 });
 // JOIN ROOM
+
+const room = new URLSearchParams(window.location.search).get("room") || "DefaultRoom";
 socket.emit("joinRoom", room);
 const canvas = document.getElementById("board");
 const pdfUpload = document.getElementById("pdfUpload");
 const pdfCanvas = document.getElementById("pdfCanvas");
 const pdfCtx = pdfCanvas.getContext("2d");
 const ctx = canvas.getContext("2d");
+function resizeCanvas(){
+    const container = document.getElementById("pdfContainer");
 
+    canvas.width = container.clientWidth;
+    canvas.height = window.innerHeight - 60;
+
+    pdfCanvas.width = canvas.width;
+    pdfCanvas.height = canvas.height;
+}
+
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
 /* FULL SCREEN CANVAS */
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight - 50;
 
 let drawing = false;
 let tool = "pen";
