@@ -89,15 +89,10 @@ video {
 
 /* VIDEO */
 #remoteVideo {
-    position: absolute;
-    top: 30px;
-    left: 0;
     width: 100%;
-    height: calc(100% - 30px);
-    object-fit: contain;
-    z-index: 1;   /* BACK */
+    height: 100%;
+    object-fit: cover;
 }
-
 #screenDraw {
     position: absolute;
     top: 30px;
@@ -113,9 +108,9 @@ video {
     right: 10px;
     width: 90px;
     height: 60px;
-    border-radius: 6px;
-    z-index: 10;  /* 🔥 ALWAYS TOP */
+    border-radius: 8px;
     border: 2px solid white;
+    object-fit: cover;
 }
 
 #screenContainer {
@@ -1168,7 +1163,11 @@ async function startScreenShare(){
         const screenTrack = screenStream.getVideoTracks()[0];
 
         // 🔥 Replace camera with screen
-        pc.addTrack(screenTrack, screenStream);
+        const sender = pc.getSenders().find(s => s.track.kind === "video");
+
+if (sender) {
+    sender.replaceTrack(screenTrack);   // 🔥 KEY FIX
+}
 
         // show locally
         
@@ -1189,13 +1188,15 @@ async function stopScreenShare(){
 
     const videoTrack = localStream.getVideoTracks()[0];
 
-    screenStream.getTracks().forEach(track => track.stop());
-screenStream = null;
+    const sender = pc.getSenders().find(s => s.track.kind === "video");
+
+    if(sender){
+        sender.replaceTrack(videoTrack);   // back to camera
+    }
 
     document.getElementById("localVideo").srcObject = localStream;
 
     screenStream.getTracks().forEach(track => track.stop());
-
     screenStream = null;
 }
 
