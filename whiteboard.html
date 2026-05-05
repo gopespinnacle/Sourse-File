@@ -89,21 +89,24 @@ video {
 
 /* VIDEO */
 #remoteVideo {
+    position: absolute;
+    top: 30px;
+    left: 0;
     width: 100%;
     height: calc(100% - 30px);
     object-fit: contain;
+    z-index: 1;   /* BACK */
 }
 
-/* DRAW */
 #screenDraw {
     position: absolute;
     top: 30px;
     left: 0;
     width: 100%;
     height: calc(100% - 30px);
+    z-index: 2;   /* middle */
 }
 
-/* LOCAL VIDEO */
 #localVideo {
     position: absolute;
     bottom: 10px;
@@ -111,8 +114,14 @@ video {
     width: 90px;
     height: 60px;
     border-radius: 6px;
+    z-index: 10;  /* 🔥 ALWAYS TOP */
+    border: 2px solid white;
 }
 
+#screenContainer {
+    position: fixed;
+    overflow: hidden;
+}
 /* MINIMIZE */
 .minimized {
     height: 40px !important;
