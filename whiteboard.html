@@ -975,48 +975,54 @@ if(role === "teacher"){
 
 function drawFourLines(){
 
-    mainCtx.globalCompositeOperation = "source-over";
+    mainBoard.style.background = "white";
 
-    mainBoard.style.backgroundColor = "white";
+    const gap = 60;  // space between each set
 
-    mainBoard.style.backgroundImage = `
-        repeating-linear-gradient(
-            to bottom,
-            #035096 0px,
-            #035096 1px,
+    for(let y = 0; y < mainBoard.height; y += gap){
 
-            white 1px,
-            white 19px,
+        // top thin line
+        mainCtx.beginPath();
+        mainCtx.moveTo(0, y);
+        mainCtx.lineTo(mainBoard.width, y);
+        mainCtx.strokeStyle = "#035096";
+        mainCtx.lineWidth = 1;
+        mainCtx.stroke();
 
-            #8b0000 20px,
-            #8b0000 21px,
+        // middle thick line
+        mainCtx.beginPath();
+        mainCtx.moveTo(0, y + 20);
+        mainCtx.lineTo(mainBoard.width, y + 20);
+        mainCtx.strokeStyle = "#8b0000";
+        mainCtx.lineWidth = 1.5;
+        mainCtx.stroke();
 
-            white 21px,
-            white 39px,
-
-            #035096 40px,
-            #035096 41px,
-
-            white 41px,
-            white 60px
-        )
-    `;
-
-    mainBoard.style.backgroundSize = "100% 60px";
+        // bottom thin line
+        mainCtx.beginPath();
+        mainCtx.moveTo(0, y + 40);
+        mainCtx.lineTo(mainBoard.width, y + 40);
+        mainCtx.strokeStyle = "#035096";
+        mainCtx.lineWidth = 1;
+        mainCtx.stroke();
+    }
 }
 
 function drawOneLines(){
 
-    mainCtx.globalCompositeOperation = "source-over";
+    mainBoard.style.background = "white";
 
-    mainBoard.style.backgroundColor = "white";
+    const gap = 40;
 
-    mainBoard.style.backgroundImage =
-        "repeating-linear-gradient(to bottom, white 0px, white 39px, #002366 40px)";
+    for(let y = 0; y < mainBoard.height; y += gap){
 
-    mainBoard.style.backgroundSize = "100% 40px";
+        mainCtx.beginPath();
+        mainCtx.moveTo(0, y);
+        mainCtx.lineTo(mainBoard.width, y);
+        mainCtx.strokeStyle = "#002366";
+        mainCtx.lineWidth = 1;
+        mainCtx.stroke();
+    }
 }
-
 
 function loadCanvasHistory(type){
 
@@ -1430,5 +1436,4 @@ async function startPiP() {
 </script>
 </body>
 </html>
-
 
