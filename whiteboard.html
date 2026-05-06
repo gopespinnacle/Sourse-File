@@ -154,6 +154,16 @@ height: 40px;
     height: 40px !important;
     width: 200px !important;
 }
+
+#drawLayer{
+    position:absolute;
+    top:80px;
+    left:0;
+    width:100%;
+    height:calc(100% - 80px);
+    z-index:5;
+    background:transparent;
+}
 </style>
 </head>
 
@@ -233,6 +243,13 @@ height: 40px;
     background:white;
     z-index:1;
 "></canvas>
+
+<canvas id="drawLayer" style="
+    position:absolute;
+    top:0;
+    left:0;
+    z-index:50;
+"></canvas>
 <div id="pdfWindow" style="
     position:absolute;
     top:60px;
@@ -263,12 +280,7 @@ height: 40px;
 
     <!-- CANVAS -->
     <canvas id="board"></canvas>
-    <canvas id="drawLayer" style="
-    position:absolute;
-    top:0;
-    left:0;
-    z-index:50;
-"></canvas>
+    
 
 </div>
 
@@ -345,15 +357,27 @@ mainBoard.addEventListener("pointermove", (e) => {
     const x = (e.clientX - rect.left) * (mainBoard.width / rect.width);
     const y = (e.clientY - rect.top) * (mainBoard.height / rect.height);
 
-    mainCtx.beginPath();
-    mainCtx.moveTo(prevX, prevY);
-    mainCtx.lineTo(x, y);
+    dctx.beginPath();
+dctx.moveTo(prevX, prevY);
+dctx.lineTo(x, y);
 
-    mainCtx.strokeStyle = currentColor;
-    mainCtx.lineWidth = 2;
+dctx.lineCap = "round";
 
-    mainCtx.lineCap = "round";   // 🔥 ADD (smooth line)
-    mainCtx.stroke();
+if(currentTool === "eraser"){
+
+    dctx.globalCompositeOperation = "destination-out";
+    dctx.lineWidth = 25;
+
+}else{
+
+    dctx.globalCompositeOperation = "source-over";
+    dctx.strokeStyle = currentColor;
+    dctx.lineWidth = 2;
+}
+
+dctx.stroke();
+
+    
 // 🔥 SAVE DRAWING HISTORY
 let key = getHistoryKey();
 
@@ -695,22 +719,25 @@ socket.on("draw", (data) => {
 }
 
     // main board → draw here
-    mainCtx.beginPath();
-    mainCtx.moveTo(data.prevX, data.prevY);
-    mainCtx.lineTo(data.x, data.y);
+    dctx.beginPath();
+dctx.moveTo(data.prevX, data.prevY);
+dctx.lineTo(data.x, data.y);
 
-    mainCtx.lineCap = "round";
+dctx.lineCap = "round";
 
-    if(data.tool === "eraser"){
-        mainCtx.globalCompositeOperation = "destination-out";
-        mainCtx.lineWidth = 20;
-    } else {
-        mainCtx.globalCompositeOperation = "source-over";
-        mainCtx.strokeStyle = data.color;
-        mainCtx.lineWidth = 2;
-    }
+if(data.tool === "eraser"){
 
-    mainCtx.stroke();
+    dctx.globalCompositeOperation = "destination-out";
+    dctx.lineWidth = 25;
+
+}else{
+
+    dctx.globalCompositeOperation = "source-over";
+    dctx.strokeStyle = data.color;
+    dctx.lineWidth = 2;
+}
+
+dctx.stroke();
 });
 
 /* RECEIVE DRAW */
