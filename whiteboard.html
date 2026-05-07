@@ -154,6 +154,206 @@ height: 40px;
     height: 40px !important;
     width: 200px !important;
 }
+
+
+/* ================= MOBILE ONLY ================= */
+
+@media screen and (max-width:768px){
+
+    body{
+        overflow:hidden;
+    }
+
+    /* TOOLBAR */
+    .toolbar{
+
+        display:grid;
+
+        grid-template-columns:repeat(4, 1fr);
+
+        gap:6px;
+
+        padding:6px;
+
+        position:fixed;
+
+        top:0;
+        left:0;
+
+        width:100%;
+
+        background:#1e293b;
+
+        z-index:99999;
+    }
+
+    .toolbar button,
+    .toolbar select,
+    .toolbar input{
+
+        width:100%;
+
+        min-width:0;
+
+        font-size:11px;
+
+        padding:6px 4px;
+
+        height:55px;
+
+        box-sizing:border-box;
+    }
+
+    /* CANVAS */
+    #mainBoard{
+
+        top:140px !important;
+
+        left:0;
+
+        width:100vw !important;
+
+        height:calc(100vh - 140px) !important;
+    }
+
+    #drawLayer{
+
+        top:140px !important;
+
+        left:0;
+
+        width:100vw !important;
+
+        height:calc(100vh - 140px) !important;
+    }
+
+    /* PiP VIDEO */
+    #screenContainer{
+
+        width:110px;
+
+        height:80px;
+
+        top:150px;
+
+        right:5px;
+    }
+
+    #localVideoBox{
+
+        width:40px;
+
+        height:28px;
+    }
+
+    /* PDF */
+    #pdfWindow{
+
+        top:140px !important;
+
+        left:0 !important;
+
+        width:100vw !important;
+
+        height:calc(100vh - 140px) !important;
+    }
+}
+
+/* ================= MOBILE MENU ================= */
+
+#mobileMenu{
+    display:flex;
+    gap:10px;
+}
+
+#menuBtn{
+    display:none;
+}
+
+@media(max-width:768px){
+
+    body{
+        overflow:hidden;
+    }
+
+    .toolbar{
+
+        display:flex;
+
+        flex-wrap:nowrap;
+
+        overflow-x:auto;
+        overflow-y:hidden;
+
+        white-space:nowrap;
+
+        gap:8px;
+
+        padding:6px;
+
+        width:100vw;
+
+        box-sizing:border-box;
+
+        -webkit-overflow-scrolling:touch;
+    }
+
+    .toolbar::-webkit-scrollbar{
+        display:none;
+    }
+
+    .toolbar button,
+    .toolbar select,
+    .toolbar input{
+
+        flex:0 0 auto;
+
+        min-width:85px;
+
+        height:55px;
+
+        font-size:14px;
+    }
+
+    #mainBoard{
+
+        position:absolute;
+
+        top:72px !important;
+
+        left:0;
+
+        width:100vw !important;
+
+        height:calc(100vh - 72px) !important;
+    }
+
+    #screenContainer{
+
+        width:110px;
+        height:80px;
+
+        top:82px;
+        right:5px;
+    }
+
+    #localVideoBox{
+
+        width:35px;
+        height:28px;
+    }
+
+    #pdfWindow{
+
+        top:72px !important;
+
+        left:0 !important;
+
+        width:100vw !important;
+
+        height:calc(100vh - 72px) !important;
+    }
+}
 </style>
 </head>
 
@@ -173,15 +373,27 @@ height: 40px;
     </div>
 <button onclick="setTool('eraseDraw')">🧽 Erase</button>
 
+<button id="menuBtn" onclick="toggleMobileMenu()">☰ Menu</button>
+
+<div id="mobileMenu">
+
 <button onclick="openBigTextBox()">⌨️ Type Text</button>
+
 <button onclick="saveAsPDF()">💾 Save PDF</button>
 
 <button onclick="startScreenShare()">🖥 Share Screen</button>
+
 <button onclick="stopScreenShare()">❌ Stop Share</button>
+
 <button onclick="toggleAudio()">🎤 Mute</button>
+
 <button onclick="toggleVideo()">📷 Stop Video</button>
+
 <button onclick="startPiP()">📺 Camera PiP</button>
-    <button onclick="leaveClass()">🚪 Leave</button>
+
+<button onclick="leaveClass()">🚪 Leave</button>
+
+</div>
 </div>
 <!-- 🔥 SCREEN SHARE CONTAINER -->
 <div id="screenContainer">
@@ -1172,12 +1384,6 @@ function loadCanvasHistory(type){
 
         mainCtx.stroke();
     });
-
-
-// draw only cleaned strokes
-cleaned.forEach(d => {
-    drawLine(d.x1, d.y1, d.x2, d.y2, d.tool, d.color);
-});
 }
 
 function openBigTextBox(){
@@ -1727,6 +1933,13 @@ async function startPiP() {
     }
 }
  
+
+ function toggleMobileMenu(){
+
+    document
+        .getElementById("mobileMenu")
+        .classList.toggle("show");
+}
 </script>
 </body>
 </html>
