@@ -353,30 +353,17 @@ height: 40px;
 .mobile-share-video{
 
     position:fixed !important;
-
     right:10px !important;
     bottom:10px !important;
 
     width:120px !important;
     height:160px !important;
 
-    z-index:999999999 !important;
+    border-radius:12px;
+    z-index:999999;
 
-    border-radius:12px !important;
-
-    background:black !important;
-
-    object-fit:cover !important;
-
-    display:block !important;
-
-    visibility:visible !important;
-
-    opacity:1 !important;
-
-    border:3px solid white !important;
-
-    box-shadow:0 0 20px rgba(0,0,0,0.5) !important;
+    background:black;
+    object-fit:cover;
 }
 
 </style>
@@ -420,7 +407,7 @@ height: 40px;
         <button onclick="saveAsPDF()">💾 Save PDF</button>
 
         <button id="shareScreenBtn"
-onclick="startMobileScreenShare()">
+onclick="Android.startScreenCapture()">
 
 🖥️ Share Screen
 
@@ -2017,24 +2004,12 @@ async function testCamera(){
 
 function startMobileScreenShare(){
 
-    const remoteVideo =
-        document.getElementById("remoteVideo");
+    // SHOW OTHER PARTICIPANT VIDEO
 
-    // FORCE FLOATING VIDEO
+    document.getElementById("remoteVideo")
+    .classList.add("mobile-share-video");
 
-    remoteVideo.classList.add(
-        "mobile-share-video"
-    );
-
-    remoteVideo.style.position = "fixed";
-    remoteVideo.style.right = "10px";
-    remoteVideo.style.bottom = "10px";
-    remoteVideo.style.width = "120px";
-    remoteVideo.style.height = "160px";
-    remoteVideo.style.zIndex = "999999999";
-    remoteVideo.style.display = "block";
-
-    // START NATIVE SHARE
+    // START ANDROID SCREEN SHARE
 
     Android.startScreenCapture();
 }
