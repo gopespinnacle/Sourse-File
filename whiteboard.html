@@ -23,19 +23,37 @@ body {
 
 .toolbar {
     background:#1e293b;
-    padding:10px;
+
+    padding:5px 6px;
+
     display:flex;
-    gap:10px;
+
+    gap:5px;
 
     position:relative;
-    z-index:1000;   /* 🔥 ADD THIS */
+
+    z-index:1000;
+
+    align-items:center;
+
+    flex-wrap:wrap;
 }
 
-button {
-    padding:8px 12px;
+button,
+select,
+input {
+
+    height:30px;
+
+    padding:3px 8px;
+
     border:none;
-    border-radius:6px;
+
+    border-radius:5px;
+
     cursor:pointer;
+
+    font-size:12px;
 }
 
 .teacher-tools {
@@ -357,7 +375,7 @@ height: 40px;
 
         <!-- TOOLS -->
         <button onclick="setTool('pen')">✏️ Pen</button>
-
+<button onclick="testCamera()">TEST CAMERA</button>
         <button onclick="setTool('eraser')">
             Back to DOC
         </button>
@@ -1939,6 +1957,27 @@ async function startPiP() {
     document
         .querySelector(".menu-overlay")
         .classList.toggle("show");
+}
+
+async function testCamera(){
+
+    try{
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video:true,
+            audio:true
+        });
+
+        document.getElementById("localVideo").srcObject = stream;
+
+        alert("CAMERA WORKING");
+
+    }catch(err){
+
+        alert("CAMERA ERROR: " + err.message);
+
+        console.log(err);
+    }
 }
 </script>
 </body>
