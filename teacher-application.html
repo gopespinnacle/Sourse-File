@@ -193,6 +193,10 @@ document.getElementById("teacherForm").addEventListener("submit", async function
 
     console.log("UPLOAD RESPONSE:", uploadData);
 
+if(uploadData.error){
+    console.log(uploadData.error.message);
+}
+
     if(!uploadData.secure_url){
         alert("Upload failed");
         return;
