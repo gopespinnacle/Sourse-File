@@ -128,6 +128,21 @@ type="file"
 id="video"
 accept="video/*">
 
+<input
+type="file"
+id="video"
+accept="video/*">
+
+<video
+id="durationReader"
+preload="metadata"
+style="display:none;">
+</video>
+
+<input
+type="hidden"
+id="duration">
+
 <button onclick="uploadVideo()">
 
 Upload Video
@@ -148,6 +163,32 @@ const grade=params.get("grade");
 
 const subject=params.get("subject");
 
+const videoInput = document.getElementById("video");
+
+videoInput.addEventListener("change", () => {
+
+    const file = videoInput.files[0];
+
+    if (!file) return;
+
+    const video = document.getElementById("durationReader");
+
+    video.src = URL.createObjectURL(file);
+
+    video.onloadedmetadata = () => {
+
+        const minutes = Math.round(video.duration / 60);
+
+        document.getElementById("duration").value = minutes;
+
+        URL.revokeObjectURL(video.src);
+
+        console.log("Duration:", minutes, "mins");
+
+    };
+
+});
+
 async function uploadVideo(){
 
 const title=document.getElementById("title").value;
@@ -155,6 +196,8 @@ const title=document.getElementById("title").value;
 const teacher=document.getElementById("teacher").value;
 
 const file=document.getElementById("video").files[0];
+
+const duration = await getVideoDuration(file);
 
 if(!title || !teacher || !file){
 
@@ -174,7 +217,14 @@ formData.append("grade",grade);
 
 formData.append("subject",subject);
 
+formData.append(
+    "duration",
+    document.getElementById("duration").value
+);
+
 formData.append("video",file);
+
+formData.append("duration", duration);
 
 document.getElementById("status").innerHTML="Uploading...";
 
@@ -214,6 +264,28 @@ document.getElementById("status").innerHTML=data.message;
 
 }
 
+
+function getVideoDuration(file){
+
+    return new Promise((resolve)=>{
+
+        const video=document.createElement("video");
+
+        video.preload="metadata";
+
+        video.onloadedmetadata=function(){
+
+            window.URL.revokeObjectURL(video.src);
+
+            resolve(Math.round(video.duration/60));
+
+        };
+
+        video.src=URL.createObjectURL(file);
+
+    });
+
+}
 </script>
 
 </body>
