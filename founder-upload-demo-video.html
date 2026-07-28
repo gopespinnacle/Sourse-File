@@ -128,10 +128,6 @@ type="file"
 id="video"
 accept="video/*">
 
-<input
-type="file"
-id="video"
-accept="video/*">
 
 <video
 id="durationReader"
@@ -197,15 +193,16 @@ const teacher=document.getElementById("teacher").value;
 
 const file=document.getElementById("video").files[0];
 
-const duration = await getVideoDuration(file);
-
 if(!title || !teacher || !file){
 
-alert("Fill all fields");
-
-return;
+    alert("Fill all fields");
+    return;
 
 }
+
+const duration = await getVideoDuration(file);
+
+
 
 const formData=new FormData();
 
@@ -217,10 +214,7 @@ formData.append("grade",grade);
 
 formData.append("subject",subject);
 
-formData.append(
-    "duration",
-    document.getElementById("duration").value
-);
+
 
 formData.append("video",file);
 
