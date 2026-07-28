@@ -1,0 +1,1918 @@
+/* ===========================================================
+   GOPES PINNACLE ACADEMY
+   Birthday Celebration
+===========================================================*/
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+
+    font-family:'Poppins',sans-serif;
+
+    overflow-x:hidden;
+
+    background:
+    linear-gradient(135deg,#041c4a,#072d70,#0a479f);
+
+    min-height:100vh;
+
+    color:#fff;
+
+}
+
+/* ===========================================================
+BACKGROUND
+===========================================================*/
+
+.birthday-container{
+
+    position:relative;
+
+    width:100%;
+
+    min-height:100vh;
+
+    overflow:hidden;
+
+}
+
+/* ===========================================================
+LOGO
+===========================================================*/
+
+header{
+
+    width:100%;
+
+    padding:20px 40px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    flex-direction:column;
+
+    position:relative;
+
+    z-index:20;
+
+}
+
+.academy-logo{
+
+    width:220px;
+    height:auto;
+
+    margin-bottom:15px;
+
+    filter:drop-shadow(0 0 15px rgba(255,215,0,0.8));
+
+    transition:0.3s;
+
+}
+
+header h3{
+
+    color:#FFD54F;
+
+    font-size:22px;
+
+    font-weight:700;
+
+    letter-spacing:2px;
+
+}
+
+/* ===========================================================
+HERO
+===========================================================*/
+
+.hero-section{
+
+    width:100%;
+
+    padding:70px 20px;
+
+    text-align:center;
+
+}
+
+.hero-text h4{
+
+    font-size:42px;
+
+    color:#FFD700;
+
+    margin-bottom:20px;
+
+    animation:bounce 2s infinite;
+
+}
+
+.hero-text h1{
+
+    font-size:70px;
+
+    line-height:90px;
+
+    font-weight:800;
+
+}
+
+.hero-text span{
+
+    display:block;
+
+    color:#FFD700;
+
+    margin:25px 0;
+
+}
+
+.hero-text p{
+
+    width:80%;
+
+    max-width:900px;
+
+    margin:auto;
+
+    margin-top:35px;
+
+    font-size:24px;
+
+    line-height:40px;
+
+    color:#ececec;
+
+}
+
+/* ===========================================================
+STUDENT
+===========================================================*/
+
+.student-section{
+
+    padding:80px 20px;
+
+    text-align:center;
+
+}
+
+.photo-circle{
+
+    width:260px;
+
+    height:260px;
+
+    margin:auto;
+
+    border-radius:50%;
+
+    overflow:hidden;
+
+    border:8px solid gold;
+
+    box-shadow:
+
+    0 0 50px gold,
+
+    0 0 120px rgba(255,215,0,.4);
+
+    animation:glow 3s infinite;
+
+}
+
+.photo-circle img{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+}
+
+.student-section h2{
+
+    margin-top:35px;
+
+    font-size:34px;
+
+    color:#FFD700;
+
+}
+
+.student-section h1{
+
+    margin-top:20px;
+
+    font-size:55px;
+
+    color:white;
+
+}
+
+/* ===========================================================
+MESSAGE
+===========================================================*/
+
+.message-section{
+
+    width:100%;
+
+    padding:60px 20px;
+
+}
+
+.glass-card{
+
+    width:90%;
+
+    max-width:1100px;
+
+    margin:auto;
+
+    padding:60px;
+
+    border-radius:25px;
+
+    background:
+
+    rgba(255,255,255,.08);
+
+    backdrop-filter:blur(14px);
+
+    border:
+
+    1px solid rgba(255,255,255,.2);
+
+    box-shadow:
+
+    0 20px 60px rgba(0,0,0,.3);
+
+}
+
+.glass-card h2{
+
+    text-align:center;
+
+    color:#FFD700;
+
+    margin-bottom:35px;
+
+    font-size:42px;
+
+}
+
+.glass-card p{
+
+    font-size:26px;
+
+    line-height:52px;
+
+    text-align:center;
+
+}
+
+/* ===========================================================
+SECTION SPACING
+===========================================================*/
+
+section{
+
+    position:relative;
+
+    z-index:10;
+
+}
+
+/* ===========================================================
+ANIMATIONS
+===========================================================*/
+
+@keyframes glow{
+
+    0%{
+
+        box-shadow:
+
+        0 0 20px gold;
+
+    }
+
+    50%{
+
+        box-shadow:
+
+        0 0 70px gold,
+
+        0 0 120px gold;
+
+    }
+
+    100%{
+
+        box-shadow:
+
+        0 0 20px gold;
+
+    }
+
+}
+
+@keyframes bounce{
+
+    0%{
+
+        transform:translateY(0);
+
+    }
+
+    50%{
+
+        transform:translateY(-12px);
+
+    }
+
+    100%{
+
+        transform:translateY(0);
+
+    }
+
+}
+
+/* ===========================================================
+TABLET
+===========================================================*/
+
+@media(max-width:900px){
+
+.hero-text h1{
+
+font-size:48px;
+
+line-height:65px;
+
+}
+
+.hero-text h4{
+
+font-size:30px;
+
+}
+
+.hero-text p{
+
+width:95%;
+
+font-size:20px;
+
+line-height:34px;
+
+}
+
+.student-section h1{
+
+font-size:40px;
+
+}
+
+.photo-circle{
+
+width:220px;
+
+height:220px;
+
+}
+
+.glass-card{
+
+padding:35px;
+
+}
+
+.glass-card p{
+
+font-size:20px;
+
+line-height:40px;
+
+}
+
+}
+
+/* ===========================================================
+MOBILE
+===========================================================*/
+
+@media(max-width:600px){
+
+header{
+
+padding:20px;
+
+}
+
+.academy-logo{
+
+width:110px;
+
+}
+
+header h3{
+
+font-size:16px;
+
+}
+
+.hero-section{
+
+padding:40px 15px;
+
+}
+
+.hero-text h1{
+
+font-size:34px;
+
+line-height:48px;
+
+}
+
+.hero-text h4{
+
+font-size:24px;
+
+}
+
+.hero-text p{
+
+font-size:17px;
+
+line-height:30px;
+
+}
+
+.photo-circle{
+
+width:180px;
+
+height:180px;
+
+}
+
+.student-section h1{
+
+font-size:28px;
+
+}
+
+.student-section h2{
+
+font-size:24px;
+
+}
+
+.glass-card{
+
+width:95%;
+
+padding:25px;
+
+}
+
+.glass-card h2{
+
+font-size:28px;
+
+}
+
+.glass-card p{
+
+font-size:18px;
+
+line-height:34px;
+
+}
+
+}
+
+/*==========================================================
+CAKE SECTION
+==========================================================*/
+
+.cake-section{
+
+    width:100%;
+
+    padding:100px 20px;
+
+    text-align:center;
+
+}
+
+.cake-section h2{
+
+    font-size:48px;
+
+    color:#FFD700;
+
+    margin-bottom:15px;
+
+}
+
+.cake-section p{
+
+    font-size:24px;
+
+    color:#ffffff;
+
+    margin-bottom:70px;
+
+}
+
+/*==========================================================
+CAKE
+==========================================================*/
+
+/*==========================================================
+PREMIUM 3D CAKE
+==========================================================*/
+
+#cakeWrapper{
+
+    position:relative;
+
+    width:520px;
+
+    height:420px;
+
+    margin:auto;
+
+}
+
+#knife{
+
+    position:absolute;
+
+    left:50%;
+
+    top:-120px;
+
+    transform:translateX(-50%);
+
+    font-size:70px;
+
+    z-index:999;
+
+    transition:all 1s ease;
+
+}
+
+#cake{
+
+    position:relative;
+
+    left:50%;
+
+    bottom:0;
+
+    transform:translateX(-50%) scale(.60);
+
+    transform-origin:center center;
+
+    margin:0 auto;
+
+}
+
+/*================ LEFT & RIGHT HALF =================*/
+
+.cake-half{
+
+    position:absolute;
+
+    width:190px;
+
+    height:220px;
+
+    transition:1.2s ease;
+
+}
+
+.left{
+
+    left:10px;
+
+}
+
+.right{
+
+    right:10px;
+
+}
+
+/*================ BOTTOM =================*/
+
+.cake-bottom{
+
+    position:absolute;
+
+    bottom:0;
+
+    width:100%;
+
+    height:90px;
+
+    background:#ffb347;
+
+    border-radius:12px;
+
+    box-shadow:0 12px 30px rgba(0,0,0,.35);
+
+}
+
+/*================ MIDDLE =================*/
+
+.cake-middle{
+
+    position:absolute;
+
+    bottom:75px;
+
+    width:100%;
+
+    height:70px;
+
+    background:#ffd18c;
+
+    border-radius:12px;
+
+}
+
+/*================ TOP =================*/
+
+.cake-top{
+
+    position:absolute;
+
+    bottom:140px;
+
+    width:100%;
+
+    height:60px;
+
+    background:#ffe7b8;
+
+    border-radius:12px;
+
+}
+
+/*================ CREAM =================*/
+
+.cake-top::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:-12px;
+
+    width:100%;
+
+    height:26px;
+
+    background:white;
+
+    border-radius:50%;
+
+}
+
+/*================ CANDLES =================*/
+
+.candles{
+
+    position:absolute;
+
+    top:10px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    display:flex;
+
+    gap:40px;
+
+    z-index:200;
+
+}
+
+.candle{
+
+    width:14px;
+
+    height:60px;
+
+    border-radius:4px;
+
+    background:repeating-linear-gradient(
+
+        45deg,
+
+        #ff4d4d,
+
+        #ff4d4d 6px,
+
+        white 6px,
+
+        white 12px
+
+    );
+
+    position:relative;
+
+}
+
+/*================ FLAME =================*/
+
+.candle::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:-20px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:16px;
+
+    height:22px;
+
+    background:gold;
+
+    border-radius:50%;
+
+    box-shadow:
+
+    0 0 20px orange,
+
+    0 0 40px gold;
+
+    animation:flicker .5s infinite;
+
+}
+
+@keyframes flicker{
+
+0%{
+
+transform:translateX(-50%) scale(1);
+
+}
+
+50%{
+
+transform:translateX(-50%) scale(.85);
+
+}
+
+100%{
+
+transform:translateX(-50%) scale(1.1);
+
+}
+
+}
+
+/*================ BLOWN CANDLE =================*/
+
+.candle.off::before{
+
+    display:none;
+
+}
+
+.candle.off::after{
+
+    content:"";
+
+    position:absolute;
+
+    left:50%;
+
+    top:-18px;
+
+    transform:translateX(-50%);
+
+    width:10px;
+
+    height:18px;
+
+    background:radial-gradient(
+
+        rgba(255,255,255,.8),
+
+        transparent
+
+    );
+
+    animation:smoke 2s forwards;
+
+}
+
+@keyframes smoke{
+
+0%{
+
+opacity:1;
+
+transform:translate(-50%,0);
+
+}
+
+100%{
+
+opacity:0;
+
+transform:translate(-50%,-40px) scale(2);
+
+}
+
+}
+
+/*================ SPLIT =================*/
+
+#cake.cut .left{
+
+    transform:
+
+    translateX(-60px)
+
+    rotate(-8deg);
+
+}
+
+#cake.cut .right{
+
+    transform:
+
+    translateX(60px)
+
+    rotate(8deg);
+
+}
+
+/*================ KNIFE =================*/
+
+#knife.cut{
+
+    top:110px;
+
+}
+
+/*==========================================================
+BUTTONS
+==========================================================*/
+
+.cake-buttons{
+
+    margin-top:80px;
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:30px;
+
+    flex-wrap:wrap;
+
+}
+
+.cake-buttons button{
+
+    border:none;
+
+    padding:18px 45px;
+
+    font-size:22px;
+
+    font-weight:700;
+
+    border-radius:60px;
+
+    cursor:pointer;
+
+    transition:.35s;
+
+    color:white;
+
+}
+
+/*==========================================================
+BLOW BUTTON
+==========================================================*/
+
+#blowBtn{
+
+    background:
+
+    linear-gradient(
+
+    135deg,
+
+    #ff9800,
+
+    #ff5722
+
+    );
+
+    box-shadow:
+
+    0 10px 25px rgba(255,87,34,.4);
+
+}
+
+#blowBtn:hover{
+
+    transform:translateY(-5px);
+
+}
+
+/*==========================================================
+CUT BUTTON
+==========================================================*/
+
+#cutBtn{
+
+    background:
+
+    linear-gradient(
+
+    135deg,
+
+    #2196F3,
+
+    #0D47A1
+
+    );
+
+    box-shadow:
+
+    0 10px 25px rgba(33,150,243,.4);
+
+    opacity:.4;
+
+}
+
+#cutBtn:enabled{
+
+    opacity:1;
+
+}
+
+#cutBtn:hover:enabled{
+
+    transform:translateY(-5px);
+
+}
+
+/*==========================================================
+CAKE CUT ANIMATION
+==========================================================*/
+
+#cake.cut{
+
+    animation:cakeCut 1s forwards;
+
+}
+
+@keyframes cakeCut{
+
+0%{
+
+transform:scale(1);
+
+}
+
+40%{
+
+transform:scale(1.03);
+
+}
+
+100%{
+
+transform:scale(.98);
+
+}
+
+}
+
+/*==========================================================
+RESPONSIVE
+==========================================================*/
+
+@media(max-width:768px){
+
+#cake{
+
+width:250px;
+
+height:240px;
+
+}
+
+.cake-bottom{
+
+width:250px;
+
+height:70px;
+
+}
+
+.cake-middle{
+
+width:220px;
+
+left:15px;
+
+height:60px;
+
+bottom:60px;
+
+}
+
+.cake-top{
+
+width:190px;
+
+left:30px;
+
+height:55px;
+
+bottom:120px;
+
+}
+
+.candles{
+
+bottom:170px;
+
+gap:25px;
+
+}
+
+.candle{
+
+height:45px;
+
+}
+
+.cake-buttons{
+
+flex-direction:column;
+
+align-items:center;
+
+}
+
+.cake-buttons button{
+
+width:260px;
+
+font-size:18px;
+
+}
+
+}
+
+/*==========================================================
+STARS BACKGROUND
+==========================================================*/
+
+#stars{
+
+    position:fixed;
+
+    inset:0;
+
+    overflow:hidden;
+
+    pointer-events:none;
+
+    z-index:1;
+
+}
+
+.star{
+
+    position:absolute;
+
+    width:3px;
+
+    height:3px;
+
+    border-radius:50%;
+
+    background:white;
+
+    box-shadow:
+    0 0 10px white,
+    0 0 20px white;
+
+    animation:twinkle 2s infinite;
+
+}
+
+@keyframes twinkle{
+
+0%{
+
+opacity:.2;
+transform:scale(.5);
+
+}
+
+50%{
+
+opacity:1;
+transform:scale(1.5);
+
+}
+
+100%{
+
+opacity:.2;
+transform:scale(.5);
+
+}
+
+}
+
+/*==========================================================
+BALLOONS
+==========================================================*/
+
+/*==========================================================
+DISNEY 3D BALLOONS
+==========================================================*/
+
+#balloons{
+
+    position:fixed;
+
+    inset:0;
+
+    overflow:hidden;
+
+    pointer-events:none;
+
+    z-index:2;
+
+}
+
+.balloon{
+
+    position:absolute;
+
+    bottom:-180px;
+
+    width:70px;
+
+    height:90px;
+
+    border-radius:50% 50% 48% 48%;
+
+    animation:balloonFloat 12s linear forwards;
+
+    box-shadow:
+        inset -12px -15px 20px rgba(0,0,0,.18),
+        inset 12px 12px 18px rgba(255,255,255,.45),
+        0 18px 35px rgba(0,0,0,.30);
+
+}
+
+/* shiny highlight */
+
+.balloon::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:18px;
+
+    left:16px;
+
+    width:18px;
+
+    height:32px;
+
+    background:rgba(255,255,255,.8);
+
+    border-radius:50%;
+
+    transform:rotate(25deg);
+
+}
+
+/* knot */
+
+.balloon::after{
+
+    content:"";
+
+    position:absolute;
+
+    bottom:-6px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:14px;
+
+    height:12px;
+
+    background:inherit;
+
+    clip-path:polygon(50% 100%,0 0,100% 0);
+
+}
+
+/* string */
+
+.balloon span{
+
+    position:absolute;
+
+    top:88px;
+
+    left:50%;
+
+    width:2px;
+
+    height:80px;
+
+    background:white;
+
+    transform:translateX(-50%);
+
+}
+
+@keyframes balloonFloat{
+
+0%{
+
+transform:
+translateY(0)
+translateX(0)
+rotate(-3deg);
+
+}
+
+25%{
+
+transform:
+translateY(-35vh)
+translateX(-18px)
+rotate(5deg);
+
+}
+
+50%{
+
+transform:
+translateY(-70vh)
+translateX(18px)
+rotate(-5deg);
+
+}
+
+75%{
+
+transform:
+translateY(-105vh)
+translateX(-12px)
+rotate(3deg);
+
+}
+
+100%{
+
+transform:
+translateY(-145vh)
+translateX(10px)
+rotate(-2deg);
+
+}
+
+}
+
+/*==========================================================
+CONFETTI
+==========================================================*/
+
+#confetti-container{
+
+    position:fixed;
+
+    inset:0;
+
+    overflow:hidden;
+
+    pointer-events:none;
+
+    z-index:1000;
+
+}
+
+.confetti{
+
+    position:absolute;
+
+    width:12px;
+
+    height:18px;
+
+    animation:confettiFall linear forwards;
+
+}
+
+@keyframes confettiFall{
+
+0%{
+
+transform:
+translateY(-30px)
+rotate(0deg);
+
+opacity:1;
+
+}
+
+100%{
+
+transform:
+translateY(120vh)
+rotate(1080deg);
+
+opacity:1;
+
+}
+
+}
+
+/*==========================================================
+FIREWORK CANVAS
+==========================================================*/
+
+#fireworksCanvas{
+
+    position:fixed;
+
+    top:0;
+
+    left:0;
+
+    width:100%;
+
+    height:100%;
+
+    pointer-events:none;
+
+    z-index:900;
+
+}
+
+/*==========================================================
+SPARKLES
+==========================================================*/
+
+.sparkle{
+
+    position:absolute;
+
+    width:8px;
+
+    height:8px;
+
+    border-radius:50%;
+
+    background:#fff;
+
+    box-shadow:
+
+    0 0 20px #fff,
+
+    0 0 40px gold;
+
+    animation:sparkle 2s infinite;
+
+}
+
+@keyframes sparkle{
+
+0%{
+
+opacity:0;
+
+transform:scale(.2);
+
+}
+
+50%{
+
+opacity:1;
+
+transform:scale(1.3);
+
+}
+
+100%{
+
+opacity:0;
+
+transform:scale(.2);
+
+}
+
+}
+
+/*==========================================================
+CELEBRATION SECTION
+==========================================================*/
+
+#celebrationSection{
+
+    padding:120px 20px;
+
+    text-align:center;
+
+    display:none;
+
+}
+
+#celebrationSection h1{
+
+    font-size:90px;
+
+    color:#FFD700;
+
+    text-shadow:
+
+    0 0 25px gold,
+
+    0 0 80px gold;
+
+}
+
+#celebrationSection h2{
+
+    margin-top:30px;
+
+    font-size:60px;
+
+}
+
+/*==========================================================
+FINAL SECTION
+==========================================================*/
+
+#finalSection{
+
+    display:none;
+
+    padding:120px 20px;
+
+    text-align:center;
+
+}
+
+#finalSection h1{
+
+    font-size:70px;
+
+    color:#FFD700;
+
+}
+
+#finalSection h2{
+
+    margin:25px 0;
+
+    font-size:40px;
+
+}
+
+#finalSection p{
+
+    margin-top:40px;
+
+    font-size:28px;
+
+    line-height:50px;
+
+}
+
+/*==========================================================
+GLOW EFFECT
+==========================================================*/
+
+.gold-glow{
+
+    animation:goldGlow 2s infinite;
+
+}
+
+@keyframes goldGlow{
+
+0%{
+
+text-shadow:
+
+0 0 5px gold;
+
+}
+
+50%{
+
+text-shadow:
+
+0 0 25px gold,
+
+0 0 60px gold;
+
+}
+
+100%{
+
+text-shadow:
+
+0 0 5px gold;
+
+}
+
+}
+
+/*==========================================================
+FLOATING
+==========================================================*/
+
+.float{
+
+    animation:floating 4s ease-in-out infinite;
+
+}
+
+@keyframes floating{
+
+0%{
+
+transform:translateY(0);
+
+}
+
+50%{
+
+transform:translateY(-12px);
+
+}
+
+100%{
+
+transform:translateY(0);
+
+}
+
+}
+
+/*==========================================================
+ZOOM IN
+==========================================================*/
+
+.zoomIn{
+
+    animation:zoomIn .8s forwards;
+
+}
+
+@keyframes zoomIn{
+
+0%{
+
+transform:scale(.5);
+
+opacity:0;
+
+}
+
+100%{
+
+transform:scale(1);
+
+opacity:1;
+
+}
+
+}
+
+/*==========================================================
+FADE IN
+==========================================================*/
+
+.fadeIn{
+
+    animation:fadeIn 1s forwards;
+
+}
+
+@keyframes fadeIn{
+
+0%{
+
+opacity:0;
+
+}
+
+100%{
+
+opacity:1;
+
+}
+
+}
+
+/*==========================================================
+RESPONSIVE
+==========================================================*/
+
+@media(max-width:768px){
+
+.balloon{
+
+width:45px;
+
+height:60px;
+
+}
+
+#celebrationSection h1{
+
+font-size:42px;
+
+}
+
+#celebrationSection h2{
+
+font-size:30px;
+
+}
+
+#finalSection h1{
+
+font-size:42px;
+
+}
+
+#finalSection h2{
+
+font-size:28px;
+
+}
+
+#finalSection p{
+
+font-size:18px;
+
+line-height:34px;
+
+}
+
+}
+
+/*==========================================================
+TOAST
+==========================================================*/
+
+.birthday-toast{
+
+position:fixed;
+
+left:50%;
+
+bottom:40px;
+
+transform:translateX(-50%);
+
+padding:18px 35px;
+
+background:#222;
+
+color:#fff;
+
+font-size:20px;
+
+border-radius:50px;
+
+opacity:0;
+
+transition:.4s;
+
+z-index:99999;
+
+box-shadow:
+
+0 10px 30px rgba(0,0,0,.3);
+
+}
+
+.birthday-toast.show{
+
+opacity:1;
+
+bottom:70px;
+
+}
+
+/*==========================================================
+VIDEO SECTION
+==========================================================*/
+
+#videoSection{
+
+    width:100%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    text-align:center;
+
+    padding:80px 20px;
+
+}
+
+#videoSection h2{
+
+    font-size:42px;
+
+    color:#FFD700;
+
+    margin-bottom:40px;
+
+    text-shadow:0 0 20px gold;
+
+}
+
+.video-info{
+
+    text-align:center;
+
+    margin-top:20px;
+
+    font-size:38px;
+
+    font-weight:bold;
+
+    color:#FFD700;
+
+}
+
+#teacherVideo{
+
+    width:360px;
+
+    aspect-ratio:9 / 16;
+
+    height:auto;
+
+    object-fit:contain;
+
+    background:#000;
+
+    border:8px solid #FFD700;
+
+    border-radius:28px;
+
+}
+
+.video-info{
+
+    margin-top:20px;
+
+    font-size:28px;
+
+    font-weight:bold;
+
+    color:#FFD700;
+
+}
+
+/*=========================================
+/*==========================================================
+MOBILE RESPONSIVE
+==========================================================*/
+
+@media (max-width:768px){
+
+    .cake-section{
+
+        padding:60px 10px;
+
+    }
+
+    .cake-section h2{
+
+        font-size:32px;
+
+        line-height:42px;
+
+    }
+
+    .cake-section p{
+
+        font-size:18px;
+
+        margin-bottom:25px;
+
+    }
+
+    #cakeWrapper{
+
+        width:100%;
+
+        height:260px;
+
+        display:flex;
+
+        justify-content:center;
+
+        align-items:center;
+
+        overflow:visible;
+
+        margin:0 auto;
+
+    }
+
+    #cake{
+
+        position:relative;
+
+        left:0;
+
+        bottom:0;
+
+        transform:scale(.60);
+
+        transform-origin:center center;
+
+        margin:0 auto;
+
+    }
+
+    .cake-buttons{
+
+        display:flex;
+
+        flex-direction:column;
+
+        align-items:center;
+
+        justify-content:center;
+
+        gap:15px;
+
+        margin-top:20px;
+
+    }
+
+    .cake-buttons button{
+
+        width:240px;
+
+        font-size:18px;
+
+    }
+
+}

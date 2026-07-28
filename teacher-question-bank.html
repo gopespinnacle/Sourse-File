@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<title>Question Bank Manager</title>
+
+<link
+rel="stylesheet"
+href="assets/css/questionBank.css">
+</head>
+
+<body>
+
+<div class="header">
+
+Question Bank Manager
+
+</div>
+
+<div class="container">
+
+<div class="toolbar">
+
+<input
+type="text"
+placeholder="Search Question">
+
+<select>
+
+<option>All Types</option>
+<option>MCQ</option>
+<option>Short Answer</option>
+<option>Long Answer</option>
+
+</select>
+
+<select>
+
+<option>All Difficulty</option>
+<option>Easy</option>
+<option>Medium</option>
+<option>Hard</option>
+
+</select>
+
+<button onclick="addQuestion()">
+
++ Add Question
+
+</button>
+
+<button onclick="saveAllQuestions()">
+
+💾 Save All
+
+</button>
+
+</div>
+
+<div id="questionContainer">
+
+</div>
+
+</div>
+
+
+<script src="assets/js/meeting/ai/questionBank.js"></script>
+</body>
+
+</html>

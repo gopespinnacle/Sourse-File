@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Happy Birthday | Gopes Pinnacle Academy</title>
+
+    <link rel="icon" href="images/logo.png">
+
+    <link rel="stylesheet" href="css/birthday.css">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+</head>
+
+<body>
+
+<!-- =======================================================
+BACKGROUND EFFECTS
+======================================================= -->
+
+<div id="stars"></div>
+
+<div id="balloons"></div>
+
+<div id="confetti-container"></div>
+
+<canvas id="fireworksCanvas"></canvas>
+
+
+<!-- =======================================================
+BACKGROUND MUSIC
+======================================================= -->
+
+<audio id="birthdayMusic"
+       src="audio/birthday.mp3"
+       autoplay
+       loop>
+</audio>
+
+
+<!-- =======================================================
+MAIN CONTAINER
+======================================================= -->
+
+<div class="birthday-container">
+
+    <!-- =======================================================
+    HEADER
+    ======================================================= -->
+
+    <header>
+
+        <img src="images/logo.png"
+             class="academy-logo">
+
+        <h3>
+            GOPES PINNACLE ACADEMY
+        </h3>
+
+    </header>
+
+
+
+    <!-- =======================================================
+    HERO
+    ======================================================= -->
+
+    <section class="hero-section">
+
+        <div class="hero-text">
+
+            <h4>
+                🥳 HIP HIP HOORAY!
+            </h4>
+
+            <h1>
+
+                It's
+
+                <span id="studentName">
+
+                    PRANAV SIVAKUMAAR'S
+
+                </span>
+
+                Birthday!
+
+            </h1>
+
+            <p>
+
+                Today is all about smiles,
+                happiness,
+                celebration
+                and unforgettable memories.
+
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =======================================================
+    STUDENT PHOTO
+    ======================================================= -->
+
+    <section class="student-section">
+
+        <div class="photo-circle">
+
+            <img
+                id="studentPhoto"
+                src="images/birthday/student.jpg">
+
+        </div>
+
+        <h2>
+
+            🎂 Birthday Star
+
+        </h2>
+
+        <h1 id="studentTitle">
+
+            PRANAV SIVAKUMAAR
+
+        </h1>
+
+    </section>
+
+
+
+    <!-- =======================================================
+    BIRTHDAY MESSAGE
+    ======================================================= -->
+
+    <section class="message-section">
+
+        <div class="glass-card">
+
+            <h2>
+
+                ❤️ A Special Birthday Wish ❤️
+
+            </h2>
+
+            <p>
+
+                Happy Birthday,
+                <strong>Pranav Sivakumaar!</strong>
+
+                <br><br>
+
+                Today is your very special day,
+                and everyone at
+                <strong>Gopes Pinnacle Academy</strong>
+                is celebrating you with love and joy.
+
+                <br><br>
+
+                May your heart always be filled
+                with happiness.
+
+                <br><br>
+
+                May your dreams grow bigger every
+                single day.
+
+                <br><br>
+
+                Keep Smiling 😊
+
+                <br>
+
+                Keep Learning 📚
+
+                <br>
+
+                Keep Shining ⭐
+
+                <br><br>
+
+                Happy Birthday!
+
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =======================================================
+    CAKE SECTION
+    ======================================================= -->
+
+    <section
+        id="cakeSection"
+        class="cake-section">
+
+        <h2>
+
+            🎂 Time To Celebrate!
+
+        </h2>
+
+        <p>
+
+            Blow the candles and cut the cake!
+
+        </p>
+
+        <!-- Cake created using HTML/CSS -->
+        <div id="cakeWrapper">
+
+    <!-- Knife -->
+
+    <div id="knife">
+
+        🔪
+
+    </div>
+
+    <div id="cake">
+
+        <!-- LEFT HALF -->
+
+        <div class="cake-half left">
+
+            <div class="cake-top"></div>
+
+            <div class="cake-middle"></div>
+
+            <div class="cake-bottom"></div>
+
+        </div>
+
+        <!-- RIGHT HALF -->
+
+        <div class="cake-half right">
+
+            <div class="cake-top"></div>
+
+            <div class="cake-middle"></div>
+
+            <div class="cake-bottom"></div>
+
+        </div>
+
+        <!-- Candles -->
+
+        <div class="candles">
+
+            <div class="candle"></div>
+
+            <div class="candle"></div>
+
+            <div class="candle"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+        <div class="cake-buttons">
+
+            <button
+                id="blowBtn">
+
+                🕯 Blow Candles
+
+            </button>
+
+            <button
+                id="cutBtn"
+                disabled>
+
+                🔪 Cut Cake
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =======================================================
+    CELEBRATION
+    ======================================================= -->
+
+    <section
+        id="celebrationSection">
+
+        <h1>
+
+            🎉
+
+            HAPPY BIRTHDAY
+
+            🎉
+
+        </h1>
+
+        <h2>
+
+            PRANAV SIVAKUMAAR
+
+        </h2>
+
+    </section>
+
+
+
+    <!-- =======================================================
+    TEACHER VIDEOS
+    ======================================================= -->
+
+    <section
+        id="videoSection">
+
+        <h2>
+
+            ❤️ Birthday Wishes From Your Teachers ❤️
+
+        </h2>
+
+        <div class="video-player">
+
+            <video
+
+                id="teacherVideo"
+
+                controls
+
+                playsinline
+
+                preload="auto">
+
+            </video>
+
+        </div>
+
+        <div class="video-info">
+
+            <span id="videoCounter">
+
+                1 / 20
+
+            </span>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =======================================================
+    FINAL MESSAGE
+    ======================================================= -->
+
+    <section
+        id="finalSection">
+
+        <h1>
+
+            🎆
+
+            Thank You
+
+            🎆
+
+        </h1>
+
+        <h2>
+
+            Happy Birthday
+
+        </h2>
+
+        <h1>
+
+            PRANAV SIVAKUMAAR
+
+        </h1>
+
+        <p>
+
+            May all your dreams come true.
+
+            <br><br>
+
+            With Lots of Love ❤️
+
+            <br>
+
+            Gopes Pinnacle Academy
+
+        </p>
+
+    </section>
+
+</div>
+
+<script src="assets/birthday.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Student Homework</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+
+background:#f4f6f9;
+
+}
+
+.header{
+
+background:#1e3a5f;
+
+color:white;
+
+padding:18px 30px;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+}
+
+.header h2{
+
+font-size:28px;
+
+}
+
+.backBtn{
+
+background:white;
+
+color:#1e3a5f;
+
+border:none;
+
+padding:10px 20px;
+
+border-radius:8px;
+
+cursor:pointer;
+
+font-weight:bold;
+
+}
+
+.container{
+
+padding:25px;
+
+}
+
+table{
+
+width:100%;
+
+border-collapse:collapse;
+
+background:white;
+
+box-shadow:0 2px 10px rgba(0,0,0,.1);
+
+}
+
+th{
+
+background:#1e3a5f;
+
+color:white;
+
+padding:14px;
+
+border:1px solid #d8d8d8;
+
+}
+
+td{
+
+padding:12px;
+
+border:1px solid #d8d8d8;
+
+vertical-align:top;
+
+}
+
+.status{
+
+padding:5px 12px;
+
+border-radius:20px;
+
+font-size:13px;
+
+font-weight:bold;
+
+display:inline-block;
+
+}
+
+.pending{
+
+background:#ffeeba;
+
+color:#856404;
+
+}
+
+.submitted{
+
+background:#cce5ff;
+
+color:#004085;
+
+}
+
+.reviewed{
+
+background:#d4edda;
+
+color:#155724;
+
+}
+
+.actionBtn{
+
+background:#1e3a5f;
+
+color:white;
+
+border:none;
+
+padding:8px 14px;
+
+border-radius:6px;
+
+cursor:pointer;
+
+}
+
+.downloadBtn{
+
+background:#28a745;
+
+color:white;
+
+padding:6px 10px;
+
+border-radius:6px;
+
+display:inline-block;
+
+text-decoration:none;
+
+margin-bottom:5px;
+
+}
+
+.videoBtn{
+
+background:#dc3545;
+
+color:white;
+
+padding:6px 10px;
+
+border-radius:6px;
+
+display:inline-block;
+
+text-decoration:none;
+
+margin-bottom:5px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+<h2>Student Homework</h2>
+
+<button
+class="backBtn"
+onclick="window.location='student-dashboard.html'">
+
+← Back
+
+</button>
+
+</div>
+
+<div class="container">
+
+<div style="
+background:white;
+padding:20px;
+margin-bottom:20px;
+border-radius:10px;
+box-shadow:0 2px 8px rgba(0,0,0,.1);
+display:flex;
+gap:25px;
+align-items:center;
+flex-wrap:wrap;
+">
+
+<div>
+
+<label><b>Filter Date</b></label><br>
+
+<input
+type="date"
+id="filterDate"
+onchange="loadHomework()"
+style="
+padding:8px;
+margin-top:5px;
+">
+
+</div>
+
+<div>
+
+<label><b>Subject</b></label><br>
+
+<select
+id="filterSubject"
+onchange="loadHomework()"
+style="
+padding:8px;
+margin-top:5px;
+min-width:170px;
+">
+
+<option value="">All Subjects</option>
+
+</select>
+
+</div>
+
+<div>
+
+<label><b>Status</b></label><br>
+
+<select
+id="filterStatus"
+onchange="loadHomework()"
+style="
+padding:8px;
+margin-top:5px;
+min-width:170px;
+">
+
+<option value="">All Status</option>
+
+<option value="Pending">Pending</option>
+
+<option value="Submitted">Submitted</option>
+
+<option value="Reviewed">Reviewed</option>
+
+</select>
+
+</div>
+
+</div>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Date</th>
+
+<th>Subject</th>
+
+<th>Topic</th>
+
+<th>Topic Summary</th>
+
+<th>Homework</th>
+
+<th>Homework Document</th>
+
+<th>Class Materials</th>
+
+<th>Videos</th>
+
+<th>Status</th>
+
+<th>Upload</th>
+
+<th>Reviewed Files</th>
+
+</tr>
+
+</thead>
+
+<tbody id="homeworkBody">
+
+<tr>
+
+<td colspan="9"
+style="text-align:center;padding:40px;">
+
+Loading Homework...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+<script>
+
+const API =
+"https://academy-backend-eatl.onrender.com/api";
+
+const studentId =
+localStorage.getItem("studentId");
+
+const tbody =
+document.getElementById("homeworkBody");
+
+async function loadHomework(){
+
+try{
+
+const res = await fetch(
+
+API + "/student-homework/" + studentId
+
+);
+
+const result = await res.json();
+
+if(!result.success){
+
+tbody.innerHTML = `
+
+<tr>
+
+<td colspan="9"
+style="text-align:center;color:red;">
+
+Unable to load homework.
+
+</td>
+
+</tr>
+
+`;
+
+return;
+
+}
+
+console.log(result.data);
+
+let html = "";
+
+const subjectSelect =
+document.getElementById("filterSubject");
+
+const currentSubject =
+subjectSelect.value;
+
+subjectSelect.innerHTML =
+
+`<option value="">All Subjects</option>`;
+
+const subjects = [];
+
+result.data.forEach(hw=>{
+
+    if(
+!subjects.includes(hw.lessonPlan.subject)
+){
+
+subjects.push(hw.lessonPlan.subject);
+
+}
+
+const filterDate =
+document.getElementById("filterDate").value;
+
+const filterSubject =
+document.getElementById("filterSubject").value;
+
+const filterStatus =
+document.getElementById("filterStatus").value;
+
+const plan = hw.lessonPlan;
+
+(plan.lessons || [])
+.filter(lesson => lesson.topicId === hw.topicId)
+.forEach(lesson=>{
+
+if(
+filterDate &&
+plan.date !== filterDate
+){
+return;
+}
+
+if(
+filterSubject &&
+plan.subject !== filterSubject
+){
+return;
+}
+
+if(
+filterStatus &&
+hw.status !== filterStatus
+){
+return;
+}
+
+html += `
+
+<tr>
+
+<td>${plan.date}</td>
+
+<td>${plan.subject}</td>
+
+<td>${lesson.topic || "-"}</td>
+
+<td>${lesson.topicSummary || "-"}</td>
+
+<td>${lesson.homework || "-"}</td>
+
+<td>
+
+${
+
+lesson.homeworkDocuments &&
+
+lesson.homeworkDocuments.length>0
+
+?
+
+lesson.homeworkDocuments.map(file=>`
+
+<a
+href="${file.s3Url}"
+target="_blank"
+class="downloadBtn">
+
+📄 ${file.fileName}
+
+</a><br>
+
+`).join("")
+
+:
+
+"-"
+
+}
+
+</td>
+
+<td>
+
+${(lesson.classMaterials || []).map(file=>`
+
+<a
+href="${file.s3Url}"
+target="_blank"
+class="downloadBtn">
+
+📎 Download
+
+</a>
+
+`).join("")}
+
+</td>
+
+<td>
+
+${(lesson.videoLinks || []).map(link=>`
+
+<a
+href="${link}"
+target="_blank"
+class="videoBtn">
+
+▶ Watch
+
+</a>
+
+`).join("")}
+
+</td>
+
+<td>
+
+<span class="status ${hw.status.toLowerCase()}">
+
+${hw.status}
+
+</span>
+
+</td>
+
+<td>
+
+<input
+type="file"
+class="homeworkFile"
+style="
+width:150px;
+margin-bottom:5px;
+">
+
+<br>
+
+<button
+class="actionBtn"
+onclick="uploadHomework(
+this,
+'${plan._id}',
+'${studentId}',
+'${lesson.topicId}'
+)"
+>
+
+Upload
+
+</button>
+
+</td>
+
+<td>
+
+${
+hw.reviewFiles && hw.reviewFiles.length
+
+?
+
+hw.reviewFiles.map(file=>`
+
+<a
+href="${file.s3Url}"
+target="_blank"
+class="downloadBtn"
+>
+
+📄 ${file.fileName}
+
+</a><br>
+
+`).join("")
+
+:
+
+"-"
+
+}
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+});
+
+subjects.sort();
+
+subjects.forEach(subject=>{
+
+subjectSelect.innerHTML +=
+
+`<option value="${subject}">
+
+${subject}
+
+</option>`;
+
+});
+
+subjectSelect.value =
+currentSubject;
+
+tbody.innerHTML = html;
+
+}catch(err){
+
+console.log(err);
+
+tbody.innerHTML = `
+
+<tr>
+
+<td colspan="9"
+style="text-align:center;color:red;">
+
+Server Error
+
+</td>
+
+</tr>
+
+`;
+
+}
+
+}
+
+loadHomework();
+
+async function uploadHomework(
+button,
+lessonPlanId,
+studentId,
+topicId
+){
+
+    const td = button.parentElement;
+
+    const input = td.querySelector(".homeworkFile");
+
+    if(!input.files.length){
+
+        alert("Please choose a file.");
+
+        return;
+
+    }
+
+    const fd = new FormData();
+
+    fd.append("lessonPlanId", lessonPlanId);
+
+fd.append("studentId", studentId);
+
+fd.append("topicId", topicId);
+
+    fd.append("files", input.files[0]);
+
+    const res = await fetch(
+
+        "https://academy-backend-eatl.onrender.com/api/student-upload-homework",
+
+        {
+
+            method:"POST",
+
+            body:fd
+
+        }
+
+    );
+
+    const data = await res.json();
+
+    if(data.success){
+
+        alert("Homework uploaded successfully.");
+
+        loadHomework();
+
+    }else{
+
+        alert(data.message);
+
+    }
+
+}
+
+</script>
+
+</body>
+
+</html>

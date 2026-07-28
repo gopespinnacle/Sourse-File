@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Upload Demo Video</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f5f7fb;
+padding:30px;
+}
+
+.container{
+
+max-width:700px;
+
+margin:auto;
+
+background:white;
+
+padding:30px;
+
+border-radius:12px;
+
+box-shadow:0 3px 10px rgba(0,0,0,.08);
+
+}
+
+h2{
+
+margin-bottom:25px;
+
+}
+
+label{
+
+display:block;
+
+margin-top:20px;
+
+margin-bottom:8px;
+
+font-weight:bold;
+
+}
+
+input{
+
+width:100%;
+
+padding:12px;
+
+border:1px solid #ccc;
+
+border-radius:8px;
+
+}
+
+button{
+
+margin-top:30px;
+
+background:#0d6efd;
+
+color:white;
+
+border:none;
+
+padding:14px;
+
+width:100%;
+
+font-size:17px;
+
+border-radius:8px;
+
+cursor:pointer;
+
+}
+
+#status{
+
+margin-top:20px;
+
+font-weight:bold;
+
+color:green;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Upload Demo Video</h2>
+
+<label>Title</label>
+
+<input
+type="text"
+id="title">
+
+<label>Teacher Name</label>
+
+<input
+type="text"
+id="teacher">
+
+<label>Video</label>
+
+<input
+type="file"
+id="video"
+accept="video/*">
+
+<button onclick="uploadVideo()">
+
+Upload Video
+
+</button>
+
+<div id="status"></div>
+
+</div>
+
+<script>
+
+const API="https://academy-backend-eatl.onrender.com/api/demo-videos";
+
+const params=new URLSearchParams(location.search);
+
+const grade=params.get("grade");
+
+const subject=params.get("subject");
+
+async function uploadVideo(){
+
+const title=document.getElementById("title").value;
+
+const teacher=document.getElementById("teacher").value;
+
+const file=document.getElementById("video").files[0];
+
+if(!title || !teacher || !file){
+
+alert("Fill all fields");
+
+return;
+
+}
+
+const formData=new FormData();
+
+formData.append("title",title);
+
+formData.append("teacherName",teacher);
+
+formData.append("grade",grade);
+
+formData.append("subject",subject);
+
+formData.append("video",file);
+
+document.getElementById("status").innerHTML="Uploading...";
+
+const res=await fetch(
+
+`${API}/upload`,
+
+{
+
+method:"POST",
+
+body:formData
+
+}
+
+);
+
+const data=await res.json();
+
+if(data.success){
+
+document.getElementById("status").innerHTML="Upload Successful";
+
+setTimeout(()=>{
+
+window.location.href=
+
+`founder-demo-video-list.html?grade=${encodeURIComponent(grade)}&subject=${encodeURIComponent(subject)}`;
+
+},1000);
+
+}else{
+
+document.getElementById("status").innerHTML=data.message;
+
+}
+
+}
+
+</script>
+
+</body>
+</html>

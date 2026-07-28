@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Demo Video</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#111;
+color:white;
+}
+
+.container{
+
+max-width:1200px;
+
+margin:auto;
+
+padding:30px;
+
+}
+
+h2{
+
+margin-bottom:20px;
+
+}
+
+p{
+
+margin-bottom:20px;
+
+color:#ddd;
+
+}
+
+video{
+
+width:100%;
+
+border-radius:12px;
+
+background:black;
+
+}
+
+#watchBtn{
+
+margin-bottom:20px;
+
+padding:14px 28px;
+
+background:#0d6efd;
+
+color:white;
+
+border:none;
+
+border-radius:8px;
+
+font-size:17px;
+
+cursor:pointer;
+
+}
+
+#watchBtn:hover{
+
+background:#0b5ed7;
+
+}
+
+.header{
+
+background:white;
+
+padding:15px;
+
+display:flex;
+
+justify-content:center;
+
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+
+margin-bottom:25px;
+
+}
+
+.logo{
+
+height:70px;
+
+object-fit:contain;
+
+}
+
+#description{
+
+margin-bottom:25px;
+
+font-size:16px;
+
+color:#dddddd;
+
+line-height:1.6;
+
+}
+
+.enrollSection{
+
+margin-top:30px;
+
+text-align:center;
+
+}
+
+.enrollBtn{
+
+display:inline-block;
+
+padding:15px 40px;
+
+background:#28a745;
+
+color:white;
+
+text-decoration:none;
+
+font-size:18px;
+
+font-weight:bold;
+
+border-radius:8px;
+
+transition:.2s;
+
+}
+
+.enrollBtn:hover{
+
+background:#218838;
+
+}
+
+#duration{
+
+margin-bottom:20px;
+
+font-size:16px;
+
+color:#dddddd;
+
+}
+
+
+#gradeSubject{
+
+margin:10px 0 15px;
+
+font-size:17px;
+
+font-weight:bold;
+
+color:#f0f0f0;
+
+}
+
+.enrollCTA{
+
+margin-top:50px;
+
+padding:45px 25px;
+
+background:#0d1b2a;
+
+color:white;
+
+text-align:center;
+
+border-radius:12px;
+
+}
+
+.enrollCTA h2{
+
+margin-bottom:15px;
+
+font-size:30px;
+
+}
+
+.enrollCTA p{
+
+max-width:700px;
+
+margin:0 auto 25px;
+
+line-height:1.7;
+
+color:#ddd;
+
+}
+
+.ctaButton{
+
+display:inline-block;
+
+padding:14px 28px;
+
+background:#ffc300;
+
+color:#000;
+
+text-decoration:none;
+
+font-weight:bold;
+
+border-radius:8px;
+
+transition:.3s;
+
+}
+
+.ctaButton:hover{
+
+background:#ffb703;
+
+transform:translateY(-2px);
+
+}
+</style>
+
+</head>
+
+<body>
+
+    <header class="header">
+
+<img
+src="assets/images/logo.png"
+class="logo"
+alt="Gopes Pinnacle Academy">
+
+</header>
+
+<div class="container">
+
+<div id="loading">
+Loading demo video...
+</div>
+
+<div id="videoSection" style="display:none;">
+
+<h2 id="title"></h2>
+
+<p id="gradeSubject"></p>
+
+<p id="teacher"></p>
+
+<p id="duration"></p>
+
+<p id="description">
+Experience a real classroom session from Gopes Pinnacle Academy.
+Watch the complete demo class before enrolling.
+</p>
+
+<button id="watchBtn" onclick="playVideo()">
+▶ Watch Demo Class
+</button>
+
+<video
+id="player"
+controls
+controlsList="nodownload"
+style="display:none;">
+
+Your browser doesn't support HTML5 video.
+
+</video>
+
+<div class="enrollSection">
+
+<a
+href="admission.html"
+class="enrollBtn">
+
+Enroll Now
+
+</a>
+
+</div>
+<section class="enrollCTA">
+
+    <h2>Ready to Help Your Child Excel?</h2>
+
+    <p>
+        Join Gopes Pinnacle Academy and experience structured learning with
+        expert teachers, regular assessments, and personalized attention.
+    </p>
+
+    <a href="index.html#admission" class="ctaButton">
+        Apply for Admission
+    </a>
+
+</section>
+</div>
+
+</div>
+
+<script>
+
+const API="https://academy-backend-eatl.onrender.com/api/demo-videos";
+
+const id=new URLSearchParams(location.search).get("id");
+
+async function loadVideo(){
+
+try{
+
+const res = await fetch(`${API}/${id}`);
+
+const data = await res.json();
+
+if(!data.success){
+
+document.getElementById("loading").innerHTML =
+"Demo video not found.";
+
+return;
+
+}
+
+document.getElementById("loading").style.display = "none";
+
+document.getElementById("videoSection").style.display = "block";
+
+document.getElementById("title").innerHTML = data.data.title;
+
+document.getElementById("gradeSubject").innerHTML =
+`${data.data.grade} • ${data.data.subject}`;
+
+document.getElementById("teacher").innerHTML =
+"Teacher : " + data.data.teacherName;
+
+document.getElementById("duration").innerHTML =
+"Duration : " + (data.data.duration || "-");
+
+document.getElementById("player").src = data.data.videoUrl;
+
+}catch(err){
+
+document.getElementById("loading").innerHTML =
+"Unable to load demo video.";
+
+}
+
+}
+
+loadVideo();
+
+function playVideo(){
+
+const player=document.getElementById("player");
+
+player.style.display="block";
+
+document.getElementById("watchBtn").style.display="none";
+
+player.play();
+
+}
+
+</script>
+
+</body>
+</html>

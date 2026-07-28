@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Video Test</title>
+
+</head>
+
+<body>
+
+    <h2>Video Test</h2>
+
+    <video
+        id="localVideo"
+        autoplay
+        playsinline
+        muted
+        style="width:400px;border:2px solid black;">
+    </video>
+
+    <br><br>
+
+    <button id="startCamera">Start Camera</button>
+
+    <button id="stopCamera">Stop Camera</button>
+
+    <script src="assets/js/meeting/video/mediaManager.js"></script>
+
+    <script>
+
+        const video = document.getElementById("localVideo");
+
+        document.getElementById("startCamera").onclick = async () => {
+
+            const stream = await MediaManager.initialize();
+
+            if (stream) {
+
+                video.srcObject = stream;
+
+            }
+
+        };
+
+        document.getElementById("stopCamera").onclick = () => {
+
+            MediaManager.stop();
+
+            video.srcObject = null;
+
+        };
+
+    </script>
+
+</body>
+
+</html>

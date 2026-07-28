@@ -1,0 +1,2404 @@
+    <div style="
+    display:flex;
+    align-items:center;
+    gap:15px;
+    ">
+
+    <span>Student Homework</span>
+
+    <button
+    id="createHomeworkBtn"
+    onclick="createOrEditHomework()"
+    style="
+    background:green;
+    color:white;
+    border:none;
+    padding:10px 18px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+    ">
+
+    + Create Homework
+
+    </button>
+
+    </div>
+
+    <button onclick="
+    window.location.href='teacher-dashboard.html'
+    "
+    style="
+    background:#1e3a5f;
+    color:white;
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    cursor:pointer;
+    ">
+
+    ← Back
+
+    </button>
+
+    </h2>
+
+    <div style="
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom:20px;
+    display:flex;
+    gap:25px;
+    align-items:center;
+    flex-wrap:wrap;
+    ">
+
+    <div>
+
+    <label><b>Filter Date</b></label><br>
+
+    <input
+    type="date"
+    id="filterDate"
+    onchange="load()"
+    style="
+    padding:8px;
+    margin-top:5px;
+    ">
+
+    </div>
+
+    <div>
+
+    <label><b>Subject</b></label><br>
+
+    <select
+    id="filterSubject"
+    onchange="load()"
+    style="
+    padding:8px;
+    margin-top:5px;
+    min-width:170px;
+    ">
+
+    <option value="">All Subjects</option>
+
+    </select>
+
+    </div>
+
+    <div>
+
+    <label><b>Status</b></label><br>
+
+    <select
+    id="filterStatus"
+    onchange="load()"
+    style="
+    padding:8px;
+    margin-top:5px;
+    min-width:170px;
+    ">
+
+    <option value="">All Status</option>
+
+    <option value="Pending">Pending</option>
+
+    <option value="Submitted">Submitted</option>
+
+    <option value="Reviewed">Reviewed</option>
+
+    </select>
+
+    </div>
+
+    </div>
+
+    <div
+    id="createHomeworkPanel"
+    style="
+    display:none;
+    background:white;
+    margin-bottom:20px;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,.1);
+    ">
+
+    <h2>Create Homework</h2>
+
+    <hr><br>
+
+    <div id="homeworkForm">
+
+    <div
+    style="
+    display:grid;
+    grid-template-columns:180px 1fr;
+    gap:15px;
+    align-items:center;
+    margin-bottom:25px;
+    ">
+
+    <label><b>Homework Date</b></label>
+
+    <input
+    type="date"
+    id="hwDate"
+    readonly
+    style="
+    padding:8px;
+    width:250px;
+    background:#f5f5f5;
+    ">
+
+    <label><b>Teacher</b></label>
+
+    <input
+    type="text"
+    id="hwTeacher"
+    readonly
+    style="
+    padding:8px;
+    width:350px;
+    background:#f5f5f5;
+    ">
+
+    <label><b>Class</b></label>
+
+    <input
+    type="text"
+    id="hwClass"
+    readonly
+    style="
+    padding:8px;
+    width:350px;
+    background:#f5f5f5;
+    ">
+
+    <label><b>Subject</b></label>
+
+    <input
+    type="text"
+    id="hwSubject"
+    readonly
+    style="
+    padding:8px;
+    width:350px;
+    background:#f5f5f5;
+    ">
+
+    </div>
+
+    <hr>
+
+
+    <div id="topicContainer">
+
+    </div>
+
+    <br>
+
+    <button
+    id="addTopicBtn"
+    onclick="addTopicCard()"
+    style="
+    background:#1e3a5f;
+    color:white;
+    border:none;
+    padding:10px 18px;
+    border-radius:8px;
+    cursor:pointer;
+    ">
+
+    + Add Topic
+
+    </button>
+
+    </div>
+
+    <br>
+
+    <button
+    onclick="saveHomeworkDraft()"
+    style="
+    background:green;
+    color:white;
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    cursor:pointer;
+    ">
+
+    Save Homework
+
+    </button>
+
+    <button
+    onclick="closeHomeworkPanel()"
+    style="
+    background:red;
+    color:white;
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    cursor:pointer;
+    margin-left:10px;
+    ">
+
+    Cancel
+
+    </button>
+
+    </div>
+
+    <table
+style="
+width:100%;
+border-collapse:collapse;
+background:white;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+table-layout:auto;
+border:1px solid #d0d0d0;
+font-size:14px;
+">
+
+    <thead>
+
+    <tr style="
+    background:#1e3a5f;
+    color:white;
+    ">
+
+    <th style="border:1px solid #d0d0d0;padding:10px;">
+    Date
+    </th>
+
+    <th style="border:1px solid #d0d0d0;padding:10px;">
+    Student
+    </th>
+
+    <th style="border:1px solid #d0d0d0;padding:10px;">
+    Class
+    </th>
+
+    <th style="border:1px solid #d0d0d0;padding:10px;">
+    Subject
+    </th>
+
+    <th style="border:1px solid #d0d0d0;padding:10px;">
+    Topic
+    </th>
+
+    <th style="border:1px solid #d0d0d0;padding:10px;">
+    Topic Summary
+    </th>
+
+    <th style="border:1px solid #d0d0d0;padding:10px;">
+    Homework Given
+    </th>
+
+    <th style="border:1px solid #d0d0d0;padding:10px;">
+    Homework Document
+    </th>
+
+    <th style="border:1px solid #d0d0d0;padding:10px;">
+    Class Material
+    </th>
+
+    <th style="border:1px solid #d0d0d0;padding:10px;">
+    Video Links
+    </th>
+
+    <th style="border:1px solid #d0d0d0;padding:10px;">
+    Homework Submitted
+    </th>
+
+    <th style="border:1px solid #d0d0d0;padding:10px;">
+    Reviewed Homework
+    </th>
+
+    <th style="
+border:1px solid #d0d0d0;
+padding:10px;
+width:120px;
+min-width:120px;
+">
+Action
+</th>
+
+    </tr>
+
+    </thead>
+
+    <tbody id="body">
+
+    </tbody>
+
+    </table>
+
+    <script>
+
+    async function load(){
+
+    const filterDate =
+    document.getElementById("filterDate").value;
+
+    const filterSubject =
+    document.getElementById("filterSubject").value;
+
+    const filterStatus =
+    document.getElementById("filterStatus").value;
+
+    const teacherId =
+    sessionStorage.getItem("teacherId");
+
+    const res = await fetch(
+    "https://academy-backend-eatl.onrender.com/api/lesson-plans?teacherId=" + teacherId
+    );
+
+    const result = await res.json();
+
+    if(!result.success){
+
+    document.getElementById("body").innerHTML="";
+
+    return;
+
+    }
+
+    let html="";
+
+    const subjectSelect =
+    document.getElementById("filterSubject");
+
+    const currentSubject =
+    subjectSelect.value;
+
+    subjectSelect.innerHTML =
+    `<option value="">All Subjects</option>`;
+
+    const subjects = [];
+
+    for(const plan of result.data){
+
+        if(
+    !subjects.includes(plan.subject)
+    ){
+
+    subjects.push(plan.subject);
+
+    }
+
+    if(
+    filterDate &&
+    plan.date !== filterDate
+    ){
+
+    continue;
+
+    }
+
+    if(
+    filterSubject &&
+    plan.subject !== filterSubject
+    ){
+
+    continue;
+
+    }
+
+    const submissionRes = await fetch(
+
+    "https://academy-backend-eatl.onrender.com/api/teacher-submissions/"+plan._id
+
+    );
+
+    const submissionData = await submissionRes.json();
+
+    const submissions =
+    submissionData.success
+    ? submissionData.submissions
+    : [];
+
+
+    const totalRows = plan.lessons.length;
+
+    const studentGroups = {};
+
+submissions.forEach(sub=>{
+
+    const studentId =
+    sub.student?._id || sub.student?.id || sub.studentId;
+
+    if(!studentGroups[studentId]){
+
+        studentGroups[studentId]={
+
+            studentName:
+            sub.student?.studentName ||
+            sub.student?.name ||
+            "Unknown Student",
+
+            submissions:[]
+
+        };
+
+    }
+
+    studentGroups[studentId].submissions.push(sub);
+
+});
+
+Object.values(studentGroups).forEach((student,index)=>{
+
+html += `
+
+<tr>
+
+<td
+colspan="13"
+style="
+background:#28a745;
+color:white;
+font-size:18px;
+font-weight:bold;
+padding:12px 18px;
+border:1px solid #1e3a5f;
+">
+
+👨‍🎓 Student ${index+1} :
+${student.studentName}
+
+</td>
+
+</tr>
+
+`;
+
+plan.lessons.forEach((lesson)=>{
+
+    const topicSubmissions = student.submissions.filter(
+    sub => sub.topicId === lesson.topicId
+);
+
+    if(
+        filterStatus &&
+        !topicSubmissions.some(sub => sub.status === filterStatus)
+    ){
+        return;
+    }
+
+    if(topicSubmissions.length===0){
+
+        html += `
+
+        <tr>
+
+        <td>${plan.date}</td>
+
+        <td>-</td>
+
+        <td>${plan.className}</td>
+
+        <td>${plan.subject}</td>
+
+        <td>${lesson.topic || "-"}</td>
+
+        <td>${lesson.topicSummary || "-"}</td>
+
+        <td>${lesson.homework || "-"}</td>
+
+        <td>
+
+        ${
+        lesson.homeworkDocuments && lesson.homeworkDocuments.length
+
+        ?
+
+        lesson.homeworkDocuments.map(file=>`
+
+        <div>
+
+        <a href="${file.s3Url}" target="_blank">
+
+        📄 ${file.fileName}
+
+        </a>
+
+        </div>
+
+        `).join("")
+
+        :
+
+        "-"
+
+        }
+
+        </td>
+
+        <td>${lesson.classMaterials.length} File(s)</td>
+
+        <td>${lesson.videoLinks.length} Link(s)</td>
+
+        <td>-</td>
+
+        <td>-</td>
+
+        <td>
+
+        <button
+        onclick="editLessonPlan('${plan._id}')"
+        style="
+        background:#f39c12;
+        color:white;
+        border:none;
+        padding:6px 12px;
+        border-radius:6px;
+        cursor:pointer;
+        ">
+
+        ✏ Edit
+
+        </button>
+
+        </td>
+
+        </tr>
+
+        `;
+
+    }
+
+    topicSubmissions.forEach((sub,submissionIndex)=>{
+
+        html += `
+
+        <tr
+style="
+border-top:3px solid #1e3a5f;
+">
+
+       <td style="border:1px solid #1e3a5f;padding:10px;vertical-align:top;">
+${plan.date}
+</td>
+
+        <td style="border:1px solid #1e3a5f;padding:10px;vertical-align:top;">
+${sub.student?.studentName || sub.student?.name || "-"}
+</td>
+
+        <td style="
+border-left:1px solid #1e3a5f;
+border-right:1px solid #1e3a5f;
+padding:10px;
+vertical-align:top;
+">
+${plan.className}
+</td>
+
+        <td style="
+border-left:1px solid #1e3a5f;
+border-right:1px solid #1e3a5f;
+padding:10px;
+vertical-align:top;
+">
+${plan.subject}
+</td>
+
+        <td style="
+border-left:1px solid #1e3a5f;
+border-right:1px solid #1e3a5f;
+padding:10px;
+vertical-align:top;
+">
+${lesson.topic || "-"}
+</td>
+
+        <td style="
+border-left:1px solid #1e3a5f;
+border-right:1px solid #1e3a5f;
+padding:10px;
+vertical-align:top;
+">
+${lesson.topicSummary || "-"}
+</td>
+
+        <td style="
+border-left:1px solid #1e3a5f;
+border-right:1px solid #1e3a5f;
+padding:10px;
+vertical-align:top;
+">
+${lesson.homework || "-"}
+</td>
+
+        <td>
+
+        ${
+        lesson.homeworkDocuments && lesson.homeworkDocuments.length
+
+        ?
+
+        lesson.homeworkDocuments.map(file=>`
+
+        <div>
+
+        <a href="${file.s3Url}" target="_blank">
+
+        📄 ${file.fileName}
+
+        </a>
+
+        </div>
+
+        `).join("")
+
+        :
+`<span style="color:#888;font-style:italic;">No Submission</span>`
+
+        }
+
+        </td>
+
+        <td style="
+border-left:1px solid #1e3a5f;
+border-right:1px solid #1e3a5f;
+padding:10px;
+vertical-align:top;
+">
+${lesson.classMaterials.length} File(s)
+</td>
+
+        <td style="
+border-left:1px solid #1e3a5f;
+border-right:1px solid #1e3a5f;
+padding:10px;
+vertical-align:top;
+">
+${lesson.videoLinks.length} Link(s)
+</td>
+
+        <td>
+
+        ${
+        sub.submittedFiles && sub.submittedFiles.length
+
+        ?
+
+        sub.submittedFiles.map(file=>`
+
+        <div>
+
+        <a href="${file.s3Url}" target="_blank">
+
+        📄 ${file.fileName}
+
+        </a>
+
+        </div>
+
+        `).join("")
+
+        :
+
+        "-"
+
+        }
+
+        </td>
+
+        <td style="
+border-left:1px solid #1e3a5f;
+border-right:1px solid #1e3a5f;
+padding:10px;
+vertical-align:top;
+">
+
+${
+sub.reviewFiles && sub.reviewFiles.length
+
+?
+
+`
+
+<div style="
+font-weight:bold;
+color:#28a745;
+margin-bottom:8px;
+">
+
+Previously Reviewed Files
+
+</div>
+
+`
+
++
+
+(sub.reviewFiles).map(file=>`
+
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:8px;
+gap:10px;
+">
+
+<a
+href="${file.s3Url}"
+target="_blank">
+
+📄 ${file.fileName}
+
+</a>
+
+<button
+type="button"
+onclick="deleteReviewedFile('${sub._id}','${file.s3Key}')"
+style="
+background:red;
+color:white;
+border:none;
+width:22px;
+height:22px;
+border-radius:50%;
+cursor:pointer;
+font-weight:bold;
+line-height:20px;
+">
+
+✖
+
+</button>
+
+</div>
+
+`).join("")
+
+:
+
+`<span style="color:#888;">No reviewed files</span>`
+
+}
+<br><br>
+
+<div id="reviewContainer_${sub._id}">
+
+<input
+type="file"
+class="reviewFile_${sub._id}">
+
+</div>
+
+<br>
+
+<button
+type="button"
+onclick="addReviewFile('${sub._id}')"
+style="
+background:#3498db;
+color:white;
+border:none;
+padding:5px 10px;
+border-radius:5px;
+cursor:pointer;
+">
+
++ Add Document
+
+</button>
+
+<br><br>
+
+<br><br>
+
+<button
+onclick="uploadReviewedHomework('${sub._id}')"
+style="
+background:#28a745;
+color:white;
+border:none;
+padding:5px 10px;
+border-radius:5px;
+cursor:pointer;
+">
+
+Upload
+
+</button>
+
+</td>
+
+        <td
+style="
+text-align:center;
+min-width:120px;
+width:120px;
+white-space:nowrap;
+vertical-align:middle;
+">
+
+${
+lesson === plan.lessons[0] && submissionIndex===0
+
+?
+
+`
+
+<button
+onclick="editLessonPlan('${plan._id}')"
+style="
+background:#f39c12;
+color:white;
+border:none;
+padding:6px 12px;
+border-radius:6px;
+cursor:pointer;
+">
+
+✏ Edit
+
+</button>
+
+`
+
+:
+
+""
+
+}
+
+</td>
+
+        </tr>
+
+        `;
+
+    });
+
+});
+
+});
+
+    }
+
+    subjects.sort();
+
+    subjects.forEach(subject=>{
+
+    subjectSelect.innerHTML +=
+
+    `<option value="${subject}">
+
+    ${subject}
+
+    </option>`;
+
+    });
+
+    subjectSelect.value =
+    currentSubject;
+
+    document.getElementById("body").innerHTML = html;
+
+    }
+
+    load();
+
+    function addQuestionFile(summaryId){
+
+    const container =
+
+    document.getElementById(
+    "questionFiles" + summaryId
+    );
+
+    const input =
+    document.createElement(
+    "input"
+    );
+
+    input.type = "file";
+
+    input.name =
+    "questionFile" + summaryId;
+
+    input.style.display =
+    "block";
+
+    input.style.marginTop =
+    "5px";
+
+    container.appendChild(
+    input
+    );
+
+    }
+
+    async function uploadQuestionDocs(
+    summaryId
+    ){
+
+    const inputs =
+
+    document.querySelectorAll(
+
+    `#questionFiles${summaryId} input`
+
+    );
+
+    const fd =
+    new FormData();
+
+    inputs.forEach(input=>{
+
+    if(
+    input.files[0]
+    ){
+
+    fd.append(
+    "files",
+    input.files[0]
+    );
+
+    }
+
+    });
+
+    fd.append(
+    "summaryId",
+    summaryId
+    );
+
+    const res =
+    await fetch(
+
+    "https://academy-backend-eatl.onrender.com/api/upload-question-docs",
+
+    {
+
+    method:"POST",
+
+    body:fd
+
+    }
+
+    );
+
+    const data =
+    await res.json();
+
+    if(data.success){
+
+    alert(
+    "Question Docs Uploaded"
+    );
+
+    load();
+
+    }else{
+
+    alert(
+    data.message
+    );
+
+    }
+
+    }
+
+    function viewStudentDoc(url){
+
+        document.getElementById("viewerFrame").src = url;
+
+        document.getElementById("viewerModal").style.display = "block";
+
+    }
+
+    function viewQuestionDoc(url){
+
+        document.getElementById("viewerFrame").src = url;
+
+        document.getElementById("viewerModal").style.display = "block";
+
+    }
+
+    function closeViewer(){
+
+        document.getElementById("viewerFrame").src = "";
+
+        document.getElementById("viewerModal").style.display = "none";
+
+    }
+
+
+
+
+
+    function addReviewedFile(summaryId,studentId){
+
+    const container=
+
+    document.getElementById(
+
+    "reviewFiles"+summaryId+"_"+studentId
+
+    );
+
+    const input=
+
+    document.createElement("input");
+
+    input.type="file";
+
+    input.name=
+
+    "reviewFile"+summaryId+"_"+studentId;
+
+    input.style.display="block";
+
+    input.style.marginTop="5px";
+
+    container.appendChild(input);
+
+    }
+
+
+
+    async function uploadReviewedDocs(
+
+    summaryId,
+
+    studentId,
+
+    studentName
+
+    ){
+
+    const inputs=
+
+    document.querySelectorAll(
+
+    `#reviewFiles${summaryId}_${studentId} input`
+
+    );
+
+    const fd=new FormData();
+
+    let hasFile=false;
+
+    inputs.forEach(input=>{
+
+    if(input.files[0]){
+
+    fd.append(
+
+    "files",
+
+    input.files[0]
+
+    );
+
+    hasFile=true;
+
+    }
+
+    });
+
+    if(!hasFile){
+
+    alert("Choose at least one file");
+
+    return;
+
+    }
+
+    fd.append(
+
+    "summaryId",
+
+    summaryId
+
+    );
+
+    fd.append(
+
+    "studentId",
+
+    studentId
+
+    );
+
+    fd.append(
+
+    "studentName",
+
+    studentName
+
+    );
+
+    const res=
+
+    await fetch(
+
+    "https://academy-backend-eatl.onrender.com/api/upload-reviewed-docs",
+
+    {
+
+    method:"POST",
+
+    body:fd
+
+    }
+
+    );
+
+    const data=
+
+    await res.json();
+
+    if(data.success){
+
+    alert(
+
+    "Reviewed Documents Uploaded"
+
+    );
+
+    load();
+
+    }else{
+
+    alert(
+
+    data.message
+
+    );
+
+    }
+
+    }
+
+    async function editLessonPlan(id){
+
+    window.editLessonPlanId = id;
+
+    document.getElementById("addTopicBtn").style.display = "none";
+
+    const saveBtn = document.querySelector(
+    'button[onclick="saveHomeworkDraft()"]'
+    );
+
+    if(saveBtn){
+
+    saveBtn.innerText = "Update Homework";
+
+    saveBtn.style.background = "#f39c12";
+
+    }
+    const res = await fetch(
+
+    "https://academy-backend-eatl.onrender.com/api/lesson-plan/" + id
+
+    );
+
+    const result = await res.json();
+
+    if(!result.success){
+
+    alert(result.message);
+
+    return;
+
+    }
+
+    const plan = result.data;
+
+    /* Open the existing panel */
+
+    showCreateHomeworkPanel();
+
+    /* Fill header fields */
+
+    document.getElementById("hwDate").value = plan.date;
+
+    document.getElementById("hwTeacher").value = plan.teacherName;
+
+    document.getElementById("hwClass").value = plan.className;
+
+    document.getElementById("hwSubject").value = plan.subject;
+
+    /* Remove the default empty topic */
+
+    document.getElementById("topicContainer").innerHTML = "";
+
+    /* Add all saved topics */
+
+    plan.lessons.forEach(lesson=>{
+
+
+
+    addTopicCard();
+
+    const card =
+
+    document.querySelector("#topicContainer").lastElementChild;
+
+    card.dataset.topicId = lesson.topicId || "";
+
+    card.querySelector(".topicName").value =
+    lesson.topic || "";
+
+    card.querySelector(".topicDescription").value =
+    lesson.topicSummary || "";
+
+    card.querySelector(".homeworkGiven").value =
+    lesson.homework || "";
+
+    /* Restore uploaded materials */
+
+    card.lessonMaterials =
+    lesson.classMaterials || [];
+
+    card.homeworkDocuments =
+    lesson.homeworkDocuments || [];
+
+    const homeworkDiv =
+    card.querySelector(".uploadedHomeworkDocuments");
+
+    homeworkDiv.innerHTML = "";
+
+    (card.homeworkDocuments || []).forEach(file=>{
+
+        homeworkDiv.innerHTML += `
+
+    <div style="margin-top:8px;">
+
+    📄
+
+    <a href="${file.s3Url}" target="_blank">
+
+    ${file.fileName}
+
+    </a>
+
+    </div>
+
+    `;
+
+    });
+
+    const materialDiv =
+    card.querySelector(".uploadedLessonMaterials");
+
+    materialDiv.innerHTML = "";
+
+    (card.lessonMaterials || []).forEach((file,index)=>{
+
+    materialDiv.innerHTML += `
+
+    <div style="
+    margin-top:8px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    ">
+
+    📎
+
+    <a href="${file.s3Url}" target="_blank">
+
+    ${file.fileName}
+
+    </a>
+
+    <button
+    type="button"
+    onclick="deleteLessonMaterial(this,${index})"
+    style="
+    background:red;
+    color:white;
+    border:none;
+    padding:4px 8px;
+    border-radius:5px;
+    cursor:pointer;
+    ">
+
+    ✖
+
+    </button>
+
+    </div>
+
+    `;
+
+    });
+
+    /* Restore video links */
+
+    const videoContainer =
+    card.querySelector(".videoContainer");
+
+    videoContainer.innerHTML = "";
+
+    if(
+    lesson.videoLinks &&
+    lesson.videoLinks.length
+    ){
+
+    lesson.videoLinks.forEach(link=>{
+
+    const input =
+    document.createElement("input");
+
+    input.type = "text";
+
+    input.className = "videoLink";
+
+    input.value = link;
+
+    input.style.width = "100%";
+
+    input.style.padding = "10px";
+
+    input.style.marginTop = "10px";
+
+    videoContainer.appendChild(input);
+
+    });
+
+    }else{
+
+    const input =
+    document.createElement("input");
+
+    input.type = "text";
+
+    input.className = "videoLink";
+
+    input.placeholder =
+    "https://youtube.com/...";
+
+    input.style.width = "100%";
+
+    input.style.padding = "10px";
+
+    input.style.marginTop = "10px";
+
+    videoContainer.appendChild(input);
+
+    }
+
+    });
+
+    }
+
+    async function createOrEditHomework(){
+
+        window.editLessonPlanId = null;
+
+document.getElementById("addTopicBtn").style.display = "inline-block";
+
+showCreateHomeworkPanel();
+
+    }
+
+    async function checkExistingLessonPlan(){
+
+        const teacherId = sessionStorage.getItem("teacherId");
+
+        const className = sessionStorage.getItem("homeworkClass");
+
+        const subject = sessionStorage.getItem("homeworkSubject");
+
+        const date = new Date().toISOString().split("T")[0];
+
+        const res = await fetch(
+
+            "https://academy-backend-eatl.onrender.com/api/lesson-plans?teacherId=" + teacherId
+
+        );
+
+        const result = await res.json();
+
+        if(!result.success) return;
+
+        const existing = result.data.find(plan =>
+
+            plan.date === date &&
+
+            plan.className === className &&
+
+            plan.subject === subject
+
+        );
+
+        if(existing){
+
+            editLessonPlan(existing._id);
+
+            return;
+
+        }
+
+        document.getElementById("createHomeworkPanel").style.display="block";
+
+        document.getElementById("hwDate").value = date;
+
+        document.getElementById("hwTeacher").value =
+        sessionStorage.getItem("teacherName") || "";
+
+        document.getElementById("hwClass").value = className;
+
+        document.getElementById("hwSubject").value = subject;
+
+        document.getElementById("topicContainer").innerHTML="";
+
+        addTopicCard();
+
+    }
+
+
+
+    function showCreateHomeworkPanel(){
+
+        
+
+    document.getElementById("createHomeworkPanel").style.display="block";
+
+    document.getElementById("hwDate").value =
+    new Date().toISOString().split("T")[0];
+
+    document.getElementById("hwTeacher").value =
+    sessionStorage.getItem("teacherName") || "";
+
+    document.getElementById("hwClass").value =
+    sessionStorage.getItem("homeworkClass") || "";
+
+    document.getElementById("hwSubject").value =
+    sessionStorage.getItem("homeworkSubject") || "";
+
+    document.getElementById("topicContainer").innerHTML="";
+
+
+
+    addTopicCard();
+
+
+
+    }
+
+    async function loadLessonPlans(){
+
+    const teacherId =
+    sessionStorage.getItem("teacherId");
+
+    const res =
+    await fetch(
+
+    "https://academy-backend-eatl.onrender.com/api/lesson-plans?teacherId=" +
+    teacherId
+
+    );
+
+    const data =
+    await res.json();
+
+    if(!data.success){
+
+    return;
+
+    }
+
+    const tbody =
+    document.getElementById("body");
+
+    data.data.forEach(plan=>{
+
+    (plan.lessons || []).forEach(lesson=>{
+
+    const tr =
+    document.createElement("tr");
+
+    tr.innerHTML = `
+
+    <td>${plan.teacherName}</td>
+
+    <td>${plan.className}</td>
+
+    <td>${plan.subject}</td>
+
+    <td>${lesson.homework || "-"}</td>
+
+    <td>
+
+    ${lesson.classMaterials.length}
+    File(s)
+
+    </td>
+
+    <td>
+
+    ${lesson.videoLinks.length}
+    Video Link(s)
+
+    </td>
+
+    <td>${plan.date}</td>
+
+    `;
+
+    tbody.appendChild(tr);
+
+    });
+
+    });
+
+    }
+    function closeHomeworkPanel(){
+
+        document.getElementById("addTopicBtn").style.display = "inline-block";
+
+        document.getElementById("createHomeworkPanel").style.display = "none";
+
+        window.editLessonPlanId = null;
+
+        const saveBtn = document.querySelector(
+            'button[onclick="saveHomeworkDraft()"]'
+        );
+
+        if(saveBtn){
+
+            saveBtn.innerText = "Save Homework";
+
+            saveBtn.style.background = "#28a745";
+
+        }
+
+    }
+    function addTopicCard(){
+
+    const div=document.createElement("div");
+
+    div.style.border="1px solid #ccc";
+    div.style.padding="20px";
+    div.style.marginBottom="20px";
+    div.style.borderRadius="10px";
+    div.style.background="#fafafa";
+
+    div.innerHTML=`
+
+    <h2>Topic</h2>
+
+    <label><b>Topic</b></label><br>
+
+    <input
+    type="text"
+    class="topicName"
+    placeholder="Enter Topic"
+    style="
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    margin-bottom:15px;
+    ">
+
+    <label><b>Topic Description (Topic Summary)</b></label><br>
+
+    <textarea
+    class="topicDescription"
+    placeholder="Enter Topic Summary"
+    style="
+    width:100%;
+    height:100px;
+    padding:10px;
+    margin-top:5px;
+    margin-bottom:15px;
+    "></textarea>
+
+    <label><b>Homework Given</b></label><br>
+
+    <textarea
+    class="homeworkGiven"
+    placeholder="Enter Homework"
+    style="
+    width:100%;
+    height:100px;
+    padding:10px;
+    margin-top:5px;
+    margin-bottom:15px;
+    "></textarea>
+
+    <label><b>Homework Document (Optional)</b></label><br>
+
+    <div class="homeworkDocumentContainer">
+
+    <div style="margin-bottom:10px;">
+
+    <input
+    type="file"
+    class="homeworkDocumentFile"
+    multiple>
+
+    <button
+    type="button"
+    onclick="uploadHomeworkDocument(this)"
+    style="
+    background:#28a745;
+    color:white;
+    border:none;
+    padding:6px 12px;
+    border-radius:5px;
+    cursor:pointer;
+    ">
+
+    Upload
+
+    </button>
+
+    </div>
+
+    <div class="uploadedHomeworkDocuments"></div>
+
+    </div>
+
+    <br>
+
+    <label><b>Class Material</b></label><br>
+
+    <div class="materialContainer">
+
+    <div style="margin-bottom:10px;">
+
+    <input
+    type="file"
+    class="lessonMaterialFile"
+    multiple>
+
+    <button
+    type="button"
+    onclick="uploadLessonMaterial(this)"
+    style="
+    background:#28a745;
+    color:white;
+    border:none;
+    padding:6px 12px;
+    border-radius:5px;
+    cursor:pointer;
+    ">
+
+    Upload
+
+    </button>
+
+    </div>
+
+    <div class="uploadedLessonMaterials"></div>
+
+    </div>
+
+    <br>
+
+    <button
+    type="button"
+    onclick="addMaterial(this)"
+    style="
+    background:#1e3a5f;
+    color:white;
+    border:none;
+    padding:6px 12px;
+    border-radius:5px;
+    cursor:pointer;
+    ">
+
+    + Add File
+
+    </button>
+
+    <hr style="margin:20px 0;">
+
+    <label><b>Video Link Reference</b></label><br>
+
+    <div class="videoContainer">
+
+    <input
+    type="text"
+    class="videoLink"
+    placeholder="https://youtube.com/..."
+    style="
+    width:100%;
+    padding:10px;
+    margin-top:8px;
+    ">
+
+    </div>
+
+    <br>
+
+    <button
+    type="button"
+    onclick="addVideoLink(this)"
+    style="
+    background:#1e3a5f;
+    color:white;
+    border:none;
+    padding:6px 12px;
+    border-radius:5px;
+    cursor:pointer;
+    ">
+
+    + Add Link
+
+    </button>
+
+    `;
+
+    document
+    .getElementById("topicContainer")
+    .appendChild(div);
+
+    }
+
+    function addMaterial(btn){
+
+    const container=
+
+    btn.parentElement.querySelector(".materialContainer");
+
+    const input=document.createElement("input");
+
+    input.type="file";
+
+    input.className="lessonMaterialFile";
+
+    input.style.display="block";
+
+    input.style.marginTop="10px";
+
+    container.appendChild(input);
+
+    }
+
+    function addVideoLink(btn){
+
+    const container=
+
+    btn.parentElement.querySelector(".videoContainer");
+
+    const input=document.createElement("input");
+
+    input.type="text";
+
+    input.placeholder="https://youtube.com/...";
+
+    input.className="videoLink";
+
+    input.style.width="100%";
+
+    input.style.padding="10px";
+
+    input.style.marginTop="10px";
+
+    container.appendChild(input);
+
+    }
+    async function saveHomeworkDraft(){
+
+    const lessons=[];
+
+    document.querySelectorAll("#topicContainer > div").forEach((card,index)=>{
+
+    const topic=
+    card.querySelector(".topicName").value;
+
+    const topicSummary=
+    card.querySelector(".topicDescription").value;
+
+    const homework=
+    card.querySelector(".homeworkGiven").value;
+
+    const videoLinks=[];
+
+    card.querySelectorAll(".videoLink").forEach(v=>{
+
+    if(v.value.trim()){
+
+    videoLinks.push(v.value.trim());
+
+    }
+
+    });
+
+    const subjectCode =
+    document.getElementById("hwSubject")
+    .value
+    .substring(0,3)
+    .toUpperCase();
+
+    const dateCode =
+    document.getElementById("hwDate")
+    .value
+    .replaceAll("-","");
+
+    const topicId =
+    card.dataset.topicId ||
+    `${subjectCode}-${dateCode}-${String(index+1).padStart(2,"0")}`;
+
+    lessons.push({
+
+    topicId,
+
+    topic,
+
+    topicSummary,
+
+    homework,
+
+    videoLinks,
+
+    classMaterials:
+    card.lessonMaterials || [],
+
+    homeworkDocuments:
+    card.homeworkDocuments || []
+
+    });
+
+    });
+
+    const payload={
+
+    teacherId:
+    sessionStorage.getItem("teacherId") || "",
+
+    teacherName:
+    sessionStorage.getItem("teacherName") || "",
+
+    className:
+    document.getElementById("hwClass").value,
+
+    subject:
+    document.getElementById("hwSubject").value,
+
+    day:
+    sessionStorage.getItem("homeworkDay") || "",
+
+    startTime:
+    sessionStorage.getItem("homeworkStartTime") || "",
+
+    date:
+    document.getElementById("hwDate").value,
+
+    lessons
+
+    };
+
+    let url =
+    "https://academy-backend-eatl.onrender.com/api/create-homework";
+
+    let method = "POST";
+
+    if(window.editLessonPlanId){
+
+    url =
+
+    "https://academy-backend-eatl.onrender.com/api/lesson-plan/"
+
+    +
+
+    window.editLessonPlanId;
+
+    method = "PUT";
+
+    }
+
+    const res = await fetch(
+
+    url,
+
+    {
+
+    method,
+
+    headers:{
+
+    "Content-Type":"application/json"
+
+    },
+
+    body:JSON.stringify(payload)
+
+    }
+
+    );
+
+    const data=await res.json();
+
+    if(data.success){
+
+        alert("Homework Saved Successfully");
+
+        // Reset Edit Mode
+        window.editLessonPlanId = null;
+
+        const saveBtn = document.querySelector(
+            'button[onclick="saveHomeworkDraft()"]'
+        );
+
+        if(saveBtn){
+
+            saveBtn.innerText = "Save Homework";
+
+            saveBtn.style.background = "#28a745";
+
+        }
+
+        closeHomeworkPanel();
+
+        load();
+
+    }else{
+
+        alert(data.message);
+
+    }
+
+    }
+
+    async function uploadLessonMaterial(button){
+
+    const card = button.closest("#topicContainer > div");
+
+    const inputs = card.querySelectorAll(".lessonMaterialFile");
+
+    const formData = new FormData();
+
+    let hasFile = false;
+
+    inputs.forEach(input => {
+
+        for(const file of input.files){
+
+            formData.append("files", file);
+
+            hasFile = true;
+
+        }
+
+    });
+
+    if(!hasFile){
+
+        alert("Please choose a file.");
+
+        return;
+
+    }
+
+    const res = await fetch(
+
+    "https://academy-backend-eatl.onrender.com/api/upload-lesson-material",
+
+    {
+
+    method:"POST",
+
+    body:formData
+
+    }
+
+    );
+
+    const data = await res.json();
+
+    if(!data.success){
+
+    alert(data.message);
+
+    return;
+
+    }
+
+    if(!card.lessonMaterials){
+
+    card.lessonMaterials=[];
+
+    }
+
+    card.lessonMaterials.push(...data.files);
+
+    const list = card.querySelector(".uploadedLessonMaterials");
+
+    list.innerHTML="";
+
+    card.lessonMaterials.forEach((file,index)=>{
+
+    list.innerHTML += `
+
+    <div style="
+    margin-top:8px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    ">
+
+    📎
+
+    <a href="${file.s3Url}" target="_blank">
+
+    ${file.fileName}
+
+    </a>
+
+    <button
+    type="button"
+    onclick="deleteLessonMaterial(this,${index})"
+    style="
+    background:red;
+    color:white;
+    border:none;
+    padding:4px 8px;
+    border-radius:5px;
+    cursor:pointer;
+    ">
+
+    ✖
+
+    </button>
+
+    </div>
+
+    `;
+
+    });
+
+    inputs.forEach(input => input.value = "");
+
+    alert("File uploaded successfully.");
+
+    }
+
+    async function uploadHomeworkDocument(button){
+
+    const card = button.closest("#topicContainer > div");
+
+    const input = card.querySelector(".homeworkDocumentFile");
+
+    if(input.files.length===0){
+
+        alert("Please choose a file.");
+
+        return;
+
+    }
+
+    const formData = new FormData();
+
+    for(const file of input.files){
+
+        formData.append("files", file);
+
+    }
+
+    const res = await fetch(
+
+    "https://academy-backend-eatl.onrender.com/api/upload-homework-document",
+
+    {
+
+    method:"POST",
+
+    body:formData
+
+    }
+
+    );
+
+    const data = await res.json();
+
+    if(!data.success){
+
+    alert(data.message);
+
+    return;
+
+    }
+
+    if(!card.homeworkDocuments){
+
+    card.homeworkDocuments=[];
+
+    }
+
+    card.homeworkDocuments.push(...data.files);
+
+    const list = card.querySelector(".uploadedHomeworkDocuments");
+
+    list.innerHTML="";
+
+    card.homeworkDocuments.forEach(file=>{
+
+    list.innerHTML += `
+
+    <div style="margin-top:8px;">
+
+    📄
+
+    <a href="${file.s3Url}" target="_blank">
+
+    ${file.fileName}
+
+    </a>
+
+    </div>
+
+    `;
+
+    });
+
+    input.value="";
+
+    alert("Homework Document uploaded successfully.");
+
+    }
+
+    function deleteLessonMaterial(button,index){
+
+    const card = button.closest("#topicContainer > div");
+
+    card.lessonMaterials.splice(index,1);
+
+    const list = card.querySelector(".uploadedLessonMaterials");
+
+    list.innerHTML = "";
+
+    card.lessonMaterials.forEach((file,i)=>{
+
+    list.innerHTML += `
+
+    <div style="
+    margin-top:8px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    ">
+
+    📎
+
+    <a href="${file.s3Url}" target="_blank">
+
+    ${file.fileName}
+
+    </a>
+
+    <button
+    type="button"
+    onclick="deleteLessonMaterial(this,${i})"
+    style="
+    background:red;
+    color:white;
+    border:none;
+    padding:4px 8px;
+    border-radius:5px;
+    cursor:pointer;
+    ">
+
+    ✖
+
+    </button>
+
+    </div>
+
+    `;
+
+    });
+
+    }
+
+    async function uploadReviewedHomework(homeworkId){
+
+    const inputs = document.querySelectorAll(
+".reviewFile_" + homeworkId
+);
+
+let hasFile = false;
+
+inputs.forEach(input=>{
+
+    if(input.files.length){
+
+        hasFile = true;
+
+    }
+
+});
+
+if(!hasFile){
+
+    alert("Please choose at least one file.");
+
+    return;
+
+}
+
+    const fd = new FormData();
+
+inputs.forEach(input=>{
+
+    for(const file of input.files){
+
+        fd.append("files", file);
+
+    }
+
+});
+
+    fd.append("homeworkId", homeworkId);
+
+    const res = await fetch(
+
+    "https://academy-backend-eatl.onrender.com/api/teacher-upload-reviewed-homework",
+
+    {
+
+    method:"POST",
+
+    body:fd
+
+    }
+
+    );
+
+    const data = await res.json();
+
+    if(data.success){
+
+        alert("Reviewed Homework Uploaded Successfully");
+
+        load();
+
+    }else{
+
+        alert(data.message);
+
+    }
+
+    }
+
+    function addReviewFile(homeworkId){
+
+const container = document.getElementById(
+"reviewContainer_" + homeworkId
+);
+
+const br = document.createElement("br");
+
+const input = document.createElement("input");
+
+input.type = "file";
+
+input.className = "reviewFile_" + homeworkId;
+
+container.appendChild(br);
+
+container.appendChild(input);
+
+}
+
+async function deleteReviewedFile(homeworkId, s3Key){
+
+    if(!confirm("Delete this reviewed file?")){
+        return;
+    }
+
+    const res = await fetch(
+
+        "https://academy-backend-eatl.onrender.com/api/delete-reviewed-file",
+
+        {
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify({
+
+                homeworkId,
+                s3Key
+
+            })
+
+        }
+
+    );
+
+    const data = await res.json();
+
+    if(data.success){
+
+        alert("Reviewed file deleted successfully.");
+
+        load();
+
+    }else{
+
+        alert(data.message);
+
+    }
+
+}
+    </script>
+
+    <div id="viewerModal"
+    style="
+    display:none;
+    position:fixed;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.7);
+    z-index:9999;
+    ">
+
+    <div style="
+    width:90%;
+    height:90%;
+    margin:2% auto;
+    background:white;
+    position:relative;
+    ">
+
+    <button
+    onclick="closeViewer()"
+    style="
+    position:absolute;
+    top:10px;
+    right:10px;
+    padding:8px 15px;
+    cursor:pointer;
+    z-index:1000;
+    ">
+
+    ✖
+
+    </button>
+
+    <iframe
+    id="viewerFrame"
+    style="
+    width:100%;
+    height:100%;
+    border:none;
+    ">
+    </iframe>
+
+    </div>
+
+    </div>
+

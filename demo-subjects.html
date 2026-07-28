@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Watch Demo Classes | Gopes Pinnacle Academy</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f5f7fb;
+padding:30px;
+}
+
+.container{
+max-width:1200px;
+margin:auto;
+}
+
+h1{
+margin-bottom:10px;
+}
+
+h3{
+margin-bottom:30px;
+color:#666;
+}
+
+.subjectGrid{
+
+display:grid;
+
+grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+
+gap:20px;
+
+}
+
+.subjectCard{
+
+background:white;
+
+padding:20px;
+
+border-radius:12px;
+
+cursor:pointer;
+
+font-size:17px;
+
+font-weight:bold;
+
+text-align:center;
+
+box-shadow:0 3px 10px rgba(0,0,0,.08);
+
+transition:.2s;
+
+}
+
+.subjectCard:hover{
+
+background:#0d6efd;
+
+color:white;
+
+transform:translateY(-4px);
+
+}
+
+.backBtn{
+
+margin-bottom:25px;
+
+padding:10px 20px;
+
+cursor:pointer;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<button class="backBtn" onclick="history.back()">
+← Back
+</button>
+
+<h1 style="color:#0d1b2a;">
+🎥 Watch Demo Classes
+</h1>
+
+<p style="color:#666;margin-bottom:12px;">
+Choose a subject to watch free demo classes.
+</p>
+
+<h3 id="gradeTitle"></h3>
+
+<div class="subjectGrid" id="subjectGrid"></div>
+
+</div>
+
+<script>
+
+const grade=new URLSearchParams(window.location.search).get("grade");
+
+document.getElementById("gradeTitle").innerHTML=grade;
+
+const subjects=[
+
+"English",
+
+"Phonics",
+
+"Hindi",
+
+"Mathematics",
+
+"Science",
+
+"Social Science",
+
+"French",
+
+"AP Science",
+
+"AP Maths",
+
+"Tamil",
+
+"Handwriting (English)",
+
+"Handwriting (Tamil)"
+
+];
+
+const subjectGrid=document.getElementById("subjectGrid");
+
+subjects.forEach(subject=>{
+
+const card=document.createElement("div");
+
+card.className="subjectCard";
+
+card.innerHTML=subject;
+
+card.onclick=()=>{
+
+window.location.href=
+`demo-videos.html?grade=${encodeURIComponent(grade)}&subject=${encodeURIComponent(subject)}`;
+
+};
+
+subjectGrid.appendChild(card);
+
+});
+
+</script>
+
+</body>
+
+</html>

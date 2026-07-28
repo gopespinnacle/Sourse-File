@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Demo Videos</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f5f7fb;
+padding:30px;
+}
+
+.container{
+max-width:1200px;
+margin:auto;
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:30px;
+}
+
+.uploadBtn{
+
+background:#0d6efd;
+
+color:white;
+
+border:none;
+
+padding:12px 20px;
+
+border-radius:8px;
+
+cursor:pointer;
+
+font-size:15px;
+
+}
+
+.videoCard{
+
+background:white;
+
+padding:20px;
+
+margin-bottom:20px;
+
+border-radius:12px;
+
+box-shadow:0 3px 10px rgba(0,0,0,.08);
+
+}
+
+.videoTitle{
+
+font-size:22px;
+
+font-weight:bold;
+
+margin-bottom:10px;
+
+}
+
+.teacher{
+
+margin-bottom:20px;
+
+color:#666;
+
+}
+
+.actions{
+
+display:flex;
+
+gap:12px;
+
+flex-wrap:wrap;
+
+}
+
+.actions button{
+
+padding:10px 18px;
+
+border:none;
+
+border-radius:8px;
+
+cursor:pointer;
+
+}
+
+.preview{
+background:#198754;
+color:white;
+}
+
+.copy{
+background:#0d6efd;
+color:white;
+}
+
+.edit{
+background:#ffc107;
+}
+
+.delete{
+background:#dc3545;
+color:white;
+}
+
+.backBtn{
+margin-bottom:20px;
+padding:10px 18px;
+cursor:pointer;
+}
+
+.uploadDate{
+
+margin-bottom:20px;
+
+color:#888;
+
+font-size:14px;
+
+}
+
+#searchBox{
+
+width:300px;
+
+padding:10px 14px;
+
+border:1px solid #ccc;
+
+border-radius:8px;
+
+font-size:15px;
+
+}
+.noVideos{
+
+background:white;
+
+padding:50px;
+
+text-align:center;
+
+border-radius:12px;
+
+box-shadow:0 3px 10px rgba(0,0,0,.08);
+
+}
+
+.noVideos h2{
+
+margin-bottom:15px;
+
+color:#555;
+
+}
+
+.noVideos p{
+
+color:#777;
+
+font-size:16px;
+
+}
+
+#videoCount{
+
+margin-top:8px;
+
+color:#666;
+
+font-size:15px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<button class="backBtn" onclick="history.back()">
+← Back
+</button>
+
+<div class="header">
+
+<div>
+
+<h1 id="pageTitle"></h1>
+
+<p id="videoCount"></p>
+
+</div>
+
+<button class="uploadBtn" onclick="openUpload()">
+
++ Upload New Video
+
+</button>
+
+<button
+class="uploadBtn"
+style="margin-left:10px;background:#198754;"
+onclick="downloadCSV()">
+
+Download CSV
+
+</button>
+
+<input
+type="text"
+id="searchBox"
+placeholder="Search by title or teacher..."
+onkeyup="filterVideos()">
+
+</div>
+
+<div id="videoContainer"></div>
+
+</div>
+
+<script>
+
+const API="https://academy-backend-eatl.onrender.com/api/demo-videos";
+
+const params=new URLSearchParams(location.search);
+
+const grade=params.get("grade");
+
+const subject=params.get("subject");
+
+document.getElementById("pageTitle").innerHTML=
+`${grade} - ${subject}`;
+
+let allVideos = [];
+
+async function loadVideos(){
+
+const res=await fetch(
+
+`${API}/list?grade=${encodeURIComponent(grade)}&subject=${encodeURIComponent(subject)}`
+
+);
+
+const data=await res.json();
+
+allVideos = data.data;
+
+const container=document.getElementById("videoContainer");
+
+container.innerHTML="";
+
+document.getElementById("videoCount").innerHTML =
+`Total Videos : ${allVideos.length}`;
+
+if(allVideos.length===0){
+
+container.innerHTML=`
+<div class="noVideos">
+
+<h2>No Demo Videos Found</h2>
+
+<p>Click <b>+ Upload New Video</b> to add the first demo video for this subject.</p>
+
+</div>
+`;
+
+return;
+
+}
+
+renderVideos(allVideos);
+
+
+
+}
+
+function copyLink(id){
+
+const url=`https://www.gopespinnacle.com/demo.html?id=${id}`;
+
+navigator.clipboard.writeText(url);
+
+alert("Video URL Copied");
+
+}
+
+async function shareVideo(id){
+
+const url=`https://www.gopespinnacle.com/demo.html?id=${id}`;
+
+if(navigator.share){
+
+try{
+
+await navigator.share({
+
+title:"Gopes Pinnacle Academy Demo Class",
+
+text:"Watch our free demo class.",
+
+url:url
+
+});
+
+}catch(err){}
+
+}else{
+
+navigator.clipboard.writeText(url);
+
+alert("Demo Video URL Copied");
+
+}
+
+}
+
+function openUpload(){
+
+window.location.href=
+
+`founder-upload-demo-video.html?grade=${encodeURIComponent(grade)}&subject=${encodeURIComponent(subject)}`;
+
+}
+
+function editVideo(id){
+
+window.location.href=
+
+`founder-edit-demo-video.html?id=${id}`;
+
+}
+
+async function duplicateVideo(id){
+
+const grades=[
+"LKG",
+"UKG",
+"Grade 1",
+"Grade 2",
+"Grade 3",
+"Grade 4",
+"Grade 5",
+"Grade 6",
+"Grade 7",
+"Grade 8",
+"Grade 9",
+"Grade 10",
+"Grade 11",
+"Grade 12"
+];
+
+const subjects=[
+"English",
+"Phonics",
+"Hindi",
+"Mathematics",
+"Science",
+"Social Science",
+"French",
+"AP Science",
+"AP Maths",
+"Tamil",
+"Handwriting (English)",
+"Handwriting (Tamil)"
+];
+
+let gradeOptions="";
+
+grades.forEach(g=>{
+gradeOptions+=`<option value="${g}">${g}</option>`;
+});
+
+let subjectOptions="";
+
+subjects.forEach(s=>{
+subjectOptions+=`<option value="${s}">${s}</option>`;
+});
+
+const popup=window.open("","Duplicate Video","width=400,height=300");
+
+popup.document.write(`
+<html>
+<body style="font-family:Arial;padding:20px;">
+
+<h3>Duplicate Video</h3>
+
+<label>Grade</label><br>
+<select id="grade" style="width:100%;padding:8px;margin-bottom:15px;">
+${gradeOptions}
+</select>
+
+<label>Subject</label><br>
+<select id="subject" style="width:100%;padding:8px;margin-bottom:20px;">
+${subjectOptions}
+</select>
+
+<button onclick="duplicate()" style="padding:10px 20px;">
+Duplicate
+</button>
+
+<script>
+
+async function duplicate(){
+
+const grade=document.getElementById('grade').value;
+const subject=document.getElementById('subject').value;
+
+if(!confirm(
+'Duplicate this video to\n\nGrade: ' + grade + '\nSubject: ' + subject + ' ?'
+)){
+    return;
+}
+
+const res=await fetch('${API}/${id}/duplicate',{
+
+method:'POST',
+
+headers:{
+'Content-Type':'application/json'
+},
+
+body:JSON.stringify({
+grade,
+subject
+})
+
+});
+
+const data=await res.json();
+
+if(data.success){
+
+alert('Video duplicated successfully.');
+
+window.close();
+
+}else{
+
+alert(data.message);
+
+}
+
+}
+
+<\/script>
+
+</body>
+</html>
+`);
+
+}
+
+async function deleteVideo(id){
+
+if(!confirm("Delete this video?")) return;
+
+await fetch(
+
+`${API}/${id}`,
+
+{
+
+method:"DELETE"
+
+}
+
+);
+
+loadVideos();
+
+}
+
+loadVideos();
+
+function renderVideos(videos){
+
+const container=document.getElementById("videoContainer");
+
+container.innerHTML="";
+
+videos.sort((a,b)=>
+new Date(b.uploadDate)-new Date(a.uploadDate)
+);
+
+videos.forEach(video=>{
+
+container.innerHTML+=`
+
+<div class="videoCard">
+
+<div class="videoTitle">
+
+${video.title}
+
+</div>
+
+<div class="teacher">
+
+Teacher : ${video.teacherName}
+
+</div>
+
+<div class="uploadDate">
+
+Uploaded :
+${new Date(video.uploadDate).toLocaleDateString("en-IN",{
+
+day:"2-digit",
+
+month:"short",
+
+year:"numeric"
+
+})}
+
+</div>
+
+<div class="actions">
+
+<button
+class="preview"
+onclick="window.location.href='demo.html?id=${video._id}'">
+
+Preview
+
+</button>
+
+<button
+class="copy"
+onclick="copyLink('${video._id}')">
+
+Copy Video URL
+
+</button>
+
+<button
+class="preview"
+onclick="shareVideo('${video._id}')">
+
+Share
+
+</button>
+
+<button
+class="edit"
+onclick="editVideo('${video._id}')">
+
+Edit
+
+</button>
+
+<button
+class="copy"
+onclick="duplicateVideo('${video._id}')">
+
+Duplicate
+
+</button>
+
+<button
+class="delete"
+onclick="deleteVideo('${video._id}')">
+
+Delete
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+}
+
+function filterVideos(){
+
+const keyword=document.getElementById("searchBox").value.toLowerCase();
+
+const filtered=allVideos.filter(video=>
+
+video.title.toLowerCase().includes(keyword) ||
+
+video.teacherName.toLowerCase().includes(keyword)
+
+);
+
+renderVideos(filtered);
+
+}
+
+function downloadCSV(){
+
+let csv="Title,Teacher,Grade,Subject,Duration,Views,Upload Date\n";
+
+allVideos.forEach(video=>{
+
+csv+=`"${video.title}","${video.teacherName}","${video.grade}","${video.subject}","${video.duration || ""}","${video.views || 0}","${new Date(video.uploadDate).toLocaleDateString("en-IN")}"\n`;
+
+});
+
+const blob=new Blob([csv],{type:"text/csv"});
+
+const url=URL.createObjectURL(blob);
+
+const a=document.createElement("a");
+
+a.href=url;
+
+a.download=`${grade}-${subject}-DemoVideos.csv`;
+
+document.body.appendChild(a);
+
+a.click();
+
+document.body.removeChild(a);
+
+URL.revokeObjectURL(url);
+
+}
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Video UI Test</title>
+
+<style>
+
+body{
+
+    margin:0;
+
+    background:#1e1e1e;
+
+    font-family:Arial;
+
+}
+
+#videoContainer{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fill,250px);
+
+    gap:20px;
+
+    padding:20px;
+
+}
+
+.video-card{
+
+    width:250px;
+
+    height:180px;
+
+    background:black;
+
+    border-radius:10px;
+
+    overflow:hidden;
+
+    position:relative;
+
+    border:2px solid #555;
+
+}
+
+.video-card video{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+    background:black;
+
+}
+
+.video-footer{
+
+    position:absolute;
+
+    bottom:0;
+
+    left:0;
+
+    right:0;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:8px;
+
+    background:rgba(0,0,0,.6);
+
+    color:white;
+
+    font-size:14px;
+
+}
+
+.video-name{
+
+    margin-left:5px;
+
+    font-weight:bold;
+
+}
+
+button{
+
+    margin:20px;
+
+    padding:10px 20px;
+
+    cursor:pointer;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="videoContainer"></div>
+
+<script src="assets/js/meeting/video/constants.js"></script>
+
+<script src="assets/js/meeting/video/mediaManager.js"></script>
+
+<script src="assets/js/meeting/video/peerConnection.js"></script>
+
+<script src="assets/js/meeting/video/videoCard.js"></script>
+
+<script src="assets/js/meeting/video/videoUI.js"></script>
+
+<script src="assets/js/meeting/video/videoManager.js"></script>
+
+<script src="assets/js/meeting/video/socketManager.js"></script>
+
+<script src="assets/js/meeting/video/meetingController.js"></script>
+
+<script src="assets/js/meeting/video/signalingManager.js"></script>
+
+<script src="assets/js/meeting/video/participantManager.js"></script>
+
+<script src="assets/js/meeting/video/streamManager.js"></script>
+
+<script src="assets/js/meeting/video/reconnectManager.js"></script>
+
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
+<script>
+
+VideoUI.initialize("videoContainer");
+
+MeetingController.start({
+
+    server: "https://academy-backend-eatl.onrender.com",
+
+    room: "TestRoom",
+
+    role: "teacher",
+
+    name: "Vishnu",
+
+    studentId: null,
+
+    periodId: null
+
+});
+
+</script>
+
+</body>
+
+</html>

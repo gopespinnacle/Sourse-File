@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Demo Videos</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f5f7fb;
+padding:30px;
+}
+
+.container{
+max-width:1200px;
+margin:auto;
+}
+
+h1{
+margin-bottom:30px;
+}
+
+.gradeGrid{
+
+display:grid;
+
+grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+
+gap:20px;
+
+}
+
+.gradeCard{
+
+background:white;
+
+border-radius:12px;
+
+padding:25px;
+
+text-align:center;
+
+font-size:18px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+box-shadow:0 3px 10px rgba(0,0,0,.08);
+
+transition:.2s;
+
+}
+
+.gradeCard:hover{
+
+transform:translateY(-4px);
+
+background:#0d6efd;
+
+color:white;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Demo Videos</h1>
+
+<div class="gradeGrid" id="gradeGrid"></div>
+
+</div>
+
+<script>
+
+const grades=[
+
+"LKG",
+
+"UKG",
+
+"Grade 1",
+
+"Grade 2",
+
+"Grade 3",
+
+"Grade 4",
+
+"Grade 5",
+
+"Grade 6",
+
+"Grade 7",
+
+"Grade 8",
+
+"Grade 9",
+
+"Grade 10",
+
+"Grade 11",
+
+"Grade 12"
+
+];
+
+const gradeGrid=document.getElementById("gradeGrid");
+
+grades.forEach(g=>{
+
+const card=document.createElement("div");
+
+card.className="gradeCard";
+
+card.innerHTML=g;
+
+card.onclick=()=>{
+
+window.location.href=`founder-demo-subjects.html?grade=${encodeURIComponent(g)}`;
+
+};
+
+gradeGrid.appendChild(card);
+
+});
+
+</script>
+
+</body>
+
+</html>
