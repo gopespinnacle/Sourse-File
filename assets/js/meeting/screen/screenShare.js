@@ -124,67 +124,7 @@ Object.keys(this.peers).forEach(async (socketId)=>{
     });
 
     // Wait for the student to prepare the Screen Peer
-    setTimeout(async ()=>{
-
-        let screenPeer = this.screenPeers[socketId];
-
-        if(!screenPeer){
-
-    screenPeer = new RTCPeerConnection({
-
-        iceServers:[
-            {
-                urls:"stun:stun.l.google.com:19302"
-            }
-        ]
-
-    });
-
-    this.screenPeers[socketId] = screenPeer;
-
-    screenPeer.onicecandidate = (event)=>{
-
-        if(event.candidate){
-
-            this.socket.emit("screen-ice-candidate",{
-
-                targetSocketId:socketId,
-
-                candidate:event.candidate
-
-            });
-
-        }
-
-    };
-
-}
-
-        if(!screenPeer){
-
-            console.log("Screen Peer not ready:", socketId);
-
-            return;
-
-        }
-
-        screenPeer.addTrack(screenTrack, screenStream);
-
-        const offer = await screenPeer.createOffer();
-
-        await screenPeer.setLocalDescription(offer);
-
-        console.log("SENDING SCREEN OFFER TO:", socketId);
-
-        this.socket.emit("screen-offer",{
-
-            targetSocketId: socketId,
-
-            offer
-
-        });
-
-    },500);
+    
 
 });
 
@@ -273,6 +213,12 @@ pc.addTransceiver("audio", {
         console.log("Screen Track Received");
 
     };
+
+    this.socket.emit("screenPeerReady",{
+
+    teacherSocketId:data.teacherSocketId
+
+});
 
 },
 
