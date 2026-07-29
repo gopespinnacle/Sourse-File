@@ -2753,6 +2753,38 @@ socket.on("ice-candidate", async (data) => {
 
 });
 
+socket.on("screen-ice-candidate", async (data)=>{
+
+    let pc =
+        ScreenShare.screenPeers[data.senderSocketId];
+
+    if(!pc){
+
+        console.log("No Screen Peer for ICE");
+
+        return;
+
+    }
+
+    try{
+
+        await pc.addIceCandidate(
+
+            new RTCIceCandidate(data.candidate)
+
+        );
+
+    }catch(err){
+
+        console.log(
+            "Screen ICE Error",
+            err
+        );
+
+    }
+
+});
+
 
 socket.on("startScreenPeer", async (data) => {
 
@@ -2817,6 +2849,66 @@ socket.on("screen-answer", async (data)=>{
         new RTCSessionDescription(data.answer)
 
     );
+
+});
+
+socket.on("screenPeerReady", async (data)=>{
+
+    console.log("SCREEN PEER READY:", data.studentSocketId);
+
+    let pc = ScreenShare.screenPeers[data.studentSocketId];
+
+    if(!pc){
+
+        pc = new RTCPeerConnection({
+
+            iceServers:[
+                {
+                    urls:"stun:stun.l.google.com:19302"
+                }
+            ]
+
+        });
+
+        ScreenShare.screenPeers[data.studentSocketId] = pc;
+
+        // Send screen ICE
+        pc.onicecandidate = (event)=>{
+
+            if(event.candidate){
+
+                socket.emit("screen-ice-candidate",{
+
+                    targetSocketId:data.studentSocketId,
+
+                    candidate:event.candidate
+
+                });
+
+            }
+
+        };
+
+        // Add teacher screen tracks
+        window.currentScreenStream.getTracks().forEach(track=>{
+
+            pc.addTrack(track, window.currentScreenStream);
+
+        });
+
+    }
+
+    const offer = await pc.createOffer();
+
+    await pc.setLocalDescription(offer);
+
+    socket.emit("screen-offer",{
+
+        targetSocketId:data.studentSocketId,
+
+        offer
+
+    });
 
 });
 // ✅ ✅ ADD EXACTLY HERE (NEW CODE)
