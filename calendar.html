@@ -396,7 +396,15 @@ function drawCalendar(){
 
         const todayEvents = events.filter(event=>{
 
-            const eventDate = new Date(event.startDate);
+            const date = new Date(event.startDate);
+
+date.setMinutes(
+    date.getMinutes() + date.getTimezoneOffset()
+);
+
+eventDate.setMinutes(
+    eventDate.getMinutes() + eventDate.getTimezoneOffset()
+);
 
             return(
 
