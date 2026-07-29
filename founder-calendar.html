@@ -442,7 +442,34 @@ async function loadEvents(){
     drawCalendar();
 
 }
+function getEventColor(type){
 
+    switch(type){
+
+        case "Holiday":
+            return "#f4b400";
+
+        case "Class":
+            return "#34a853";
+
+        case "Exam":
+            return "#ea4335";
+
+        case "Test":
+            return "#fb8c00";
+
+        case "Assignment":
+            return "#8e24aa";
+
+        case "Meeting":
+            return "#1a73e8";
+
+        default:
+            return "#5f6368";
+
+    }
+
+}
 function closeModal(){
 
     document.getElementById("eventModal").style.display = "none";
@@ -471,7 +498,7 @@ async function saveEvent(){
 
         allDay: true,
 
-        color: "#0d6efd"
+        color: getEventColor(document.getElementById("eventType").value)
 
     };
 
