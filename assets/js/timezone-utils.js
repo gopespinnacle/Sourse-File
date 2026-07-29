@@ -149,3 +149,75 @@ function getPeriodStatus(day,startTime,endTime){
     return "completed";
 
 }
+
+function getPeriodInfo(day,startTime,endTime){
+
+    const timing = convertISTToLocal(day,startTime,endTime);
+
+    const now = new Date();
+
+    const start = buildDate(day,startTime);
+
+    const end = buildDate(day,endTime);
+
+    let status = "upcoming";
+    let joinAllowed = false;
+    let countdown = "";
+
+    if(now >= start && now <= end){
+
+        status = "live";
+        joinAllowed = true;
+
+    }
+    else if(now > end){
+
+        status = "completed";
+
+    }
+
+    if(status === "upcoming"){
+
+        const diff = start.getTime() - now.getTime();
+
+        const totalMinutes = Math.floor(diff / 60000);
+
+        const days = Math.floor(totalMinutes / 1440);
+        const hours = Math.floor((totalMinutes % 1440) / 60);
+        const minutes = totalMinutes % 60;
+
+        if(days > 0){
+
+            countdown = `Starts in ${days} day${days > 1 ? "s" : ""}`;
+
+        }
+        else if(hours > 0){
+
+            countdown = `Starts in ${hours} hr ${minutes} min`;
+
+        }
+        else{
+
+            countdown = `Starts in ${minutes} min`;
+
+        }
+
+    }
+
+    return{
+
+        status,
+
+        joinAllowed,
+
+        countdown,
+
+        timezone: timing.timezone,
+
+        ist: timing.ist,
+
+        local: timing.local
+
+    };
+
+}
