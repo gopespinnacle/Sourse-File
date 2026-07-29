@@ -189,7 +189,11 @@ col.innerHTML = `<div class="day-header">${day}</div>`;
 
 grouped[day].forEach(s=>{
 
-const status = getStatus(s.day, s.startTime, s.endTime);
+const status = getPeriodStatus(
+    s.day,
+    s.startTime,
+    s.endTime
+);
 
 const div = document.createElement("div");
 div.className = "period-card " + status;
@@ -208,10 +212,34 @@ window.location.href =
 
 };
 
+const tz = convertISTToLocal(
+    s.day,
+    s.startTime,
+    s.endTime
+);
+
 div.innerHTML = `
 <div><b>${s.className}</b></div>
+
 <div>📘 ${s.subject || "General"}</div>
-<div>⏰ ${formatTime(s.startTime)} - ${formatTime(s.endTime)}</div>
+
+<hr style="border-color:rgba(255,255,255,.2)">
+
+<div style="font-size:13px;">
+🇮🇳 <b>India (IST)</b>
+</div>
+
+<div style="font-size:13px;margin-bottom:8px;">
+${tz.istStart} - ${tz.istEnd.split(", ")[1]}
+</div>
+
+<div style="font-size:13px;">
+🌍 <b>Your Local Time</b>
+</div>
+
+<div style="font-size:13px;">
+${tz.localStart} - ${tz.localEnd.split(", ")[1]}
+</div>
 `;
 
 col.appendChild(div);
