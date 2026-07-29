@@ -2257,20 +2257,11 @@ socket.on("studentJoined", async (data) => {
 
     if (role !== "teacher") return;
 
-    if (data.reconnect) {
+   if (data.reconnect) {
 
     console.log("Student reconnected");
 
-    // If screen sharing is active,
-    // rebuild the screen peer.
-    if (window.currentScreenStream) {
-
-        await ScreenShare.createTeacherPeer(
-            data.socketId
-        );
-
-    }
-
+    // Wait for screenPeerReady.
     return;
 
 }
