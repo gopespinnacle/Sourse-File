@@ -233,13 +233,41 @@ ${s.className}
 🇮🇳 INDIA (IST)
 </div>
 
+${
+period.ist.startDay === period.ist.endDay
+?
+`
 <div style="font-size:13px;">
-${period.ist.day}
+${period.ist.startDay}
 </div>
 
 <div style="font-size:15px;font-weight:bold;margin-bottom:10px;">
 ${period.ist.start} - ${period.ist.end}
 </div>
+`
+:
+`
+<div style="font-size:13px;">
+${period.ist.startDay}
+</div>
+
+<div style="font-size:15px;font-weight:bold;">
+${period.ist.start}
+</div>
+
+<div style="text-align:center;font-size:18px;padding:4px 0;">
+↓
+</div>
+
+<div style="font-size:13px;">
+${period.ist.endDay}
+</div>
+
+<div style="font-size:15px;font-weight:bold;margin-bottom:10px;">
+${period.ist.end}
+</div>
+`
+}
 
 <div style="font-size:12px;color:#dbeafe;">
 🌍 YOUR LOCAL TIME
