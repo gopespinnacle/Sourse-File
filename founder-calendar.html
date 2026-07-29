@@ -435,6 +435,8 @@ const API = "https://academy-backend-eatl.onrender.com/api/academy-calendar";
 
 let events = [];
 
+let editingEventId = null;
+
 function drawCalendar(){
 
     const monthYear = document.getElementById("monthYear");
@@ -568,8 +570,22 @@ style="background:#dc3545;margin-left:10px;">
 
 cell.onclick = function(){
 
+    editingEventId = null;
+
+    document.getElementById("eventTitle").value = "";
+
+    document.getElementById("eventDescription").value = "";
+
+    document.getElementById("eventType").value = "Holiday";
+
+    document.getElementById("eventGrade").value = "All";
+
     document.getElementById("selectedDate").value =
         `${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+
+    document.querySelector(
+        "#eventModal button[onclick='saveEvent()']"
+    ).innerHTML = "Save Event";
 
     document.getElementById("eventModal").style.display = "block";
 
@@ -668,13 +684,27 @@ async function saveEvent(){
 
         allDay: true,
 
-        color: getEventColor(document.getElementById("eventType").value)
+        color: getEventColor(
+            document.getElementById("eventType").value
+        )
 
     };
 
-    const res = await fetch(`${API}/add`,{
+    let url = `${API}/add`;
 
-        method:"POST",
+    let method = "POST";
+
+    if(editingEventId){
+
+        url = `${API}/${editingEventId}`;
+
+        method = "PUT";
+
+    }
+
+    const res = await fetch(url,{
+
+        method,
 
         headers:{
             "Content-Type":"application/json"
@@ -690,9 +720,19 @@ async function saveEvent(){
 
         closeModal();
 
+        editingEventId = null;
+
         loadEvents();
 
-        alert("Event Added Successfully");
+        document.querySelector(
+            "#eventModal button[onclick='saveEvent()']"
+        ).innerHTML = "Save Event";
+
+        alert(
+            method === "POST"
+                ? "Event Added Successfully"
+                : "Event Updated Successfully"
+        );
 
     }else{
 
@@ -754,6 +794,45 @@ async function deleteEvent(id) {
         alert("Unable to delete event.");
 
     }
+
+}
+
+/*
+=========================================
+EDIT EVENT
+=========================================
+*/
+
+function editEvent(id){
+
+    const event = events.find(e => e._id === id);
+
+    if(!event){
+
+        alert("Event not found.");
+
+        return;
+
+    }
+
+    editingEventId = id;
+
+    document.getElementById("eventTitle").value = event.title || "";
+
+    document.getElementById("eventDescription").value = event.description || "";
+
+    document.getElementById("eventType").value = event.eventType || "Holiday";
+
+    document.getElementById("eventGrade").value = event.grade || "All";
+
+    document.getElementById("selectedDate").value =
+        event.startDate.substring(0,10);
+
+    document.querySelector(
+        "#eventModal button[onclick='saveEvent()']"
+    ).innerHTML = "Update Event";
+
+    document.getElementById("eventModal").style.display = "block";
 
 }
 
