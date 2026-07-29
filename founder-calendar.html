@@ -521,27 +521,44 @@ todayEvents.forEach(event => {
 
         document.getElementById("eventDetails").innerHTML = `
 
-            <h3>${event.title}</h3>
+<h3>${event.title}</h3>
 
-            <hr><br>
+<hr><br>
 
-            <p><b>Description:</b><br>${event.description || "-"}</p>
+<p><b>Description:</b><br>${event.description || "-"}</p>
 
-            <br>
+<br>
 
-            <p><b>Type:</b> ${event.eventType}</p>
+<p><b>Type:</b> ${event.eventType}</p>
 
-            <p><b>Grade:</b> ${event.grade}</p>
+<p><b>Grade:</b> ${event.grade}</p>
 
-            <p><b>Subject:</b> ${event.subject || "-"}</p>
+<p><b>Subject:</b> ${event.subject || "-"}</p>
 
-            <br>
+<br>
 
-            <p><b>Date:</b></p>
+<p><b>Date:</b></p>
 
-            <p>${new Date(event.startDate).toLocaleDateString()}</p>
+<p>${new Date(event.startDate).toLocaleDateString()}</p>
 
-        `;
+<br>
+
+<button
+onclick="editEvent('${event._id}')">
+
+✏ Edit Event
+
+</button>
+
+<button
+onclick="deleteEvent('${event._id}')"
+style="background:#dc3545;margin-left:10px;">
+
+🗑 Delete
+
+</button>
+
+`;
 
     };
 
