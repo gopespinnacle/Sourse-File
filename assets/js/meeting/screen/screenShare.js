@@ -115,38 +115,40 @@ Object.keys(this.peers).forEach(async (socketId)=>{
 
         room: this.room,
 
-        targetSocketId: socketId
-
-    });
-
-    const peer = this.peers[socketId];
-
-    if(!peer) return;
-
-    const sender = peer.getSenders().find(s=>
-
-        s.track &&
-        s.track.kind === "video"
-
-    );
-
-    if(sender){
-
-        await sender.replaceTrack(screenTrack);
-
-    }
-
-    const offer = await peer.createOffer();
-
-    await peer.setLocalDescription(offer);
-
-    this.socket.emit("offer",{
-
         targetSocketId: socketId,
 
-        offer
+        teacherSocketId: this.socket.id
 
     });
+
+    // Wait for the student to prepare the Screen Peer
+    setTimeout(async ()=>{
+
+        const screenPeer = screenPeers[socketId];
+
+        if(!screenPeer){
+
+            console.log("Screen Peer not ready:", socketId);
+
+            return;
+
+        }
+
+        screenPeer.addTrack(screenTrack, screenStream);
+
+        const offer = await screenPeer.createOffer();
+
+        await screenPeer.setLocalDescription(offer);
+
+        this.socket.emit("screen-offer",{
+
+            targetSocketId: socketId,
+
+            offer
+
+        });
+
+    },500);
 
 });
 
@@ -192,9 +194,9 @@ return this.stream;
 
     },
 
-    async createScreenPeer(teacherSocketId){
+    async createScreenPeer(data){
 
-    console.log("Creating Screen Peer:", teacherSocketId);
+    console.log("Creating Screen Peer:", data.teacherSocketId);
 
     const pc = new RTCPeerConnection({
     iceServers: [
@@ -204,7 +206,15 @@ return this.stream;
     ]
 });
 
-    screenPeers[teacherSocketId] = pc;
+    screenPeers[data.teacherSocketId] = pc;
+
+    pc.addTransceiver("video", {
+    direction: "recvonly"
+});
+
+pc.addTransceiver("audio", {
+    direction: "recvonly"
+});
 
     pc.onicecandidate = (event)=>{
 
@@ -212,7 +222,7 @@ return this.stream;
 
             socket.emit("ice-candidate",{
 
-                targetSocketId: teacherSocketId,
+                targetSocketId: data.teacherSocketId,
 
                 candidate: event.candidate
 

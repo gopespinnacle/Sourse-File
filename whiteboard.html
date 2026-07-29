@@ -2760,7 +2760,63 @@ socket.on("startScreenPeer", async (data) => {
 
     console.log("START SCREEN PEER RECEIVED");
 
-    await ScreenShare.createScreenPeer(data.teacherSocketId);
+    await ScreenShare.createScreenPeer(data);
+
+});
+
+socket.on("screen-offer", async (data)=>{
+
+    console.log("SCREEN OFFER RECEIVED");
+
+    const pc = screenPeers[data.teacherSocketId];
+
+    if(!pc){
+
+        console.log("No Screen Peer");
+
+        return;
+
+    }
+
+    await pc.setRemoteDescription(
+
+        new RTCSessionDescription(data.offer)
+
+    );
+
+    const answer = await pc.createAnswer();
+
+    await pc.setLocalDescription(answer);
+
+    socket.emit("screen-answer",{
+
+        teacherSocketId:data.teacherSocketId,
+
+        answer
+
+    });
+
+});
+
+socket.on("screen-answer", async (data)=>{
+
+    console.log("SCREEN ANSWER RECEIVED");
+
+    const pc = screenPeers[data.studentSocketId];
+
+    if(!pc){
+
+        console.log("No Teacher Screen Peer");
+
+        return;
+
+    }
+
+    await pc.setRemoteDescription(
+
+        new RTCSessionDescription(data.answer)
+
+    );
 
 });
 // ✅ ✅ ADD EXACTLY HERE (NEW CODE)
