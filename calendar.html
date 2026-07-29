@@ -287,106 +287,7 @@ const monthYear = document.getElementById("monthYear");
 
 const calendarGrid = document.getElementById("calendarGrid");
 
-const year = currentDate.getFullYear();
 
-const month = currentDate.getMonth();
-
-monthYear.innerHTML =
-currentDate.toLocaleString("default",{
-
-month:"long",
-
-year:"numeric"
-
-});
-
-const firstDay =
-new Date(year,month,1).getDay();
-
-const daysInMonth =
-new Date(year,month+1,0).getDate();
-
-for(let i=0;i<firstDay;i++){
-
-const empty=document.createElement("div");
-
-empty.className="day";
-
-calendarGrid.appendChild(empty);
-
-}
-
-for(let day=1;day<=daysInMonth;day++){
-
-const cell=document.createElement("div");
-
-cell.className="day";
-
-const today=new Date();
-
-if(
-
-day===today.getDate()&&
-
-month===today.getMonth()&&
-
-year===today.getFullYear()
-
-){
-
-cell.classList.add("today");
-
-}
-
-cell.innerHTML=`
-<div class="day-number">${day}</div>
-`;
-
-const cellDate = new Date(year, month, day);
-
-const todayEvents = events.filter(event => {
-
-    const eventDate = new Date(event.startDate);
-
-    return (
-
-        eventDate.getFullYear() === cellDate.getFullYear() &&
-
-        eventDate.getMonth() === cellDate.getMonth() &&
-
-        eventDate.getDate() === cellDate.getDate()
-
-    );
-
-});
-
-todayEvents.forEach(event => {
-
-    const eventDiv = document.createElement("div");
-
-    eventDiv.style.marginTop = "5px";
-
-    eventDiv.style.padding = "4px 6px";
-
-    eventDiv.style.borderRadius = "5px";
-
-    eventDiv.style.fontSize = "12px";
-
-    eventDiv.style.color = "#fff";
-
-    eventDiv.style.background = event.color || "#0d6efd";
-
-    eventDiv.style.cursor = "pointer";
-
-    eventDiv.innerHTML = event.title;
-
-    cell.appendChild(eventDiv);
-
-});
-
-calendarGrid.appendChild(cell);
-
-}
 
 /*
 ====================================
@@ -410,6 +311,7 @@ async function loadEvents(){
                        event.audience.includes("Public");
 
             });
+            drawCalendar();
 
         }
 
@@ -423,11 +325,118 @@ async function loadEvents(){
 
 }
 
-loadEvents().then(()=>{
+/*
+====================================
+DRAW CALENDAR
+====================================
+*/
 
-    location.reload();
+function drawCalendar(){
 
-});
+    calendarGrid.innerHTML = "";
+
+    const year = currentDate.getFullYear();
+
+    const month = currentDate.getMonth();
+
+    monthYear.innerHTML = currentDate.toLocaleString("default",{
+
+        month:"long",
+
+        year:"numeric"
+
+    });
+
+    const firstDay = new Date(year,month,1).getDay();
+
+    const daysInMonth = new Date(year,month+1,0).getDate();
+
+    // Empty cells
+    for(let i=0;i<firstDay;i++){
+
+        const empty = document.createElement("div");
+
+        empty.className = "day";
+
+        calendarGrid.appendChild(empty);
+
+    }
+
+    // Days
+    for(let day=1;day<=daysInMonth;day++){
+
+        const cell = document.createElement("div");
+
+        cell.className = "day";
+
+        const today = new Date();
+
+        if(
+
+            day===today.getDate() &&
+
+            month===today.getMonth() &&
+
+            year===today.getFullYear()
+
+        ){
+
+            cell.classList.add("today");
+
+        }
+
+        cell.innerHTML = `
+            <div class="day-number">${day}</div>
+        `;
+
+        const cellDate = new Date(year,month,day);
+
+        const todayEvents = events.filter(event=>{
+
+            const eventDate = new Date(event.startDate);
+
+            return(
+
+                eventDate.getFullYear()===cellDate.getFullYear() &&
+
+                eventDate.getMonth()===cellDate.getMonth() &&
+
+                eventDate.getDate()===cellDate.getDate()
+
+            );
+
+        });
+
+        todayEvents.forEach(event=>{
+
+            const eventDiv=document.createElement("div");
+
+            eventDiv.style.marginTop="5px";
+
+            eventDiv.style.padding="4px 6px";
+
+            eventDiv.style.borderRadius="5px";
+
+            eventDiv.style.fontSize="12px";
+
+            eventDiv.style.color="#fff";
+
+            eventDiv.style.background=event.color || "#0d6efd";
+
+            eventDiv.style.cursor="pointer";
+
+            eventDiv.innerHTML=event.title;
+
+            cell.appendChild(eventDiv);
+
+        });
+
+        calendarGrid.appendChild(cell);
+
+    }
+
+}
+loadEvents();
 
 </script>
 
