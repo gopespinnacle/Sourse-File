@@ -427,6 +427,36 @@ todayEvents.forEach(event => {
 
     eventDiv.innerHTML = event.title;
 
+    eventDiv.onclick = function(e){
+
+        e.stopPropagation();
+
+        document.getElementById("eventDetails").innerHTML = `
+
+            <h3>${event.title}</h3>
+
+            <hr><br>
+
+            <p><b>Description:</b><br>${event.description || "-"}</p>
+
+            <br>
+
+            <p><b>Type:</b> ${event.eventType}</p>
+
+            <p><b>Grade:</b> ${event.grade}</p>
+
+            <p><b>Subject:</b> ${event.subject || "-"}</p>
+
+            <br>
+
+            <p><b>Date:</b></p>
+
+            <p>${new Date(event.startDate).toLocaleDateString()}</p>
+
+        `;
+
+    };
+
     cell.appendChild(eventDiv);
 
 });
