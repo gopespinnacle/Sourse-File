@@ -312,6 +312,7 @@ async function loadEvents(){
 
             });
             drawCalendar();
+            drawUpcomingEvents();
 
         }
 
@@ -451,6 +452,60 @@ document.getElementById("prevMonth").onclick = function(){
     drawCalendar();
 
 };
+
+/*
+====================================
+DRAW UPCOMING EVENTS
+====================================
+*/
+
+function drawUpcomingEvents(){
+
+    const container = document.getElementById("upcomingEvents");
+
+    container.innerHTML = "";
+
+    const today = new Date();
+
+    const upcoming = events
+        .filter(event => new Date(event.startDate) >= today)
+        .sort((a,b)=>new Date(a.startDate)-new Date(b.startDate))
+        .slice(0,5);
+
+    if(upcoming.length===0){
+
+        container.innerHTML=`
+            <div class="coming-soon">
+                No upcoming events.
+            </div>
+        `;
+
+        return;
+
+    }
+
+    upcoming.forEach(event=>{
+
+        const card=document.createElement("div");
+
+        card.className="coming-soon";
+
+        const date=new Date(event.startDate);
+
+        card.innerHTML=`
+            <strong>${event.title}</strong><br>
+            ${date.toLocaleDateString("en-IN",{
+                day:"2-digit",
+                month:"short",
+                year:"numeric"
+            })}
+        `;
+
+        container.appendChild(card);
+
+    });
+
+}
 
 /*
 ====================================
