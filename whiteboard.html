@@ -302,14 +302,9 @@ top:42px;
 
 left:0;
 
-/* Leave space for participant strip */
-width:calc(100% - 210px);
+width:100vw;
 
-height:calc(100dvh - 42px);
-
-overflow:hidden;
-
-z-index:10;
+height:calc(100vh - 42px);
 
 background:black;
 
@@ -318,6 +313,10 @@ display:flex;
 justify-content:center;
 
 align-items:center;
+
+overflow:hidden;
+
+z-index:10;
 
 }
 /* MINIMIZE */
@@ -835,25 +834,25 @@ text-align:right;
 
     #participantStrip{
 
-        position:fixed;
+position:fixed;
 
-        right:10px;
-        bottom:215px;
+right:15px;
 
-        display:flex;
-        flex-direction:column;
+bottom:130px;
 
-        gap:8px;
+width:140px;
 
-        z-index:100000;
+display:flex;
 
-        background:transparent;
+flex-direction:column;
 
-border:none;
+gap:8px;
 
-box-shadow:none;
+z-index:999999;
 
-    }
+background:transparent;
+
+}
     #meetTopBar,
 #mobileMenu,
 #bottomControls,
