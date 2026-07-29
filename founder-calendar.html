@@ -268,13 +268,48 @@ margin-right:10px;
 
 }
 
+.calendar-layout{
+
+display:grid;
+
+grid-template-columns:3fr 1fr;
+
+gap:20px;
+
+align-items:start;
+
+}
+
+.event-panel{
+
+background:white;
+
+padding:20px;
+
+border-radius:12px;
+
+box-shadow:0 3px 10px rgba(0,0,0,.08);
+
+min-height:650px;
+
+}
+
+.event-panel h2{
+
+margin-bottom:20px;
+
+}
+
 </style>
 
 </head>
+<div class="calendar-layout">
 
 <body>
 
-<div class="calendar-container">
+<div class="calendar-layout">
+
+    <div class="calendar-container">
 
     <div class="calendar-header">
 
@@ -533,6 +568,24 @@ async function saveEvent(){
 }
 
 </script>
+
+<div class="event-panel">
+
+    <h2>Event Details</h2>
+
+    <div id="eventDetails">
+
+        <p style="color:#777">
+
+            Click an event to view details.
+
+        </p>
+
+    </div>
+
+</div>
+
+</div>
 
 <div id="eventModal" class="modal">
 
