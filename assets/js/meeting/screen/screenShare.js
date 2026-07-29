@@ -140,6 +140,8 @@ Object.keys(this.peers).forEach(async (socketId)=>{
 
         await screenPeer.setLocalDescription(offer);
 
+        console.log("SENDING SCREEN OFFER TO:", socketId);
+
         this.socket.emit("screen-offer",{
 
             targetSocketId: socketId,
