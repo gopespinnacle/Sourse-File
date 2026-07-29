@@ -2259,7 +2259,17 @@ socket.on("studentJoined", async (data) => {
 
     if (data.reconnect) {
 
-    console.log("Reconnect handled by studentSocketChanged");
+    console.log("Student reconnected");
+
+    // If screen sharing is active,
+    // rebuild the screen peer.
+    if (window.currentScreenStream) {
+
+        await ScreenShare.createTeacherPeer(
+            data.socketId
+        );
+
+    }
 
     return;
 
