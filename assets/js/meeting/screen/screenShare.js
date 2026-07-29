@@ -1,321 +1,361 @@
 /*
 ==========================================================
 Gopes Pinnacle Academy
-Screen Share Manager
+Dedicated Screen Share Manager
 ==========================================================
 */
 
 const ScreenShare = {
 
-    socket:null,
+    socket: null,
 
-    room:null,
+    room: null,
 
-    peers:null,
+    peers: null,
 
-    screenPeers:{},
+    role: null,
 
-    role:null,
+    screenPeers: {},
 
-    screenCanvas:null,
+    pendingIce: {},
 
-    stream:null,
+    stream: null,
 
     init(config){
 
         this.socket = config.socket;
-
         this.room = config.room;
-
         this.peers = config.peers;
-
         this.role = config.role;
-
-        this.screenCanvas = config.screenCanvas;
 
     },
 
     async start(){
 
-        alert(
-            "AndroidBridge = " +
-            typeof window.AndroidBridge
-        );
-
-        if(window.AndroidBridge){
-
-            AndroidBridge.startScreenShare();
-
+        if(this.role !== "teacher"){
             return;
-
         }
-
-        alert("Share Screen Clicked");
-
-        if(this.role !== "teacher") return;
 
         try{
 
-            alert("Screen Selected");
-
-            alert(
-                typeof navigator.mediaDevices.getDisplayMedia
-            );
-
             this.stream =
-await navigator.mediaDevices.getDisplayMedia({
+            await navigator.mediaDevices.getDisplayMedia({
 
-    video:true,
+                video:true,
+                audio:true
 
-    audio:true
+            });
 
-});
+            window.currentScreenStream = this.stream;
 
-const screenTrack =
-this.stream.getVideoTracks()[0];
+            const screenVideo =
+            document.getElementById("screenVideo");
 
-// Dedicated screen stream
-const screenStream = new MediaStream();
+            screenVideo.srcObject = this.stream;
 
-screenStream.addTrack(screenTrack);
+            await screenVideo.play();
 
-window.currentScreenStream = screenStream;
+            ParticipantLayout.showScreenShare();
 
-const screenVideo =
-document.getElementById("screenVideo");
+            this.socket.emit("screenShareStarted",{
 
-screenVideo.srcObject =
-new MediaStream([screenTrack]);
+                room:this.room
 
-screenVideo.style.display =
-"block";
+            });
 
-ParticipantLayout.showScreenShare();
+            Object.keys(this.peers).forEach((socketId)=>{
 
-const toolbar = document.getElementById("annotationToolbar");
+                this.socket.emit("startScreenPeer",{
 
-if(toolbar){
+                    room:this.room,
 
-    toolbar.style.display = "flex";
+                    targetSocketId:socketId,
 
-}
+                    teacherSocketId:this.socket.id
 
-this.socket.emit("screenShareStarted", {
+                });
 
-    room: this.room,
+            });
 
-     teacher: this.socket.id
+            this.stream
+                .getVideoTracks()[0]
+                .onended = ()=>{
 
-});
+                    this.stop();
 
+                };
 
-// Dedicated Screen Share Offer
-// Notify each student to prepare a screen peer
-Object.keys(this.peers).forEach(async (socketId)=>{
+        }catch(err){
 
-    this.socket.emit("startScreenPeer",{
-
-        room: this.room,
-
-        targetSocketId: socketId,
-
-        teacherSocketId: this.socket.id
-
-    });
-
-    // Wait for the student to prepare the Screen Peer
-    
-
-});
-
-// Replace audio track also
-const audioTrack = this.stream.getAudioTracks()[0];
-
-if(audioTrack){
-
-    Object.values(this.peers).forEach(peer=>{
-
-        const sender = peer.getSenders().find(s=>
-
-            s.track &&
-            s.track.kind==="audio"
-
-        );
-
-        if(sender){
-
-            sender.replaceTrack(audioTrack);
-
-        }
-
-    });
-
-}
-
-window.currentScreenTrack = screenTrack;
-
-screenTrack.onended = () => {
-
-    this.stop();
-
-};
-
-return this.stream;
-
-                }catch(err){
-
-            console.error("Screen Share Error:", err);
+            console.error(
+                "Screen Share Error",
+                err
+            );
 
         }
 
     },
 
-    async createScreenPeer(data){
+    async createTeacherPeer(studentSocketId){
 
-    console.log("Creating Screen Peer:", data.teacherSocketId);
+        const pc = new RTCPeerConnection({
 
-    const pc = new RTCPeerConnection({
-    iceServers: [
-        {
-            urls: "stun:stun.l.google.com:19302"
-        }
-    ]
-});
-
-    this.screenPeers[data.teacherSocketId] = pc;
-
-    pc.addTransceiver("video", {
-    direction: "recvonly"
-});
-
-pc.addTransceiver("audio", {
-    direction: "recvonly"
-});
-
-    pc.onicecandidate = (event)=>{
-
-    if(event.candidate){
-
-        this.socket.emit("screen-ice-candidate",{
-
-            targetSocketId:data.teacherSocketId,
-
-            candidate:event.candidate
+            iceServers:[
+                {
+                    urls:"stun:stun.l.google.com:19302"
+                }
+            ]
 
         });
 
-    }
+        this.screenPeers[studentSocketId] = pc;
 
-};
+        this.stream.getTracks().forEach(track=>{
 
-    pc.ontrack = (event)=>{
+            pc.addTrack(track,this.stream);
 
-        console.log("Screen Track Received");
+        });
 
-    };
+        pc.onicecandidate=(event)=>{
 
-    this.socket.emit("screenPeerReady",{
+            if(event.candidate){
 
-    teacherSocketId:data.teacherSocketId
+                this.socket.emit("screen-ice-candidate",{
 
-});
+                    targetSocketId:studentSocketId,
 
-},
+                    candidate:event.candidate
 
-    async stop(){
+                });
 
-        if(!this.stream) return;
+            }
 
-        this.stream.getTracks().forEach(track=>track.stop());
+        };
 
-        this.stream = null;
+        const offer =
+        await pc.createOffer();
+
+        await pc.setLocalDescription(offer);
+
+        this.socket.emit("screen-offer",{
+
+            targetSocketId:studentSocketId,
+
+            offer
+
+        });
+
+    },
+
+    async createStudentPeer(teacherSocketId){
+
+        const pc = new RTCPeerConnection({
+
+            iceServers:[
+                {
+                    urls:"stun:stun.l.google.com:19302"
+                }
+            ]
+
+        });
+
+        this.screenPeers[teacherSocketId] = pc;
+
+        this.pendingIce[teacherSocketId] = [];
+
+        pc.onicecandidate = (event)=>{
+
+            if(event.candidate){
+
+                this.socket.emit("screen-ice-candidate",{
+
+                    targetSocketId:teacherSocketId,
+
+                    candidate:event.candidate
+
+                });
+
+            }
+
+        };
+
+        pc.ontrack = (event)=>{
+
+            console.log("Screen stream received");
+
+            const screenVideo =
+            document.getElementById("screenVideo");
+
+            screenVideo.srcObject = event.streams[0];
+
+            screenVideo.play();
+
+            if(window.ParticipantLayout &&
+               typeof ParticipantLayout.showScreenShare==="function"){
+
+                ParticipantLayout.showScreenShare();
+
+            }
+
+        };
+
+        this.socket.emit("screenPeerReady",{
+
+            teacherSocketId
+
+        });
+
+    },
+
+    async handleOffer(data){
+
+        let pc = this.screenPeers[data.teacherSocketId];
+
+        if(!pc){
+
+            await this.createStudentPeer(data.teacherSocketId);
+
+            pc = this.screenPeers[data.teacherSocketId];
+
+        }
+
+        await pc.setRemoteDescription(
+            new RTCSessionDescription(data.offer)
+        );
+
+        if(this.pendingIce[data.teacherSocketId]){
+
+            for(const candidate of this.pendingIce[data.teacherSocketId]){
+
+                await pc.addIceCandidate(
+                    new RTCIceCandidate(candidate)
+                );
+
+            }
+
+            delete this.pendingIce[data.teacherSocketId];
+
+        }
+
+        const answer = await pc.createAnswer();
+
+        await pc.setLocalDescription(answer);
+
+        this.socket.emit("screen-answer",{
+
+            teacherSocketId:data.teacherSocketId,
+
+            answer
+
+        });
+
+    },
+
+    async handleAnswer(data){
+
+        const pc =
+        this.screenPeers[data.studentSocketId];
+
+        if(!pc) return;
+
+        await pc.setRemoteDescription(
+
+            new RTCSessionDescription(data.answer)
+
+        );
+
+    },
+
+    async handleIceCandidate(data){
+
+        const pc =
+        this.screenPeers[data.senderSocketId];
+
+        if(!pc){
+
+            if(!this.pendingIce[data.senderSocketId]){
+
+                this.pendingIce[data.senderSocketId] = [];
+
+            }
+
+            this.pendingIce[data.senderSocketId].push(
+                data.candidate
+            );
+
+            return;
+
+        }
+
+        if(pc.remoteDescription){
+
+            await pc.addIceCandidate(
+
+                new RTCIceCandidate(data.candidate)
+
+            );
+
+        }else{
+
+            if(!this.pendingIce[data.senderSocketId]){
+
+                this.pendingIce[data.senderSocketId] = [];
+
+            }
+
+            this.pendingIce[data.senderSocketId].push(
+                data.candidate
+            );
+
+        }
+
+    },
+
+    stop(){
+
+        if(this.stream){
+
+            this.stream.getTracks().forEach(track=>track.stop());
+
+            this.stream = null;
+
+        }
+
+        Object.values(this.screenPeers).forEach(pc=>{
+
+            try{
+
+                pc.close();
+
+            }catch(e){}
+
+        });
+
+        this.screenPeers = {};
+
+        this.pendingIce = {};
+
+        const screenVideo =
+        document.getElementById("screenVideo");
+
+        if(screenVideo){
+
+            screenVideo.srcObject = null;
+
+        }
+
+        if(window.ParticipantLayout &&
+           typeof ParticipantLayout.hideScreenShare==="function"){
+
+            ParticipantLayout.hideScreenShare();
+
+        }
 
         this.socket.emit("screenShareStopped",{
 
             room:this.room
 
         });
-
-        ParticipantLayout.hideScreenShare();
-
-        const toolbar = document.getElementById("annotationToolbar");
-
-if(toolbar){
-
-    toolbar.style.display = "none";
-
-}
-
-        const screenVideo = document.getElementById("screenVideo");
-
-if(screenVideo){
-
-    screenVideo.pause();
-
-    screenVideo.srcObject = null;
-
-    screenVideo.style.display = "none";
-
-}
-
-screenCtx.clearRect(
-
-    0,
-
-    0,
-
-    screenCanvas.width,
-
-    screenCanvas.height
-
-);
-
-document.getElementById("participantStrip").style.display = "flex";
-
-document.getElementById("localVideoBox").style.display = "block";
-
-console.log("ScreenShare peers =", this.peers);
-console.log("Peer count =", Object.keys(this.peers).length);
-
-        Object.entries(this.peers).forEach(async ([socketId, peer])=>{
-
-    const sender = peer.getSenders().find(s=>
-
-        s.track &&
-        s.track.kind==="video"
-
-    );
-
-    if(sender && window.localStream){
-
-        const cameraTrack =
-            window.localStream.getVideoTracks()[0];
-
-        if(cameraTrack){
-
-            await sender.replaceTrack(cameraTrack);
-
-        }
-
-    }
-
-    const offer = await peer.createOffer();
-
-    await peer.setLocalDescription(offer);
-
-    this.socket.emit({
-
-    });
-
-    this.socket.emit("offer",{
-
-        targetSocketId: socketId,
-
-        offer
-
-    });
-
-});
 
     }
 
