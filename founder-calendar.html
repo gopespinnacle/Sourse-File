@@ -876,6 +876,32 @@ function editEvent(id){
 
     document.getElementById("eventGrade").value = event.grade || "All";
 
+    // Clear all audience selections
+document.querySelectorAll(".audience").forEach(item => {
+
+    item.checked = false;
+
+});
+
+// Select saved audience
+if(event.audience){
+
+    event.audience.forEach(audience => {
+
+        const checkbox = document.querySelector(
+            `.audience[value="${audience}"]`
+        );
+
+        if(checkbox){
+
+            checkbox.checked = true;
+
+        }
+
+    });
+
+}
+
     document.getElementById("selectedDate").value =
         event.startDate.substring(0,10);
 
