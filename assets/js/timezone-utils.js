@@ -1,7 +1,8 @@
-// ===========================================
-// Gopes Pinnacle Academy Timezone Utilities
-// School Timezone : Asia/Kolkata (IST)
-// ===========================================
+// ============================================
+// Gopes Pinnacle Academy
+// Universal Timezone Utility
+// School Timezone : Asia/Kolkata
+// ============================================
 
 const SCHOOL_TIMEZONE = "Asia/Kolkata";
 
@@ -19,18 +20,18 @@ function getNextOccurrence(dayName){
 
     const today = new Date();
 
-    const targetDay = DAYS.indexOf(dayName);
+    const target = DAYS.indexOf(dayName);
 
-    let diff = targetDay - today.getDay();
+    let diff = target - today.getDay();
 
     if(diff < 0)
         diff += 7;
 
-    const date = new Date(today);
+    const d = new Date(today);
 
-    date.setDate(today.getDate() + diff);
+    d.setDate(today.getDate() + diff);
 
-    return date;
+    return d;
 
 }
 
@@ -46,21 +47,39 @@ function buildDate(day,time){
 
 }
 
-function formatDate(date,timeZone){
+function splitDate(date,timeZone){
 
-    return new Intl.DateTimeFormat("en-US",{
+    const parts = new Intl.DateTimeFormat(
+        "en-US",
+        {
+            weekday:"long",
+            hour:"numeric",
+            minute:"2-digit",
+            hour12:true,
+            timeZone
+        }
+    ).formatToParts(date);
 
-        weekday:"long",
+    const obj={};
 
-        hour:"2-digit",
+    parts.forEach(p=>{
 
-        minute:"2-digit",
+        obj[p.type]=p.value;
 
-        hour12:true,
+    });
 
-        timeZone
+    return{
 
-    }).format(date);
+        day:obj.weekday,
+
+        time:
+        obj.hour +
+        ":" +
+        obj.minute +
+        " " +
+        obj.dayPeriod
+
+    };
 
 }
 
@@ -70,28 +89,48 @@ function convertISTToLocal(day,startTime,endTime){
 
     const end = buildDate(day,endTime);
 
-    const localZone =
+    const userZone =
     Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    const istStart =
+    splitDate(start,SCHOOL_TIMEZONE);
+
+    const istEnd =
+    splitDate(end,SCHOOL_TIMEZONE);
+
+    const localStart =
+    splitDate(start,userZone);
+
+    const localEnd =
+    splitDate(end,userZone);
 
     return{
 
-        timezone:localZone,
+        timezone:userZone,
 
-        istStart:formatDate(start,SCHOOL_TIMEZONE),
+        ist:{
 
-        istEnd:formatDate(end,SCHOOL_TIMEZONE),
+            day:istStart.day,
 
-        localStart:formatDate(start,localZone),
+            start:istStart.time,
 
-        localEnd:formatDate(end,localZone)
+            end:istEnd.time
+
+        },
+
+        local:{
+
+            day:localStart.day,
+
+            start:localStart.time,
+
+            end:localEnd.time
+
+        }
 
     };
 
 }
-
-/* ===========================
-   STATUS
-=========================== */
 
 function getPeriodStatus(day,startTime,endTime){
 
@@ -104,7 +143,7 @@ function getPeriodStatus(day,startTime,endTime){
     if(now < start)
         return "upcoming";
 
-    if(now >= start && now <= end)
+    if(now>=start && now<=end)
         return "live";
 
     return "completed";

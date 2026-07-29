@@ -221,26 +221,38 @@ const tz = convertISTToLocal(
 );
 
 div.innerHTML = `
-<div><b>${s.className}</b></div>
-
-<div>📘 ${s.subject || "General"}</div>
-
-<hr style="border-color:rgba(255,255,255,.2)">
-
-<div style="font-size:13px;">
-🇮🇳 <b>India (IST)</b>
+<div style="font-size:18px;font-weight:bold;">
+${s.className}
 </div>
 
-<div style="font-size:13px;margin-bottom:8px;">
-${tz.istStart}<br>${tz.istEnd}
+<div style="margin-bottom:10px;">
+📘 ${s.subject || "General"}
 </div>
 
-<div style="font-size:13px;">
-🌍 <b>Your Local Time</b>
+<hr style="border-color:rgba(255,255,255,.25);margin:8px 0;">
+
+<div style="font-size:12px;color:#d1fae5;">
+🇮🇳 INDIA (IST)
 </div>
 
 <div style="font-size:13px;">
-${tz.localStart}<br>${tz.localEnd}
+${tz.ist.day}
+</div>
+
+<div style="font-size:15px;font-weight:bold;margin-bottom:10px;">
+${tz.ist.start} - ${tz.ist.end}
+</div>
+
+<div style="font-size:12px;color:#dbeafe;">
+🌍 YOUR LOCAL TIME
+</div>
+
+<div style="font-size:13px;">
+${tz.local.day}
+</div>
+
+<div style="font-size:15px;font-weight:bold;">
+${tz.local.start} - ${tz.local.end}
 </div>
 `;
 
