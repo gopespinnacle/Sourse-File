@@ -464,6 +464,8 @@ document.getElementById("prevMonth").onclick = function(){
 
     drawCalendar();
 
+    drawUpcomingEvents();
+
 };
 
 /*
@@ -478,28 +480,47 @@ function drawUpcomingEvents(){
 
     container.innerHTML = "";
 
-    const today = new Date();
+    const year = currentDate.getFullYear();
 
-    const upcoming = events
-        .filter(event => {
+const month = currentDate.getMonth();
 
-    const eventDate = new Date(
-        event.startDate.split("T")[0]
-    );
+const upcoming = events
+    .filter(event => {
 
-    return eventDate >= today;
+        const eventDate = new Date(
+            event.startDate.split("T")[0]
+        );
 
-})
-        .sort((a,b)=>new Date(a.startDate)-new Date(b.startDate))
-        .slice(0,5);
+        return (
+
+            eventDate.getFullYear() === year &&
+
+            eventDate.getMonth() === month
+
+        );
+
+    })
+    .sort((a,b)=>new Date(a.startDate)-new Date(b.startDate));
 
     if(upcoming.length===0){
 
         container.innerHTML=`
-            <div class="coming-soon">
-                No upcoming events.
-            </div>
-        `;
+    <div class="coming-soon">
+
+        <strong>No events scheduled for</strong>
+
+        <br><br>
+
+        ${currentDate.toLocaleString("default",{
+
+            month:"long",
+
+            year:"numeric"
+
+        })}
+
+    </div>
+`;
 
         return;
 
@@ -556,6 +577,8 @@ document.getElementById("nextMonth").onclick = function(){
     );
 
     drawCalendar();
+
+    drawUpcomingEvents();
 
 };
 
