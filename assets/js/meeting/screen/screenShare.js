@@ -166,7 +166,13 @@ return this.stream;
 
     console.log("Creating Screen Peer:", teacherSocketId);
 
-    const pc = new RTCPeerConnection(rtcConfig);
+    const pc = new RTCPeerConnection({
+    iceServers: [
+        {
+            urls: "stun:stun.l.google.com:19302"
+        }
+    ]
+});
 
     screenPeers[teacherSocketId] = pc;
 
