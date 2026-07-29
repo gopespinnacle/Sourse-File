@@ -197,6 +197,8 @@ margin-bottom:20px;
 .coming-soon{
 
 padding:18px;
+min-height:95px;
+line-height:1.5;
 
 background:#eef5ff;
 
@@ -493,13 +495,24 @@ function drawUpcomingEvents(){
         const date=new Date(event.startDate);
 
         card.innerHTML=`
-            <strong>${event.title}</strong><br>
-            ${date.toLocaleDateString("en-IN",{
-                day:"2-digit",
-                month:"short",
-                year:"numeric"
-            })}
-        `;
+    <strong>${event.title}</strong><br>
+
+    <small>
+        ${date.toLocaleDateString("en-IN",{
+            day:"2-digit",
+            month:"short",
+            year:"numeric"
+        })}
+    </small>
+
+    <br><br>
+
+    <b>Description:</b><br>
+
+    <span style="font-size:13px;color:#555;">
+        ${event.description || "No description available."}
+    </span>
+`;
 
         container.appendChild(card);
 
