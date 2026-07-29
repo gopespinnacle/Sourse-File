@@ -164,7 +164,7 @@ grid-template-columns:repeat(7,1fr);
 
 .day{
 
-height:120px;
+height:135px;
 
 border:1px solid #ddd;
 
@@ -662,6 +662,12 @@ eventDiv.style.minHeight = "34px";
 
 todayClasses.forEach(cls => {
 
+    const period = getPeriodInfo(
+        cls.day,
+        cls.startTime,
+        cls.endTime
+    );
+
     const classDiv = document.createElement("div");
 
     classDiv.style.marginTop = "5px";
@@ -670,16 +676,48 @@ todayClasses.forEach(cls => {
     classDiv.style.background = "#16a34a";
     classDiv.style.color = "#fff";
     classDiv.style.fontSize = "11px";
-    classDiv.style.lineHeight = "1.3";
+    classDiv.style.lineHeight = "1.25";
+
+    let timingHtml = "";
+
+    if(period.local.startDay === period.local.endDay){
+
+        timingHtml = `
+            <div style="font-size:10px;">
+                ${period.local.startDay.substring(0,3)}
+            </div>
+
+            <div style="font-size:10px;font-weight:bold;">
+                ${period.local.start}
+            </div>
+        `;
+
+    }else{
+
+        timingHtml = `
+            <div style="font-size:10px;">
+                ${period.local.startDay.substring(0,3)}
+                ${period.local.start}
+            </div>
+
+            <div style="text-align:center;font-size:10px;">
+                ↓
+            </div>
+
+            <div style="font-size:10px;">
+                ${period.local.endDay.substring(0,3)}
+                ${period.local.end}
+            </div>
+        `;
+
+    }
 
     classDiv.innerHTML = `
         <div style="font-weight:bold;">
             ${cls.subject || cls.language || cls.eca || "Class"}
         </div>
 
-        <div style="font-size:10px;">
-            ${cls.startTime} - ${cls.endTime}
-        </div>
+        ${timingHtml}
     `;
 
     cell.appendChild(classDiv);
