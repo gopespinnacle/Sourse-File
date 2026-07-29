@@ -408,6 +408,20 @@ font-size:14px;
     font-size:15px;
 
 }
+
+#gradeFilter{
+
+    width:150px;
+
+    padding:10px;
+
+    border:1px solid #d0d7de;
+
+    border-radius:8px;
+
+    font-size:14px;
+
+}
 </style>
 
 </head>
@@ -435,18 +449,37 @@ font-size:14px;
 
     <div class="right-controls">
 
-        <input
-            type="text"
-            id="searchEvent"
-            placeholder="Search events...">
+    <select id="gradeFilter">
 
-        <button id="addEventBtn">
+        <option value="All">All Grades</option>
 
-            + Add Event
+        <option>Grade 1</option>
+        <option>Grade 2</option>
+        <option>Grade 3</option>
+        <option>Grade 4</option>
+        <option>Grade 5</option>
+        <option>Grade 6</option>
+        <option>Grade 7</option>
+        <option>Grade 8</option>
+        <option>Grade 9</option>
+        <option>Grade 10</option>
+        <option>Grade 11</option>
+        <option>Grade 12</option>
 
-        </button>
+    </select>
 
-    </div>
+    <input
+        type="text"
+        id="searchEvent"
+        placeholder="Search events...">
+
+    <button id="addEventBtn">
+
+        + Add Event
+
+    </button>
+
+</div>
 
 </div>
 
@@ -536,15 +569,24 @@ function drawCalendar(){
 
 const cellDate = new Date(year, month, day);
 
+const selectedGrade =
+    document.getElementById("gradeFilter").value;
+
 const todayEvents = events.filter(event => {
 
     const eventDate = new Date(event.startDate);
 
-    return (
+    const sameDate =
         eventDate.getFullYear() === cellDate.getFullYear() &&
         eventDate.getMonth() === cellDate.getMonth() &&
-        eventDate.getDate() === cellDate.getDate()
-    );
+        eventDate.getDate() === cellDate.getDate();
+
+    const gradeMatch =
+        selectedGrade === "All" ||
+        event.grade === "All" ||
+        event.grade === selectedGrade;
+
+    return sameDate && gradeMatch;
 
 });
 
@@ -912,6 +954,12 @@ if(event.audience){
     document.getElementById("eventModal").style.display = "block";
 
 }
+
+document.getElementById("gradeFilter").addEventListener("change", () => {
+
+    drawCalendar();
+
+});
 
 </script>
 
