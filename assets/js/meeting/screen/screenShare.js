@@ -41,10 +41,19 @@ const ScreenShare = {
             this.stream =
             await navigator.mediaDevices.getDisplayMedia({
 
-                video:true,
-                audio:true
+    video:{
 
-            });
+        width:{ ideal:1920 },
+
+        height:{ ideal:1080 },
+
+        frameRate:{ ideal:30 }
+
+    },
+
+    audio:true
+
+});
 
             window.currentScreenStream = this.stream;
 
@@ -187,6 +196,26 @@ const ScreenShare = {
             document.getElementById("screenVideo");
 
             screenVideo.srcObject = event.streams[0];
+
+            screenVideo.onloadedmetadata = () => {
+
+    const container = document.getElementById("screenContainer");
+
+    const ratio = screenVideo.videoWidth / screenVideo.videoHeight;
+
+    if (ratio < 1.45) {
+
+        container.style.left = "40px";
+        container.style.right = "140px";
+
+    } else {
+
+        container.style.left = "0";
+        container.style.right = "140px";
+
+    }
+
+};
 
             screenVideo.play();
 
