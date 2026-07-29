@@ -191,11 +191,13 @@ col.innerHTML = `<div class="day-header">${day}</div>`;
 
 grouped[day].forEach(s=>{
 
-const status = getPeriodStatus(
+const period = getPeriodInfo(
     s.day,
     s.startTime,
     s.endTime
 );
+
+const status = period.status;
 
 const div = document.createElement("div");
 div.className = "period-card " + status;
@@ -214,11 +216,7 @@ window.location.href =
 
 };
 
-const tz = convertISTToLocal(
-    s.day,
-    s.startTime,
-    s.endTime
-);
+
 
 div.innerHTML = `
 <div style="font-size:18px;font-weight:bold;">
@@ -236,7 +234,7 @@ ${s.className}
 </div>
 
 <div style="font-size:13px;">
-${tz.ist.day}
+${period.ist.day}
 </div>
 
 <div style="font-size:15px;font-weight:bold;margin-bottom:10px;">
