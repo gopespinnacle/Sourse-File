@@ -396,7 +396,9 @@ function drawCalendar(){
 
         const todayEvents = events.filter(event => {
 
-    const eventDate = new Date(event.startDate);
+    const eventDate = new Date(
+    event.startDate.split("T")[0]
+);
 
     return (
 
@@ -472,7 +474,15 @@ function drawUpcomingEvents(){
     const today = new Date();
 
     const upcoming = events
-        .filter(event => new Date(event.startDate) >= today)
+        .filter(event => {
+
+    const eventDate = new Date(
+        event.startDate.split("T")[0]
+    );
+
+    return eventDate >= today;
+
+})
         .sort((a,b)=>new Date(a.startDate)-new Date(b.startDate))
         .slice(0,5);
 
@@ -494,7 +504,9 @@ function drawUpcomingEvents(){
 
         card.className="coming-soon";
 
-        const date=new Date(event.startDate);
+        const date = new Date(
+    event.startDate.split("T")[0]
+);
 
         card.innerHTML=`
     <strong>${event.title}</strong><br>
