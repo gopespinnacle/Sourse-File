@@ -367,6 +367,47 @@ font-size:14px;
 
 }
 
+.audience-container{
+
+    margin-top:10px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
+}
+
+.audience-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    font-weight:normal !important;
+
+    margin:0 !important;
+
+}
+
+.audience-item input{
+
+    width:18px;
+
+    height:18px;
+
+    cursor:pointer;
+
+}
+
+.audience-item span{
+
+    font-size:15px;
+
+}
 </style>
 
 </head>
@@ -914,35 +955,33 @@ function editEvent(id){
 
         <label style="margin-top:20px;">Visible To</label>
 
-<div id="audienceSection" style="margin-top:10px;">
+<label style="margin-top:20px;">Visible To</label>
 
-    <label>
+<div id="audienceSection" class="audience-container">
+
+    <label class="audience-item">
         <input type="checkbox" class="audience" value="Public">
-        Public Website
+        <span>Public Website</span>
     </label>
-    <br>
 
-    <label>
+    <label class="audience-item">
         <input type="checkbox" class="audience" value="Founder" checked>
-        Founder
+        <span>Founder</span>
     </label>
-    <br>
 
-    <label>
+    <label class="audience-item">
         <input type="checkbox" class="audience" value="Teacher">
-        Teacher
+        <span>Teacher</span>
     </label>
-    <br>
 
-    <label>
+    <label class="audience-item">
         <input type="checkbox" class="audience" value="Student">
-        Student
+        <span>Student</span>
     </label>
-    <br>
 
-    <label>
+    <label class="audience-item">
         <input type="checkbox" class="audience" value="Parent">
-        Parent
+        <span>Parent</span>
     </label>
 
 </div>
