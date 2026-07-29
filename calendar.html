@@ -438,6 +438,34 @@ function drawCalendar(){
 }
 loadEvents();
 
+/*
+====================================
+PREVIOUS MONTH
+====================================
+*/
+
+document.getElementById("prevMonth").onclick = function(){
+
+    currentDate.setMonth(currentDate.getMonth() - 1);
+
+    drawCalendar();
+
+};
+
+/*
+====================================
+NEXT MONTH
+====================================
+*/
+
+document.getElementById("nextMonth").onclick = function(){
+
+    currentDate.setMonth(currentDate.getMonth() + 1);
+
+    drawCalendar();
+
+};
+
 </script>
 
 </body>
