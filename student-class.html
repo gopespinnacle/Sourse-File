@@ -246,12 +246,40 @@ ${period.ist.start} - ${period.ist.end}
 </div>
 
 <div style="font-size:13px;">
-${period.local.day}
+${period.local.startDay}
 </div>
 
+${
+period.local.startDay === period.local.endDay
+?
+`
 <div style="font-size:15px;font-weight:bold;">
 ${period.local.start} - ${period.local.end}
 </div>
+`
+:
+`
+<div style="font-size:13px;">
+${period.local.startDay}
+</div>
+
+<div style="font-size:15px;font-weight:bold;">
+${period.local.start}
+</div>
+
+<div style="text-align:center;font-size:18px;padding:4px 0;">
+↓
+</div>
+
+<div style="font-size:13px;">
+${period.local.endDay}
+</div>
+
+<div style="font-size:15px;font-weight:bold;">
+${period.local.end}
+</div>
+`
+}
 `;
 
 col.appendChild(div);

@@ -121,29 +121,29 @@ function convertISTToLocal(day,startTime,endTime){
 
     return{
 
-        timezone:userZone,
+    timezone:userZone,
 
-        ist:{
+    ist:{
 
-            day:istStart.day,
+        startDay:istStart.day,
+        endDay:istEnd.day,
 
-            start:istStart.time,
+        start:istStart.time,
+        end:istEnd.time
 
-            end:istEnd.time
+    },
 
-        },
+    local:{
 
-        local:{
+        startDay:localStart.day,
+        endDay:localEnd.day,
 
-            day:localStart.day,
+        start:localStart.time,
+        end:localEnd.time
 
-            start:localStart.time,
+    }
 
-            end:localEnd.time
-
-        }
-
-    };
+};
 
 }
 
