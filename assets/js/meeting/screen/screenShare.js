@@ -108,13 +108,43 @@ this.socket.emit("screenShareStarted", {
 
 
 // Dedicated Screen Share Offer
-Object.keys(this.peers).forEach((socketId)=>{
+// Notify each student to prepare a screen peer
+Object.keys(this.peers).forEach(async (socketId)=>{
 
     this.socket.emit("startScreenPeer",{
 
         room: this.room,
 
         targetSocketId: socketId
+
+    });
+
+    const peer = this.peers[socketId];
+
+    if(!peer) return;
+
+    const sender = peer.getSenders().find(s=>
+
+        s.track &&
+        s.track.kind === "video"
+
+    );
+
+    if(sender){
+
+        await sender.replaceTrack(screenTrack);
+
+    }
+
+    const offer = await peer.createOffer();
+
+    await peer.setLocalDescription(offer);
+
+    this.socket.emit("offer",{
+
+        targetSocketId: socketId,
+
+        offer
 
     });
 
