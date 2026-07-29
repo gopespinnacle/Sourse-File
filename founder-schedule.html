@@ -358,7 +358,7 @@ document.getElementById("teacher").addEventListener("change", suggestNextSlot);
 document.getElementById("startTime").addEventListener("input", checkTimeClashLive);
 function buildGrid(schedules){
 
-const days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
 // SORT
 schedules.sort((a, b) => a.startTime.localeCompare(b.startTime));
