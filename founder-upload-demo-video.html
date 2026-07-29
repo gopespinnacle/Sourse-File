@@ -167,6 +167,12 @@ const teacher=document.getElementById("teacher").value;
 
 const file=document.getElementById("video").files[0];
 
+const grade = document.getElementById("grade").value;
+
+const subject = document.getElementById("subject").value;
+
+const duration = document.getElementById("duration").value;
+
 if(!title || !teacher || !file){
 
     alert("Fill all fields");
@@ -178,37 +184,101 @@ if(!title || !teacher || !file){
 
 
 
-const formData=new FormData();
+// STEP 1: Ask backend for a pre-signed upload URL
 
-formData.append("title",title);
+const uploadUrlResponse = await fetch(`${API}/upload-url`, {
 
-formData.append("teacherName",teacher);
+    method: "POST",
 
-formData.append("grade",grade);
+    headers: {
+        "Content-Type": "application/json"
+    },
 
-formData.append("subject",subject);
+    body: JSON.stringify({
 
+        fileName: file.name,
 
+        contentType: file.type
 
-formData.append("video",file);
+    })
 
+});
 
+const uploadInfo = await uploadUrlResponse.json();
 
-document.getElementById("status").innerHTML="Uploading...";
+if (!uploadUrlResponse.ok) {
 
-const res=await fetch(
+    document.getElementById("status").innerHTML = uploadInfo.message;
 
-`${API}/upload`,
-
-{
-
-method:"POST",
-
-body:formData
+    return;
 
 }
 
-);
+if (!uploadInfo.success) {
+
+    document.getElementById("status").innerHTML = "Unable to create upload URL.";
+
+    return;
+
+}
+
+// STEP 2: Upload the video directly to AWS S3
+
+const s3Response = await fetch(uploadInfo.uploadUrl, {
+
+    method: "PUT",
+
+    headers: {
+
+        "Content-Type": file.type
+
+    },
+
+    body: file
+
+});
+
+if (!s3Response.ok) {
+
+    document.getElementById("status").innerHTML = "Video upload to S3 failed.";
+
+    return;
+
+}
+
+// STEP 3: Save only the video details in MongoDB
+
+const metadata = {
+
+    title,
+
+    teacherName: teacher,
+
+    grade,
+
+    subject,
+
+    duration,
+
+    videoUrl: uploadInfo.videoUrl,
+
+    fileName: uploadInfo.key
+
+};
+
+const res = await fetch(`${API}/save`, {
+
+    method: "POST",
+
+    headers: {
+
+        "Content-Type": "application/json"
+
+    },
+
+    body: JSON.stringify(metadata)
+
+});
 
 const data=await res.json();
 
