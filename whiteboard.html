@@ -302,7 +302,8 @@ top:42px;
 
 left:0;
 
-width:100%;
+/* Leave space for participant strip */
+width:calc(100% - 210px);
 
 height:calc(100dvh - 42px);
 
@@ -311,6 +312,13 @@ overflow:hidden;
 z-index:10;
 
 background:black;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
 }
 /* MINIMIZE */
 .minimized {
@@ -1518,11 +1526,12 @@ onclick="startScreenShare()">
         playsinline
         muted
         style="
-            width:100%;
-            height:100%;
-            object-fit:contain;
-            background:black;
-        ">
+width:96%;
+height:96%;
+object-fit:contain;
+background:black;
+border-radius:12px;
+">
     </video>
 
 </div>
