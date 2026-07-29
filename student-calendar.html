@@ -381,7 +381,7 @@ header p{
 <body>
 
     <script>
-if (!sessionStorage.getItem("token")) {
+if (!localStorage.getItem("token")) {
     window.location.href = "student-login.html";
 }
 </script>
@@ -448,6 +448,7 @@ const API =
 "https://academy-backend-eatl.onrender.com/api/academy-calendar";
 
 let events = [];
+let studentClasses = [];
 
 const monthYear = document.getElementById("monthYear");
 
@@ -482,6 +483,23 @@ async function loadEvents(){
     );
 
 });
+
+/* LOAD STUDENT CLASSES */
+
+const token = localStorage.getItem("token");
+
+const classRes = await fetch(
+    "https://academy-backend-eatl.onrender.com/api/student/my-timetable",
+    {
+        headers:{
+            "Authorization":"Bearer " + token
+        }
+    }
+);
+
+const classData = await classRes.json();
+
+studentClasses = classData.data || [];
             drawCalendar();
             drawUpcomingEvents();
 
@@ -579,7 +597,25 @@ function drawCalendar(){
     );
 
 });
+/* ===============================
+   STUDENT CLASSES FOR THIS DAY
+================================ */
 
+const weekDays = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+];
+
+const currentDayName = weekDays[cellDate.getDay()];
+
+const todayClasses = studentClasses.filter(c =>
+    c.day === currentDayName
+);
         todayEvents.forEach(event=>{
 
             const eventDiv=document.createElement("div");
@@ -619,6 +655,36 @@ eventDiv.style.minHeight = "34px";
             cell.appendChild(eventDiv);
 
         });
+
+        /* ===============================
+   DRAW STUDENT CLASSES
+================================ */
+
+todayClasses.forEach(cls => {
+
+    const classDiv = document.createElement("div");
+
+    classDiv.style.marginTop = "5px";
+    classDiv.style.padding = "4px 6px";
+    classDiv.style.borderRadius = "5px";
+    classDiv.style.background = "#16a34a";
+    classDiv.style.color = "#fff";
+    classDiv.style.fontSize = "11px";
+    classDiv.style.lineHeight = "1.3";
+
+    classDiv.innerHTML = `
+        <div style="font-weight:bold;">
+            ${cls.subject || cls.language || cls.eca || "Class"}
+        </div>
+
+        <div style="font-size:10px;">
+            ${cls.startTime} - ${cls.endTime}
+        </div>
+    `;
+
+    cell.appendChild(classDiv);
+
+});
 
         calendarGrid.appendChild(cell);
 
