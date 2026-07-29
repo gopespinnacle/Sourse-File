@@ -486,7 +486,7 @@ async function loadEvents(){
 
 /* LOAD TEACHER CLASSES */
 
-const token = sessionStorage.getItem("token");
+const token = localStorage.getItem("token");
 
 const classRes = await fetch(
     "https://academy-backend-eatl.onrender.com/api/teacher/calendar",
