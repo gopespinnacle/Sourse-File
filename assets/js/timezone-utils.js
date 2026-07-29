@@ -35,15 +35,30 @@ function getNextOccurrence(dayName){
 
 }
 
-function buildDate(day,time){
+function buildDate(day, time) {
 
-    const d = getNextOccurrence(day);
+    const targetDate = getNextOccurrence(day);
 
-    const [h,m] = time.split(":").map(Number);
+    const [hour, minute] = time.split(":").map(Number);
 
-    d.setHours(h,m,0,0);
+    // Build the date components as an IST date/time
+    const year = targetDate.getFullYear();
+    const month = targetDate.getMonth();
+    const date = targetDate.getDate();
 
-    return d;
+    // IST = UTC + 5:30
+    // Create the equivalent UTC instant
+    const utcMillis = Date.UTC(
+        year,
+        month,
+        date,
+        hour - 5,
+        minute - 30,
+        0,
+        0
+    );
+
+    return new Date(utcMillis);
 
 }
 
