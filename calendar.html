@@ -394,23 +394,19 @@ function drawCalendar(){
 
         const cellDate = new Date(year,month,day);
 
-        const todayEvents = events.filter(event=>{
+        const todayEvents = events.filter(event => {
 
-            const date = new Date(event.startDate);
+    const eventDate = new Date(event.startDate);
 
+    return (
 
+        eventDate.getFullYear() === cellDate.getFullYear() &&
+        eventDate.getMonth() === cellDate.getMonth() &&
+        eventDate.getDate() === cellDate.getDate()
 
-            return(
+    );
 
-                eventDate.getFullYear()===cellDate.getFullYear() &&
-
-                eventDate.getMonth()===cellDate.getMonth() &&
-
-                eventDate.getDate()===cellDate.getDate()
-
-            );
-
-        });
+});
 
         todayEvents.forEach(event=>{
 
