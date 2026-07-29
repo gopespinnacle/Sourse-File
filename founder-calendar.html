@@ -666,29 +666,39 @@ loadEvents();
 
 async function saveEvent(){
 
-    const event = {
+    const audience = [];
 
-        title: document.getElementById("eventTitle").value,
+document.querySelectorAll(".audience:checked").forEach(item => {
 
-        description: document.getElementById("eventDescription").value,
+    audience.push(item.value);
 
-        eventType: document.getElementById("eventType").value,
+});
 
-        grade: document.getElementById("eventGrade").value,
+const event = {
 
-        subject: "",
+    title: document.getElementById("eventTitle").value,
 
-        startDate: document.getElementById("selectedDate").value,
+    description: document.getElementById("eventDescription").value,
 
-        endDate: document.getElementById("selectedDate").value,
+    eventType: document.getElementById("eventType").value,
 
-        allDay: true,
+    grade: document.getElementById("eventGrade").value,
 
-        color: getEventColor(
-            document.getElementById("eventType").value
-        )
+    subject: "",
 
-    };
+    startDate: document.getElementById("selectedDate").value,
+
+    endDate: document.getElementById("selectedDate").value,
+
+    allDay: true,
+
+    color: getEventColor(
+        document.getElementById("eventType").value
+    ),
+
+    audience: audience
+
+};
 
     let url = `${API}/add`;
 
@@ -901,6 +911,41 @@ function editEvent(id){
             <option>Grade 12</option>
 
         </select>
+
+        <label style="margin-top:20px;">Visible To</label>
+
+<div id="audienceSection" style="margin-top:10px;">
+
+    <label>
+        <input type="checkbox" class="audience" value="Public">
+        Public Website
+    </label>
+    <br>
+
+    <label>
+        <input type="checkbox" class="audience" value="Founder" checked>
+        Founder
+    </label>
+    <br>
+
+    <label>
+        <input type="checkbox" class="audience" value="Teacher">
+        Teacher
+    </label>
+    <br>
+
+    <label>
+        <input type="checkbox" class="audience" value="Student">
+        Student
+    </label>
+    <br>
+
+    <label>
+        <input type="checkbox" class="audience" value="Parent">
+        Parent
+    </label>
+
+</div>
 
         <br><br>
 
