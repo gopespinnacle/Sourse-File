@@ -50,24 +50,27 @@ background:black;
 
 #participantStrip{
 
-    position:fixed;
+position:fixed;
 
-    right:15px;
+right:15px;
 
-    bottom:125px;
+top:50%;
 
-    display:flex;
+transform:translateY(-50%);
 
-    flex-direction:column;
+display:flex;
 
-    align-items:flex-end;
+flex-direction:column;
 
-    gap:8px;
+align-items:flex-end;
 
-    z-index:99999;
+gap:8px;
 
-    width:180px;
-    background:transparent;
+z-index:99999;
+
+width:120px;
+
+background:transparent;
 
 border:none;
 
@@ -77,9 +80,9 @@ box-shadow:none;
 
 .participant-card{
 
-    width:180px;
+    width:120px;
 
-    height:100px;
+height:68px;
 
     border-radius:12px;
 
@@ -302,7 +305,7 @@ left:0;
 
     left:0;
 
-    width:100vw;
+    width:calc(100vw - 130px);
 
     height:calc(100vh - 100px);
 
@@ -492,6 +495,8 @@ position:fixed;
 top:0;
 
 left:0;
+
+
 
 width:100%;
 
@@ -804,6 +809,8 @@ text-align:right;
     top:50px;
     left:0;
 
+    right:130px;
+
     width:100vw;
     height:calc(100vh - 50px);
 
@@ -834,23 +841,25 @@ text-align:right;
 
     #participantStrip{
 
-position:fixed;
+    position:fixed;
 
-right:15px;
+    right:12px;
 
-bottom:130px;
+    top:50%;
 
-width:140px;
+    transform:translateY(-50%);
 
-display:flex;
+    width:140px;
 
-flex-direction:column;
+    display:flex;
 
-gap:8px;
+    flex-direction:column;
 
-z-index:999999;
+    gap:10px;
 
-background:transparent;
+    z-index:9999;
+
+    background:transparent;
 
 }
     #meetTopBar,
@@ -1537,8 +1546,8 @@ onclick="startScreenShare()">
 width:100%;
 height:100%;
 object-fit:contain;
-background:black;
 display:block;
+background:black;
 ">
     </video>
 
