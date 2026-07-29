@@ -702,6 +702,61 @@ async function saveEvent(){
 
 }
 
+
+/*
+=========================================
+DELETE EVENT
+=========================================
+*/
+
+async function deleteEvent(id) {
+
+    if (!confirm("Are you sure you want to delete this event?")) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+
+            `${API}/${id}`,
+
+            {
+                method: "DELETE"
+            }
+
+        );
+
+        const result = await response.json();
+
+        if (!result.success) {
+
+            alert(result.message);
+
+            return;
+
+        }
+
+        alert("Event deleted successfully.");
+
+        // Clear the event details panel
+        document.getElementById("eventDetails").innerHTML = `
+            Click an event to view its details.
+        `;
+
+        // Reload calendar events
+        await loadEvents();
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert("Unable to delete event.");
+
+    }
+
+}
+
 </script>
 
 <div class="event-panel">
