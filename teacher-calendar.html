@@ -668,14 +668,7 @@ eventDiv.style.minHeight = "34px";
 
         });
 
-        calendarGrid.appendChild(cell);
-
-    }
-
-}
-loadEvents();
-
-/* ===============================
+        /* ===============================
    DRAW TEACHER CLASSES
 ================================ */
 
@@ -708,6 +701,15 @@ todayClasses.forEach(cls => {
     cell.appendChild(classDiv);
 
 });
+
+        calendarGrid.appendChild(cell);
+
+    }
+
+}
+loadEvents();
+
+
 
 /*
 ====================================
