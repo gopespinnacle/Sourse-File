@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Academy Calendar | Gopes Pinnacle Academy</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+
+background:#f5f7fb;
+
+}
+
+header{
+
+background:#0d6efd;
+
+color:white;
+
+padding:30px;
+
+text-align:center;
+
+}
+
+header h1{
+
+font-size:38px;
+
+margin-bottom:10px;
+
+}
+
+header p{
+
+font-size:18px;
+
+opacity:.9;
+
+}
+
+.container{
+
+width:95%;
+
+max-width:1400px;
+
+margin:40px auto;
+
+display:grid;
+
+grid-template-columns:3fr 1fr;
+
+gap:30px;
+
+}
+
+.calendar-card{
+
+background:white;
+
+padding:25px;
+
+border-radius:15px;
+
+box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+}
+
+.upcoming-card{
+
+background:white;
+
+padding:25px;
+
+border-radius:15px;
+
+box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+}
+
+.calendar-header{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:25px;
+
+}
+
+.calendar-header h2{
+
+font-size:32px;
+
+}
+
+.calendar-header button{
+
+padding:10px 18px;
+
+border:none;
+
+background:#0d6efd;
+
+color:white;
+
+border-radius:8px;
+
+cursor:pointer;
+
+font-size:16px;
+
+}
+
+.weekdays{
+
+display:grid;
+
+grid-template-columns:repeat(7,1fr);
+
+background:#0d6efd;
+
+color:white;
+
+border-radius:8px 8px 0 0;
+
+overflow:hidden;
+
+}
+
+.weekdays div{
+
+padding:15px;
+
+text-align:center;
+
+font-weight:bold;
+
+}
+
+.calendar-grid{
+
+display:grid;
+
+grid-template-columns:repeat(7,1fr);
+
+}
+
+.day{
+
+height:120px;
+
+border:1px solid #ddd;
+
+padding:8px;
+
+background:white;
+
+}
+
+.day-number{
+
+font-weight:bold;
+
+margin-bottom:8px;
+
+}
+
+.today{
+
+background:#dbeafe;
+
+}
+
+.upcoming-card h2{
+
+margin-bottom:20px;
+
+}
+
+.coming-soon{
+
+padding:18px;
+
+background:#eef5ff;
+
+border-left:5px solid #0d6efd;
+
+border-radius:8px;
+
+margin-bottom:15px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>Academy Events Calendar</h1>
+
+<p>Stay updated with Holidays, Admissions, Competitions and Academy Events.</p>
+
+</header>
+
+<div class="container">
+
+<div class="calendar-card">
+
+<div class="calendar-header">
+
+<button id="prevMonth">◀</button>
+
+<h2 id="monthYear">July 2026</h2>
+
+<button id="nextMonth">▶</button>
+
+</div>
+
+<div class="weekdays">
+
+<div>Sun</div>
+<div>Mon</div>
+<div>Tue</div>
+<div>Wed</div>
+<div>Thu</div>
+<div>Fri</div>
+<div>Sat</div>
+
+</div>
+
+<div
+id="calendarGrid"
+class="calendar-grid">
+
+</div>
+
+</div>
+
+<div class="upcoming-card">
+
+<h2>Upcoming Events</h2>
+
+<div id="upcomingEvents">
+
+<div class="coming-soon">
+
+Upcoming events will appear here.
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const currentDate = new Date();
+
+const API =
+"https://academy-backend-eatl.onrender.com/api/academy-calendar";
+
+let events = [];
+
+const monthYear = document.getElementById("monthYear");
+
+const calendarGrid = document.getElementById("calendarGrid");
+
+const year = currentDate.getFullYear();
+
+const month = currentDate.getMonth();
+
+monthYear.innerHTML =
+currentDate.toLocaleString("default",{
+
+month:"long",
+
+year:"numeric"
+
+});
+
+const firstDay =
+new Date(year,month,1).getDay();
+
+const daysInMonth =
+new Date(year,month+1,0).getDate();
+
+for(let i=0;i<firstDay;i++){
+
+const empty=document.createElement("div");
+
+empty.className="day";
+
+calendarGrid.appendChild(empty);
+
+}
+
+for(let day=1;day<=daysInMonth;day++){
+
+const cell=document.createElement("div");
+
+cell.className="day";
+
+const today=new Date();
+
+if(
+
+day===today.getDate()&&
+
+month===today.getMonth()&&
+
+year===today.getFullYear()
+
+){
+
+cell.classList.add("today");
+
+}
+
+cell.innerHTML=`
+<div class="day-number">${day}</div>
+`;
+
+const cellDate = new Date(year, month, day);
+
+const todayEvents = events.filter(event => {
+
+    const eventDate = new Date(event.startDate);
+
+    return (
+
+        eventDate.getFullYear() === cellDate.getFullYear() &&
+
+        eventDate.getMonth() === cellDate.getMonth() &&
+
+        eventDate.getDate() === cellDate.getDate()
+
+    );
+
+});
+
+todayEvents.forEach(event => {
+
+    const eventDiv = document.createElement("div");
+
+    eventDiv.style.marginTop = "5px";
+
+    eventDiv.style.padding = "4px 6px";
+
+    eventDiv.style.borderRadius = "5px";
+
+    eventDiv.style.fontSize = "12px";
+
+    eventDiv.style.color = "#fff";
+
+    eventDiv.style.background = event.color || "#0d6efd";
+
+    eventDiv.style.cursor = "pointer";
+
+    eventDiv.innerHTML = event.title;
+
+    cell.appendChild(eventDiv);
+
+});
+
+calendarGrid.appendChild(cell);
+
+}
+
+/*
+====================================
+LOAD PUBLIC EVENTS
+====================================
+*/
+
+async function loadEvents(){
+
+    try{
+
+        const res = await fetch(`${API}/list`);
+
+        const data = await res.json();
+
+        if(data.success){
+
+            events = data.data.filter(event=>{
+
+                return event.audience &&
+                       event.audience.includes("Public");
+
+            });
+
+        }
+
+        console.log(events);
+
+    }catch(err){
+
+        console.log(err);
+
+    }
+
+}
+
+loadEvents().then(()=>{
+
+    location.reload();
+
+});
+
+</script>
+
+</body>
+
+</html>
