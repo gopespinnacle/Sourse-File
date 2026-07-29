@@ -381,7 +381,7 @@ header p{
 <body>
 
     <script>
-if (!localStorage.getItem("token")) {
+if (!sessionStorage.getItem("token")) {
     window.location.href = "teacher-login.html";
 }
 </script>
@@ -486,7 +486,7 @@ async function loadEvents(){
 
 /* LOAD TEACHER CLASSES */
 
-const token = localStorage.getItem("token");
+const token = sessionStorage.getItem("token");
 
 const classRes = await fetch(
     "https://academy-backend-eatl.onrender.com/api/teacher/calendar",
