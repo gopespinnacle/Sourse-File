@@ -278,7 +278,7 @@ Upcoming events will appear here.
 
 <script>
 
-const currentDate = new Date();
+let currentDate = new Date();
 
 const API =
 "https://academy-backend-eatl.onrender.com/api/academy-calendar";
@@ -449,7 +449,11 @@ PREVIOUS MONTH
 
 document.getElementById("prevMonth").onclick = function(){
 
-    currentDate.setMonth(currentDate.getMonth() - 1);
+    currentDate = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - 1,
+        1
+    );
 
     drawCalendar();
 
@@ -528,7 +532,11 @@ NEXT MONTH
 
 document.getElementById("nextMonth").onclick = function(){
 
-    currentDate.setMonth(currentDate.getMonth() + 1);
+    currentDate = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() + 1,
+        1
+    );
 
     drawCalendar();
 
