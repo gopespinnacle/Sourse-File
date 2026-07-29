@@ -13,6 +13,8 @@ const ScreenShare = {
 
     peers:null,
 
+    screenPeers:{},
+
     role:null,
 
     screenCanvas:null,
@@ -124,7 +126,39 @@ Object.keys(this.peers).forEach(async (socketId)=>{
     // Wait for the student to prepare the Screen Peer
     setTimeout(async ()=>{
 
-        const screenPeer = screenPeers[socketId];
+        let screenPeer = this.screenPeers[socketId];
+
+        if(!screenPeer){
+
+    screenPeer = new RTCPeerConnection({
+
+        iceServers:[
+            {
+                urls:"stun:stun.l.google.com:19302"
+            }
+        ]
+
+    });
+
+    this.screenPeers[socketId] = screenPeer;
+
+    screenPeer.onicecandidate = (event)=>{
+
+        if(event.candidate){
+
+            this.socket.emit("screen-ice-candidate",{
+
+                targetSocketId:socketId,
+
+                candidate:event.candidate
+
+            });
+
+        }
+
+    };
+
+}
 
         if(!screenPeer){
 
@@ -208,7 +242,7 @@ return this.stream;
     ]
 });
 
-    screenPeers[data.teacherSocketId] = pc;
+    this.screenPeers[data.teacherSocketId] = pc;
 
     pc.addTransceiver("video", {
     direction: "recvonly"
@@ -220,19 +254,19 @@ pc.addTransceiver("audio", {
 
     pc.onicecandidate = (event)=>{
 
-        if(event.candidate){
+    if(event.candidate){
 
-            socket.emit("ice-candidate",{
+        this.socket.emit("screen-ice-candidate",{
 
-                targetSocketId: data.teacherSocketId,
+            targetSocketId:data.teacherSocketId,
 
-                candidate: event.candidate
+            candidate:event.candidate
 
-            });
+        });
 
-        }
+    }
 
-    };
+};
 
     pc.ontrack = (event)=>{
 
