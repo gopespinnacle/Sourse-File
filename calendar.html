@@ -598,8 +598,24 @@ console.log(
             eventDiv.style.background=event.color || "#0d6efd";
 
             eventDiv.style.cursor="pointer";
+            eventDiv.style.lineHeight = "1.3";
+eventDiv.style.minHeight = "34px";
 
-            eventDiv.innerHTML=event.title;
+            eventDiv.innerHTML = `
+<div style="font-weight:bold;">
+    ${event.title}
+</div>
+
+<div style="
+    font-size:10px;
+    margin-top:2px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+">
+    ${event.description || ""}
+</div>
+`;
 
             cell.appendChild(eventDiv);
 
