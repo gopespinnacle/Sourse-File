@@ -1483,51 +1483,9 @@ body.layout-spotlight #screenContainer{
 
 }
 
-body.layout-spotlight #participantStrip{
 
-    position:fixed;
 
-    right:15px;
 
-    bottom:90px;
-
-    width:170px;
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:10px;
-
-    z-index:99999;
-
-    background:transparent;
-
-}
-
-body.layout-spotlight .participant-card{
-
-    width:170px;
-
-    height:96px;
-
-    border-radius:12px;
-
-    overflow:hidden;
-
-    box-shadow:0 4px 15px rgba(0,0,0,.4);
-
-}
-
-body.layout-spotlight .participant-card video{
-
-    width:100%;
-
-    height:100%;
-
-    object-fit:cover;
-
-}
 
 #participantsToggleBtn{
 
@@ -1564,6 +1522,72 @@ body.layout-spotlight .participant-card video{
 #participantStrip.open{
 
     right:10px;
+
+}
+
+#attendanceFab{
+
+    position:fixed;
+
+    right:20px;
+
+    bottom:170px;
+
+    width:60px;
+
+    height:60px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#202124;
+
+    color:white;
+
+    font-size:24px;
+
+    cursor:pointer;
+
+    z-index:999999;
+
+    box-shadow:0 6px 20px rgba(0,0,0,.35);
+
+}
+
+#attendanceFab:hover{
+
+    background:#303134;
+
+}
+
+#attendanceBadge{
+
+    position:absolute;
+
+    top:-5px;
+
+    right:-5px;
+
+    width:22px;
+
+    height:22px;
+
+    border-radius:50%;
+
+    background:#ea4335;
+
+    color:white;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:12px;
+
+    font-weight:bold;
 
 }
 </style>
@@ -4205,12 +4229,12 @@ function updateAttendanceList(students){
 
     list.innerHTML = "";
 
-    const count =
-document.getElementById("participantCount");
+    const badge =
+document.getElementById("attendanceBadge");
 
-if(count){
+if(badge){
 
-    count.innerText = students.length;
+    badge.innerText = students.length;
 
 }
 
@@ -4543,23 +4567,16 @@ LIVE ATTENDANCE PANEL
 
 <div id="attendancePanel">
 
-<button
-id="attendanceToggleBtn"
-style="
-position:absolute;
-left:-42px;
-top:45%;
-width:42px;
-height:70px;
-border:none;
-border-radius:12px 0 0 12px;
-background:#1f2937;
-color:white;
-cursor:pointer;
-font-size:22px;
-">
-<span id="participantCount">0</span><br>👥
+    <button id="attendanceFab" onclick="toggleAttendancePanel()">
+
+    👥
+
+    <span id="attendanceBadge">0</span>
+
 </button>
+
+
+
 
     <h3>📋 Live Attendance</h3>
 
@@ -4711,6 +4728,14 @@ function toggleParticipantsPanel(){
     document.getElementById("participantStrip");
 
     panel.classList.toggle("open");
+
+}
+
+function toggleAttendancePanel(){
+
+    document
+        .getElementById("attendancePanel")
+        .classList.toggle("open");
 
 }
 
