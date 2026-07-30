@@ -177,7 +177,15 @@ ParticipantLayout.updateLayout = function(){
     strip.style.right = "0";
     strip.style.bottom = "0";
 
+    if(strip.classList.contains("screen-sharing")){
+
+    strip.style.display = "flex";
+
+}else{
+
     strip.style.display = "grid";
+
+}
     strip.style.padding = "8px";
     strip.style.gap = "8px";
 
@@ -223,6 +231,12 @@ ParticipantLayout.showScreenShare = function(){
 
     document.getElementById("drawLayer").style.display="none";
 
+    document
+    .getElementById("participantStrip")
+    ?.classList.add("screen-sharing");
+
+this.updateLayout();
+
 };
 
 ParticipantLayout.hideScreenShare = function(){
@@ -232,6 +246,12 @@ ParticipantLayout.hideScreenShare = function(){
     document.getElementById("mainBoard").style.display="block";
 
     document.getElementById("drawLayer").style.display="block";
+
+    document
+    .getElementById("participantStrip")
+    ?.classList.remove("screen-sharing");
+
+this.updateLayout();
 
 };
 
