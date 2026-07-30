@@ -52,15 +52,11 @@ background:black;
 
     position:fixed;
 
-    top:60px;
+    right:15px;
 
-    right:-240px;
+    bottom:130px;
 
-    width:220px;
-
-    height:calc(100vh - 120px);
-
-    overflow-y:auto;
+    width:190px;
 
     display:flex;
 
@@ -68,15 +64,11 @@ background:black;
 
     gap:10px;
 
-    padding:10px;
+    background:transparent;
 
-    background:rgba(20,20,20,.92);
+    padding:0;
 
-    border-radius:12px 0 0 12px;
-
-    transition:right .3s ease;
-
-    z-index:100000;
+    z-index:99998;
 
 }
 
@@ -1519,11 +1511,7 @@ body.layout-spotlight #screenContainer{
 
 }
 
-#participantStrip.open{
 
-    right:10px;
-
-}
 
 #attendanceFab{
 
@@ -4742,13 +4730,7 @@ function toggleAttendancePanel(){
 
 <script>
 
-window.addEventListener("load",()=>{
 
-    document
-        .getElementById("participantStrip")
-        ?.classList.remove("open");
-
-});
 
 </script>
 
