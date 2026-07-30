@@ -1368,10 +1368,184 @@ font-size:14px;
     background:black;
 
 }
+
+/* ==========================================
+   GOOGLE MEET LAYOUT MENU
+========================================== */
+
+#layoutMenu{
+
+    position:fixed;
+
+    top:70px;
+
+    right:20px;
+
+    width:260px;
+
+    background:#202124;
+
+    color:white;
+
+    border-radius:14px;
+
+    padding:18px;
+
+    box-shadow:0 8px 30px rgba(0,0,0,.35);
+
+    z-index:999999;
+
+    display:none;
+
+}
+
+#layoutMenu .layout-title{
+
+    font-size:20px;
+
+    font-weight:bold;
+
+    margin-bottom:18px;
+
+}
+
+#layoutMenu button{
+
+    width:100%;
+
+    padding:14px;
+
+    margin-bottom:10px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#303134;
+
+    color:white;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+    text-align:left;
+
+    transition:.25s;
+
+}
+
+#layoutMenu button:hover{
+
+    background:#3c4043;
+
+}
+
+/* ==========================================
+   GOOGLE MEET SPOTLIGHT LAYOUT
+========================================== */
+
+body.layout-spotlight #screenContainer{
+
+    position:fixed;
+
+    top:50px;
+
+    left:0;
+
+    right:0;
+
+    bottom:0;
+
+    width:auto;
+
+    height:auto;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:black;
+
+    z-index:1;
+
+}
+
+body.layout-spotlight #participantStrip{
+
+    position:fixed;
+
+    right:15px;
+
+    bottom:90px;
+
+    width:170px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
+    z-index:99999;
+
+    background:transparent;
+
+}
+
+body.layout-spotlight .participant-card{
+
+    width:170px;
+
+    height:96px;
+
+    border-radius:12px;
+
+    overflow:hidden;
+
+    box-shadow:0 4px 15px rgba(0,0,0,.4);
+
+}
+
+body.layout-spotlight .participant-card video{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+}
 </style>
 </head>
 
 <body>
+
+    <div id="layoutMenu">
+
+    <div class="layout-title">
+        Adjust View
+    </div>
+
+    <button onclick="MeetingLayout.set('auto')">
+        ⭐ Auto
+    </button>
+
+    <button onclick="MeetingLayout.set('spotlight')">
+        🎥 Spotlight
+    </button>
+
+    <button onclick="MeetingLayout.set('sidebar')">
+        📑 Sidebar
+    </button>
+
+    <button onclick="MeetingLayout.set('grid')">
+        🔲 Grid
+    </button>
+
+</div>
 <div class="menu-overlay" onclick="toggleMobileMenu()"></div>
 <div class="toolbar">
 
@@ -1508,6 +1682,10 @@ onclick="startScreenShare()">
 <button onclick="toggleDeviceBar()">⋮</button>
 
 <button onclick="leaveClass()">📞</button>
+
+<button onclick="toggleLayoutMenu()">
+    ⋮
+</button>
 
 </div>
 
@@ -4345,6 +4523,57 @@ window.addEventListener("load", async () => {
     }
 
 });
+
+function toggleLayoutMenu(){
+
+    const menu = document.getElementById("layoutMenu");
+
+    menu.style.display =
+        menu.style.display==="block"
+        ? "none"
+        : "block";
+
+}
+
+document.addEventListener("click",function(e){
+
+    const menu=document.getElementById("layoutMenu");
+
+    if(!menu.contains(e.target) &&
+       e.target.innerText.trim()!=="⋮"){
+
+        menu.style.display="none";
+
+    }
+
+});
+
+const MeetingLayout = {
+
+    current:"auto",
+
+    set(layout){
+
+        this.current = layout;
+
+        document.body.classList.remove(
+            "layout-auto",
+            "layout-spotlight",
+            "layout-sidebar",
+            "layout-grid"
+        );
+
+        document.body.classList.add(
+            "layout-"+layout
+        );
+
+        document.getElementById("layoutMenu").style.display="none";
+
+    }
+
+};
+
+
 
 </script>
 
