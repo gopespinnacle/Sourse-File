@@ -1178,27 +1178,35 @@ LIVE ATTENDANCE
 
 #attendancePanel{
 
-position:fixed;
+    position:fixed;
 
-top:70px;
+    top:70px;
 
-right:20px;
+    right:-265px;
 
-width:250px;
+    width:250px;
 
-max-height:400px;
+    max-height:400px;
 
-overflow-y:hidden;
+    overflow-y:auto;
 
-background:white;
+    background:#fff;
 
-border-radius:10px;
+    border-radius:12px 0 0 12px;
 
-padding:10px;
+    padding:10px;
 
-box-shadow:0 0 10px rgba(0,0,0,.3);
+    box-shadow:0 8px 24px rgba(0,0,0,.25);
 
-z-index:999999;
+    transition:right .35s ease;
+
+    z-index:999999;
+
+}
+
+#attendancePanel.open{
+
+    right:15px;
 
 }
 
@@ -4526,6 +4534,24 @@ LIVE ATTENDANCE PANEL
 
 <div id="attendancePanel">
 
+<button
+id="attendanceToggleBtn"
+style="
+position:absolute;
+left:-42px;
+top:45%;
+width:42px;
+height:70px;
+border:none;
+border-radius:12px 0 0 12px;
+background:#1f2937;
+color:white;
+cursor:pointer;
+font-size:22px;
+">
+👥
+</button>
+
     <h3>📋 Live Attendance</h3>
 
     <div id="attendanceList"></div>
@@ -4582,6 +4608,40 @@ function toggleLayoutMenu(){
         : "block";
 
 }
+
+const attendancePanel =
+document.getElementById("attendancePanel");
+
+const attendanceToggleBtn =
+document.getElementById("attendanceToggleBtn");
+
+if(attendanceToggleBtn){
+
+    attendanceToggleBtn.onclick = function(e){
+
+        e.stopPropagation();
+
+        attendancePanel.classList.toggle("open");
+
+    };
+
+}
+
+document.addEventListener("click",function(e){
+
+    if(
+
+        attendancePanel &&
+        attendancePanel.classList.contains("open") &&
+        !attendancePanel.contains(e.target)
+
+    ){
+
+        attendancePanel.classList.remove("open");
+
+    }
+
+});
 
 document.addEventListener("click",function(e){
 
