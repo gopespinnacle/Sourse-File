@@ -1583,6 +1583,46 @@ body.layout-spotlight #screenContainer{
     font-weight:bold;
 
 }
+
+/* ======================================
+   MOBILE LANDSCAPE
+====================================== */
+
+@media (max-width:768px) and (orientation:landscape){
+
+    #meetTopBar{
+        height:40px;
+    }
+
+    #participantStrip{
+
+        top:40px;
+        left:0;
+        right:0;
+        bottom:0;
+
+        padding:4px;
+        gap:4px;
+
+    }
+
+    #localVideoBox{
+
+        width:120px;
+        height:70px;
+
+        right:10px;
+        bottom:10px;
+
+    }
+
+    #bottomControls{
+
+        bottom:10px;
+
+    }
+
+}
 </style>
 </head>
 
@@ -3785,45 +3825,57 @@ window.addEventListener("load", () => {
     });
 
 });
-window.addEventListener("orientationchange", () => {
+function applyOrientationLayout(){
 
-    setTimeout(() => {
+    const isMobile = window.innerWidth <= 768;
 
-        handleResize();
+    if(!isMobile) return;
 
-        if(window.innerWidth > window.innerHeight){
+    const isLandscape = window.innerWidth > window.innerHeight;
 
-            // Landscape
-            document.getElementById("meetTopBar").style.height = "40px";
+    const topBar = document.getElementById("meetTopBar");
+    const screenContainer = document.getElementById("screenContainer");
+    const localVideoBox = document.getElementById("localVideoBox");
 
-            document.getElementById("screenContainer").style.top = "40px";
-            document.getElementById("screenContainer").style.height = "calc(100vh - 40px)";
+    if(isLandscape){
 
-        }else{
+        topBar.style.height = "40px";
 
-            // Portrait
-            document.getElementById("meetTopBar").style.height = "50px";
+        screenContainer.style.top = "40px";
+        screenContainer.style.height = "calc(100vh - 40px)";
 
-            document.getElementById("screenContainer").style.top = "50px";
-            document.getElementById("screenContainer").style.height = "calc(100vh - 60px)";
+        localVideoBox.style.width = "120px";
+        localVideoBox.style.height = "70px";
+        localVideoBox.style.bottom = "10px";
 
-        }
+    }else{
 
-    },300);
+        topBar.style.height = "50px";
 
-});
-window.addEventListener("load", () => {
+        screenContainer.style.top = "50px";
+        screenContainer.style.height = "calc(100vh - 50px)";
 
-    if(window.innerWidth > window.innerHeight){
-
-        document.getElementById("meetTopBar").style.height = "40px";
-
-        document.getElementById("screenContainer").style.top = "40px";
-        document.getElementById("screenContainer").style.height = "calc(100vh - 40px)";
+        localVideoBox.style.width = "90px";
+        localVideoBox.style.height = "120px";
+        localVideoBox.style.bottom = "80px";
 
     }
 
+    handleResize();
+
+    ParticipantLayout.updateLayout();
+
+}
+
+window.addEventListener("orientationchange", () => {
+
+    setTimeout(applyOrientationLayout,300);
+
 });
+
+window.addEventListener("resize", applyOrientationLayout);
+
+window.addEventListener("load", applyOrientationLayout);
 
 
 function handleResize(){
