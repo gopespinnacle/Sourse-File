@@ -4205,6 +4205,15 @@ function updateAttendanceList(students){
 
     list.innerHTML = "";
 
+    const count =
+document.getElementById("participantCount");
+
+if(count){
+
+    count.innerText = students.length;
+
+}
+
     students.forEach(student=>{
 
         const div = document.createElement("div");
