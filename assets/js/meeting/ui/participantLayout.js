@@ -33,6 +33,8 @@ const ParticipantLayout = {
 
         delete this.participants[socketId];
 
+this.updateLayout();
+
     },
 
     clear() {
@@ -168,13 +170,46 @@ ParticipantLayout.updateLayout = function(){
 
     const count = Object.keys(this.participants).length;
 
-    if(count <= 2){
+    // Leave space for teacher preview
+    strip.style.position = "fixed";
+    strip.style.top = "50px";
+    strip.style.left = "0";
+    strip.style.right = "0";
+    strip.style.bottom = "0";
 
-        strip.style.flexDirection = "column";
+    strip.style.display = "grid";
+    strip.style.padding = "8px";
+    strip.style.gap = "8px";
 
-    }else{
+    // Google Meet Layout
+    if(count <= 1){
 
-        strip.style.flexDirection = "column";
+        strip.style.gridTemplateColumns = "1fr";
+        strip.style.gridTemplateRows = "1fr";
+
+    }
+    else if(count === 2){
+
+        strip.style.gridTemplateColumns = "1fr 1fr";
+        strip.style.gridTemplateRows = "1fr";
+
+    }
+    else if(count <= 4){
+
+        strip.style.gridTemplateColumns = "repeat(2,1fr)";
+        strip.style.gridTemplateRows = "repeat(2,1fr)";
+
+    }
+    else if(count <= 9){
+
+        strip.style.gridTemplateColumns = "repeat(3,1fr)";
+        strip.style.gridTemplateRows = "repeat(3,1fr)";
+
+    }
+    else{
+
+        strip.style.gridTemplateColumns = "repeat(4,1fr)";
+        strip.style.gridTemplateRows = "repeat(4,1fr)";
 
     }
 
