@@ -50,31 +50,33 @@ background:black;
 
 #participantStrip{
 
-position:fixed;
+    position:fixed;
 
-right:15px;
+    top:60px;
 
-top:50%;
+    right:-240px;
 
-transform:translateY(-50%);
+    width:220px;
 
-display:flex;
+    height:calc(100vh - 120px);
 
-flex-direction:column;
+    overflow-y:auto;
 
-align-items:flex-end;
+    display:flex;
 
-gap:8px;
+    flex-direction:column;
 
-z-index:99999;
+    gap:10px;
 
-width:120px;
+    padding:10px;
 
-background:transparent;
+    background:rgba(20,20,20,.92);
 
-border:none;
+    border-radius:12px 0 0 12px;
 
-box-shadow:none;
+    transition:right .3s ease;
+
+    z-index:100000;
 
 }
 
@@ -1550,6 +1552,12 @@ body.layout-spotlight .participant-card video{
     box-shadow:0 8px 24px rgba(0,0,0,.35);
 
 }
+
+#participantStrip.open{
+
+    right:10px;
+
+}
 </style>
 </head>
 
@@ -2317,6 +2325,8 @@ if(role === "teacher"){
 
 // 🔥 LOAD HISTORY AFTER REFRESH
 window.addEventListener("load", () => {
+
+    
 
     
     // ✅ ADD THIS PART (PDF RESTORE)
@@ -4584,7 +4594,22 @@ document.addEventListener("click",function(e){
 
     }
 
+    const panel = document.getElementById("participantStrip");
+const button = document.getElementById("participantsToggleBtn");
+
+if(
+    panel &&
+    button &&
+    panel.classList.contains("open") &&
+    !panel.contains(e.target) &&
+    !button.contains(e.target)
+){
+    panel.classList.remove("open");
+}
+
 });
+
+
 
 const MeetingLayout = {
 
@@ -4611,7 +4636,14 @@ const MeetingLayout = {
 
 };
 
+function toggleParticipantsPanel(){
 
+    const panel =
+    document.getElementById("participantStrip");
+
+    panel.classList.toggle("open");
+
+}
 
 </script>
 
@@ -4637,7 +4669,17 @@ const MeetingLayout = {
 <script src="assets/js/meeting/video/signalingManager.js"></script>
 <script src="assets/js/meeting/video/reconnectManager.js"></script>
 
+<script>
 
+window.addEventListener("load",()=>{
+
+    document
+        .getElementById("participantStrip")
+        ?.classList.remove("open");
+
+});
+
+</script>
 
 </body>
 </html>
