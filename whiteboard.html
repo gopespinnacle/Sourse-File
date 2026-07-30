@@ -1798,12 +1798,7 @@ onclick="startScreenShare()">
 </div>
 
 <!-- REMOTE VIDEO -->
- <button
-    id="participantsToggleBtn"
-    onclick="toggleParticipantsPanel()"
->
-    👥
-</button>
+ 
 <div id="participantStrip"></div>
 
 <!-- DRAW -->
@@ -4638,12 +4633,12 @@ function toggleLayoutMenu(){
 const attendancePanel =
 document.getElementById("attendancePanel");
 
-const attendanceToggleBtn =
-document.getElementById("attendanceToggleBtn");
+const attendanceFab =
+document.getElementById("attendanceFab");
 
-if(attendanceToggleBtn){
+if(attendanceFab){
 
-    attendanceToggleBtn.onclick = function(e){
+    attendanceFab.onclick = function(e){
 
         e.stopPropagation();
 
@@ -4680,18 +4675,7 @@ document.addEventListener("click",function(e){
 
     }
 
-    const panel = document.getElementById("participantStrip");
-const button = document.getElementById("participantsToggleBtn");
-
-if(
-    panel &&
-    button &&
-    panel.classList.contains("open") &&
-    !panel.contains(e.target) &&
-    !button.contains(e.target)
-){
-    panel.classList.remove("open");
-}
+    
 
 });
 
@@ -4722,14 +4706,7 @@ const MeetingLayout = {
 
 };
 
-function toggleParticipantsPanel(){
 
-    const panel =
-    document.getElementById("participantStrip");
-
-    panel.classList.toggle("open");
-
-}
 
 function toggleAttendancePanel(){
 
