@@ -1518,6 +1518,38 @@ body.layout-spotlight .participant-card video{
     object-fit:cover;
 
 }
+
+#participantsToggleBtn{
+
+    position:fixed;
+
+    right:18px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    width:52px;
+
+    height:52px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#1f2937;
+
+    color:white;
+
+    font-size:24px;
+
+    cursor:pointer;
+
+    z-index:100001;
+
+    box-shadow:0 8px 24px rgba(0,0,0,.35);
+
+}
 </style>
 </head>
 
@@ -1726,6 +1758,12 @@ onclick="startScreenShare()">
 </div>
 
 <!-- REMOTE VIDEO -->
+ <button
+    id="participantsToggleBtn"
+    onclick="toggleParticipantsPanel()"
+>
+    👥
+</button>
 <div id="participantStrip"></div>
 
 <!-- DRAW -->
