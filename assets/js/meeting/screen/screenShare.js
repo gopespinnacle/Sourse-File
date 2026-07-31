@@ -72,19 +72,23 @@ const ScreenShare = {
 
             });
 
-            Object.keys(this.peers).forEach((socketId)=>{
+            console.log("Current peers:", Object.keys(this.peers));
 
-                this.socket.emit("startScreenPeer",{
+Object.keys(this.peers).forEach((socketId)=>{
 
-                    room:this.room,
+    console.log("Creating screen peer for:", socketId);
 
-                    targetSocketId:socketId,
+    this.socket.emit("startScreenPeer",{
 
-                    teacherSocketId:this.socket.id
+        room:this.room,
 
-                });
+        targetSocketId:socketId,
 
-            });
+        teacherSocketId:this.socket.id
+
+    });
+
+});
 
             this.stream
                 .getVideoTracks()[0]
