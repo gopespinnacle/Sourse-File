@@ -2405,6 +2405,27 @@ socket.on("screenPeerReady", async (data)=>{
 
     if(role !== "teacher") return;
 
+    // Teacher is not sharing screen
+    if(!ScreenShare.stream) return;
+
+    console.log(
+        "Creating Screen Peer:",
+        data.studentSocketId
+    );
+
+    // Prevent duplicate screen peers
+    if(ScreenShare.screenPeers[data.studentSocketId]){
+
+        try{
+
+            ScreenShare.screenPeers[data.studentSocketId].close();
+
+        }catch(e){}
+
+        delete ScreenShare.screenPeers[data.studentSocketId];
+
+    }
+
     await ScreenShare.createTeacherPeer(
         data.studentSocketId
     );
@@ -2695,15 +2716,11 @@ if(oldVideo){
 await createPeer(data.socketId);
 
 await createOffer(data.socketId);
-});
 
-// ===============================
-// Send Screen Share to Late Student
-// ===============================
+// Send screen share to newly joined student
+if (role === "teacher" && ScreenShare.stream) {
 
-if (ScreenShare.stream) {
-
-    console.log("Late student detected. Starting screen share.");
+    console.log("Sending screen share to new student");
 
     socket.emit("startScreenPeer", {
 
@@ -2716,6 +2733,9 @@ if (ScreenShare.stream) {
     });
 
 }
+});
+
+
 
 socket.on("existingStudents", async (students) => {
 
