@@ -4,6 +4,24 @@ const API =
 const teacherId =
 new URLSearchParams(window.location.search).get("id");
 
+const menus = [
+
+"dashboard",
+
+"myClasses",
+
+"attendance",
+
+"homework",
+
+"calendar",
+
+"marksEntry",
+
+"aiAssessment"
+
+];
+
 loadTeacher();
 
 async function loadTeacher(){
@@ -33,6 +51,10 @@ async function loadTeacher(){
 
         "Teacher : <b>" + teacher.name + "</b>";
 
+        document.getElementById("teacherName").innerHTML=
+
+"Teacher : <b>" + teacher.name + "</b>";
+
     }
 
     catch(error){
@@ -42,5 +64,55 @@ async function loadTeacher(){
         alert("Unable to load teacher.");
 
     }
+
+}
+
+function renderPermissions(teacher){
+
+const container =
+
+document.getElementById("permissionList");
+
+container.innerHTML="";
+
+menus.forEach(menu=>{
+
+const checked =
+
+teacher.menuPermissions?.[menu]
+
+? "checked"
+
+: "";
+
+container.innerHTML += `
+
+<div class="permission-row">
+
+<div>
+
+${menu}
+
+</div>
+
+<label>
+
+<input
+
+type="checkbox"
+
+id="${menu}"
+
+${checked}
+
+>
+
+</label>
+
+</div>
+
+`;
+
+});
 
 }
