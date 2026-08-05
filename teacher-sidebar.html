@@ -4,13 +4,13 @@
 
     <ul>
 
-     <li>
+     <li id="menu-dashboard">
     <a href="teacher-dashboard.html" style="color:white; text-decoration:none;">
         <i class="fa fa-chart-line"></i> Dashboard
     </a>
 </li>
 
-        <li onclick="go('teacher-classes.html')">
+        <li id="menu-myClasses" onclick="go('teacher-classes.html')">
             <i class="fa fa-book"></i> My Classes
         </li>
 
@@ -22,21 +22,21 @@
             <i class="fa fa-users"></i> My Students
         </li>
 
-        <li>
-            <i class="fa fa-calendar-check"></i> Attendance
-        </li>
+       <li id="menu-attendance">
+    <i class="fa fa-calendar-check"></i> Attendance
+</li>
 
-        <li>
-            <i class="fa fa-clipboard"></i> Assessments
-        </li>
+        <li id="menu-aiAssessment">
+    <i class="fa fa-clipboard"></i> Assessments
+</li>
 
-        <li onclick="go('teacher-homework.html')">
+        <li id="menu-homework" onclick="go('teacher-homework.html')">
             <i class="fa fa-tasks"></i> Homework
         </li>
 
-        <li>
-            <i class="fa fa-pen"></i> Marks Entry
-        </li>
+       <li id="menu-marksEntry">
+    <i class="fa fa-pen"></i> Marks Entry
+</li>
 
         <li onclick="logout()">
             <i class="fa fa-sign-out-alt"></i> Logout
@@ -148,4 +148,36 @@ function logout(){
 function goToDashboard(){
     window.location.href = "teacher-dashboard.html";
 }
+
+const permissions = JSON.parse(
+
+sessionStorage.getItem("menuPermissions") || "{}"
+
+);
+
+function applyMenuPermissions(){
+
+    Object.keys(permissions).forEach(menu=>{
+
+        if(permissions[menu] === false){
+
+            const item = document.getElementById(
+
+                "menu-" + menu
+
+            );
+
+            if(item){
+
+                item.style.display = "none";
+
+            }
+
+        }
+
+    });
+
+}
+
+applyMenuPermissions();
 </script>
