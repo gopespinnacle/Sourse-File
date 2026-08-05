@@ -51,6 +51,34 @@ fetch("teacher-sidebar.html")
 
 document.getElementById("sidebar-container").innerHTML=data;
 
+/* APPLY MENU PERMISSIONS */
+
+const permissions = JSON.parse(
+
+sessionStorage.getItem("menuPermissions") || "{}"
+
+);
+
+Object.keys(permissions).forEach(menu=>{
+
+if(permissions[menu] === false){
+
+const item = document.getElementById(
+
+"menu-" + menu
+
+);
+
+if(item){
+
+item.style.display = "none";
+
+}
+
+}
+
+});
+
 });
 
 </script>
