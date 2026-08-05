@@ -319,6 +319,22 @@ ScenarioDebugger.step(
 
         let pc = this.screenPeers[data.teacherSocketId];
 
+        // Ignore duplicate offers
+if (
+    pc &&
+    pc.signalingState === "stable" &&
+    pc.remoteDescription
+){
+
+    ScenarioDebugger.warning(
+        "Duplicate Screen Offer Ignored",
+        data.teacherSocketId
+    );
+
+    return;
+
+}
+
         if(!pc){
 
             await this.createStudentPeer(data.teacherSocketId);
