@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 
 <meta charset="UTF-8">
 
-<title>Teacher Menu Permissions</title>
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<title>Teacher Permissions</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -14,55 +17,79 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 
 <style>
 
-.permission-card{
+.page-title{
 
-max-width:900px;
+font-size:30px;
 
-margin:30px auto;
+font-weight:bold;
+
+margin-bottom:25px;
+
+}
+
+.permission-table{
+
+width:100%;
+
+border-collapse:collapse;
 
 background:white;
 
-padding:30px;
+border-radius:10px;
 
-border-radius:12px;
+overflow:hidden;
 
-box-shadow:0 0 10px rgba(0,0,0,.15);
-
-}
-
-.permission-row{
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-padding:15px 0;
-
-border-bottom:1px solid #eee;
-
-font-size:18px;
+box-shadow:0 2px 10px rgba(0,0,0,.1);
 
 }
 
-.save-btn{
-
-margin-top:30px;
-
-padding:12px 35px;
+.permission-table th{
 
 background:#0d6efd;
 
 color:white;
 
+padding:15px;
+
+text-align:left;
+
+}
+
+.permission-table td{
+
+padding:15px;
+
+border-bottom:1px solid #eee;
+
+}
+
+.permission-table tr:hover{
+
+background:#f8f9fa;
+
+}
+
+.manage-btn{
+
+background:#198754;
+
+color:white;
+
 border:none;
 
-border-radius:8px;
+padding:10px 20px;
+
+border-radius:6px;
 
 cursor:pointer;
 
-font-size:18px;
+font-weight:bold;
+
+}
+
+.manage-btn:hover{
+
+background:#157347;
 
 }
 
@@ -77,10 +104,10 @@ font-size:18px;
 <script>
 
 fetch("sidebar.html")
-.then(res=>res.text())
-.then(data=>{
+.then(r=>r.text())
+.then(html=>{
 
-document.getElementById("sidebar-container").innerHTML=data;
+document.getElementById("sidebar-container").innerHTML=html;
 
 });
 
@@ -88,32 +115,41 @@ document.getElementById("sidebar-container").innerHTML=data;
 
 <div class="main-content">
 
-<div class="permission-card">
-
-<h2 id="teacherName">
+<div class="page-title">
 
 Teacher Permissions
 
-</h2>
+</div>
 
-<hr>
+<table
+class="permission-table"
+id="teacherTable">
 
-<div id="permissionList">
+<thead>
+
+<tr>
+
+<th>Teacher</th>
+
+<th>Email</th>
+
+<th>Subject</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+</tbody>
+
+</table>
 
 </div>
 
-<button
-class="save-btn">
-
-Save Permissions
-
-</button>
-
-</div>
-
-</div>
-
-<script src="assets/js/founder/teacherPermissions.js"></script>
+<script src="assets/js/founder/teacherPermissionsList.js"></script>
 
 </body>
 

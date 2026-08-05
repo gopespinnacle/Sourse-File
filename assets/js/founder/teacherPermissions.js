@@ -1,14 +1,11 @@
 const API =
 "https://academy-backend-eatl.onrender.com/api/founder";
 
-const teacherId =
-new URLSearchParams(window.location.search).get("id");
+let teachers = [];
 
-let teacher = null;
+loadTeachers();
 
-loadTeacher();
-
-async function loadTeacher(){
+async function loadTeachers(){
 
     try{
 
@@ -18,90 +15,67 @@ async function loadTeacher(){
 
         );
 
-        const data =
-        await response.json();
+        const data = await response.json();
 
-        teacher =
-        data.teachers.find(t => t._id === teacherId);
+        teachers = data.teachers;
 
-        if(!teacher){
-
-            alert("Teacher not found.");
-
-            return;
-
-        }
-
-        document.getElementById("teacherName").innerHTML =
-
-        "Permissions : " + teacher.name;
-
-        renderPermissions();
+        renderTeachers();
 
     }
 
     catch(err){
 
-        console.log(err);
+        console.error(err);
 
-        alert(err.message);
+        alert("Unable to load teachers.");
 
     }
 
 }
 
-function renderPermissions(){
+function renderTeachers(){
 
-    const container =
-    document.getElementById("permissionList");
+    const tbody =
+    document.querySelector("#teacherTable tbody");
 
-    container.innerHTML = "";
+    tbody.innerHTML = "";
 
-    const permissions = [
+    teachers.forEach(t=>{
 
-        "dashboard",
+        tbody.innerHTML += `
 
-        "myClasses",
+<tr>
 
-        "attendance",
+<td>${t.name}</td>
 
-        "aiAssessment",
+<td>${t.email}</td>
 
-        "homework",
+<td>${t.subject ? t.subject.join(", ") : "-"}</td>
 
-        "calendar",
+<td>
 
-        "marksEntry"
+<button
+class="manage-btn"
+onclick="managePermissions('${t._id}')">
 
-    ];
+Manage Permissions
 
-    permissions.forEach(permission => {
+</button>
 
-        container.innerHTML += `
+</td>
 
-        <div class="permission-row">
+</tr>
 
-            <span>
-
-                ${permission}
-
-            </span>
-
-            <input
-                type="checkbox"
-                id="${permission}"
-
-                ${teacher.menuPermissions &&
-                  teacher.menuPermissions[permission]
-                  ? "checked"
-                  : ""}
-
-            >
-
-        </div>
-
-        `;
+`;
 
     });
+
+}
+
+function managePermissions(id){
+
+    window.location.href =
+
+    "founder-teacher-menu-permissions.html?id=" + id;
 
 }
