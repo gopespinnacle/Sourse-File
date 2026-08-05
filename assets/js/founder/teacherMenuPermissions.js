@@ -114,3 +114,66 @@ ${checked}
 });
 
 }
+
+async function savePermissions(){
+
+    const menuPermissions = {};
+
+    menus.forEach(menu=>{
+
+        menuPermissions[menu] =
+
+        document.getElementById(menu).checked;
+
+    });
+
+    try{
+
+        const response = await fetch(
+
+            API + "/teacher/" + teacherId + "/menu-permissions",
+
+            {
+
+                method:"PUT",
+
+                headers:{
+                    "Content-Type":"application/json"
+                },
+
+                body:JSON.stringify({
+
+                    menuPermissions
+
+                })
+
+            }
+
+        );
+
+        const result =
+        await response.json();
+
+        if(result.success){
+
+            alert("Permissions Saved Successfully.");
+
+        }
+
+        else{
+
+            alert(result.message);
+
+        }
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        alert("Unable to save permissions.");
+
+    }
+
+}
