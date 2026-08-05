@@ -39,26 +39,21 @@ onclick="closeMenu()">
     <i class="fa fa-user-circle"></i>
 
 </div>
-<div class="sidebar">
-    <h2>Academy ERP</h2>
-    <ul>
-        <li><i class="fa fa-chart-line"></i> Dashboard</li>
-        <li onclick="goToClasses()">
-    <i class="fa fa-book"></i> My Classes
-</li>
-        <li><i class="fa fa-calendar-check"></i> Attendance</li>
-        <li onclick="location.href='teacher-ai-assessment.html'">
-    <i class="fa fa-robot"></i> AI Assessment
-</li>
-        <li onclick="location.href='teacher-homework.html'"><i class="fa fa-tasks"></i> Homework</li>
-        <li onclick="location.href='teacher-calendar.html'">
-    <i class="fa fa-calendar-alt"></i> Calendar
-</li>
-        <li><i class="fa fa-pen"></i> Marks Entry</li>
-        
-        <li onclick="logout()"><i class="fa fa-sign-out-alt"></i> Logout</li>
-    </ul>
-</div>
+<div id="sidebar-container"></div>
+
+<script>
+
+fetch("teacher-sidebar.html")
+
+.then(res=>res.text())
+
+.then(data=>{
+
+document.getElementById("sidebar-container").innerHTML=data;
+
+});
+
+</script>
 
 <div class="main">
 
