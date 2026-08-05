@@ -477,13 +477,40 @@ function renderTeachers(){
 </td>
 
 <td>${new Date(t.createdAt).toLocaleDateString()}</td>
-            <td>
-    <button class="action-btn" onclick="viewDetails('${t._id}')">Details</button>
-    <button class="action-btn edit-btn" onclick="editTeacher('${t._id}')">Edit</button>
-    <button class="action-btn delete-btn" onclick="deleteTeacher('${t._id}')">Delete</button>
-    <button class="action-btn" onclick="updateAttendance('${t._id}')">
-Attendance
-</button>
+            <td style="white-space:nowrap; text-align:center;">
+
+    <button class="action-btn"
+        onclick="viewDetails('${t._id}')">
+        Details
+    </button>
+
+    <button class="action-btn edit-btn"
+        onclick="editTeacher('${t._id}')">
+        Edit
+    </button>
+
+    <button class="action-btn delete-btn"
+        onclick="deleteTeacher('${t._id}')">
+        Delete
+    </button>
+
+    <button class="action-btn"
+        onclick="updateAttendance('${t._id}')">
+        Attendance
+    </button>
+
+    <button
+        class="action-btn"
+        style="
+            background:${t.allowScreenShare ? '#28a745' : '#dc3545'};
+            color:white;
+        "
+        onclick="toggleScreenShare('${t._id}')">
+
+        ${t.allowScreenShare ? 'Screen ON' : 'Screen OFF'}
+
+    </button>
+
 </td>
         </tr>`;
     });
