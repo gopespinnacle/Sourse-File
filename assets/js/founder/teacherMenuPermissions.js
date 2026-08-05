@@ -47,13 +47,11 @@ async function loadTeacher(){
 
         }
 
-        document.getElementById("teacherName").innerHTML=
-
-        "Teacher : <b>" + teacher.name + "</b>";
-
-        document.getElementById("teacherName").innerHTML=
+        document.getElementById("teacherName").innerHTML =
 
 "Teacher : <b>" + teacher.name + "</b>";
+
+renderPermissions(teacher);
 
     }
 
