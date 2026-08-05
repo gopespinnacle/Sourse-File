@@ -291,6 +291,14 @@ sessionStorage.setItem(
 data.user._id
 );
 
+
+sessionStorage.setItem(
+"menuPermissions",
+JSON.stringify(
+data.user.menuPermissions || {}
+)
+);
+
 sessionStorage.setItem(
 "teacherName",
 data.user.studentName
