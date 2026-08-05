@@ -57,8 +57,21 @@ const ScreenShare = {
 
             window.currentScreenStream = this.stream;
 
-            const screenVideo =
-            document.getElementById("screenVideo");
+DebugMeeting.success(
+    "Teacher Screen Capture Granted"
+);
+
+DebugMeeting.log(
+    "Screen Tracks",
+    this.stream.getTracks().map(track => ({
+        kind: track.kind,
+        id: track.id,
+        readyState: track.readyState
+    }))
+);
+
+const screenVideo =
+document.getElementById("screenVideo");
 
             screenVideo.srcObject = this.stream;
 
@@ -66,11 +79,19 @@ const ScreenShare = {
 
             ParticipantLayout.showScreenShare();
 
-            this.socket.emit("screenShareStarted",{
+DebugMeeting.step(
+    "Broadcasting Screen Share Started"
+);
 
-                room:this.room
+this.socket.emit("screenShareStarted",{
 
-            });
+    room:this.room
+
+});
+
+DebugMeeting.success(
+    "Broadcast Sent"
+);
 
             console.log("Current peers:", Object.keys(this.peers));
 
@@ -121,13 +142,31 @@ Object.keys(this.peers).forEach((socketId)=>{
 
         });
 
+        DebugMeeting.step(
+    "Creating Screen Peer",
+    studentSocketId
+);
+
+DebugMeeting.log(
+    "Current Screen Peers",
+    Object.keys(this.screenPeers)
+);
+
         this.screenPeers[studentSocketId] = pc;
 
         this.stream.getTracks().forEach(track=>{
 
-            pc.addTrack(track,this.stream);
+    DebugMeeting.log(
+        "Adding Track",
+        {
+            kind: track.kind,
+            id: track.id
+        }
+    );
 
-        });
+    pc.addTrack(track,this.stream);
+
+});
 
         pc.onicecandidate=(event)=>{
 
@@ -145,18 +184,33 @@ Object.keys(this.peers).forEach((socketId)=>{
 
         };
 
+        DebugMeeting.step(
+    "Creating WebRTC Offer",
+    studentSocketId
+);
+
         const offer =
         await pc.createOffer();
 
         await pc.setLocalDescription(offer);
 
-        this.socket.emit("screen-offer",{
+        DebugMeeting.success(
+    "Offer Created",
+    studentSocketId
+);
 
-            targetSocketId:studentSocketId,
+this.socket.emit("screen-offer",{
 
-            offer
+    targetSocketId:studentSocketId,
 
-        });
+    offer
+
+});
+
+DebugMeeting.success(
+    "Offer Sent",
+    studentSocketId
+);
 
     },
 
@@ -232,15 +286,36 @@ Object.keys(this.peers).forEach((socketId)=>{
 
         };
 
-        this.socket.emit("screenPeerReady",{
+        ScenarioDebugger.step(
+    "Student Ready For Screen",
+    teacherSocketId
+);
 
-            teacherSocketId
+this.socket.emit("screenPeerReady",{
 
-        });
+    teacherSocketId
+
+});
+
+ScenarioDebugger.success(
+    "screenPeerReady Sent",
+    teacherSocketId
+);
 
     },
 
+    
+
     async handleOffer(data){
+
+        ScenarioDebugger.socket(
+    "screen-offer",
+    data
+);
+
+ScenarioDebugger.step(
+    "Processing Screen Offer"
+);
 
         let pc = this.screenPeers[data.teacherSocketId];
 
@@ -256,6 +331,10 @@ Object.keys(this.peers).forEach((socketId)=>{
             new RTCSessionDescription(data.offer)
         );
 
+        ScenarioDebugger.success(
+    "Remote Offer Applied"
+);
+
         if(this.pendingIce[data.teacherSocketId]){
 
             for(const candidate of this.pendingIce[data.teacherSocketId]){
@@ -270,9 +349,17 @@ Object.keys(this.peers).forEach((socketId)=>{
 
         }
 
+        ScenarioDebugger.step(
+    "Creating Screen Answer"
+);
+
         const answer = await pc.createAnswer();
 
         await pc.setLocalDescription(answer);
+
+        ScenarioDebugger.success(
+    "Screen Answer Created"
+);
 
         this.socket.emit("screen-answer",{
 
@@ -282,24 +369,72 @@ Object.keys(this.peers).forEach((socketId)=>{
 
         });
 
+        ScenarioDebugger.success(
+    "Screen Answer Sent"
+);
+
     },
 
     async handleAnswer(data){
 
+        ScenarioDebugger.socket(
+    "screen-answer",
+    data
+);
+
+ScenarioDebugger.step(
+    "Teacher Received Screen Answer",
+    data.studentSocketId
+);
+
         const pc =
         this.screenPeers[data.studentSocketId];
 
+        if(!pc){
+
+    ScenarioDebugger.error(
+        "Teacher Screen Peer Missing",
+        data.studentSocketId
+    );
+
+    return;
+
+}
+
         if(!pc) return;
 
-        await pc.setRemoteDescription(
+        try{
 
-            new RTCSessionDescription(data.answer)
+    await pc.setRemoteDescription(
 
-        );
+        new RTCSessionDescription(data.answer)
+
+    );
+
+    ScenarioDebugger.success(
+        "Teacher Applied Screen Answer",
+        data.studentSocketId
+    );
+
+}catch(err){
+
+    ScenarioDebugger.error(
+        "Teacher Failed Applying Answer",
+        err
+    );
+
+    console.error(err);
+
+}
 
     },
 
     async handleIceCandidate(data){
+
+        ScenarioDebugger.socket(
+    "screen-ice-candidate",
+    data
+);
 
         const pc =
         this.screenPeers[data.senderSocketId];
@@ -324,9 +459,15 @@ Object.keys(this.peers).forEach((socketId)=>{
 
             await pc.addIceCandidate(
 
+                
+
                 new RTCIceCandidate(data.candidate)
 
             );
+            ScenarioDebugger.success(
+    "ICE Candidate Added",
+    data.senderSocketId
+);
 
         }else{
 

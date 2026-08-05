@@ -34,17 +34,28 @@ window.MeetingSocket = (() => {
 
         socket.on("connect", () => {
 
-            connected = true;
+    connected = true;
 
-            MeetingUtils.success(
+    DebugMeeting.scenario(
+        1,
+        "Teacher Opens Classroom"
+    );
 
-                "Socket Connected",
+    DebugMeeting.step(
+        "Socket Connected"
+    );
 
-                socket.id
+    DebugMeeting.socket(
+        "connect",
+        socket.id
+    );
 
-            );
+    MeetingUtils.success(
+        "Socket Connected",
+        socket.id
+    );
 
-        });
+});
 
         socket.on("disconnect", reason => {
 
