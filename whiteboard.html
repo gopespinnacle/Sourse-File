@@ -2401,10 +2401,9 @@ if (role === "student") {
         if (window.teacherSocketId) {
 
             socket.emit("studentReady", {
-
-                teacherSocketId: window.teacherSocketId
-
-            });
+    teacherSocketId: data.socketId,
+    studentSocketId: socket.id
+});
 
             clearInterval(waitTeacher);
 
