@@ -2510,15 +2510,7 @@ socket.on("screen-ice-candidate", async (data)=>{
 
 });
 
-socket.on("screenPeerReady", async (data)=>{
 
-    if(role !== "teacher") return;
-
-    console.log("Student is ready for screen:", data.studentSocketId);
-
-    await ScreenShare.createTeacherPeer(data.studentSocketId);
-
-});
 
 console.log("JOINED ROOM:", room);
 sendDeviceInfo();
