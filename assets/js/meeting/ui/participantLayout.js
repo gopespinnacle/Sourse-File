@@ -168,171 +168,106 @@ ParticipantLayout.removeParticipant = function(socketId){
 
 };
 
-ParticipantLayout.updateLayout = function(){
+ParticipantLayout.updateLayout = function () {
 
     const strip = document.getElementById("participantStrip");
 
-    if(!strip) return;
+    if (!strip) return;
 
     const count = Object.keys(this.participants).length;
 
     const isMobile =
-    /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+        /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 
-if(
-    strip.classList.contains("screen-sharing") &&
-    isMobile
-){
+    const isScreenSharing =
+        strip.classList.contains("screen-sharing");
 
-    strip.style.position = "fixed";
+    // Reset previous inline styles
+    strip.removeAttribute("style");
 
-    strip.style.right = "10px";
+    // ============================
+    // SCREEN SHARE LAYOUT
+    // ============================
 
-    const localVideo = document.getElementById("localVideoBox");
+    if (isScreenSharing) {
 
-if (localVideo) {
-    strip.style.bottom = (localVideo.offsetHeight + 15) + "px";
-} else {
-    strip.style.bottom = "135px";
-}  // Above local video
+        let videoWidth = 120;
+        let videoHeight = 90;
 
-    strip.style.left = "auto";
+        if (isMobile) {
 
-    strip.style.top = "auto";
+            videoWidth = 70;
+            videoHeight = 120;
 
-    strip.style.width = "70px";
+        }
 
-    strip.style.height = "120px";
+        strip.style.position = "fixed";
+        strip.style.right = "10px";
+        strip.style.bottom = "10px";
 
-    strip.style.display = "flex";
-
-    strip.style.flexDirection = "column-reverse";
-
-    strip.style.alignItems = "flex-end";
-
-    strip.style.gap = "3px";
-
-    strip.style.zIndex = "99999";
-
-    strip.style.overflow = "visible";
-
-
-
-}
-else if (
-    strip.classList.contains("screen-sharing")
-){
-
-    strip.style.position = "fixed";
-
-    strip.style.right = "110px";
-
-    strip.style.bottom = "10px";
-
-    strip.style.left = "auto";
-
-    strip.style.top = "auto";
-
-    strip.style.width = "70px";
-
-    strip.style.height = "120px";
-
-    strip.style.display = "flex";
-
-    strip.style.flexDirection = "column";
-
-    strip.style.alignItems = "flex-end";
-
-    strip.style.gap = "4px";
-
-    strip.style.zIndex = "99999";
-
-    strip.style.overflow = "visible";
-
-}
-else{
-
-    strip.style.position = "";
-
-    strip.style.top = "";
-
-    strip.style.left = "";
-
-    strip.style.right = "";
-
-    strip.style.bottom = "";
-
-    strip.style.width = "";
-
-    strip.style.height = "";
-
-    strip.style.display = "";
-
-    strip.style.flexDirection = "";
-
-    strip.style.alignItems = "";
-
-    strip.style.gap = "";
-
-    strip.style.zIndex = "";
-
-    strip.style.overflow = "";
-
-}
-
-    const isPortrait = window.innerHeight > window.innerWidth;
-
-if (strip.classList.contains("screen-sharing")) {
-
-    if (isMobile && isPortrait) {
-
-        // Mobile Portrait
         strip.style.display = "flex";
+        strip.style.flexDirection = "column";
+        strip.style.alignItems = "flex-end";
+        strip.style.gap = "3px";
 
-    } else {
+        strip.style.zIndex = "99999";
 
-        // Desktop + Mobile Landscape
-        strip.style.display = "flex";
+        Object.values(this.participants).forEach(participant => {
+
+            if (!participant.card) return;
+
+            participant.card.style.width = videoWidth + "px";
+            participant.card.style.height = videoHeight + "px";
+            participant.card.style.flex = "none";
+
+        });
+
+        return;
+
     }
 
-} else {
+    // ============================
+    // NORMAL MEETING LAYOUT
+    // ============================
 
-    // Normal classroom view
+    strip.style.position = "fixed";
+    strip.style.top = "50px";
+    strip.style.left = "0";
+    strip.style.right = "0";
+    strip.style.bottom = "0";
+
     strip.style.display = "grid";
 
-}
     strip.style.padding = "8px";
     strip.style.gap = "8px";
 
-    // Google Meet Layout
-    if(count <= 1){
+    if (count <= 1) {
 
         strip.style.gridTemplateColumns = "1fr";
-        strip.style.gridTemplateRows = "1fr";
 
     }
-    else if(count === 2){
+
+    else if (count == 2) {
 
         strip.style.gridTemplateColumns = "1fr 1fr";
-        strip.style.gridTemplateRows = "1fr";
 
     }
-    else if(count <= 4){
+
+    else if (count <= 4) {
 
         strip.style.gridTemplateColumns = "repeat(2,1fr)";
-        strip.style.gridTemplateRows = "repeat(2,1fr)";
 
     }
-    else if(count <= 9){
+
+    else if (count <= 9) {
 
         strip.style.gridTemplateColumns = "repeat(3,1fr)";
-        strip.style.gridTemplateRows = "repeat(3,1fr)";
 
     }
-    else{
+
+    else {
 
         strip.style.gridTemplateColumns = "repeat(4,1fr)";
-        strip.style.gridTemplateRows = "repeat(4,1fr)";
 
     }
 
