@@ -114,25 +114,29 @@ strip.style.flexDirection = "column";
 strip.style.alignItems = "flex-end";
 strip.style.gap = "1px";
 
-        const width =
-            isMobile
-                ? (isPortrait ? 90 : 70)
-                : 120;
+        const localBox = document.getElementById("localVideoBox");
 
-        const height =
-            isMobile
-                ? (isPortrait ? 150 : 120)
-                : 180;
+const width = localBox
+    ? localBox.offsetWidth
+    : (isMobile ? (isPortrait ? 90 : 70) : 120);
+
+const height = localBox
+    ? localBox.offsetHeight
+    : (isMobile ? (isPortrait ? 150 : 120) : 180);
 
         Object.values(ParticipantLayout.participants).forEach(p => {
 
-            if (!p.card) return;
+    if (!p.card) return;
 
-            p.card.style.width = width + "px";
-            p.card.style.height = height + "px";
-            p.card.style.flex = "none";
+    p.card.style.width = width + "px";
+    p.card.style.height = height + "px";
+    p.card.style.minWidth = width + "px";
+    p.card.style.minHeight = height + "px";
+    p.card.style.maxWidth = width + "px";
+    p.card.style.maxHeight = height + "px";
+    p.card.style.flex = "none";
 
-        });
+});
 
         return;
 
