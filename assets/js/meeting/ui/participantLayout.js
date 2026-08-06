@@ -211,19 +211,31 @@ ParticipantLayout.updateLayout = function(){
 
 }else{
 
-    strip.style.position = "fixed";
+    strip.style.position = "";
 
-    strip.style.top = "50px";
+    strip.style.top = "";
 
-    strip.style.left = "0";
+    strip.style.left = "";
 
-    strip.style.right = "0";
+    strip.style.right = "";
 
-    strip.style.bottom = "0";
+    strip.style.bottom = "";
 
     strip.style.width = "";
 
     strip.style.height = "";
+
+    strip.style.display = "";
+
+    strip.style.flexDirection = "";
+
+    strip.style.alignItems = "";
+
+    strip.style.gap = "";
+
+    strip.style.zIndex = "";
+
+    strip.style.overflow = "";
 
 }
 
