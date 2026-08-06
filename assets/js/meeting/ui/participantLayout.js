@@ -245,10 +245,13 @@ if (localVideo) {
 
 }
 
-    if(
+    const isPortrait = window.innerHeight > window.innerWidth;
+
+if (
     strip.classList.contains("screen-sharing") &&
-    window.innerWidth <= 768
-){
+    window.innerWidth <= 768 &&
+    isPortrait
+) {
     strip.style.display = "flex";
 }else{
     strip.style.display = "grid";
