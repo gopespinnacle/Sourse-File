@@ -198,7 +198,7 @@ ParticipantLayout.updateLayout = function(){
 
     strip.style.alignItems = "flex-end";
 
-    strip.style.gap = "8px";
+    strip.style.gap = "3px";
 
     strip.style.zIndex = "99999";
 
