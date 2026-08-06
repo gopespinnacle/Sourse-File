@@ -197,13 +197,21 @@ data2.data.forEach(p => {
 
     console.log("Period:", p);
 
-    console.log("Student:", p.student);
+    console.log("Students:", p.students);
 
-    console.log("Student ID:", p.student?._id);
+    if (Array.isArray(p.students)) {
 
-    if (p.student && p.student._id) {
+        p.students.forEach(student => {
 
-        studentSet.add(p.student._id);
+            console.log("Student:", student);
+
+            if (student && student._id) {
+
+                studentSet.add(student._id);
+
+            }
+
+        });
 
     }
 
