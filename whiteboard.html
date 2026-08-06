@@ -2009,6 +2009,20 @@ const socket = MeetingSocket.connect(
 "https://academy-backend-eatl.onrender.com"
 );
 
+socket.on("userJoined", async (data) => {
+
+    console.log("USER JOINED:", data.socketId);
+
+    if (role !== "teacher") return;
+
+    if (peers[data.socketId]) return;
+
+    await createPeer(data.socketId);
+
+    await createOffer(data.socketId);
+
+});
+
 
 socket.onAny((event, ...args) => {
 
