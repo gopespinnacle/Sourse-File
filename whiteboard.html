@@ -1661,11 +1661,11 @@ body.layout-spotlight #screenContainer{
 
    #localVideoBox{
 
-    width:60px;
-    height:60px;
+    width:60px !important;
+    height:60px !important;
 
-    right:10px;
-    bottom:10px;
+    right:10px !important;
+    bottom:10px !important;
 
 }
 
@@ -3982,16 +3982,17 @@ function applyOrientationLayout(){
 
     if(isLandscape){
 
-        topBar.style.height = "40px";
+    topBar.style.height = "40px";
 
-        screenContainer.style.top = "40px";
-        screenContainer.style.height = "calc(100vh - 40px)";
+    screenContainer.style.top = "40px";
+    screenContainer.style.height = "calc(100vh - 40px)";
 
-        localVideoBox.style.width = "70px";
-localVideoBox.style.height = "60px";
-        localVideoBox.style.bottom = "10px";
+    localVideoBox.style.width = "60px";
+    localVideoBox.style.height = "60px";
+    localVideoBox.style.right = "10px";
+    localVideoBox.style.bottom = "10px";
 
-    }else{
+}else{
 
         topBar.style.height = "50px";
 
