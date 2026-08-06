@@ -3357,6 +3357,22 @@ socket.on("screenShareStopped", () => {
 
 });
 
+socket.on("screenAlreadySharing", (data) => {
+
+    window.teacherSocketId = data.teacherSocketId;
+
+    if (role === "student") {
+
+        socket.emit("screenPeerReady", {
+
+            teacherSocketId: data.teacherSocketId
+
+        });
+
+    }
+
+});
+
 function leaveClass(){
 
     // ✅ ONLY FOR STUDENT
