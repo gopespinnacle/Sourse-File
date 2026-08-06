@@ -170,12 +170,39 @@ ParticipantLayout.updateLayout = function(){
 
     const count = Object.keys(this.participants).length;
 
-    // Leave space for teacher preview
+    if(strip.classList.contains("screen-sharing")){
+
     strip.style.position = "fixed";
+
+    strip.style.top = "auto";
+
+    strip.style.left = "auto";
+
+    strip.style.right = "10px";
+
+    strip.style.bottom = "20px";
+
+    strip.style.width = "90px";
+
+    strip.style.height = "auto";
+
+}else{
+
+    strip.style.position = "fixed";
+
     strip.style.top = "50px";
+
     strip.style.left = "0";
+
     strip.style.right = "0";
+
     strip.style.bottom = "0";
+
+    strip.style.width = "";
+
+    strip.style.height = "";
+
+}
 
     if(strip.classList.contains("screen-sharing")){
 
@@ -235,24 +262,7 @@ ParticipantLayout.showScreenShare = function(){
     .getElementById("participantStrip")
     ?.classList.add("screen-sharing");
 
-    const strip = document.getElementById("participantStrip");
-
-strip.style.position = "fixed";
-strip.style.right = "10px";
-strip.style.left = "auto";
-strip.style.top = "auto";
-strip.style.bottom = "10px";
-
-strip.style.width = "90px";
-strip.style.height = "auto";
-
-strip.style.display = "flex";
-strip.style.flexDirection = "column";
-strip.style.alignItems = "flex-end";
-strip.style.gap = "8px";
-
-strip.style.zIndex = "999999";
-
+    
 this.updateLayout();
 
 };
