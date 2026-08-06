@@ -4021,7 +4021,11 @@ localVideoBox.style.bottom = "10px";
 
     handleResize();
 
-    ParticipantLayout.updateLayout();
+    MeetingLayout.update();
+
+if (window.LocalVideoLayout) {
+    MeetingLayout.update();
+}
 
 }
 
@@ -4923,7 +4927,10 @@ function toggleAttendancePanel(){
 
 <!-- UI -->
 <script src="assets/js/meeting/ui/participantLayout.js"></script>
+<script src="assets/js/meeting/ui/localVideoLayout.js"></script>
+<script src="assets/js/meeting/ui/meetingLayout.js"></script>
 <script src="assets/js/meeting/ui/meetingToolbar.js"></script>
+
 
 <!-- Screen -->
 <script src="assets/js/meeting/screen/screenLayout.js"></script>

@@ -88,7 +88,7 @@ ParticipantLayout.createVideoCard = function(socketId, isLocal = false){
         video
 
     };
-    this.updateLayout();
+    MeetingLayout.update();
 
     return video;
 
@@ -164,108 +164,15 @@ ParticipantLayout.removeParticipant = function(socketId){
 
     delete this.participants[socketId];
 
-    this.updateLayout();
+    MeetingLayout.update();
 
 };
 
-ParticipantLayout.updateLayout = function () {
 
-    const strip = document.getElementById("participantStrip");
 
-    if (!strip) return;
 
-    const count = Object.keys(this.participants).length;
 
-    const isMobile =
-        /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 
-    const isScreenSharing =
-        strip.classList.contains("screen-sharing");
-
-    // Reset previous inline styles
-    strip.removeAttribute("style");
-
-    // ============================
-    // SCREEN SHARE LAYOUT
-    // ============================
-
-    if (isScreenSharing) {
-
-    strip.style.position = "fixed";
-    strip.style.right = "10px";
-    strip.style.bottom = "10px";
-    strip.style.left = "auto";
-    strip.style.top = "auto";
-
-    strip.style.display = "flex";
-    strip.style.flexDirection = "column";
-    strip.style.alignItems = "flex-end";
-    strip.style.gap = "3px";
-    strip.style.zIndex = "99999";
-
-    let videoWidth = isMobile ? 90 : 120;
-    let videoHeight = isMobile ? 150 : 180;
-
-    Object.values(this.participants).forEach(participant => {
-
-        if (!participant.card) return;
-
-        participant.card.style.width = videoWidth + "px";
-        participant.card.style.height = videoHeight + "px";
-        participant.card.style.flex = "none";
-
-    });
-
-    return;
-
-}
-
-    // ============================
-    // NORMAL MEETING LAYOUT
-    // ============================
-
-    strip.style.position = "fixed";
-strip.style.top = "auto";
-strip.style.left = "auto";
-strip.style.right = "10px";
-strip.style.bottom = "10px";
-
-    strip.style.display = "grid";
-
-    strip.style.padding = "8px";
-    strip.style.gap = "8px";
-
-    if (count <= 1) {
-
-        strip.style.gridTemplateColumns = "1fr";
-
-    }
-
-    else if (count == 2) {
-
-        strip.style.gridTemplateColumns = "1fr 1fr";
-
-    }
-
-    else if (count <= 4) {
-
-        strip.style.gridTemplateColumns = "repeat(2,1fr)";
-
-    }
-
-    else if (count <= 9) {
-
-        strip.style.gridTemplateColumns = "repeat(3,1fr)";
-
-    }
-
-    else {
-
-        strip.style.gridTemplateColumns = "repeat(4,1fr)";
-
-    }
-
-};
 
 ParticipantLayout.showScreenShare = function(){
 
@@ -280,7 +187,11 @@ ParticipantLayout.showScreenShare = function(){
     ?.classList.add("screen-sharing");
 
     
-this.updateLayout();
+MeetingLayout.update();
+
+if(window.LocalVideoLayout){
+    LocalVideoLayout.updateLayout();
+}
 
 };
 
@@ -300,8 +211,14 @@ ParticipantLayout.hideScreenShare = function(){
 
 strip.removeAttribute("style");
 
-this.updateLayout();
+MeetingLayout.update();
+
+if(window.LocalVideoLayout){
+    LocalVideoLayout.updateLayout();
+}
 
 };
 
 window.ParticipantLayout = ParticipantLayout;
+
+
