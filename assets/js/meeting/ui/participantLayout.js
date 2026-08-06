@@ -191,40 +191,21 @@ ParticipantLayout.updateLayout = function () {
 
     if (isScreenSharing) {
 
-        let videoWidth = 120;
-        let videoHeight = 90;
+    strip.style.display = "flex";
 
-        if (isMobile) {
+    Object.values(this.participants).forEach(participant => {
 
-            videoWidth = 70;
-            videoHeight = 120;
+        if (!participant.card) return;
 
-        }
+        participant.card.style.width = "";
+        participant.card.style.height = "";
+        participant.card.style.flex = "";
 
-        strip.style.position = "fixed";
-        strip.style.right = "10px";
-        strip.style.bottom = "10px";
+    });
 
-        strip.style.display = "flex";
-        strip.style.flexDirection = "column";
-        strip.style.alignItems = "flex-end";
-        strip.style.gap = "3px";
+    return;
 
-        strip.style.zIndex = "99999";
-
-        Object.values(this.participants).forEach(participant => {
-
-            if (!participant.card) return;
-
-            participant.card.style.width = videoWidth + "px";
-            participant.card.style.height = videoHeight + "px";
-            participant.card.style.flex = "none";
-
-        });
-
-        return;
-
-    }
+}
 
     // ============================
     // NORMAL MEETING LAYOUT

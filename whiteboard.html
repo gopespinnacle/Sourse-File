@@ -103,11 +103,11 @@ background:black;
 
 #participantStrip.screen-sharing .participant-card{
 
-    width:100px;
+    width:120px;
 
-    height:75px;
+    height:90px;
 
-    min-height:75px;
+    min-height:90px;
 
     flex:none;
 
@@ -212,17 +212,24 @@ canvas {
 video {
     background: black;
 }
-#mainBoard {
+#mainBoard{
 
 position:absolute;
 
-top:42px;
+top:50px;
 
 left:0;
 
 width:100%;
 
-height:calc(100dvh - 42px);
+height:calc(100vh - 50px);
+
+background:white;
+
+z-index:1;
+
+pointer-events:auto;
+
 }
 
 /* HEADER */
@@ -242,25 +249,21 @@ height:calc(100dvh - 42px);
 
 #screenDraw{
 
-    position:absolute;
+position:absolute;
 
-    top:30px;
+top:50px;
 
-    left:0;
+left:0;
 
-    width:100%;
+width:100%;
 
-    height:calc(100% - 30px);
+height:calc(100vh - 50px);
 
-    background:transparent;
+background:transparent;
 
-    z-index:5;
+z-index:20;
 
-    pointer-events:none;
-
-    cursor:crosshair;
-
-    touch-action:none;
+pointer-events:none;
 
 }
 /* 🔥 STUDENT SMALL VIDEO */
@@ -287,20 +290,23 @@ left:0;
 
     position:fixed;
 
-    right:15px;
-    bottom:15px;
+    right:10px;
 
-    width:180px;
-    height:100px;
+    bottom:10px;
+
+    width:120px;
+
+    height:90px;
 
     border-radius:12px;
+
     overflow:hidden;
 
-    border:2px solid white;
+    border:2px solid #fff;
 
     background:#000;
 
-    z-index:99999;
+    z-index:100000;
 
 }
 
@@ -1676,6 +1682,34 @@ body.layout-spotlight #screenContainer{
     }
 
 }
+
+#videoStack{
+
+    position:fixed;
+
+    right:10px;
+
+    bottom:10px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:flex-end;
+
+    gap:3px;
+
+    z-index:100000;
+
+    pointer-events:none;
+
+}
+
+#videoStack > *{
+
+    pointer-events:auto;
+
+}
 </style>
 </head>
 
@@ -1884,26 +1918,10 @@ onclick="startScreenShare()">
 </div>
 
 <!-- REMOTE VIDEO -->
- 
-<div id="participantStrip"></div>
+
 
 <!-- DRAW -->
 <canvas id="screenDraw"></canvas>
-
-<!-- TEACHER VIDEO INSIDE -->
-<div id="localVideoBox">
-
-    <video
-    id="localVideo"
-    autoplay
-    muted
-    playsinline></video>
-
-    <!-- AR FILTER CANVAS -->
-    <!-- <canvas id="jeeFaceFilterCanvas"></canvas>-->
-     <!--<canvas id="arOverlay"></canvas>-->
-
-</div>
 <!-- LOCAL SMALL PREVIEW -->
     
 <div id="pdfTab" style="
@@ -1919,6 +1937,23 @@ onclick="startScreenShare()">
 ">
     📄 PDF
 </div>
+<!-- VIDEO STACK -->
+<div id="videoStack">
+
+    <div id="participantStrip"></div>
+
+    <div id="localVideoBox">
+
+        <video
+            id="localVideo"
+            autoplay
+            muted
+            playsinline></video>
+
+    </div>
+
+</div>
+
 <canvas id="mainBoard" style="
     position:absolute;
     top:50px;
