@@ -2394,6 +2394,26 @@ socket.emit("joinRoom", {
 
 });
 
+if (role === "student") {
+
+    const waitTeacher = setInterval(() => {
+
+        if (window.teacherSocketId) {
+
+            socket.emit("studentReady", {
+
+                teacherSocketId: window.teacherSocketId
+
+            });
+
+            clearInterval(waitTeacher);
+
+        }
+
+    }, 500);
+
+}
+
 ScenarioDebugger.success(
     "joinRoom emitted"
 );
@@ -2570,6 +2590,8 @@ const offer = await pc.createOffer();
 socket.on("offer", async(data)=>{
 
     const teacherSocketId = data.teacherSocketId;
+
+    window.teacherSocketId = teacherSocketId;
 
     let pc = peers[teacherSocketId];
 
