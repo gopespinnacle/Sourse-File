@@ -3844,19 +3844,7 @@ pc.onconnectionstatechange = async () => {
                 return;
             }
 
-            const offer = await pc.createOffer({
-                iceRestart: true
-            });
-
-            await pc.setLocalDescription(offer);
-
-            socket.emit("offer", {
-
-                targetSocketId: socketId,
-
-                offer
-
-            });
+            
 
         } catch (e) {
 
