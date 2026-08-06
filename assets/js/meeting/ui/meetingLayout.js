@@ -114,7 +114,7 @@ strip.style.flexDirection = "column";
 strip.style.alignItems = "flex-end";
 strip.style.gap = "1px";
 
-        const localBox = document.getElementById("localVideoBox");
+        
 
 const width = localBox
     ? localBox.offsetWidth
