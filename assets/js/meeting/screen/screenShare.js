@@ -132,6 +132,14 @@ Object.keys(this.peers).forEach((socketId)=>{
 
     async createTeacherPeer(studentSocketId){
 
+        if (this.screenPeers[studentSocketId]) {
+
+    console.log("Screen peer already exists:", studentSocketId);
+
+    return;
+
+}
+
         const pc = new RTCPeerConnection({
 
             iceServers:[
