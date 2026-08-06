@@ -206,7 +206,7 @@ if (localVideo) {
 
     strip.style.display = "flex";
 
-    strip.style.flexDirection = "column";
+    strip.style.flexDirection = "column-reverse";
 
     strip.style.alignItems = "flex-end";
 
@@ -282,14 +282,24 @@ else{
 
     const isPortrait = window.innerHeight > window.innerWidth;
 
-if (
-    strip.classList.contains("screen-sharing") &&
-    isMobile &&
-    isPortrait
-){
-    strip.style.display = "flex";
-}else{
+if (strip.classList.contains("screen-sharing")) {
+
+    if (isMobile && isPortrait) {
+
+        // Mobile Portrait
+        strip.style.display = "flex";
+
+    } else {
+
+        // Desktop + Mobile Landscape
+        strip.style.display = "flex";
+    }
+
+} else {
+
+    // Normal classroom view
     strip.style.display = "grid";
+
 }
     strip.style.padding = "8px";
     strip.style.gap = "8px";
