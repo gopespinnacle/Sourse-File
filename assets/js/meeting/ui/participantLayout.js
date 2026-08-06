@@ -184,7 +184,7 @@ ParticipantLayout.updateLayout = function(){
 
     strip.style.left = "auto";
 
-    strip.style.right = "auto";
+    strip.style.right = "5px";
 
     strip.style.bottom = "130px";
 
