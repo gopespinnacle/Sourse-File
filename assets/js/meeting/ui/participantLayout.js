@@ -88,7 +88,12 @@ ParticipantLayout.createVideoCard = function(socketId, isLocal = false){
         video
 
     };
+    if (
+    window.MeetingLayout &&
+    typeof MeetingLayout.update === "function"
+) {
     MeetingLayout.update();
+}
 
     return video;
 
@@ -164,7 +169,12 @@ ParticipantLayout.removeParticipant = function(socketId){
 
     delete this.participants[socketId];
 
+    if (
+    window.MeetingLayout &&
+    typeof MeetingLayout.update === "function"
+) {
     MeetingLayout.update();
+}
 
 };
 
@@ -187,7 +197,12 @@ ParticipantLayout.showScreenShare = function(){
     ?.classList.add("screen-sharing");
 
     
-MeetingLayout.update();
+if (
+    window.MeetingLayout &&
+    typeof MeetingLayout.update === "function"
+) {
+    MeetingLayout.update();
+}
 
 if(window.LocalVideoLayout){
     LocalVideoLayout.updateLayout();
@@ -211,7 +226,12 @@ ParticipantLayout.hideScreenShare = function(){
 
 strip.removeAttribute("style");
 
-MeetingLayout.update();
+if (
+    window.MeetingLayout &&
+    typeof MeetingLayout.update === "function"
+) {
+    MeetingLayout.update();
+}
 
 if(window.LocalVideoLayout){
     LocalVideoLayout.updateLayout();
