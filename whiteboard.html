@@ -3782,6 +3782,20 @@ if (oldVideo) {
     const pc = await PeerManager.create(socketId, localStream);
 
     peers[socketId] = pc;
+
+    console.log("NEW PEER CREATED:", socketId);
+
+pc.onnegotiationneeded = async () => {
+
+    console.log("NEGOTIATION NEEDED:", socketId);
+
+    if (role !== "teacher") return;
+
+    if (pc.signalingState !== "stable") return;
+
+    await createOffer(socketId);
+
+};
 pc.onicecandidate = null;
 pc.ontrack = null;
 pc.onconnectionstatechange = null;
