@@ -215,7 +215,39 @@ if (localVideo) {
 
 
 
-}else{
+}
+else if (
+    strip.classList.contains("screen-sharing")
+){
+
+    strip.style.position = "fixed";
+
+    strip.style.right = "110px";
+
+    strip.style.bottom = "10px";
+
+    strip.style.left = "auto";
+
+    strip.style.top = "auto";
+
+    strip.style.width = "70px";
+
+    strip.style.height = "120px";
+
+    strip.style.display = "flex";
+
+    strip.style.flexDirection = "column";
+
+    strip.style.alignItems = "flex-end";
+
+    strip.style.gap = "4px";
+
+    strip.style.zIndex = "99999";
+
+    strip.style.overflow = "visible";
+
+}
+else{
 
     strip.style.position = "";
 
