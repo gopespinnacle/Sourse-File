@@ -179,9 +179,12 @@ ParticipantLayout.updateLayout = function(){
     const isMobile =
     /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 
+const isPortrait = window.innerHeight > window.innerWidth;
+
 if(
     strip.classList.contains("screen-sharing") &&
-    isMobile
+    isMobile &&
+    isPortrait
 ){
 
     strip.style.position = "fixed";
@@ -220,8 +223,45 @@ if (localVideo) {
 
 }
 else if (
+    strip.classList.contains("screen-sharing") &&
+    isMobile &&
+    !isPortrait
+){
+
+    // Mobile Landscape
+
+    strip.style.position = "fixed";
+
+    strip.style.right = "90px";
+
+    strip.style.bottom = "10px";
+
+    strip.style.left = "auto";
+
+    strip.style.top = "auto";
+
+    strip.style.width = "70px";
+
+    strip.style.height = "120px";
+
+    strip.style.display = "flex";
+
+    strip.style.flexDirection = "column";
+
+    strip.style.alignItems = "flex-end";
+
+    strip.style.gap = "4px";
+
+    strip.style.zIndex = "99999";
+
+    strip.style.overflow = "visible";
+
+}
+else if (
     strip.classList.contains("screen-sharing")
 ){
+
+    // Desktop
 
     strip.style.position = "fixed";
 
