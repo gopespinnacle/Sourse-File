@@ -86,6 +86,12 @@ video.style.display = "block";
 
     strip.appendChild(card);
 
+    console.log(
+    "CARD CREATED:",
+    socketId,
+    strip.children.length
+);
+
     this.participants[socketId] = {
 
         card,
@@ -143,6 +149,12 @@ ParticipantLayout.attachTrack = function(socketId, track){
     }
 
     video.srcObject.addTrack(track);
+
+    console.log(
+    "TRACK ATTACHED:",
+    socketId,
+    video.srcObject.getTracks().length
+);
 
     video.play().catch(console.error);
 
