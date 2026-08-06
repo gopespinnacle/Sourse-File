@@ -59,39 +59,7 @@ const MeetingLayout = {
     if (screenSharing) {
 
         // One participant → Full screen
-        if (count === 1) {
-
-            strip.style.position = "fixed";
-            strip.style.left = "0";
-            strip.style.top = "50px";
-            strip.style.right = "0";
-            strip.style.bottom = "0";
-
-            strip.style.display = "grid";
-
-            strip.style.width = "100vw";
-strip.style.height = "calc(100vh - 50px)";
-strip.style.alignItems = "stretch";
-strip.style.justifyItems = "stretch";
-
-            strip.style.gridTemplateColumns = "1fr";
-            strip.style.gridTemplateRows = "1fr";
-
-            const participant =
-                Object.values(ParticipantLayout.participants)[0];
-
-            if (participant) {
-
-                participant.card.style.width = "100%";
-participant.card.style.height = "100%";
-participant.card.style.minWidth = "100%";
-participant.card.style.minHeight = "100%";
-
-            }
-
-            return;
-
-        }
+        
 
         // Multiple participants → bottom-right stack
 
