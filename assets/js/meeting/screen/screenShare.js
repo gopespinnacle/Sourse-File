@@ -95,21 +95,8 @@ DebugMeeting.success(
 
             console.log("Current peers:", Object.keys(this.peers));
 
-Object.keys(this.peers).forEach((socketId)=>{
-
-    console.log("Creating screen peer for:", socketId);
-
-    this.socket.emit("startScreenPeer",{
-
-        room:this.room,
-
-        targetSocketId:socketId,
-
-        teacherSocketId:this.socket.id
-
-    });
-
-});
+// Existing students will request screen automatically.
+// Do nothing here.
 
             this.stream
                 .getVideoTracks()[0]
