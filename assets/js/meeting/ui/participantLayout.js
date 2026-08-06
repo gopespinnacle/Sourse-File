@@ -188,7 +188,7 @@ ParticipantLayout.updateLayout = function(){
 
     strip.style.bottom = "100px";
 
-    strip.style.width = "70px";
+    strip.style.width = "100px";
 strip.style.height = "120px";
 strip.style.overflow = "visible";
 
