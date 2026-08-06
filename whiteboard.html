@@ -1657,6 +1657,39 @@ body.layout-spotlight #screenContainer{
 
 <body>
 
+<div id="bottomControls">
+
+<button
+id="videoBtn"
+onclick="toggleVideo(this)">
+🎥
+</button>
+
+<button onclick="toggleAudio(this)">🎤</button>
+
+<button onclick="openEmojiPopup()">😊</button>
+
+<button onclick="openParticipants()">👥</button>
+
+
+<button
+id="screenShareBtn"
+onclick="startScreenShare()">
+🖥️
+</button>
+
+
+
+<button onclick="toggleDeviceBar()">⋮</button>
+
+<button onclick="leaveClass()">📞</button>
+
+<button onclick="toggleLayoutMenu()">
+    ⋮
+</button>
+
+</div>
+
     <div id="layoutMenu">
 
     <div class="layout-title">
@@ -1805,38 +1838,7 @@ onchange="switchCamera(this.value)">
 
 </div>
 
-<div id="bottomControls">
 
-<button
-id="videoBtn"
-onclick="toggleVideo(this)">
-🎥
-</button>
-
-<button onclick="toggleAudio(this)">🎤</button>
-
-<button onclick="openEmojiPopup()">😊</button>
-
-<button onclick="openParticipants()">👥</button>
-
-
-<button
-id="screenShareBtn"
-onclick="startScreenShare()">
-🖥️
-</button>
-
-
-
-<button onclick="toggleDeviceBar()">⋮</button>
-
-<button onclick="leaveClass()">📞</button>
-
-<button onclick="toggleLayoutMenu()">
-    ⋮
-</button>
-
-</div>
 
     <!-- HEADER -->
     <div id="pipHeader" style="display:none;">
