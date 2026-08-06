@@ -179,12 +179,9 @@ ParticipantLayout.updateLayout = function(){
     const isMobile =
     /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 
-const isPortrait = window.innerHeight > window.innerWidth;
-
 if(
     strip.classList.contains("screen-sharing") &&
-    isMobile &&
-    isPortrait
+    isMobile
 ){
 
     strip.style.position = "fixed";
