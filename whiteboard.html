@@ -2740,6 +2740,26 @@ if(!exists){
 
 });
 
+socket.on("studentReady", async (data) => {
+
+    if (role !== "teacher") return;
+
+    if (!peers[data.teacherSocketId]) {
+
+        await createPeer(data.teacherSocketId);
+
+    }
+
+    const pc = peers[data.teacherSocketId];
+
+    if (pc.signalingState === "stable") {
+
+        await createOffer(data.teacherSocketId);
+
+    }
+
+});
+
 }
 
 updateAttendanceList(liveStudents);
