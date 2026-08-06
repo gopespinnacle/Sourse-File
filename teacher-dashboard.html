@@ -194,9 +194,19 @@ const totalClasses = data2.data.length;
 let studentSet = new Set();
 
 data2.data.forEach(p => {
-    if(p.student){
+
+    console.log("Period:", p);
+
+    console.log("Student:", p.student);
+
+    console.log("Student ID:", p.student?._id);
+
+    if (p.student && p.student._id) {
+
         studentSet.add(p.student._id);
+
     }
+
 });
 
 const totalStudents = studentSet.size;
