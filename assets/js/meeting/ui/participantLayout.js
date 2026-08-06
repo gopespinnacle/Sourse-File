@@ -176,7 +176,10 @@ ParticipantLayout.updateLayout = function(){
 
     const count = Object.keys(this.participants).length;
 
-    if(strip.classList.contains("screen-sharing")){
+    if(
+    strip.classList.contains("screen-sharing") &&
+    window.innerWidth <= 768
+){
 
     strip.style.position = "fixed";
 
@@ -224,14 +227,13 @@ ParticipantLayout.updateLayout = function(){
 
 }
 
-    if(strip.classList.contains("screen-sharing")){
-
+    if(
+    strip.classList.contains("screen-sharing") &&
+    window.innerWidth <= 768
+){
     strip.style.display = "flex";
-
 }else{
-
     strip.style.display = "grid";
-
 }
     strip.style.padding = "8px";
     strip.style.gap = "8px";
