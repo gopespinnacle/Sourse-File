@@ -180,17 +180,31 @@ ParticipantLayout.updateLayout = function(){
 
     strip.style.position = "fixed";
 
-    strip.style.top = "auto";
+    strip.style.right = "10px";
+
+    strip.style.bottom = "140px";   // Above local video
 
     strip.style.left = "auto";
 
-    strip.style.right = "60px";
+    strip.style.top = "auto";
 
-    strip.style.bottom = "90px";
+    strip.style.width = "70px";
 
-    strip.style.width = "100px";
-strip.style.height = "120px";
-strip.style.overflow = "visible";
+    strip.style.height = "120px";
+
+    strip.style.display = "flex";
+
+    strip.style.flexDirection = "column";
+
+    strip.style.alignItems = "flex-end";
+
+    strip.style.gap = "8px";
+
+    strip.style.zIndex = "99999";
+
+    strip.style.overflow = "visible";
+
+
 
 }else{
 
