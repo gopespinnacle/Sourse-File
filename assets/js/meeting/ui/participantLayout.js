@@ -212,10 +212,10 @@ ParticipantLayout.updateLayout = function () {
     // ============================
 
     strip.style.position = "fixed";
-    strip.style.top = "50px";
-    strip.style.left = "0";
-    strip.style.right = "0";
-    strip.style.bottom = "0";
+strip.style.top = "auto";
+strip.style.left = "auto";
+strip.style.right = "10px";
+strip.style.bottom = "10px";
 
     strip.style.display = "grid";
 
