@@ -185,7 +185,13 @@ ParticipantLayout.updateLayout = function(){
 
     strip.style.right = "10px";
 
-    strip.style.bottom = "70px";   // Above local video
+    const localVideo = document.getElementById("localVideoBox");
+
+if (localVideo) {
+    strip.style.bottom = (localVideo.offsetHeight + 15) + "px";
+} else {
+    strip.style.bottom = "135px";
+}  // Above local video
 
     strip.style.left = "auto";
 
