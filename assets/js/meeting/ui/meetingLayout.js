@@ -69,6 +69,11 @@ const MeetingLayout = {
 
             strip.style.display = "grid";
 
+            strip.style.width = "100vw";
+strip.style.height = "calc(100vh - 50px)";
+strip.style.alignItems = "stretch";
+strip.style.justifyItems = "stretch";
+
             strip.style.gridTemplateColumns = "1fr";
             strip.style.gridTemplateRows = "1fr";
 
@@ -78,7 +83,9 @@ const MeetingLayout = {
             if (participant) {
 
                 participant.card.style.width = "100%";
-                participant.card.style.height = "100%";
+participant.card.style.height = "100%";
+participant.card.style.minWidth = "100%";
+participant.card.style.minHeight = "100%";
 
             }
 

@@ -71,6 +71,11 @@ ParticipantLayout.createVideoCard = function(socketId, isLocal = false){
 
     video.playsInline = true;
 
+    video.style.width = "100%";
+video.style.height = "100%";
+video.style.objectFit = "cover";
+video.style.display = "block";
+
     if(isLocal){
 
         video.muted = true;
