@@ -3983,10 +3983,12 @@ localVideoBox.style.bottom = "10px";
 
     handleResize();
 
+if (window.MeetingLayout) {
     MeetingLayout.update();
+}
 
 if (window.LocalVideoLayout) {
-    MeetingLayout.update();
+    LocalVideoLayout.updateLayout();
 }
 
 }
