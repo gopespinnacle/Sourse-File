@@ -96,15 +96,23 @@ participant.card.style.minHeight = "100%";
         // Multiple participants → bottom-right stack
 
         strip.style.position = "fixed";
-        strip.style.right = "10px";
-        strip.style.bottom = "10px";
-        strip.style.left = "auto";
-        strip.style.top = "auto";
+strip.style.right = "10px";
+strip.style.left = "auto";
+strip.style.top = "auto";
 
-        strip.style.display = "flex";
-        strip.style.flexDirection = "column";
-        strip.style.alignItems = "flex-end";
-        strip.style.gap = "3px";
+const localBox = document.getElementById("localVideoBox");
+
+const localHeight = localBox
+    ? localBox.getBoundingClientRect().height
+    : 150;
+
+// Place participant just ABOVE local video
+strip.style.bottom = (localHeight + 11) + "px";
+
+strip.style.display = "flex";
+strip.style.flexDirection = "column";
+strip.style.alignItems = "flex-end";
+strip.style.gap = "1px";
 
         const width =
             isMobile
