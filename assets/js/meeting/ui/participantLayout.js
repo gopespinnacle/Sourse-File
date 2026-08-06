@@ -55,6 +55,12 @@ ParticipantLayout.createVideoCard = function(socketId, isLocal = false){
 
     card.className = "participant-card";
 
+    if(document.getElementById("participantStrip")?.classList.contains("screen-sharing")){
+    card.style.width = "70px";
+    card.style.height = "120px";
+    card.style.flex = "none";
+}
+
     card.id = "participant_" + socketId;
 
     const video = document.createElement("video");
@@ -182,9 +188,9 @@ ParticipantLayout.updateLayout = function(){
 
     strip.style.bottom = "20px";
 
-    strip.style.width = "90px";
-
-    strip.style.height = "auto";
+    strip.style.width = "70px";
+strip.style.height = "120px";
+strip.style.overflow = "visible";
 
 }else{
 
