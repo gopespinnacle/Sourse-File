@@ -154,19 +154,29 @@ DebugMeeting.log(
 
         this.screenPeers[studentSocketId] = pc;
 
-        this.stream.getTracks().forEach(track=>{
+// Reuse the current screen stream when a student rejoins
+if (this.stream) {
 
-    DebugMeeting.log(
-        "Adding Track",
-        {
-            kind: track.kind,
-            id: track.id
-        }
-    );
+    this.stream.getTracks().forEach(track => {
 
-    pc.addTrack(track,this.stream);
+        DebugMeeting.log(
+            "Adding Track",
+            {
+                kind: track.kind,
+                id: track.id
+            }
+        );
 
-});
+        pc.addTrack(track, this.stream);
+
+    });
+
+} else {
+
+    console.log("No active screen stream");
+    return;
+
+}
 
         pc.onicecandidate=(event)=>{
 
@@ -346,6 +356,23 @@ if (
         await pc.setRemoteDescription(
             new RTCSessionDescription(data.offer)
         );
+
+        // Force playback after a student refreshes
+const screenVideo = document.getElementById("screenVideo");
+
+if (screenVideo) {
+
+    screenVideo.autoplay = true;
+    screenVideo.playsInline = true;
+    screenVideo.muted = false;
+
+    setTimeout(() => {
+
+        screenVideo.play().catch(console.error);
+
+    }, 300);
+
+}
 
         ScenarioDebugger.success(
     "Remote Offer Applied"
