@@ -185,7 +185,7 @@ ParticipantLayout.updateLayout = function(){
 
     strip.style.right = "10px";
 
-    strip.style.bottom = "140px";   // Above local video
+    strip.style.bottom = "70px";   // Above local video
 
     strip.style.left = "auto";
 
