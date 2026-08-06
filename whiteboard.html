@@ -2017,13 +2017,8 @@ socket.on("userJoined", async (data) => {
 
     console.log("USER JOINED:", data.socketId);
 
-    if (role !== "teacher") return;
-
-    if (peers[data.socketId]) return;
-
-    await createPeer(data.socketId);
-
-    await createOffer(data.socketId);
+    // Disabled.
+    // studentJoined/existingStudents already handle WebRTC.
 
 });
 
@@ -2531,7 +2526,18 @@ async function createOffer(socketId){
 
     console.log("SIGNAL:", pc.signalingState);
 
-    const offer = await pc.createOffer();
+    if (pc.signalingState !== "stable") {
+
+    console.log(
+        "Skipping offer:",
+        pc.signalingState
+    );
+
+    return;
+
+}
+
+const offer = await pc.createOffer();
 
     console.log("OFFER CREATED");
 
@@ -2754,9 +2760,13 @@ if(oldVideo){
 
 }
 
-await createPeer(data.socketId);
+const pc = await createPeer(data.socketId);
 
-await createOffer(data.socketId);
+if (pc.signalingState === "stable") {
+
+    await createOffer(data.socketId);
+
+}
 
 // Send screen share to newly joined student
 /*if (role === "teacher" && ScreenShare.stream) {
@@ -2815,12 +2825,15 @@ socket.on("existingStudents", async (students) => {
 
     updateAttendanceList(liveStudents);
 
-    await createPeer(student.socketId);
+   const pc = await createPeer(student.socketId);
 
-// Wait a moment for tracks to be attached
-await new Promise(resolve => setTimeout(resolve, 300));
+await new Promise(resolve => setTimeout(resolve,300));
 
-await createOffer(student.socketId);
+if (pc.signalingState === "stable") {
+
+    await createOffer(student.socketId);
+
+}
 
 }
 
@@ -3785,14 +3798,7 @@ if (oldVideo) {
 
     console.log("NEW PEER CREATED:", socketId);
 
-pc.onnegotiationneeded = async () => {
-
-    console.log("NEGOTIATION NEEDED:", socketId);
-
-    // Do NOT automatically create another offer.
-    // Offers are already created by userJoined/existingStudents.
-
-};
+pc.onnegotiationneeded = null;
 pc.onicecandidate = null;
 pc.ontrack = null;
 pc.onconnectionstatechange = null;
