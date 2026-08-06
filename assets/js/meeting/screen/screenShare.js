@@ -408,10 +408,10 @@ ScenarioDebugger.step(
 
         if(!pc){
 
-    ScenarioDebugger.error(
-        "Teacher Screen Peer Missing",
-        data.studentSocketId
-    );
+    console.error(
+    "Teacher Screen Peer Missing",
+    data.studentSocketId
+);
 
     return;
 
@@ -434,10 +434,10 @@ ScenarioDebugger.step(
 
 }catch(err){
 
-    ScenarioDebugger.error(
-        "Teacher Failed Applying Answer",
-        err
-    );
+    console.error(
+    "Teacher Failed Applying Answer",
+    err
+);
 
     console.error(err);
 
