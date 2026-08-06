@@ -3789,11 +3789,8 @@ pc.onnegotiationneeded = async () => {
 
     console.log("NEGOTIATION NEEDED:", socketId);
 
-    if (role !== "teacher") return;
-
-    if (pc.signalingState !== "stable") return;
-
-    await createOffer(socketId);
+    // Do NOT automatically create another offer.
+    // Offers are already created by userJoined/existingStudents.
 
 };
 pc.onicecandidate = null;
