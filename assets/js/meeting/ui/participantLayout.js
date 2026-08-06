@@ -176,9 +176,12 @@ ParticipantLayout.updateLayout = function(){
 
     const count = Object.keys(this.participants).length;
 
-    if(
+    const isMobile =
+    /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+
+if(
     strip.classList.contains("screen-sharing") &&
-    window.innerWidth <= 768
+    isMobile
 ){
 
     strip.style.position = "fixed";
@@ -281,9 +284,9 @@ else{
 
 if (
     strip.classList.contains("screen-sharing") &&
-    window.innerWidth <= 768 &&
+    isMobile &&
     isPortrait
-) {
+){
     strip.style.display = "flex";
 }else{
     strip.style.display = "grid";
