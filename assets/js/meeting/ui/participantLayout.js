@@ -191,15 +191,28 @@ ParticipantLayout.updateLayout = function () {
 
     if (isScreenSharing) {
 
+    strip.style.position = "fixed";
+    strip.style.right = "10px";
+    strip.style.bottom = "10px";
+    strip.style.left = "auto";
+    strip.style.top = "auto";
+
     strip.style.display = "flex";
+    strip.style.flexDirection = "column";
+    strip.style.alignItems = "flex-end";
+    strip.style.gap = "3px";
+    strip.style.zIndex = "99999";
+
+    let videoWidth = isMobile ? 90 : 120;
+    let videoHeight = isMobile ? 150 : 180;
 
     Object.values(this.participants).forEach(participant => {
 
         if (!participant.card) return;
 
-        participant.card.style.width = "";
-        participant.card.style.height = "";
-        participant.card.style.flex = "";
+        participant.card.style.width = videoWidth + "px";
+        participant.card.style.height = videoHeight + "px";
+        participant.card.style.flex = "none";
 
     });
 
