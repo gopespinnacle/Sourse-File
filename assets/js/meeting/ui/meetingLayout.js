@@ -26,6 +26,12 @@ const MeetingLayout = {
     const count =
         Object.keys(ParticipantLayout.participants).length;
 
+        const hasLocal =
+    document.getElementById("localVideoBox") &&
+    document.getElementById("localVideoBox").offsetParent !== null;
+
+    const localVisible = hasLocal;
+
     const screenSharing =
         strip.classList.contains("screen-sharing");
 
@@ -133,11 +139,36 @@ const MeetingLayout = {
 
     strip.style.gap = "8px";
 
-    if (count <= 1) {
+    if (count === 1) {
 
-        strip.style.gridTemplateColumns = "1fr";
+    strip.style.gridTemplateColumns = "1fr";
+    strip.style.gridTemplateRows = "1fr";
+
+    const participant =
+        Object.values(ParticipantLayout.participants)[0];
+
+    if (participant) {
+
+        participant.card.style.width = "100%";
+        participant.card.style.height = "100%";
+        participant.card.style.position = "relative";
 
     }
+
+    if (localVisible) {
+
+        const box = document.getElementById("localVideoBox");
+
+        box.style.position = "fixed";
+        box.style.right = "10px";
+        box.style.bottom = "10px";
+        box.style.width = "160px";
+        box.style.height = "220px";
+        box.style.zIndex = "100000";
+
+    }
+
+}
 
     else if (count == 2) {
 
