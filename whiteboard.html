@@ -2463,10 +2463,19 @@ socket.on("startScreenPeer", async (data)=>{
 
 socket.on("screenPeerReady", async (data)=>{
 
-    if(role !== "teacher") return;
+    console.log("screenPeerReady RECEIVED", data);
+    console.log("ROLE =", role);
+    console.log("STREAM =", ScreenShare.stream);
 
-    // Teacher is not sharing screen
-    if(!ScreenShare.stream) return;
+    if(role !== "teacher"){
+        console.log("EXIT: NOT TEACHER");
+        return;
+    }
+
+    if(!ScreenShare.stream){
+        console.log("EXIT: STREAM IS NULL");
+        return;
+    }
 
     console.log(
         "Creating Screen Peer:",
