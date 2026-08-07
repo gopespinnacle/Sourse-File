@@ -2433,67 +2433,47 @@ ScreenShare.init({
 });
 
 // ===============================
-// SCREEN SHARE SOCKET HANDLERS
+// NEW SCREEN SHARE SOCKET HANDLERS
 // ===============================
 
-socket.on("startScreenPeer", async (data)=>{
+// Teacher started sharing
+socket.on("screen-start", async (data)=>{
 
-    if(role !== "student") return;
+    window.teacherSocketId = data.teacherSocketId;
 
-    // Close old screen connection if any
-    if(ScreenShare.screenPeers[data.teacherSocketId]){
+    if(role === "student"){
 
-        try{
-
-            ScreenShare.screenPeers[data.teacherSocketId].close();
-
-        }catch(e){}
-
-        delete ScreenShare.screenPeers[data.teacherSocketId];
+        await ScreenShare.createStudentPeer(
+            data.teacherSocketId
+        );
 
     }
-
-    await ScreenShare.createStudentPeer(
-        data.teacherSocketId
-    );
 
 });
 
+// Teacher already sharing (student refresh / rejoin)
 
+// Teacher already sharing (student refresh / rejoin)
 
-socket.on("screenPeerReady", async (data)=>{
+socket.on("screenAlreadySharing", async (data)=>{
 
-    console.log("screenPeerReady RECEIVED", data);
-    console.log("ROLE =", role);
-    console.log("STREAM =", ScreenShare.stream);
+    window.teacherSocketId = data.teacherSocketId;
 
-    if(role !== "teacher"){
-        console.log("EXIT: NOT TEACHER");
-        return;
-    }
+    if(role === "student"){
 
-    if(!ScreenShare.stream){
-        console.log("EXIT: STREAM IS NULL");
-        return;
-    }
-
-    console.log(
-        "Creating Screen Peer:",
-        data.studentSocketId
-    );
-
-    // Prevent duplicate screen peers
-    if(ScreenShare.screenPeers[data.studentSocketId]){
-
-        try{
-
-            ScreenShare.screenPeers[data.studentSocketId].close();
-
-        }catch(e){}
-
-        delete ScreenShare.screenPeers[data.studentSocketId];
+        await ScreenShare.createStudentPeer(
+            data.teacherSocketId
+        );
 
     }
+
+});
+
+// Teacher receives student request
+// Teacher receives student request
+socket.on("screen-request", async (data)=>{
+
+    if(role !== "teacher") return;
 
     await ScreenShare.createTeacherPeer(
         data.studentSocketId
@@ -2501,25 +2481,33 @@ socket.on("screenPeerReady", async (data)=>{
 
 });
 
+// Offer
 socket.on("screen-offer", async (data)=>{
 
     await ScreenShare.handleOffer(data);
 
 });
 
+// Answer
 socket.on("screen-answer", async (data)=>{
 
     await ScreenShare.handleAnswer(data);
 
 });
 
-socket.on("screen-ice-candidate", async (data)=>{
+// ICE
+socket.on("screen-ice", async (data)=>{
 
     await ScreenShare.handleIceCandidate(data);
 
 });
 
+// Stop sharing
+socket.on("screen-stop", ()=>{
 
+    ParticipantLayout.hideScreenShare();
+
+});
 
 console.log("JOINED ROOM:", room);
 sendDeviceInfo();
@@ -2813,22 +2801,7 @@ if (pc.signalingState === "stable") {
 
 }
 
-// Send screen share to newly joined student
-/*if (role === "teacher" && ScreenShare.stream) {
 
-    console.log("Sending screen share to new student");
-
-    socket.emit("startScreenPeer", {
-
-        room,
-
-        targetSocketId: data.socketId,
-
-        teacherSocketId: socket.id
-
-    });
-
-}*/
 });
 
 socket.on("studentReady", async (data) => {
@@ -3350,48 +3323,7 @@ socket.on("screenDraw", (data) => {
     screenCtx.stroke();
 });
 
-socket.on("screenShareStarted", async () => {
 
-    console.log("SCREEN SHARE STARTED");
-
-    ParticipantLayout.showScreenShare();
-
-    // If teacher socket already known, create screen peer immediately
-    console.log("Teacher Socket =", window.teacherSocketId);
-
-if (role === "student" && window.teacherSocketId) {
-
-        console.log("Creating Screen Peer...");
-
-        await ScreenShare.createStudentPeer(window.teacherSocketId);
-
-    }
-
-});
-
-
-
-socket.on("screenShareStopped", () => {
-
-   ParticipantLayout.hideScreenShare();
-
-});
-
-socket.on("screenAlreadySharing", (data) => {
-
-    window.teacherSocketId = data.teacherSocketId;
-
-    if (role === "student") {
-
-        socket.emit("screenPeerReady", {
-
-            teacherSocketId: data.teacherSocketId
-
-        });
-
-    }
-
-});
 
 function leaveClass(){
 
