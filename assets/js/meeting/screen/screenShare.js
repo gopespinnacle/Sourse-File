@@ -260,6 +260,14 @@ DebugMeeting.success(
 
             screenVideo.srcObject = event.streams[0];
 
+            console.log("VIDEO OBJECT:", screenVideo);
+
+console.log("STREAM:", event.streams[0]);
+
+console.log("VIDEO TRACKS:", event.streams[0].getVideoTracks());
+
+console.log("READY STATE:", event.streams[0].getVideoTracks()[0]?.readyState);
+
             screenVideo.onloadedmetadata = () => {
 
     const container = document.getElementById("screenContainer");
