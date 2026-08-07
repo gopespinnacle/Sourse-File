@@ -124,17 +124,25 @@ const ScreenShare = {
 
     };
 
-    const offer = await pc.createOffer();
+   const offer = await pc.createOffer();
 
-    await pc.setLocalDescription(offer);
+console.log("Offer created");
 
-    this.socket.emit("screen-offer",{
+await pc.setLocalDescription(offer);
 
-        studentSocketId,
+console.log("Local description set");
 
-        offer
+console.log("Sending offer to:", studentSocketId);
 
-    });
+this.socket.emit("screen-offer",{
+
+    studentSocketId,
+
+    offer
+
+});
+
+console.log("Offer emitted");
 
 },
 
