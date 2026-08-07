@@ -178,29 +178,51 @@ console.log("Offer emitted");
 
     };
 
-    pc.ontrack = async (event)=>{
+    pc.ontrack = (event)=>{
 
-        console.log("Screen track received");
+    console.log("===== SCREEN TRACK RECEIVED =====");
 
-        const screenVideo =
-        document.getElementById("screenVideo");
+    console.log(event);
 
-        if(!screenVideo){
+    const screenVideo = document.getElementById("screenVideo");
 
-            console.error("screenVideo not found");
+    const screenContainer = document.getElementById("screenContainer");
 
-            return;
+    if(!screenVideo){
 
-        }
+        console.error("screenVideo NOT FOUND");
 
-        screenVideo.srcObject = event.streams[0];
+        return;
 
-        screenVideo.autoplay = true;
-        screenVideo.playsInline = true;
+    }
+
+    if(!screenContainer){
+
+        console.error("screenContainer NOT FOUND");
+
+        return;
+
+    }
+
+    screenContainer.style.display = "block";
+
+    screenContainer.style.visibility = "visible";
+
+    screenContainer.style.opacity = "1";
+
+    screenContainer.style.zIndex = "99999";
+
+    screenVideo.srcObject = event.streams[0];
+
+    screenVideo.onloadedmetadata = async ()=>{
+
+        console.log("VIDEO SIZE :",screenVideo.videoWidth,screenVideo.videoHeight);
 
         try{
 
             await screenVideo.play();
+
+            console.log("SCREEN VIDEO PLAYING");
 
         }catch(err){
 
@@ -208,13 +230,15 @@ console.log("Offer emitted");
 
         }
 
-        if(window.ParticipantLayout){
-
-            ParticipantLayout.showScreenShare();
-
-        }
-
     };
+
+    if(window.ParticipantLayout){
+
+        ParticipantLayout.showScreenShare();
+
+    }
+
+};
 
     this.socket.emit("screen-request",{
 
@@ -242,6 +266,8 @@ console.log("Offer emitted");
         new RTCSessionDescription(data.offer)
     );
 
+    console.log("REMOTE DESCRIPTION SET");
+
     if(this.pendingIce[data.teacherSocketId]){
 
     for(const candidate of this.pendingIce[data.teacherSocketId]){
@@ -268,6 +294,7 @@ console.log("Offer emitted");
     await pc.createAnswer();
 
     await pc.setLocalDescription(answer);
+    console.log("LOCAL ANSWER SET");
 
     this.socket.emit("screen-answer",{
 
