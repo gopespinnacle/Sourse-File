@@ -3341,17 +3341,26 @@ socket.on("screenDraw", (data) => {
     screenCtx.stroke();
 });
 
-socket.on("screenShareStarted", () => {
+socket.on("screenShareStarted", async () => {
 
     console.log("SCREEN SHARE STARTED");
 
     ParticipantLayout.showScreenShare();
 
-    const video = document.getElementById("screenVideo");
+    // If teacher socket already known, create screen peer immediately
+    console.log("Teacher Socket =", window.teacherSocketId);
 
-    console.log("Video srcObject =", video.srcObject);
+if (role === "student" && window.teacherSocketId) {
+
+        console.log("Creating Screen Peer...");
+
+        await ScreenShare.createStudentPeer(window.teacherSocketId);
+
+    }
 
 });
+
+
 
 socket.on("screenShareStopped", () => {
 
