@@ -260,35 +260,44 @@ DebugMeeting.success(
 
             screenVideo.srcObject = event.streams[0];
 
-            console.log("VIDEO OBJECT:", screenVideo);
+screenVideo.autoplay = true;
+screenVideo.playsInline = true;
+screenVideo.muted = false;
 
-console.log("STREAM:", event.streams[0]);
+screenVideo.onloadedmetadata = async () => {
 
-console.log("VIDEO TRACKS:", event.streams[0].getVideoTracks());
+    try{
 
-console.log("READY STATE:", event.streams[0].getVideoTracks()[0]?.readyState);
+        await screenVideo.play();
 
-            screenVideo.onloadedmetadata = () => {
+        console.log("✅ Screen video playing");
 
-    const container = document.getElementById("screenContainer");
+    }catch(err){
 
-    const ratio = screenVideo.videoWidth / screenVideo.videoHeight;
+        console.error("Screen play failed:", err);
 
-    if (ratio < 1.45) {
+    }
 
-        container.style.left = "40px";
-        container.style.right = "140px";
+    const container =
+    document.getElementById("screenContainer");
 
-    } else {
+    const ratio =
+    screenVideo.videoWidth /
+    screenVideo.videoHeight;
 
-        container.style.left = "0";
-        container.style.right = "140px";
+    if(ratio < 1.45){
+
+        container.style.left="40px";
+        container.style.right="140px";
+
+    }else{
+
+        container.style.left="0";
+        container.style.right="140px";
 
     }
 
 };
-
-            screenVideo.play();
 
             if(window.ParticipantLayout &&
                typeof ParticipantLayout.showScreenShare==="function"){
