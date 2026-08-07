@@ -270,6 +270,8 @@ DebugMeeting.success(
 
             screenVideo.srcObject = event.streams[0];
 
+            console.log("SRC OBJECT SET");
+
 screenVideo.autoplay = true;
 screenVideo.playsInline = true;
 screenVideo.muted = false;
