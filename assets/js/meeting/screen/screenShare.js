@@ -234,6 +234,28 @@ const ScreenShare = {
         new RTCSessionDescription(data.offer)
     );
 
+    if(this.pendingIce[data.teacherSocketId]){
+
+    for(const candidate of this.pendingIce[data.teacherSocketId]){
+
+        try{
+
+            await pc.addIceCandidate(
+                new RTCIceCandidate(candidate)
+            );
+
+        }catch(e){
+
+            console.error(e);
+
+        }
+
+    }
+
+    delete this.pendingIce[data.teacherSocketId];
+
+}
+
     const answer =
     await pc.createAnswer();
 
@@ -280,6 +302,28 @@ const ScreenShare = {
         new RTCSessionDescription(data.answer)
     );
 
+    if(this.pendingIce[data.studentSocketId]){
+
+    for(const candidate of this.pendingIce[data.studentSocketId]){
+
+        try{
+
+            await pc.addIceCandidate(
+                new RTCIceCandidate(candidate)
+            );
+
+        }catch(e){
+
+            console.error(e);
+
+        }
+
+    }
+
+    delete this.pendingIce[data.studentSocketId];
+
+}
+
     console.log("SCREEN CONNECTED");
 
 },
@@ -290,9 +334,25 @@ const ScreenShare = {
 
     if(!pc){
 
-        console.warn(
-            "ICE received before peer exists"
+        console.warn("Peer not ready");
+
+        return;
+
+    }
+
+    if(!pc.remoteDescription){
+
+        if(!this.pendingIce[data.senderSocketId]){
+
+            this.pendingIce[data.senderSocketId] = [];
+
+        }
+
+        this.pendingIce[data.senderSocketId].push(
+            data.candidate
         );
+
+        console.log("ICE Queued");
 
         return;
 
@@ -306,15 +366,11 @@ const ScreenShare = {
 
         );
 
+        console.log("ICE Added");
+
     }catch(err){
 
-        console.error(
-
-            "ICE Error",
-
-            err
-
-        );
+        console.error(err);
 
     }
 
