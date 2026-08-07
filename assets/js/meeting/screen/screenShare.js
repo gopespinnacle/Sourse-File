@@ -214,6 +214,18 @@ console.log("Offer emitted");
 
     screenVideo.srcObject = event.streams[0];
 
+    console.log("SRC OBJECT =", screenVideo.srcObject);
+
+setTimeout(()=>{
+
+    console.log("VIDEO WIDTH =", screenVideo.videoWidth);
+
+    console.log("VIDEO HEIGHT =", screenVideo.videoHeight);
+
+    console.log("READY STATE =", screenVideo.readyState);
+
+},2000);
+
     screenVideo.onloadedmetadata = async ()=>{
 
         console.log("VIDEO SIZE :",screenVideo.videoWidth,screenVideo.videoHeight);
