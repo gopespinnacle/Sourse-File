@@ -124,11 +124,22 @@ const ScreenShare = {
 
     };
 
-   const offer = await pc.createOffer();
+   // Wait until all senders are registered
+await new Promise(resolve => setTimeout(resolve,100));
+
+const offer = await pc.createOffer({
+
+    offerToReceiveVideo:false,
+
+    offerToReceiveAudio:false
+
+});
 
 console.log("Offer created");
 
 await pc.setLocalDescription(offer);
+
+await new Promise(resolve => setTimeout(resolve,100));
 
 console.log("Local description set");
 
