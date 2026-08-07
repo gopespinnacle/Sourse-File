@@ -73,6 +73,16 @@ DebugMeeting.log(
 const screenVideo =
 document.getElementById("screenVideo");
 
+console.log("SCREEN VIDEO =", screenVideo);
+
+if(!screenVideo){
+
+    console.error("screenVideo NOT FOUND");
+
+    return;
+
+}
+
             screenVideo.srcObject = this.stream;
 
             await screenVideo.play();
