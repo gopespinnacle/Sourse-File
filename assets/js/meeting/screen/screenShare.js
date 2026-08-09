@@ -1,251 +1,85 @@
 /*
 ==========================================================
 Gopes Pinnacle Academy
-Dedicated Screen Share Manager
+Screen Share Manager V3
 ==========================================================
 */
 
 const ScreenShare = {
 
-    socket: null,
+    socket:null,
 
-    room: null,
+    room:null,
 
-    peers: null,
+    role:null,
 
-    role: null,
+    stream:null,
 
-    screenPeers: {},
+    screenPeers:{},
 
-    pendingIce: {},
-
-    stream: null,
+    pendingIce:{},
 
     init(config){
 
         this.socket = config.socket;
+
         this.room = config.room;
-        this.peers = config.peers;
+
         this.role = config.role;
 
     },
 
     async start(){
 
-    if(this.role !== "teacher"){
-        return;
-    }
-
-    try{
-
-        this.stream = await navigator.mediaDevices.getDisplayMedia({
-
-            video:true,
-            audio:true
-
-        });
-
-        window.currentScreenStream = this.stream;
-
-        const screenVideo =
-        document.getElementById("screenVideo");
-
-        if(screenVideo){
-
-            screenVideo.srcObject = this.stream;
-
-            await screenVideo.play();
-
-        }
-
-        if(window.ParticipantLayout){
-
-            ParticipantLayout.showScreenShare();
-
-        }
-
-        this.socket.emit("screen-start",{
-
-            room:this.room
-
-        });
-
-        console.log("Screen sharing started");
-
-        this.stream.getVideoTracks()[0].onended = ()=>{
-
-            this.stop();
-
-        };
-
-    }catch(err){
-
-        console.error("Screen Share Error",err);
-
-    }
-
-},
-
-    async createTeacherPeer(studentSocketId){
-
-    console.log("Creating screen peer for:", studentSocketId);
-
-    const pc = new RTCPeerConnection({
-
-        iceServers:[
-            {
-                urls:"stun:stun.l.google.com:19302"
-            }
-        ]
-
-    });
-
-    this.screenPeers[studentSocketId] = pc;
-
-    this.stream.getTracks().forEach(track=>{
-
-        pc.addTrack(track,this.stream);
-
-    });
-
-    pc.onicecandidate = (event)=>{
-
-        if(event.candidate){
-
-            this.socket.emit("screen-ice",{
-
-                targetSocketId:studentSocketId,
-
-                candidate:event.candidate
-
-            });
-
-        }
-
-    };
-
-   // Wait until all senders are registered
-await new Promise(resolve => setTimeout(resolve,100));
-
-const offer = await pc.createOffer({
-
-    offerToReceiveVideo:false,
-
-    offerToReceiveAudio:false
-
-});
-
-console.log("Offer created");
-
-await pc.setLocalDescription(offer);
-
-await new Promise(resolve => setTimeout(resolve,100));
-
-console.log("Local description set");
-
-console.log("Sending offer to:", studentSocketId);
-
-this.socket.emit("screen-offer",{
-
-    studentSocketId,
-
-    offer
-
-});
-
-console.log("Offer emitted");
-
-},
-
-   async createStudentPeer(teacherSocketId){
-
-    console.log("Creating student screen peer");
-
-    const pc = new RTCPeerConnection({
-
-        iceServers:[
-            {
-                urls:"stun:stun.l.google.com:19302"
-            }
-        ]
-
-    });
-
-    this.screenPeers[teacherSocketId] = pc;
-
-    pc.onicecandidate = (event)=>{
-
-        if(event.candidate){
-
-            this.socket.emit("screen-ice",{
-
-                targetSocketId:teacherSocketId,
-
-                candidate:event.candidate
-
-            });
-
-        }
-
-    };
-
-    pc.ontrack = (event)=>{
-
-    console.log("===== SCREEN TRACK RECEIVED =====");
-
-    console.log(event);
-
-    const screenVideo = document.getElementById("screenVideo");
-
-    const screenContainer = document.getElementById("screenContainer");
-
-    if(!screenVideo){
-
-        console.error("screenVideo NOT FOUND");
-
-        return;
-
-    }
-
-    if(!screenContainer){
-
-        console.error("screenContainer NOT FOUND");
-
-        return;
-
-    }
-
-    screenContainer.style.display = "block";
-
-    screenContainer.style.visibility = "visible";
-
-    screenContainer.style.opacity = "1";
-
-    screenContainer.style.zIndex = "99999";
-
-    screenVideo.srcObject = event.streams[0];
-
-    console.log("SRC OBJECT =", screenVideo.srcObject);
-
-setTimeout(()=>{
-
-    console.log("VIDEO WIDTH =", screenVideo.videoWidth);
-
-    console.log("VIDEO HEIGHT =", screenVideo.videoHeight);
-
-    console.log("READY STATE =", screenVideo.readyState);
-
-},2000);
-
-    screenVideo.onloadedmetadata = async ()=>{
-
-        console.log("VIDEO SIZE :",screenVideo.videoWidth,screenVideo.videoHeight);
+        if(this.role !== "teacher") return;
 
         try{
 
-            await screenVideo.play();
+            console.log("Starting Screen Share...");
 
-            console.log("SCREEN VIDEO PLAYING");
+            this.stream =
+            await navigator.mediaDevices.getDisplayMedia({
+
+                video:{
+                    cursor:"always"
+                },
+
+                audio:true
+
+            });
+
+            const video =
+            document.getElementById("screenVideo");
+
+            if(video){
+
+                video.srcObject = this.stream;
+
+                video.muted = true;
+
+                video.autoplay = true;
+
+                video.playsInline = true;
+
+                await video.play();
+
+            }
+
+            ParticipantLayout.showScreenShare();
+
+            this.socket.emit("screen-start",{
+
+                room:this.room
+
+            });
+
+            this.stream
+            .getVideoTracks()[0]
+            .onended = ()=>{
+
+                this.stop();
+
+            };
 
         }catch(err){
 
@@ -253,232 +87,449 @@ setTimeout(()=>{
 
         }
 
-    };
+    },
 
-    if(window.ParticipantLayout){
+    async createTeacherPeer(studentSocketId){
 
-        ParticipantLayout.showScreenShare();
+        if(this.screenPeers[studentSocketId]){
 
-    }
+            try{
 
-};
+                this.screenPeers[studentSocketId].close();
 
-    this.socket.emit("screen-request",{
+            }catch(e){}
 
-        teacherSocketId
+            delete this.screenPeers[studentSocketId];
 
-    });
+        }
 
-},
+        console.log(
+            "Teacher Peer ->",
+            studentSocketId
+        );
+
+        const pc =
+        new RTCPeerConnection({
+
+            iceServers:[
+                {
+                    urls:"stun:stun.l.google.com:19302"
+                }
+            ]
+
+        });
+
+        this.screenPeers[studentSocketId]=pc;
+
+        this.stream.getTracks().forEach(track=>{
+
+            pc.addTrack(track,this.stream);
+
+        });
+
+        pc.onicecandidate=(event)=>{
+
+            if(event.candidate){
+
+                this.socket.emit("screen-ice",{
+
+                    targetSocketId:studentSocketId,
+
+                    candidate:event.candidate
+
+                });
+
+            }
+
+        };
+
+        const offer =
+        await pc.createOffer();
+
+        await pc.setLocalDescription(offer);
+
+        this.socket.emit("screen-offer",{
+
+            studentSocketId,
+
+            offer
+
+        });
+
+    },
+
+        async createStudentPeer(teacherSocketId){
+
+        if(this.screenPeers[teacherSocketId]){
+
+            try{
+
+                this.screenPeers[teacherSocketId].close();
+
+            }catch(e){}
+
+            delete this.screenPeers[teacherSocketId];
+
+        }
+
+        console.log(
+            "Student Peer ->",
+            teacherSocketId
+        );
+
+        const pc =
+        new RTCPeerConnection({
+
+            iceServers:[
+                {
+                    urls:"stun:stun.l.google.com:19302"
+                }
+            ]
+
+        });
+
+        this.screenPeers[teacherSocketId] = pc;
+
+        pc.onicecandidate = (event)=>{
+
+            if(event.candidate){
+
+                this.socket.emit("screen-ice",{
+
+                    targetSocketId:teacherSocketId,
+
+                    candidate:event.candidate
+
+                });
+
+            }
+
+        };
+
+        pc.ontrack = async(event)=>{
+
+            console.log("SCREEN TRACK RECEIVED");
+
+            const video =
+            document.getElementById("screenVideo");
+
+            if(!video){
+
+                console.error("screenVideo missing");
+
+                return;
+
+            }
+
+            video.srcObject = event.streams[0];
+
+            video.autoplay = true;
+
+            video.playsInline = true;
+
+            try{
+
+                await video.play();
+
+            }catch(err){
+
+                console.error(
+                    "Screen video play error:",
+                    err
+                );
+
+            }
+
+            if(window.ParticipantLayout){
+
+                ParticipantLayout.showScreenShare();
+
+            }
+
+        };
+
+        this.socket.emit("screen-request",{
+
+            teacherSocketId
+
+        });
+
+    },
 
     async handleOffer(data){
 
-    console.log("SCREEN OFFER RECEIVED");
+        console.log("SCREEN OFFER RECEIVED");
 
-    const pc = this.screenPeers[data.teacherSocketId];
+        const pc =
+        this.screenPeers[data.teacherSocketId];
 
-    if(!pc){
+        if(!pc){
 
-        console.error("No screen peer");
-
-        return;
-
-    }
-
-    await pc.setRemoteDescription(
-        new RTCSessionDescription(data.offer)
-    );
-
-    console.log("REMOTE DESCRIPTION SET");
-
-    if(this.pendingIce[data.teacherSocketId]){
-
-    for(const candidate of this.pendingIce[data.teacherSocketId]){
-
-        try{
-
-            await pc.addIceCandidate(
-                new RTCIceCandidate(candidate)
+            console.error(
+                "Student screen peer missing"
             );
 
-        }catch(e){
-
-            console.error(e);
+            return;
 
         }
 
-    }
+        await pc.setRemoteDescription(
 
-    delete this.pendingIce[data.teacherSocketId];
+            new RTCSessionDescription(
+                data.offer
+            )
 
-}
+        );
 
-    const answer =
-    await pc.createAnswer();
+        console.log(
+            "Student remote description set"
+        );
 
-    await pc.setLocalDescription(answer);
-    console.log("LOCAL ANSWER SET");
+        if(this.pendingIce[data.teacherSocketId]){
 
-    this.socket.emit("screen-answer",{
+            for(
+                const candidate
+                of this.pendingIce[data.teacherSocketId]
+            ){
 
-        targetSocketId:data.teacherSocketId,
+                try{
 
-        answer
+                    await pc.addIceCandidate(
 
-    });
+                        new RTCIceCandidate(
+                            candidate
+                        )
 
-    console.log("SCREEN ANSWER SENT");
+                    );
 
-},
+                }catch(err){
+
+                    console.error(
+                        "Queued ICE error:",
+                        err
+                    );
+
+                }
+
+            }
+
+            delete this.pendingIce[
+                data.teacherSocketId
+            ];
+
+        }
+
+        const answer =
+        await pc.createAnswer();
+
+        await pc.setLocalDescription(answer);
+
+        this.socket.emit("screen-answer",{
+
+            targetSocketId:
+                data.teacherSocketId,
+
+            answer
+
+        });
+
+        console.log(
+            "SCREEN ANSWER SENT"
+        );
+
+    },
 
     async handleAnswer(data){
 
-    console.log("SCREEN ANSWER RECEIVED");
+        console.log("SCREEN ANSWER RECEIVED");
 
-    const pc = this.screenPeers[data.studentSocketId];
+        const pc =
+        this.screenPeers[data.studentSocketId];
 
-    if(!pc){
+        if(!pc){
 
-        console.error("No teacher screen peer");
+            console.error(
+                "Teacher screen peer missing"
+            );
 
-        return;
+            return;
 
-    }
+        }
 
-    if(pc.signalingState !== "have-local-offer"){
+        await pc.setRemoteDescription(
 
-        console.warn(
-            "Ignoring answer. State =",
-            pc.signalingState
+            new RTCSessionDescription(
+                data.answer
+            )
+
         );
 
-        return;
+        console.log(
+            "TEACHER SCREEN CONNECTION READY"
+        );
 
-    }
+    },
 
-    await pc.setRemoteDescription(
-        new RTCSessionDescription(data.answer)
-    );
+    async handleIceCandidate(data){
 
-    if(this.pendingIce[data.studentSocketId]){
+        const socketId =
+            data.senderSocketId ||
+            data.teacherSocketId ||
+            data.studentSocketId;
 
-    for(const candidate of this.pendingIce[data.studentSocketId]){
+        if(!socketId){
+
+            console.warn(
+                "Screen ICE has no sender socket ID"
+            );
+
+            return;
+
+        }
+
+        const pc =
+        this.screenPeers[socketId];
+
+        if(!pc){
+
+            if(!this.pendingIce[socketId]){
+
+                this.pendingIce[socketId] = [];
+
+            }
+
+            this.pendingIce[socketId].push(
+                data.candidate
+            );
+
+            console.log(
+                "ICE queued - peer not ready"
+            );
+
+            return;
+
+        }
+
+        if(!pc.remoteDescription){
+
+            if(!this.pendingIce[socketId]){
+
+                this.pendingIce[socketId] = [];
+
+            }
+
+            this.pendingIce[socketId].push(
+                data.candidate
+            );
+
+            console.log(
+                "ICE queued - remote description not ready"
+            );
+
+            return;
+
+        }
 
         try{
 
             await pc.addIceCandidate(
-                new RTCIceCandidate(candidate)
+
+                new RTCIceCandidate(
+                    data.candidate
+                )
+
             );
 
-        }catch(e){
+            console.log(
+                "SCREEN ICE ADDED"
+            );
 
-            console.error(e);
+        }catch(err){
 
-        }
-
-    }
-
-    delete this.pendingIce[data.studentSocketId];
-
-}
-
-    console.log("SCREEN CONNECTED");
-
-},
-
-    async handleIceCandidate(data){
-
-    const pc = this.screenPeers[data.senderSocketId];
-
-    if(!pc){
-
-        console.warn("Peer not ready");
-
-        return;
-
-    }
-
-    if(!pc.remoteDescription){
-
-        if(!this.pendingIce[data.senderSocketId]){
-
-            this.pendingIce[data.senderSocketId] = [];
+            console.error(
+                "SCREEN ICE ERROR:",
+                err
+            );
 
         }
 
-        this.pendingIce[data.senderSocketId].push(
-            data.candidate
-        );
+    },
 
-        console.log("ICE Queued");
+        stop(notifyServer = true){
 
-        return;
-
-    }
-
-    try{
-
-        await pc.addIceCandidate(
-
-            new RTCIceCandidate(data.candidate)
-
-        );
-
-        console.log("ICE Added");
-
-    }catch(err){
-
-        console.error(err);
-
-    }
-
-},
-
-    stop(){
+        console.log("Stopping Screen Share");
 
         if(this.stream){
 
-            this.stream.getTracks().forEach(track=>track.stop());
+            this.stream
+                .getTracks()
+                .forEach(track=>{
+
+                    try{
+
+                        track.stop();
+
+                    }catch(e){}
+
+                });
 
             this.stream = null;
 
         }
 
-        Object.values(this.screenPeers).forEach(pc=>{
+        Object.values(this.screenPeers)
+            .forEach(pc=>{
 
-            try{
+                try{
 
-                pc.close();
+                    pc.close();
 
-            }catch(e){}
+                }catch(e){}
 
-        });
+            });
 
         this.screenPeers = {};
 
         this.pendingIce = {};
 
-        const screenVideo =
+        const video =
         document.getElementById("screenVideo");
 
-        if(screenVideo){
+        if(video){
 
-            screenVideo.srcObject = null;
+            try{
+
+                video.pause();
+
+            }catch(e){}
+
+            video.srcObject = null;
 
         }
 
-        if(window.ParticipantLayout &&
-           typeof ParticipantLayout.hideScreenShare==="function"){
+        if(
+            window.ParticipantLayout &&
+            typeof ParticipantLayout.hideScreenShare ===
+            "function"
+        ){
 
             ParticipantLayout.hideScreenShare();
 
         }
 
-        this.socket.emit("screen-stop",{
+        if(notifyServer && this.socket){
 
-    room:this.room
+    this.socket.emit("screen-stop",{
 
-});
+        room:this.room
+
+    });
+
+}
+
+        console.log(
+            "SCREEN SHARE STOPPED"
+        );
 
     }
 

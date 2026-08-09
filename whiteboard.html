@@ -2434,19 +2434,7 @@ ScreenShare.init({
 // ===============================
 
 // Teacher started sharing
-socket.on("screen-start", async (data)=>{
 
-    window.teacherSocketId = data.teacherSocketId;
-
-    if(role === "student"){
-
-        await ScreenShare.createStudentPeer(
-            data.teacherSocketId
-        );
-
-    }
-
-});
 
 // Teacher already sharing (student refresh / rejoin)
 
@@ -2466,43 +2454,63 @@ socket.on("screenAlreadySharing", async (data)=>{
 
 });
 
-// Teacher receives student request
-// Teacher receives student request
-socket.on("screen-request", async (data)=>{
+/*==========================================================
+SCREEN SHARE SOCKET EVENTS - V3
+==========================================================*/
+
+socket.on("screen-start",(data)=>{
+
+    console.log("SCREEN START RECEIVED",data);
+
+    if(role !== "student") return;
+
+    window.teacherSocketId = data.teacherSocketId;
+
+    ScreenShare.createStudentPeer(
+        data.teacherSocketId
+    );
+
+});
+
+socket.on("screen-request",(data)=>{
+
+    console.log("SCREEN REQUEST RECEIVED",data);
 
     if(role !== "teacher") return;
 
-    await ScreenShare.createTeacherPeer(
+    ScreenShare.createTeacherPeer(
         data.studentSocketId
     );
 
 });
 
-// Offer
-socket.on("screen-offer", async (data)=>{
+socket.on("screen-offer",async(data)=>{
+
+    console.log("SCREEN OFFER RECEIVED BY SOCKET");
 
     await ScreenShare.handleOffer(data);
 
 });
 
-// Answer
-socket.on("screen-answer", async (data)=>{
+socket.on("screen-answer",async(data)=>{
+
+    console.log("SCREEN ANSWER RECEIVED BY SOCKET");
 
     await ScreenShare.handleAnswer(data);
 
 });
 
-// ICE
-socket.on("screen-ice", async (data)=>{
+socket.on("screen-ice",async(data)=>{
 
     await ScreenShare.handleIceCandidate(data);
 
 });
 
-// Stop sharing
-socket.on("screen-stop", ()=>{
+socket.on("screen-stop",()=>{
 
-    ParticipantLayout.hideScreenShare();
+    console.log("SCREEN STOP RECEIVED");
+
+    ScreenShare.stop(false);
 
 });
 
