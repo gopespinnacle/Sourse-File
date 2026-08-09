@@ -223,7 +223,31 @@ const ScreenShare = {
 
             video.srcObject = event.streams[0];
 
-            video.autoplay = true;
+const receivedStream = event.streams[0];
+
+console.log("SCREEN SRC OBJECT:", video.srcObject);
+
+console.log(
+    "SCREEN TRACKS:",
+    receivedStream.getTracks()
+);
+
+console.log(
+    "SCREEN VIDEO TRACK:",
+    receivedStream.getVideoTracks()[0]
+);
+
+console.log(
+    "TRACK READY STATE:",
+    receivedStream.getVideoTracks()[0]?.readyState
+);
+
+console.log(
+    "TRACK ENABLED:",
+    receivedStream.getVideoTracks()[0]?.enabled
+);
+
+video.autoplay = true;
 
             video.playsInline = true;
 
