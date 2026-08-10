@@ -1840,27 +1840,48 @@ function renderStatements(
                         </div>
 
 
-                        <button
-                            class="view-button"
-                            type="button"
-                            onclick="viewTransactions(
-                                '${statement._id}',
-                                '${escapeHtml(
-                                    statement.bank
-                                )}',
-                                '${escapeHtml(
-                                    statement.statementPeriod
-                                )}'
-                            )"
-                        >
+                        <div style="
+    display:flex;
+    gap:8px;
+    width:100%;
+">
 
-                            <i
-                                class="fa-solid fa-table-list"
-                            ></i>
+    <button
+        type="button"
+        style="
+            flex:1;
+            padding:10px;
+            border:1px solid #2563eb;
+            background:white;
+            color:#2563eb;
+            border-radius:6px;
+            cursor:pointer;
+        "
+        onclick="viewTransactions('${statement._id}')"
+    >
+        <i class="fa-solid fa-table-list"></i>
+        View Transactions
+    </button>
 
-                            View Transactions
 
-                        </button>
+    <button
+        type="button"
+        style="
+            padding:10px 14px;
+            border:1px solid #dc2626;
+            background:white;
+            color:#dc2626;
+            border-radius:6px;
+            cursor:pointer;
+        "
+        onclick="deleteBankStatement('${statement._id}')"
+        title="Delete Statement"
+    >
+        <i class="fa-solid fa-trash"></i>
+        Delete
+    </button>
+
+</div>
 
                     </div>
 
