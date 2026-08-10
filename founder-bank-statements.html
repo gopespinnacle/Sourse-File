@@ -1,0 +1,2268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Bank Statements - Gopes Pinnacle Academy</title>
+
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f4f6f9;
+
+            color: #172033;
+
+        }
+
+
+        /* ==================================================
+           LAYOUT
+        ================================================== */
+
+        .layout {
+
+            display: flex;
+
+            min-height: 100vh;
+
+        }
+
+
+        /* ==================================================
+           SIDEBAR
+        ================================================== */
+
+        .sidebar {
+
+            width: 205px;
+
+            background: #172033;
+
+            color: white;
+
+            flex-shrink: 0;
+
+        }
+
+
+        .academy-logo {
+
+            height: 90px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            flex-direction: column;
+
+            border-bottom:
+                1px solid
+                rgba(255,255,255,0.1);
+
+        }
+
+
+        .academy-logo i {
+
+            font-size: 28px;
+
+            margin-bottom: 7px;
+
+        }
+
+
+        .academy-logo strong {
+
+            font-size: 14px;
+
+            letter-spacing: 0.3px;
+
+        }
+
+
+        .menu {
+
+            padding: 15px 10px;
+
+        }
+
+
+        .menu a {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            color: white;
+
+            text-decoration: none;
+
+            padding: 12px 13px;
+
+            margin-bottom: 5px;
+
+            border-radius: 7px;
+
+            font-size: 13px;
+
+            transition: 0.2s;
+
+        }
+
+
+        .menu a:hover {
+
+            background: #263656;
+
+        }
+
+
+        .menu a.active {
+
+            background: #2864e8;
+
+        }
+
+
+        .menu a i {
+
+            width: 18px;
+
+            text-align: center;
+
+        }
+
+
+        /* ==================================================
+           MAIN
+        ================================================== */
+
+        .main {
+
+            flex: 1;
+
+            padding: 20px;
+
+            min-width: 0;
+
+        }
+
+
+        /* ==================================================
+           HEADER
+        ================================================== */
+
+        .page-header {
+
+            background: white;
+
+            border-radius: 10px;
+
+            padding: 20px;
+
+            box-shadow:
+                0 2px 10px
+                rgba(0,0,0,0.06);
+
+            margin-bottom: 16px;
+
+        }
+
+
+        .page-header h1 {
+
+            margin: 0 0 5px;
+
+            font-size: 22px;
+
+            color: #172033;
+
+        }
+
+
+        .page-header p {
+
+            margin: 0;
+
+            font-size: 13px;
+
+            color: #667085;
+
+        }
+
+
+        /* ==================================================
+           UPLOAD CARD
+        ================================================== */
+
+        .upload-card {
+
+            background: white;
+
+            border-radius: 10px;
+
+            padding: 20px;
+
+            box-shadow:
+                0 2px 10px
+                rgba(0,0,0,0.06);
+
+            margin-bottom: 16px;
+
+        }
+
+
+        .section-title {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            font-size: 16px;
+
+            font-weight: 700;
+
+            margin-bottom: 18px;
+
+        }
+
+
+        .section-title i {
+
+            color: #2864e8;
+
+        }
+
+
+        .upload-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                180px
+                180px
+                1fr
+                180px;
+
+            gap: 14px;
+
+            align-items: end;
+
+        }
+
+
+        .field {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 6px;
+
+        }
+
+
+        .field label {
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+            color: #475467;
+
+        }
+
+
+        .field input,
+        .field select {
+
+            width: 100%;
+
+            height: 40px;
+
+            border:
+                1px solid
+                #d0d5dd;
+
+            border-radius: 6px;
+
+            padding:
+                0 10px;
+
+            font-size: 13px;
+
+            outline: none;
+
+            background: white;
+
+        }
+
+
+        .field input:focus,
+        .field select:focus {
+
+            border-color: #2864e8;
+
+        }
+
+
+        .upload-button {
+
+            height: 40px;
+
+            border: none;
+
+            border-radius: 6px;
+
+            background: #2864e8;
+
+            color: white;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            font-size: 13px;
+
+        }
+
+
+        .upload-button:hover {
+
+            background: #1d54cc;
+
+        }
+
+
+        .upload-button:disabled {
+
+            opacity: 0.6;
+
+            cursor: not-allowed;
+
+        }
+
+
+        .upload-button i {
+
+            margin-right: 6px;
+
+        }
+
+
+        .help-text {
+
+            margin-top: 12px;
+
+            padding: 10px 12px;
+
+            background: #f5f8ff;
+
+            border-radius: 6px;
+
+            color: #475467;
+
+            font-size: 12px;
+
+        }
+
+
+        /* ==================================================
+           MESSAGE
+        ================================================== */
+
+        .message {
+
+            display: none;
+
+            padding: 11px 13px;
+
+            border-radius: 6px;
+
+            margin-top: 14px;
+
+            font-size: 13px;
+
+        }
+
+
+        .message.success {
+
+            display: block;
+
+            background: #ecfdf3;
+
+            color: #027a48;
+
+        }
+
+
+        .message.error {
+
+            display: block;
+
+            background: #fef3f2;
+
+            color: #b42318;
+
+        }
+
+
+        /* ==================================================
+           STATEMENT LIST
+        ================================================== */
+
+        .statements-card {
+
+            background: white;
+
+            border-radius: 10px;
+
+            padding: 20px;
+
+            box-shadow:
+                0 2px 10px
+                rgba(0,0,0,0.06);
+
+            margin-bottom: 16px;
+
+        }
+
+
+        .statement-list {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(280px, 1fr)
+                );
+
+            gap: 12px;
+
+        }
+
+
+        .statement-item {
+
+            border:
+                1px solid
+                #e4e7ec;
+
+            border-radius: 8px;
+
+            padding: 15px;
+
+        }
+
+
+        .statement-top {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 12px;
+
+        }
+
+
+        .bank-name {
+
+            font-weight: 700;
+
+            font-size: 15px;
+
+        }
+
+
+        .bank-badge {
+
+            display: inline-block;
+
+            padding: 4px 8px;
+
+            border-radius: 5px;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            background: #eef4ff;
+
+            color: #3538cd;
+
+        }
+
+
+        .statement-file {
+
+            font-size: 12px;
+
+            color: #475467;
+
+            margin-bottom: 8px;
+
+            word-break: break-word;
+
+        }
+
+
+        .statement-info {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 8px;
+
+            font-size: 12px;
+
+            color: #667085;
+
+        }
+
+
+        .statement-info strong {
+
+            display: block;
+
+            color: #172033;
+
+            margin-top: 2px;
+
+        }
+
+
+        .view-button {
+
+            width: 100%;
+
+            margin-top: 14px;
+
+            height: 36px;
+
+            border:
+                1px solid
+                #2864e8;
+
+            background: white;
+
+            color: #2864e8;
+
+            border-radius: 6px;
+
+            cursor: pointer;
+
+            font-weight: 600;
+
+        }
+
+
+        .view-button:hover {
+
+            background: #f5f8ff;
+
+        }
+
+
+        /* ==================================================
+           TRANSACTION CARD
+        ================================================== */
+
+        .transactions-card {
+
+            background: white;
+
+            border-radius: 10px;
+
+            padding: 20px;
+
+            box-shadow:
+                0 2px 10px
+                rgba(0,0,0,0.06);
+
+        }
+
+
+        .transaction-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 14px;
+
+            gap: 10px;
+
+        }
+
+
+        .transaction-title {
+
+            font-size: 16px;
+
+            font-weight: 700;
+
+        }
+
+
+        .transaction-subtitle {
+
+            font-size: 12px;
+
+            color: #667085;
+
+            margin-top: 4px;
+
+        }
+
+
+        .close-button {
+
+            border: none;
+
+            background: #f2f4f7;
+
+            width: 35px;
+
+            height: 35px;
+
+            border-radius: 6px;
+
+            cursor: pointer;
+
+        }
+
+
+        .table-wrapper {
+
+            width: 100%;
+
+            overflow-x: auto;
+
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 950px;
+
+        }
+
+
+        th {
+
+            background: #172033;
+
+            color: white;
+
+            font-size: 11px;
+
+            text-align: left;
+
+            padding: 10px;
+
+            white-space: nowrap;
+
+        }
+
+
+        td {
+
+            border-bottom:
+                1px solid
+                #eaecf0;
+
+            padding: 10px;
+
+            font-size: 12px;
+
+            vertical-align: top;
+
+        }
+
+
+        tr:hover td {
+
+            background: #f9fafb;
+
+        }
+
+
+        .credit {
+
+            color: #027a48;
+
+            font-weight: 700;
+
+        }
+
+
+        .debit {
+
+            color: #b42318;
+
+            font-weight: 700;
+
+        }
+
+
+        .reference {
+
+            font-family:
+                Consolas,
+                monospace;
+
+            font-size: 11px;
+
+        }
+
+
+        .empty {
+
+            text-align: center;
+
+            padding: 35px;
+
+            color: #667085;
+
+            font-size: 13px;
+
+        }
+
+
+        /* ==================================================
+           RESPONSIVE
+        ================================================== */
+
+        @media (
+            max-width: 900px
+        ) {
+
+            .sidebar {
+
+                width: 175px;
+
+            }
+
+
+            .upload-grid {
+
+                grid-template-columns:
+                    1fr 1fr;
+
+            }
+
+        }
+
+
+        @media (
+            max-width: 650px
+        ) {
+
+            .layout {
+
+                display: block;
+
+            }
+
+
+            .sidebar {
+
+                width: 100%;
+
+            }
+
+
+            .academy-logo {
+
+                height: 70px;
+
+            }
+
+
+            .menu {
+
+                display: flex;
+
+                overflow-x: auto;
+
+                gap: 5px;
+
+            }
+
+
+            .menu a {
+
+                white-space: nowrap;
+
+                margin: 0;
+
+            }
+
+
+            .main {
+
+                padding: 12px;
+
+            }
+
+
+            .upload-grid {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="layout">
+
+
+    <!-- ==================================================
+         SIDEBAR
+    ================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="academy-logo">
+
+            <i class="fa-solid fa-graduation-cap"></i>
+
+            <strong>GOPES PINNACLE</strong>
+
+        </div>
+
+
+        <nav class="menu">
+
+            <a href="founder-dashboard.html">
+
+                <i class="fa-solid fa-chart-line"></i>
+
+                Dashboard
+
+            </a>
+
+
+            <a href="founder-students.html">
+
+                <i class="fa-solid fa-user-graduate"></i>
+
+                Students
+
+            </a>
+
+
+            <a href="founder-teachers.html">
+
+                <i class="fa-solid fa-chalkboard-user"></i>
+
+                Teachers
+
+            </a>
+
+
+            <a href="founder-admission-parents.html">
+
+                <i class="fa-solid fa-user-plus"></i>
+
+                Admissions
+
+            </a>
+
+
+            <a href="founder-fees.html">
+
+                <i class="fa-solid fa-money-check-dollar"></i>
+
+                Student Fee
+
+            </a>
+
+
+            <a
+                href="founder-bank-statements.html"
+                class="active"
+            >
+
+                <i class="fa-solid fa-building-columns"></i>
+
+                Bank Statements
+
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- ==================================================
+         MAIN CONTENT
+    ================================================== -->
+
+    <main class="main">
+
+
+        <!-- HEADER -->
+
+        <section class="page-header">
+
+            <h1>
+
+                <i class="fa-solid fa-building-columns"></i>
+
+                Bank Statements
+
+            </h1>
+
+            <p>
+
+                Upload SBI or Bank of Baroda statements
+                and manage imported transactions.
+
+            </p>
+
+        </section>
+
+
+        <!-- ==================================================
+             UPLOAD
+        ================================================== -->
+
+        <section class="upload-card">
+
+            <div class="section-title">
+
+                <i class="fa-solid fa-file-arrow-up"></i>
+
+                Upload Bank Statement
+
+            </div>
+
+
+            <form id="statementForm">
+
+
+                <div class="upload-grid">
+
+
+                    <!-- BANK -->
+
+                    <div class="field">
+
+                        <label>
+                            Bank
+                        </label>
+
+                        <select
+                            id="bank"
+                            required
+                        >
+
+                            <option value="">
+                                Select Bank
+                            </option>
+
+                            <option value="SBI">
+                                SBI
+                            </option>
+
+                            <option value="BOB">
+                                Bank of Baroda
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- PERIOD -->
+
+                    <div class="field">
+
+                        <label>
+                            Statement Period
+                        </label>
+
+                        <input
+                            type="text"
+                            id="statementPeriod"
+                            placeholder="August 2026"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- FILE -->
+
+                    <div class="field">
+
+                        <label>
+                            Statement PDF
+                        </label>
+
+                        <input
+                            type="file"
+                            id="statement"
+                            accept=".pdf,application/pdf"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- UPLOAD -->
+
+                    <button
+                        type="submit"
+                        class="upload-button"
+                        id="uploadButton"
+                    >
+
+                        <i class="fa-solid fa-upload"></i>
+
+                        Upload & Import
+
+                    </button>
+
+
+                </div>
+
+
+                <div class="help-text">
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                    Your SBI/BOB PDF password will be requested
+                    after you select the statement. It is used
+                    only for processing and is not stored.
+
+                </div>
+
+
+                <div
+                    id="message"
+                    class="message"
+                ></div>
+
+
+            </form>
+
+        </section>
+
+
+        <!-- ==================================================
+             IMPORTED STATEMENTS
+        ================================================== -->
+
+        <section class="statements-card">
+
+            <div class="section-title">
+
+                <i class="fa-solid fa-folder-open"></i>
+
+                Imported Statements
+
+            </div>
+
+
+            <div
+                id="statementList"
+                class="statement-list"
+            >
+
+                <div class="empty">
+
+                    Loading statements...
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================================================
+             TRANSACTIONS
+        ================================================== -->
+
+        <section
+            class="transactions-card"
+            id="transactionsSection"
+            style="display:none;"
+        >
+
+            <div class="transaction-header">
+
+
+                <div>
+
+                    <div
+                        id="transactionTitle"
+                        class="transaction-title"
+                    >
+
+                        Transactions
+
+                    </div>
+
+
+                    <div
+                        id="transactionSubtitle"
+                        class="transaction-subtitle"
+                    >
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    class="close-button"
+                    type="button"
+                    onclick="closeTransactions()"
+                >
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                #
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Description
+                            </th>
+
+                            <th>
+                                Bank Reference
+                            </th>
+
+                            <th>
+                                Debit
+                            </th>
+
+                            <th>
+                                Credit
+                            </th>
+
+                            <th>
+                                Balance
+                            </th>
+
+                            <th>
+                                Type
+                            </th>
+
+                            <th>
+                                Match Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody
+                        id="transactionBody"
+                    >
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+</div>
+
+
+<script>
+
+/*
+==========================================================
+CONFIGURATION
+==========================================================
+*/
+
+const API_BASE =
+    "https://academy-backend-eatl.onrender.com";
+
+
+/*
+==========================================================
+AUTHENTICATION
+==========================================================
+
+Your existing Academy frontend uses sessionStorage for
+the login token, so we follow the same pattern here.
+==========================================================
+*/
+
+const token =
+    sessionStorage.getItem("token");
+
+const role =
+    sessionStorage.getItem("role");
+
+
+/*
+==========================================================
+FOUNDER LOGIN CHECK
+==========================================================
+*/
+
+if (
+    !token ||
+    role !== "founder"
+) {
+
+    alert(
+        "Please login as Founder first."
+    );
+
+    window.location.href =
+        "founder-login.html";
+
+}
+
+
+/*
+==========================================================
+ELEMENTS
+==========================================================
+*/
+
+const form =
+    document.getElementById(
+        "statementForm"
+    );
+
+const uploadButton =
+    document.getElementById(
+        "uploadButton"
+    );
+
+const message =
+    document.getElementById(
+        "message"
+    );
+
+const statementList =
+    document.getElementById(
+        "statementList"
+    );
+
+const transactionsSection =
+    document.getElementById(
+        "transactionsSection"
+    );
+
+const transactionBody =
+    document.getElementById(
+        "transactionBody"
+    );
+
+const transactionTitle =
+    document.getElementById(
+        "transactionTitle"
+    );
+
+const transactionSubtitle =
+    document.getElementById(
+        "transactionSubtitle"
+    );
+
+
+/*
+==========================================================
+MESSAGE
+==========================================================
+*/
+
+function showMessage(
+    text,
+    type
+) {
+
+    message.textContent =
+        text;
+
+    message.className =
+        "message " +
+        type;
+
+}
+
+
+/*
+==========================================================
+UPLOAD
+==========================================================
+*/
+
+form.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const bank =
+            document.getElementById(
+                "bank"
+            ).value;
+
+
+        const statementPeriod =
+            document.getElementById(
+                "statementPeriod"
+            ).value.trim();
+
+
+        const fileInput =
+            document.getElementById(
+                "statement"
+            );
+
+
+        const file =
+            fileInput.files[0];
+
+
+        if (!bank) {
+
+            showMessage(
+                "Please select the bank.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if (!statementPeriod) {
+
+            showMessage(
+                "Please enter the statement period.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if (!file) {
+
+            showMessage(
+                "Please select the statement PDF.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        /*
+        --------------------------------------------------
+        Ask PDF password
+        --------------------------------------------------
+        */
+
+        const pdfPassword =
+            prompt(
+                "Enter the password of this bank statement PDF:"
+            );
+
+
+        if (
+            pdfPassword === null
+        ) {
+
+            return;
+
+        }
+
+
+        /*
+        --------------------------------------------------
+        FormData
+        --------------------------------------------------
+        */
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "bank",
+            bank
+        );
+
+
+        formData.append(
+            "statementPeriod",
+            statementPeriod
+        );
+
+
+        formData.append(
+            "pdfPassword",
+            pdfPassword
+        );
+
+
+        formData.append(
+            "statement",
+            file
+        );
+
+
+        /*
+        --------------------------------------------------
+        UI
+        --------------------------------------------------
+        */
+
+        uploadButton.disabled =
+            true;
+
+        uploadButton.innerHTML =
+            '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+
+
+        showMessage(
+            "Uploading and processing the statement...",
+            "success"
+        );
+
+
+        try {
+
+            const response =
+                await fetch(
+                    API_BASE +
+                    "/api/founder/bank-statements/upload",
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "Authorization":
+                                "Bearer " +
+                                token
+
+                        },
+
+                        body:
+                            formData
+
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                !response.ok ||
+                !data.success
+            ) {
+
+                throw new Error(
+                    data.message ||
+                    "Bank statement import failed."
+                );
+
+            }
+
+
+            showMessage(
+
+                "Statement imported successfully. " +
+                data.transactionCount +
+                " transactions found.",
+
+                "success"
+
+            );
+
+
+            form.reset();
+
+
+            await loadStatements();
+
+
+        }
+        catch (error) {
+
+            console.error(
+                "Bank statement upload error:",
+                error
+            );
+
+
+            showMessage(
+                error.message ||
+                "Unable to import the statement.",
+                "error"
+            );
+
+        }
+        finally {
+
+            uploadButton.disabled =
+                false;
+
+            uploadButton.innerHTML =
+                '<i class="fa-solid fa-upload"></i> Upload & Import';
+
+        }
+
+    }
+);
+
+
+/*
+==========================================================
+LOAD STATEMENTS
+==========================================================
+*/
+
+async function loadStatements() {
+
+    try {
+
+        statementList.innerHTML =
+            '<div class="empty">Loading statements...</div>';
+
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/api/founder/bank-statements",
+                {
+
+                    headers: {
+
+                        "Authorization":
+                            "Bearer " +
+                            token
+
+                    }
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            throw new Error(
+                data.message ||
+                "Unable to load statements."
+            );
+
+        }
+
+
+        renderStatements(
+            data.statements || []
+        );
+
+
+    }
+    catch (error) {
+
+        console.error(
+            "Load statements error:",
+            error
+        );
+
+
+        statementList.innerHTML = `
+
+            <div class="empty">
+
+                Unable to load bank statements.
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/*
+==========================================================
+RENDER STATEMENTS
+==========================================================
+*/
+
+function renderStatements(
+    statements
+) {
+
+    if (
+        !statements.length
+    ) {
+
+        statementList.innerHTML = `
+
+            <div class="empty">
+
+                No bank statements imported yet.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    statementList.innerHTML =
+        statements.map(
+            statement => {
+
+                const created =
+                    statement.createdAt
+                        ? new Date(
+                            statement.createdAt
+                          ).toLocaleDateString(
+                            "en-IN"
+                          )
+                        : "-";
+
+
+                const status =
+                    statement.status ||
+                    "UNKNOWN";
+
+
+                return `
+
+                    <div
+                        class="statement-item"
+                    >
+
+                        <div
+                            class="statement-top"
+                        >
+
+                            <div
+                                class="bank-name"
+                            >
+
+                                ${escapeHtml(
+                                    statement.bank
+                                )}
+
+                            </div>
+
+                            <span
+                                class="bank-badge"
+                            >
+
+                                ${escapeHtml(
+                                    status
+                                )}
+
+                            </span>
+
+                        </div>
+
+
+                        <div
+                            class="statement-file"
+                        >
+
+                            <i
+                                class="fa-solid fa-file-pdf"
+                            ></i>
+
+                            ${escapeHtml(
+                                statement.fileName
+                            )}
+
+                        </div>
+
+
+                        <div
+                            class="statement-info"
+                        >
+
+                            <div>
+
+                                Period
+
+                                <strong>
+
+                                    ${escapeHtml(
+                                        statement.statementPeriod
+                                    )}
+
+                                </strong>
+
+                            </div>
+
+
+                            <div>
+
+                                Transactions
+
+                                <strong>
+
+                                    ${Number(
+                                        statement.transactionCount || 0
+                                    )}
+
+                                </strong>
+
+                            </div>
+
+
+                            <div>
+
+                                Uploaded
+
+                                <strong>
+
+                                    ${created}
+
+                                </strong>
+
+                            </div>
+
+
+                            <div>
+
+                                Bank
+
+                                <strong>
+
+                                    ${escapeHtml(
+                                        statement.bank
+                                    )}
+
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            class="view-button"
+                            type="button"
+                            onclick="viewTransactions(
+                                '${statement._id}',
+                                '${escapeHtml(
+                                    statement.bank
+                                )}',
+                                '${escapeHtml(
+                                    statement.statementPeriod
+                                )}'
+                            )"
+                        >
+
+                            <i
+                                class="fa-solid fa-table-list"
+                            ></i>
+
+                            View Transactions
+
+                        </button>
+
+                    </div>
+
+                `;
+
+            }
+        )
+        .join("");
+
+}
+
+
+/*
+==========================================================
+VIEW TRANSACTIONS
+==========================================================
+*/
+
+async function viewTransactions(
+    statementId,
+    bank,
+    period
+) {
+
+    transactionsSection.style.display =
+        "block";
+
+
+    transactionTitle.textContent =
+        bank +
+        " Transactions";
+
+
+    transactionSubtitle.textContent =
+        period;
+
+
+    transactionBody.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="9"
+                class="empty"
+            >
+
+                Loading transactions...
+
+            </td>
+
+        </tr>
+
+    `;
+
+
+    transactionsSection.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+
+    try {
+
+        const response =
+            await fetch(
+
+                API_BASE +
+                "/api/founder/bank-statements/" +
+                statementId +
+                "/transactions",
+
+                {
+
+                    headers: {
+
+                        "Authorization":
+                            "Bearer " +
+                            token
+
+                    }
+
+                }
+
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            throw new Error(
+                data.message ||
+                "Unable to load transactions."
+            );
+
+        }
+
+
+        renderTransactions(
+            data.transactions || []
+        );
+
+
+    }
+    catch (error) {
+
+        console.error(
+            "Transaction loading error:",
+            error
+        );
+
+
+        transactionBody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="9"
+                    class="empty"
+                >
+
+                    Unable to load transactions.
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+/*
+==========================================================
+RENDER TRANSACTIONS
+==========================================================
+*/
+
+function renderTransactions(
+    transactions
+) {
+
+    if (
+        !transactions.length
+    ) {
+
+        transactionBody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="9"
+                    class="empty"
+                >
+
+                    No transactions found.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    transactionBody.innerHTML =
+        transactions.map(
+            (transaction, index) => {
+
+                const date =
+                    transaction.transactionDate
+                        ? new Date(
+                            transaction.transactionDate
+                          ).toLocaleDateString(
+                            "en-IN"
+                          )
+                        : "-";
+
+
+                const debit =
+                    Number(
+                        transaction.debit || 0
+                    );
+
+
+                const credit =
+                    Number(
+                        transaction.credit || 0
+                    );
+
+
+                const balance =
+                    transaction.balance !== null &&
+                    transaction.balance !== undefined
+                        ? formatAmount(
+                            transaction.balance
+                          )
+                        : "-";
+
+
+                return `
+
+                    <tr>
+
+                        <td>
+                            ${index + 1}
+                        </td>
+
+
+                        <td>
+                            ${date}
+                        </td>
+
+
+                        <td>
+                            ${escapeHtml(
+                                transaction.description || "-"
+                            )}
+                        </td>
+
+
+                        <td class="reference">
+
+                            ${escapeHtml(
+                                transaction.bankReference || "-"
+                            )}
+
+                        </td>
+
+
+                        <td
+                            class="debit"
+                        >
+
+                            ${
+                                debit > 0
+                                    ? "₹" +
+                                      formatAmount(
+                                          debit
+                                      )
+                                    : "-"
+                            }
+
+                        </td>
+
+
+                        <td
+                            class="credit"
+                        >
+
+                            ${
+                                credit > 0
+                                    ? "₹" +
+                                      formatAmount(
+                                          credit
+                                      )
+                                    : "-"
+                            }
+
+                        </td>
+
+
+                        <td>
+
+                            ${
+                                balance === "-"
+                                    ? "-"
+                                    : "₹" + balance
+                            }
+
+                        </td>
+
+
+                        <td>
+
+                            ${escapeHtml(
+                                transaction.transactionType ||
+                                "-"
+                            )}
+
+                        </td>
+
+
+                        <td>
+
+                            ${escapeHtml(
+                                transaction.reconciliationStatus ||
+                                "UNMATCHED"
+                            )}
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+        )
+        .join("");
+
+}
+
+
+/*
+==========================================================
+CLOSE TRANSACTIONS
+==========================================================
+*/
+
+function closeTransactions() {
+
+    transactionsSection.style.display =
+        "none";
+
+}
+
+
+/*
+==========================================================
+FORMAT AMOUNT
+==========================================================
+*/
+
+function formatAmount(
+    amount
+) {
+
+    return Number(
+        amount || 0
+    ).toLocaleString(
+        "en-IN",
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+    );
+
+}
+
+
+/*
+==========================================================
+HTML ESCAPE
+==========================================================
+*/
+
+function escapeHtml(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+/*
+==========================================================
+INITIAL LOAD
+==========================================================
+*/
+
+loadStatements();
+
+</script>
+
+
+</body>
+
+</html>
