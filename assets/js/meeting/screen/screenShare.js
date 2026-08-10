@@ -206,94 +206,66 @@ const ScreenShare = {
 
         };
 
-        pc.ontrack = async (event) => {
+       pc.ontrack = async (event) => {
 
-    console.log("=================================");
     console.log("SCREEN TRACK RECEIVED");
-    console.log("SCREEN STREAM:", event.streams[0]);
-    console.log("SCREEN TRACKS:", event.streams[0]?.getTracks());
-    console.log("=================================");
 
-    const video = document.getElementById("screenVideo");
+    const track = event.track;
 
-    if (!video) {
-        console.error("❌ screenVideo element NOT FOUND");
+    if (!track) {
+        console.error("SCREEN TRACK MISSING");
         return;
     }
 
-    const remoteStream = event.streams[0];
+    console.log("SCREEN TRACK:", track.kind);
+    console.log("SCREEN TRACK STATE:", track.readyState);
+    console.log("SCREEN TRACK ENABLED:", track.enabled);
 
-    if (!remoteStream) {
-        console.error("❌ No remote screen stream received");
-        return;
-    }
+    if (
+        window.ScreenLayout &&
+        typeof ScreenLayout.attachRemoteTrack === "function"
+    ) {
 
-    // Attach teacher's shared screen
-    video.srcObject = remoteStream;
+        ScreenLayout.attachRemoteTrack(track);
 
-    // Force video playback settings
-    video.autoplay = true;
-    video.playsInline = true;
-    video.muted = true;
-
-    // IMPORTANT:
-    // Make the screen container visible
-    const container =
-        document.getElementById("screenContainer");
-
-    if (container) {
-
-        container.style.display = "block";
-        container.style.visibility = "visible";
-        container.style.opacity = "1";
-        container.style.zIndex = "9999";
-
-        console.log(
-            "✅ SCREEN CONTAINER MADE VISIBLE"
-        );
+        console.log("SCREEN ATTACHED THROUGH ScreenLayout");
 
     } else {
 
-        console.error(
-            "❌ screenContainer NOT FOUND"
-        );
+        console.error("ScreenLayout.attachRemoteTrack NOT FOUND");
 
-    }
+        const video =
+            document.getElementById("screenVideo");
 
-    // Force video dimensions
-    video.style.display = "block";
-    video.style.visibility = "visible";
-    video.style.width = "100%";
-    video.style.height = "100%";
-    video.style.objectFit = "contain";
-    video.style.background = "#000";
+        if (!video) {
+            console.error("screenVideo missing");
+            return;
+        }
 
-    try {
+        const stream =
+            event.streams[0] ||
+            new MediaStream([track]);
 
-        await video.play();
+        video.srcObject = stream;
+        video.autoplay = true;
+        video.playsInline = true;
+        video.muted = true;
 
-        console.log(
-            "✅ STUDENT SCREEN VIDEO PLAYING"
-        );
+        try {
+            await video.play();
+        } catch (err) {
+            console.error(
+                "Screen video play error:",
+                err
+            );
+        }
 
-    } catch (err) {
+        const container =
+            document.getElementById("screenContainer");
 
-        console.error(
-            "❌ Screen video play error:",
-            err
-        );
-
-    }
-
-    // Tell participant layout that screen sharing is active
-    if (
-        window.ParticipantLayout &&
-        typeof ParticipantLayout.showScreenShare ===
-        "function"
-    ) {
-
-        ParticipantLayout.showScreenShare();
-
+        if (container) {
+            container.style.display = "block";
+        }
     }
 
 };
