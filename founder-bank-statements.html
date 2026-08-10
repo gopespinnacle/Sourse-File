@@ -1277,10 +1277,9 @@ the login token, so we follow the same pattern here.
 */
 
 const token =
-    sessionStorage.getItem("token");
+    localStorage.getItem("token");
 
-const role =
-    sessionStorage.getItem("role");
+
 
 
 /*
@@ -1289,10 +1288,7 @@ FOUNDER LOGIN CHECK
 ==========================================================
 */
 
-if (
-    !token ||
-    role !== "founder"
-) {
+if (!token) {
 
     alert(
         "Please login as Founder first."
