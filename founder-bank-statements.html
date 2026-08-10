@@ -862,6 +862,14 @@
 
         }
 
+        @media (max-width: 650px) {
+
+    #transactionSummary {
+        grid-template-columns: 1fr !important;
+    }
+
+}
+
     </style>
 
 </head>
@@ -1185,6 +1193,129 @@
 
 
             </div>
+
+            <!-- ==================================================
+     TRANSACTION SUMMARY
+================================================== -->
+
+<div
+    id="transactionSummary"
+    style="
+        display:grid;
+        grid-template-columns:repeat(3, 1fr);
+        gap:12px;
+        margin-bottom:16px;
+    "
+>
+
+    <!-- TOTAL DEBIT -->
+
+    <div
+        style="
+            background:#fff5f5;
+            border:1px solid #fecdca;
+            border-radius:8px;
+            padding:14px;
+        "
+    >
+
+        <div
+            style="
+                font-size:12px;
+                color:#b42318;
+                font-weight:600;
+            "
+        >
+            Total Debits
+        </div>
+
+        <div
+            id="totalDebit"
+            style="
+                font-size:18px;
+                font-weight:700;
+                color:#b42318;
+                margin-top:5px;
+            "
+        >
+            ₹0.00
+        </div>
+
+    </div>
+
+
+    <!-- TOTAL CREDIT -->
+
+    <div
+        style="
+            background:#ecfdf3;
+            border:1px solid #abefc6;
+            border-radius:8px;
+            padding:14px;
+        "
+    >
+
+        <div
+            style="
+                font-size:12px;
+                color:#027a48;
+                font-weight:600;
+            "
+        >
+            Total Credits
+        </div>
+
+        <div
+            id="totalCredit"
+            style="
+                font-size:18px;
+                font-weight:700;
+                color:#027a48;
+                margin-top:5px;
+            "
+        >
+            ₹0.00
+        </div>
+
+    </div>
+
+
+    <!-- CURRENT BALANCE -->
+
+    <div
+        style="
+            background:#f5f8ff;
+            border:1px solid #b2ccff;
+            border-radius:8px;
+            padding:14px;
+        "
+    >
+
+        <div
+            style="
+                font-size:12px;
+                color:#2864e8;
+                font-weight:600;
+            "
+        >
+            Current Balance
+        </div>
+
+        <div
+            id="currentBalance"
+            style="
+                font-size:18px;
+                font-weight:700;
+                color:#2864e8;
+                margin-top:5px;
+            "
+        >
+            ₹0.00
+        </div>
+
+    </div>
+
+</div>
 
 
             <div class="table-wrapper">
@@ -2055,6 +2186,113 @@ function renderTransactions(
         return;
 
     }
+
+    /*
+==========================================================
+CALCULATE TRANSACTION TOTALS
+==========================================================
+*/
+
+let totalDebit = 0;
+
+let totalCredit = 0;
+
+let currentBalance = null;
+
+
+/*
+----------------------------------------------------------
+CALCULATE DEBIT / CREDIT
+----------------------------------------------------------
+*/
+
+transactions.forEach(
+    transaction => {
+
+        totalDebit +=
+            Number(
+                transaction.debit || 0
+            );
+
+
+        totalCredit +=
+            Number(
+                transaction.credit || 0
+            );
+
+    }
+);
+
+
+/*
+----------------------------------------------------------
+GET CURRENT BALANCE
+----------------------------------------------------------
+
+The current balance is NOT the sum of balances.
+
+It is the balance belonging to the latest
+transaction in the statement.
+----------------------------------------------------------
+*/
+
+for (
+    let i = transactions.length - 1;
+    i >= 0;
+    i--
+) {
+
+    if (
+        transactions[i].balance !== null &&
+        transactions[i].balance !== undefined &&
+        transactions[i].balance !== ""
+    ) {
+
+        currentBalance =
+            Number(
+                transactions[i].balance
+            );
+
+        break;
+
+    }
+
+}
+
+
+/*
+----------------------------------------------------------
+DISPLAY TOTALS
+----------------------------------------------------------
+*/
+
+document.getElementById(
+    "totalDebit"
+).textContent =
+    "₹" +
+    formatAmount(
+        totalDebit
+    );
+
+
+document.getElementById(
+    "totalCredit"
+).textContent =
+    "₹" +
+    formatAmount(
+        totalCredit
+    );
+
+
+document.getElementById(
+    "currentBalance"
+).textContent =
+    currentBalance === null
+        ? "-"
+        : "₹" +
+          formatAmount(
+              currentBalance
+          );
 
 
     transactionBody.innerHTML =
