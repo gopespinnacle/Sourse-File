@@ -1705,10 +1705,75 @@ async function editTransaction(
         }
 
 
+        // ================= LOAD CURRENT FILTERED TRANSACTIONS =================
+
+        let url =
+            `${API_BASE}/api/founder/finance-transactions`;
+
+
+        if (currentView === "day") {
+
+            const date =
+                document.getElementById(
+                    "filterDate"
+                ).value;
+
+
+            if (!date) {
+
+                alert(
+                    "Please select a date."
+                );
+
+                return;
+
+            }
+
+
+            url +=
+                `?view=day&date=${encodeURIComponent(date)}`;
+
+        } else {
+
+            const monthValue =
+                document.getElementById(
+                    "filterMonth"
+                ).value;
+
+
+            if (!monthValue) {
+
+                alert(
+                    "Please select a month."
+                );
+
+                return;
+
+            }
+
+
+            const parts =
+                monthValue.split("-");
+
+
+            const year =
+                parts[0];
+
+
+            const month =
+                Number(parts[1]);
+
+
+            url +=
+                `?view=month&month=${month}&year=${year}`;
+
+        }
+
+
         const response =
             await fetch(
 
-                `${API_BASE}/api/founder/finance-transactions`,
+                url,
 
                 {
 
