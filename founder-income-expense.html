@@ -1301,6 +1301,8 @@
         let currentView =
             "day";
 
+            let editingTransactionId = null;
+
 
         // ================= SET DEFAULT DATE =================
 
@@ -1599,6 +1601,9 @@
 
         function openAddTransaction() {
 
+    editingTransactionId = null;
+
+
     const modal =
         document.getElementById(
             "transactionModal"
@@ -1617,18 +1622,14 @@
     clearFormMessage();
 
 
-    // Use currently selected filter date
-
-    const selectedDate =
-        document.getElementById(
-            "filterDate"
-        ).value;
-
-
     document.getElementById(
         "transactionDate"
     ).value =
-        selectedDate ||
+
+        document.getElementById(
+            "filterDate"
+        ).value ||
+
         getTodayDate();
 
 
@@ -1654,11 +1655,251 @@
     `;
 
 
+    document.querySelector(
+        ".modal-header h2"
+    ).innerHTML = `
+
+        <i class="fa fa-wallet"></i>
+
+        Add Income / Expense
+
+    `;
+
+
+    document.getElementById(
+        "saveTransactionBtn"
+    ).innerHTML = `
+
+        <i class="fa fa-save"></i>
+
+        Save Transaction
+
+    `;
+
+
     modal.style.display =
         "flex";
 
 }
 
+async function editTransaction(
+    transactionId
+) {
+
+    try {
+
+        const token =
+            localStorage.getItem(
+                "token"
+            );
+
+
+        if (!token) {
+
+            alert(
+                "Login session expired. Please login again."
+            );
+
+            return;
+
+        }
+
+
+        const response =
+            await fetch(
+
+                `${API_BASE}/api/founder/finance-transactions`,
+
+                {
+
+                    method: "GET",
+
+                    headers: {
+
+                        "Authorization":
+                            "Bearer " + token
+
+                    }
+
+                }
+
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            alert(
+                data.message ||
+                "Unable to load transaction."
+            );
+
+            return;
+
+        }
+
+
+        const transaction =
+            data.transactions.find(
+
+                item =>
+                    item._id === transactionId
+
+            );
+
+
+        if (!transaction) {
+
+            alert(
+                "Transaction not found."
+            );
+
+            return;
+
+        }
+
+
+        editingTransactionId =
+            transactionId;
+
+
+        // ================= OPEN FORM =================
+
+        document.getElementById(
+            "transactionModal"
+        ).style.display =
+            "flex";
+
+
+        clearFormMessage();
+
+
+        // ================= DATE =================
+
+        const transactionDate =
+            new Date(
+                transaction.date
+            );
+
+
+        const year =
+            transactionDate
+                .getFullYear();
+
+
+        const month =
+            String(
+                transactionDate.getMonth() + 1
+            ).padStart(2, "0");
+
+
+        const day =
+            String(
+                transactionDate.getDate()
+            ).padStart(2, "0");
+
+
+        document.getElementById(
+            "transactionDate"
+        ).value =
+            `${year}-${month}-${day}`;
+
+
+        // ================= TYPE =================
+
+        document.getElementById(
+            "transactionType"
+        ).value =
+            transaction.type;
+
+
+        // ================= LOAD CATEGORIES =================
+
+        await loadTransactionCategories();
+
+
+        // ================= CATEGORY =================
+
+        document.getElementById(
+            "transactionCategory"
+        ).value =
+            transaction.category;
+
+
+        // ================= LOAD SUB CATEGORIES =================
+
+        await loadTransactionSubCategories();
+
+
+        // ================= SUB CATEGORY =================
+
+        document.getElementById(
+            "transactionSubCategory"
+        ).value =
+            transaction.subCategory;
+
+
+        // ================= DESCRIPTION =================
+
+        document.getElementById(
+            "transactionDescription"
+        ).value =
+            transaction.description || "";
+
+
+        // ================= AMOUNT =================
+
+        document.getElementById(
+            "transactionAmount"
+        ).value =
+            transaction.amount;
+
+
+        // ================= CHANGE HEADER =================
+
+        document.querySelector(
+            ".modal-header h2"
+        ).innerHTML = `
+
+            <i class="fa fa-edit"></i>
+
+            Edit Income / Expense
+
+        `;
+
+
+        document.getElementById(
+            "saveTransactionBtn"
+        ).innerHTML = `
+
+            <i class="fa fa-save"></i>
+
+            Update Transaction
+
+        `;
+
+
+    } catch (error) {
+
+        console.error(
+            "EDIT TRANSACTION ERROR:",
+            error
+        );
+
+
+        alert(
+            "Unable to open transaction."
+        );
+
+    }
+
+}
 function getTodayDate() {
 
     const today =
@@ -2135,14 +2376,32 @@ async function saveTransaction(event) {
 
     try {
 
+                const requestUrl =
+
+            editingTransactionId
+
+                ? `${API_BASE}/api/founder/finance-transaction/${editingTransactionId}`
+
+                : `${API_BASE}/api/founder/finance-transaction`;
+
+
+        const requestMethod =
+
+            editingTransactionId
+
+                ? "PUT"
+
+                : "POST";
+
+
         const response =
             await fetch(
 
-                `${API_BASE}/api/founder/finance-transaction`,
+                requestUrl,
 
                 {
 
-                    method: "POST",
+                    method: requestMethod,
 
                     headers: {
 
@@ -2176,8 +2435,12 @@ async function saveTransaction(event) {
             );
 
 
+
+
         const data =
             await response.json();
+
+            
 
 
         if (
@@ -2201,11 +2464,15 @@ async function saveTransaction(event) {
 
         showFormMessage(
 
-            "Transaction saved successfully.",
+    editingTransactionId
 
-            "success"
+        ? "Transaction updated successfully."
 
-        );
+        : "Transaction saved successfully.",
+
+    "success"
+
+);
 
 
         /*
@@ -2214,6 +2481,8 @@ async function saveTransaction(event) {
          */
 
         await loadTransactions();
+
+        editingTransactionId = null;
 
 
         setTimeout(
@@ -2278,6 +2547,110 @@ function showFormMessage(
 
 }
 
+async function deleteTransaction(
+    transactionId
+) {
+
+    const confirmed =
+        confirm(
+
+            "Are you sure you want to delete this transaction?\n\n" +
+            "This action cannot be undone."
+
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const token =
+            localStorage.getItem(
+                "token"
+            );
+
+
+        if (!token) {
+
+            alert(
+                "Login session expired. Please login again."
+            );
+
+            return;
+
+        }
+
+
+        const response =
+            await fetch(
+
+                `${API_BASE}/api/founder/finance-transaction/${transactionId}`,
+
+                {
+
+                    method: "DELETE",
+
+                    headers: {
+
+                        "Authorization":
+                            "Bearer " + token
+
+                    }
+
+                }
+
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            alert(
+
+                data.message ||
+                "Unable to delete transaction."
+
+            );
+
+            return;
+
+        }
+
+
+        alert(
+            "Transaction deleted successfully."
+        );
+
+
+        await loadTransactions();
+
+
+    } catch (error) {
+
+        console.error(
+            "DELETE TRANSACTION ERROR:",
+            error
+        );
+
+
+        alert(
+            "Unable to delete transaction."
+        );
+
+    }
+
+}
 
 function clearFormMessage() {
 
@@ -2435,15 +2808,33 @@ function renderTransactions(
 
                             <button
     type="button"
-    disabled
+    onclick="editTransaction('${transaction._id}')"
     style="
-        background:#999;
+        background:#17395f;
         color:white;
         border:none;
-        padding:6px 10px;
+        padding:6px 9px;
         border-radius:4px;
-        cursor:not-allowed;
+        cursor:pointer;
+        margin-right:4px;
     "
+    title="Edit"
+>
+    <i class="fa fa-edit"></i>
+</button>
+
+<button
+    type="button"
+    onclick="deleteTransaction('${transaction._id}')"
+    style="
+        background:#dc3545;
+        color:white;
+        border:none;
+        padding:6px 9px;
+        border-radius:4px;
+        cursor:pointer;
+    "
+    title="Delete"
 >
     <i class="fa fa-trash"></i>
 </button>
