@@ -951,11 +951,186 @@
 
         async function loadTransactions() {
 
-            console.log(
-                "Loading finance transactions..."
+    try {
+
+        const token =
+            localStorage.getItem("token");
+
+
+        if (!token) {
+
+            alert(
+                "Login session expired. Please login again."
             );
 
+            return;
+
         }
+
+
+        let url =
+            `${API_BASE}/api/founder/finance-transactions`;
+
+
+        // ================= DAY VIEW =================
+
+        if (currentView === "day") {
+
+            const date =
+                document.getElementById(
+                    "filterDate"
+                ).value;
+
+
+            if (!date) {
+
+                alert(
+                    "Please select a date."
+                );
+
+                return;
+
+            }
+
+
+            url +=
+                `?view=day&date=${encodeURIComponent(date)}`;
+
+        }
+
+
+        // ================= MONTH VIEW =================
+
+        else {
+
+            const monthValue =
+                document.getElementById(
+                    "filterMonth"
+                ).value;
+
+
+            if (!monthValue) {
+
+                alert(
+                    "Please select a month."
+                );
+
+                return;
+
+            }
+
+
+            const parts =
+                monthValue.split("-");
+
+
+            const year =
+                parts[0];
+
+
+            const month =
+                Number(parts[1]);
+
+
+            url +=
+                `?view=month&month=${month}&year=${year}`;
+
+        }
+
+
+        console.log(
+            "FINANCE REPORT URL:",
+            url
+        );
+
+
+        const response =
+            await fetch(
+                url,
+                {
+
+                    method: "GET",
+
+                    headers: {
+
+                        "Authorization":
+                            "Bearer " + token
+
+                    }
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "FINANCE REPORT:",
+            data
+        );
+
+
+        if (!response.ok || !data.success) {
+
+            alert(
+                data.message ||
+                "Unable to load finance report."
+            );
+
+            return;
+
+        }
+
+
+        // ================= UPDATE TOTALS =================
+
+        document.getElementById(
+            "totalIncome"
+        ).textContent =
+            formatCurrency(
+                data.totals.totalIncome
+            );
+
+
+        document.getElementById(
+            "totalExpense"
+        ).textContent =
+            formatCurrency(
+                data.totals.totalExpense
+            );
+
+
+        document.getElementById(
+            "netBalance"
+        ).textContent =
+            formatCurrency(
+                data.totals.netBalance
+            );
+
+
+        // ================= UPDATE TABLE =================
+
+        renderTransactions(
+            data.transactions
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "LOAD FINANCE TRANSACTIONS ERROR:",
+            error
+        );
+
+        alert(
+            "Unable to load finance transactions."
+        );
+
+    }
+
+}
 
 
         // ================= ADD TRANSACTION =================
@@ -974,6 +1149,173 @@
         setDefaultDate();
 
         loadTransactions();
+
+        function formatCurrency(amount) {
+
+    return new Intl.NumberFormat(
+        "en-IN",
+        {
+            style: "currency",
+            currency: "INR",
+            maximumFractionDigits: 0
+        }
+    ).format(
+        Number(amount || 0)
+    );
+
+}
+
+function renderTransactions(
+    transactions
+) {
+
+    const tableBody =
+        document.getElementById(
+            "transactionTableBody"
+        );
+
+
+    if (
+        !transactions ||
+        transactions.length === 0
+    ) {
+
+        tableBody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="7"
+                    class="empty-row"
+                >
+                    No transactions found
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    tableBody.innerHTML =
+        transactions.map(
+            transaction => {
+
+                const date =
+                    new Date(
+                        transaction.date
+                    );
+
+
+                const formattedDate =
+                    date.toLocaleDateString(
+                        "en-IN"
+                    );
+
+
+                const typeClass =
+                    transaction.type ===
+                    "Income"
+                        ? "income"
+                        : "expense";
+
+
+                const sign =
+                    transaction.type ===
+                    "Income"
+                        ? "+"
+                        : "-";
+
+
+                return `
+
+                    <tr>
+
+                        <td>
+                            ${formattedDate}
+                        </td>
+
+
+                        <td
+                            class="${typeClass}"
+                        >
+                            ${transaction.type}
+                        </td>
+
+
+                        <td>
+                            ${escapeHtml(
+                                transaction.category
+                            )}
+                        </td>
+
+
+                        <td>
+                            ${escapeHtml(
+                                transaction.subCategory
+                            )}
+                        </td>
+
+
+                        <td>
+                            ${escapeHtml(
+                                transaction.description ||
+                                "-"
+                            )}
+                        </td>
+
+
+                        <td
+                            class="${typeClass}"
+                        >
+                            ${sign}
+                            ${formatCurrency(
+                                transaction.amount
+                            )}
+                        </td>
+
+
+                        <td>
+
+                            <button
+    type="button"
+    disabled
+    style="
+        background:#999;
+        color:white;
+        border:none;
+        padding:6px 10px;
+        border-radius:4px;
+        cursor:not-allowed;
+    "
+>
+    <i class="fa fa-trash"></i>
+</button>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+        ).join("");
+
+}
+
+function escapeHtml(value) {
+
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
 
     </script>
 
