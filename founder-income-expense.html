@@ -514,6 +514,248 @@
 
         }
 
+        /* ================= ADD TRANSACTION MODAL ================= */
+
+.modal-overlay {
+
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.45);
+
+    z-index: 9999;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+.modal-box {
+
+    background: white;
+
+    width: 520px;
+
+    max-width: 92%;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,0.2);
+
+    overflow: hidden;
+
+}
+
+
+.modal-header {
+
+    background: #17395f;
+
+    color: white;
+
+    padding: 15px 18px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+}
+
+
+.modal-header h2 {
+
+    margin: 0;
+
+    font-size: 20px;
+
+}
+
+
+.modal-close {
+
+    background: none;
+
+    border: none;
+
+    color: white;
+
+    font-size: 22px;
+
+    cursor: pointer;
+
+}
+
+
+.modal-body {
+
+    padding: 20px;
+
+}
+
+
+.form-group {
+
+    margin-bottom: 15px;
+
+}
+
+
+.form-group label {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    color: #444;
+
+}
+
+
+.form-group input,
+
+.form-group select,
+
+.form-group textarea {
+
+    width: 100%;
+
+    padding: 10px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 5px;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+}
+
+
+.form-group textarea {
+
+    min-height: 80px;
+
+    resize: vertical;
+
+}
+
+
+.form-actions {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 20px;
+
+}
+
+
+.cancel-btn {
+
+    padding: 10px 18px;
+
+    border: 1px solid #ccc;
+
+    background: #f3f3f3;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+
+}
+
+
+.save-btn {
+
+    padding: 10px 20px;
+
+    border: none;
+
+    background: #17395f;
+
+    color: white;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    font-weight: 600;
+
+}
+
+
+.save-btn:disabled {
+
+    background: #999;
+
+    cursor: not-allowed;
+
+}
+
+
+.form-message {
+
+    display: none;
+
+    padding: 10px;
+
+    border-radius: 5px;
+
+    margin-bottom: 15px;
+
+    font-size: 13px;
+
+}
+
+
+.form-message.error {
+
+    display: block;
+
+    background: #fde8e8;
+
+    color: #b42318;
+
+}
+
+
+.form-message.success {
+
+    display: block;
+
+    background: #e8f7ed;
+
+    color: #16733c;
+
+}
+
+
+@media (max-width: 800px) {
+
+    .modal-box {
+
+        width: 95%;
+
+    }
+
+}
+
     </style>
 
 </head>
@@ -828,6 +1070,226 @@
 
 
     </div>
+    <!-- ================= ADD TRANSACTION MODAL ================= -->
+
+<div
+    class="modal-overlay"
+    id="transactionModal"
+>
+
+    <div class="modal-box">
+
+
+        <!-- MODAL HEADER -->
+
+        <div class="modal-header">
+
+            <h2>
+
+                <i class="fa fa-wallet"></i>
+
+                Add Income / Expense
+
+            </h2>
+
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="closeTransactionModal()"
+            >
+
+                &times;
+
+            </button>
+
+        </div>
+
+
+        <!-- MODAL BODY -->
+
+        <div class="modal-body">
+
+
+            <div
+                id="formMessage"
+                class="form-message"
+            ></div>
+
+
+            <form
+                id="transactionForm"
+                onsubmit="saveTransaction(event)"
+            >
+
+
+                <!-- DATE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="transactionDate"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- TYPE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Type
+                    </label>
+
+                    <select
+                        id="transactionType"
+                        required
+                        onchange="loadTransactionCategories()"
+                    >
+
+                        <option value="">
+                            Select Income / Expense
+                        </option>
+
+                        <option value="Income">
+                            Income
+                        </option>
+
+                        <option value="Expense">
+                            Expense
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- CATEGORY -->
+
+                <div class="form-group">
+
+                    <label>
+                        Category
+                    </label>
+
+                    <select
+                        id="transactionCategory"
+                        required
+                        onchange="loadTransactionSubCategories()"
+                    >
+
+                        <option value="">
+                            Select Category
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- SUB CATEGORY -->
+
+                <div class="form-group">
+
+                    <label>
+                        Sub Category
+                    </label>
+
+                    <select
+                        id="transactionSubCategory"
+                        required
+                    >
+
+                        <option value="">
+                            Select Sub Category
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="form-group">
+
+                    <label>
+                        Description
+                    </label>
+
+                    <textarea
+                        id="transactionDescription"
+                        placeholder="Enter description..."
+                    ></textarea>
+
+                </div>
+
+
+                <!-- AMOUNT -->
+
+                <div class="form-group">
+
+                    <label>
+                        Amount (₹)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="transactionAmount"
+                        min="0.01"
+                        step="0.01"
+                        placeholder="Enter amount"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- ACTIONS -->
+
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        class="cancel-btn"
+                        onclick="closeTransactionModal()"
+                    >
+
+                        Cancel
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="save-btn"
+                        id="saveTransactionBtn"
+                    >
+
+                        <i class="fa fa-save"></i>
+
+                        Save Transaction
+
+                    </button>
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </div>
+
+</div>
 
 
     <script>
@@ -1137,11 +1599,702 @@
 
         function openAddTransaction() {
 
-            alert(
-                "Add Income / Expense form will be added in the next block."
+    const modal =
+        document.getElementById(
+            "transactionModal"
+        );
+
+
+    const form =
+        document.getElementById(
+            "transactionForm"
+        );
+
+
+    form.reset();
+
+
+    clearFormMessage();
+
+
+    // Use currently selected filter date
+
+    const selectedDate =
+        document.getElementById(
+            "filterDate"
+        ).value;
+
+
+    document.getElementById(
+        "transactionDate"
+    ).value =
+        selectedDate ||
+        getTodayDate();
+
+
+    document.getElementById(
+        "transactionCategory"
+    ).innerHTML = `
+
+        <option value="">
+            Select Category
+        </option>
+
+    `;
+
+
+    document.getElementById(
+        "transactionSubCategory"
+    ).innerHTML = `
+
+        <option value="">
+            Select Sub Category
+        </option>
+
+    `;
+
+
+    modal.style.display =
+        "flex";
+
+}
+
+function getTodayDate() {
+
+    const today =
+        new Date();
+
+
+    const year =
+        today.getFullYear();
+
+
+    const month =
+        String(
+            today.getMonth() + 1
+        ).padStart(2, "0");
+
+
+    const day =
+        String(
+            today.getDate()
+        ).padStart(2, "0");
+
+
+    return `${year}-${month}-${day}`;
+
+}
+
+function closeTransactionModal() {
+
+    document.getElementById(
+        "transactionModal"
+    ).style.display =
+        "none";
+
+}
+
+async function loadTransactionCategories() {
+
+    const type =
+        document.getElementById(
+            "transactionType"
+        ).value;
+
+
+    const categorySelect =
+        document.getElementById(
+            "transactionCategory"
+        );
+
+
+    const subCategorySelect =
+        document.getElementById(
+            "transactionSubCategory"
+        );
+
+
+    categorySelect.innerHTML = `
+
+        <option value="">
+            Select Category
+        </option>
+
+    `;
+
+
+    subCategorySelect.innerHTML = `
+
+        <option value="">
+            Select Sub Category
+        </option>
+
+    `;
+
+
+    if (!type) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const token =
+            localStorage.getItem(
+                "token"
             );
 
+
+        const response =
+            await fetch(
+
+                `${API_BASE}/api/founder/finance-categories`,
+
+                {
+
+                    method: "GET",
+
+                    headers: {
+
+                        "Authorization":
+                            "Bearer " + token
+
+                    }
+
+                }
+
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            alert(
+                data.message ||
+                "Unable to load categories."
+            );
+
+            return;
+
         }
+
+
+        const filteredCategories =
+            data.categories.filter(
+                item =>
+                    item.type === type
+            );
+
+
+        filteredCategories.forEach(
+            item => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    item.category;
+
+
+                option.textContent =
+                    item.category;
+
+
+                categorySelect.appendChild(
+                    option
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "LOAD FINANCE CATEGORIES ERROR:",
+            error
+        );
+
+
+        alert(
+            "Unable to load categories."
+        );
+
+    }
+
+}
+
+async function loadTransactionSubCategories() {
+
+    const type =
+        document.getElementById(
+            "transactionType"
+        ).value;
+
+
+    const category =
+        document.getElementById(
+            "transactionCategory"
+        ).value;
+
+
+    const subCategorySelect =
+        document.getElementById(
+            "transactionSubCategory"
+        );
+
+
+    subCategorySelect.innerHTML = `
+
+        <option value="">
+            Select Sub Category
+        </option>
+
+    `;
+
+
+    if (
+        !type ||
+        !category
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const token =
+            localStorage.getItem(
+                "token"
+            );
+
+
+        const response =
+            await fetch(
+
+                `${API_BASE}/api/founder/finance-categories`,
+
+                {
+
+                    method: "GET",
+
+                    headers: {
+
+                        "Authorization":
+                            "Bearer " + token
+
+                    }
+
+                }
+
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            return;
+
+        }
+
+
+        const selectedCategory =
+            data.categories.find(
+
+                item =>
+
+                    item.type === type &&
+                    item.category === category
+
+            );
+
+
+        if (
+            !selectedCategory
+        ) {
+
+            return;
+
+        }
+
+
+        selectedCategory.subCategories
+            .forEach(
+                subCategory => {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    /*
+                     * Supports both:
+                     *
+                     * "Monthly Tuition Fees"
+                     *
+                     * and future object format.
+                     */
+
+                    if (
+                        typeof subCategory ===
+                        "string"
+                    ) {
+
+                        option.value =
+                            subCategory;
+
+                        option.textContent =
+                            subCategory;
+
+                    } else {
+
+                        option.value =
+                            subCategory.name;
+
+                        option.textContent =
+                            subCategory.name;
+
+                    }
+
+
+                    subCategorySelect
+                        .appendChild(
+                            option
+                        );
+
+                }
+            );
+
+
+    } catch (error) {
+
+        console.error(
+            "LOAD SUB CATEGORIES ERROR:",
+            error
+        );
+
+    }
+
+}
+async function saveTransaction(event) {
+
+    event.preventDefault();
+
+
+    const token =
+        localStorage.getItem(
+            "token"
+        );
+
+
+    if (!token) {
+
+        alert(
+            "Login session expired. Please login again."
+        );
+
+        return;
+
+    }
+
+
+    const saveButton =
+        document.getElementById(
+            "saveTransactionBtn"
+        );
+
+
+    const date =
+        document.getElementById(
+            "transactionDate"
+        ).value;
+
+
+    const type =
+        document.getElementById(
+            "transactionType"
+        ).value;
+
+
+    const category =
+        document.getElementById(
+            "transactionCategory"
+        ).value;
+
+
+    const subCategory =
+        document.getElementById(
+            "transactionSubCategory"
+        ).value;
+
+
+    const description =
+        document.getElementById(
+            "transactionDescription"
+        ).value.trim();
+
+
+    const amount =
+        Number(
+            document.getElementById(
+                "transactionAmount"
+            ).value
+        );
+
+
+    if (!date) {
+
+        showFormMessage(
+            "Please select a date.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (!type) {
+
+        showFormMessage(
+            "Please select Income or Expense.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (!category) {
+
+        showFormMessage(
+            "Please select a Category.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (!subCategory) {
+
+        showFormMessage(
+            "Please select a Sub Category.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !Number.isFinite(amount) ||
+        amount <= 0
+    ) {
+
+        showFormMessage(
+            "Please enter a valid amount.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    saveButton.disabled = true;
+
+    saveButton.innerHTML = `
+        <i class="fa fa-spinner fa-spin"></i>
+        Saving...
+    `;
+
+
+    try {
+
+        const response =
+            await fetch(
+
+                `${API_BASE}/api/founder/finance-transaction`,
+
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " + token
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            date,
+
+                            type,
+
+                            category,
+
+                            subCategory,
+
+                            description,
+
+                            amount
+
+                        })
+
+                }
+
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            showFormMessage(
+
+                data.message ||
+                "Unable to save transaction.",
+
+                "error"
+
+            );
+
+            return;
+
+        }
+
+
+        showFormMessage(
+
+            "Transaction saved successfully.",
+
+            "success"
+
+        );
+
+
+        /*
+         * Refresh the report
+         * after successful save.
+         */
+
+        await loadTransactions();
+
+
+        setTimeout(
+            () => {
+
+                closeTransactionModal();
+
+            },
+            700
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "SAVE TRANSACTION ERROR:",
+            error
+        );
+
+
+        showFormMessage(
+            "Unable to save transaction.",
+            "error"
+        );
+
+
+    } finally {
+
+        saveButton.disabled =
+            false;
+
+
+        saveButton.innerHTML = `
+
+            <i class="fa fa-save"></i>
+
+            Save Transaction
+
+        `;
+
+    }
+
+}
+
+function showFormMessage(
+    message,
+    type
+) {
+
+    const messageBox =
+        document.getElementById(
+            "formMessage"
+        );
+
+
+    messageBox.textContent =
+        message;
+
+
+    messageBox.className =
+        "form-message " + type;
+
+}
+
+
+function clearFormMessage() {
+
+    const messageBox =
+        document.getElementById(
+            "formMessage"
+        );
+
+
+    messageBox.textContent =
+        "";
+
+
+    messageBox.className =
+        "form-message";
+
+}
 
 
         // ================= INITIAL LOAD =================
