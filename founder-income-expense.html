@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Daily Income & Expense</title>
+
+
+    <!-- Font Awesome -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    >
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            font-family:
+                Arial,
+                sans-serif;
+
+            background: #f4f6f9;
+
+            color: #222;
+
+        }
+
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+
+            position: fixed;
+
+            left: 0;
+
+            top: 0;
+
+            bottom: 0;
+
+            width: 165px;
+
+            background: #17395f;
+
+            color: white;
+
+            overflow-y: auto;
+
+            padding: 12px 8px;
+
+        }
+
+
+        .sidebar h2 {
+
+            font-size: 18px;
+
+            margin: 0 0 25px 5px;
+
+        }
+
+
+        .sidebar a {
+
+            display: block;
+
+            color: white;
+
+            text-decoration: none;
+
+            padding: 10px 8px;
+
+            margin-bottom: 3px;
+
+            border-radius: 4px;
+
+            font-size: 14px;
+
+        }
+
+
+        .sidebar a:hover {
+
+            background: #28527d;
+
+        }
+
+
+        .sidebar a.active {
+
+            background: #28527d;
+
+        }
+
+
+        .sidebar i {
+
+            width: 20px;
+
+        }
+
+
+        /* ================= MAIN ================= */
+
+        .main {
+
+            margin-left: 165px;
+
+            padding: 25px;
+
+            min-height: 100vh;
+
+        }
+
+
+        .page-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .page-header h1 {
+
+            margin: 0;
+
+            color: #17395f;
+
+            font-size: 28px;
+
+        }
+
+
+        /* ================= VIEW CONTROLS ================= */
+
+        .controls {
+
+            background: white;
+
+            padding: 18px;
+
+            border-radius: 10px;
+
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.08);
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .view-buttons {
+
+            display: flex;
+
+            gap: 8px;
+
+            margin-bottom: 18px;
+
+        }
+
+
+        .view-btn {
+
+            padding: 9px 20px;
+
+            border: none;
+
+            border-radius: 6px;
+
+            background: #e8edf3;
+
+            color: #17395f;
+
+            cursor: pointer;
+
+            font-weight: 600;
+
+        }
+
+
+        .view-btn.active {
+
+            background: #17395f;
+
+            color: white;
+
+        }
+
+
+        .filter-row {
+
+            display: flex;
+
+            gap: 15px;
+
+            align-items: end;
+
+            flex-wrap: wrap;
+
+        }
+
+
+        .filter-group {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 6px;
+
+        }
+
+
+        .filter-group label {
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            color: #555;
+
+        }
+
+
+        .filter-group input,
+
+        .filter-group select {
+
+            padding: 9px 10px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 5px;
+
+            min-width: 160px;
+
+        }
+
+
+        .filter-btn {
+
+            padding: 9px 18px;
+
+            border: none;
+
+            border-radius: 5px;
+
+            background: #17395f;
+
+            color: white;
+
+            cursor: pointer;
+
+            font-weight: 600;
+
+        }
+
+
+        /* ================= SUMMARY ================= */
+
+        .summary-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .summary-card {
+
+            background: white;
+
+            border-radius: 10px;
+
+            padding: 18px;
+
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.08);
+
+        }
+
+
+        .summary-card .label {
+
+            font-size: 13px;
+
+            color: #666;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .summary-card .amount {
+
+            font-size: 24px;
+
+            font-weight: 700;
+
+            color: #17395f;
+
+        }
+
+
+        /* ================= ADD BUTTON ================= */
+
+        .add-section {
+
+            display: flex;
+
+            justify-content: flex-end;
+
+            margin-bottom: 15px;
+
+        }
+
+
+        .add-btn {
+
+            background: #17395f;
+
+            color: white;
+
+            border: none;
+
+            padding: 11px 18px;
+
+            border-radius: 6px;
+
+            cursor: pointer;
+
+            font-weight: 600;
+
+        }
+
+
+        /* ================= TABLE ================= */
+
+        .table-container {
+
+            background: white;
+
+            border-radius: 10px;
+
+            padding: 12px;
+
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.08);
+
+            overflow-x: auto;
+
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 850px;
+
+        }
+
+
+        th {
+
+            background: #17395f;
+
+            color: white;
+
+            padding: 11px 9px;
+
+            text-align: left;
+
+            font-size: 13px;
+
+        }
+
+
+        td {
+
+            padding: 11px 9px;
+
+            border-bottom:
+                1px solid #ddd;
+
+            font-size: 13px;
+
+        }
+
+
+        tr:hover td {
+
+            background: #f8fafc;
+
+        }
+
+
+        .income {
+
+            color: #16803c;
+
+            font-weight: 600;
+
+        }
+
+
+        .expense {
+
+            color: #c62828;
+
+            font-weight: 600;
+
+        }
+
+
+        .empty-row {
+
+            text-align: center;
+
+            padding: 35px;
+
+            color: #777;
+
+        }
+
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+
+                width: 60px;
+
+            }
+
+
+            .sidebar h2 {
+
+                display: none;
+
+            }
+
+
+            .sidebar a {
+
+                text-align: center;
+
+                font-size: 0;
+
+            }
+
+
+            .sidebar i {
+
+                font-size: 17px;
+
+            }
+
+
+            .main {
+
+                margin-left: 60px;
+
+                padding: 15px;
+
+            }
+
+
+            .page-header h1 {
+
+                font-size: 22px;
+
+            }
+
+
+            .summary-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <div class="sidebar">
+
+        <h2>
+            Founder Panel
+        </h2>
+
+
+        <a href="founder-dashboard.html">
+            <i class="fa fa-chart-line"></i>
+            Dashboard
+        </a>
+
+
+        <a href="founder-students.html">
+            <i class="fa fa-users"></i>
+            Students
+        </a>
+
+
+        <a href="founder-fees.html">
+            <i class="fa fa-money-bill"></i>
+            Fees
+        </a>
+
+
+        <a
+            href="founder-income-expense.html"
+            class="active"
+        >
+            <i class="fa fa-wallet"></i>
+            Income & Expense
+        </a>
+
+
+        <a href="founder-teacher-attendance.html">
+            <i class="fa fa-user-check"></i>
+            Teacher Attendance
+        </a>
+
+
+        <a href="founder-salary.html">
+            <i class="fa fa-wallet"></i>
+            Salaries
+        </a>
+
+
+        <a href="founder-compensation.html">
+            <i class="fa fa-clock"></i>
+            Compensation
+        </a>
+
+
+        <a href="founder-schedule.html">
+            <i class="fa fa-calendar"></i>
+            Schedule
+        </a>
+
+
+    </div>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <div class="main">
+
+
+        <!-- ================= HEADER ================= -->
+
+        <div class="page-header">
+
+            <h1>
+
+                <i class="fa fa-wallet"></i>
+
+                Daily Income & Expense
+
+            </h1>
+
+        </div>
+
+
+        <!-- ================= FILTERS ================= -->
+
+        <div class="controls">
+
+
+            <div class="view-buttons">
+
+                <button
+                    class="view-btn active"
+                    id="dayViewBtn"
+                    onclick="setView('day')"
+                >
+                    Day
+                </button>
+
+
+                <button
+                    class="view-btn"
+                    id="monthViewBtn"
+                    onclick="setView('month')"
+                >
+                    Month
+                </button>
+
+            </div>
+
+
+            <div class="filter-row">
+
+
+                <div
+                    class="filter-group"
+                    id="dayFilter"
+                >
+
+                    <label>
+                        Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="filterDate"
+                    >
+
+                </div>
+
+
+                <div
+                    class="filter-group"
+                    id="monthFilter"
+                    style="display:none;"
+                >
+
+                    <label>
+                        Month
+                    </label>
+
+                    <input
+                        type="month"
+                        id="filterMonth"
+                    >
+
+                </div>
+
+
+                <button
+                    class="filter-btn"
+                    onclick="loadTransactions()"
+                >
+
+                    <i class="fa fa-filter"></i>
+
+                    Apply Filter
+
+                </button>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= SUMMARY ================= -->
+
+        <div class="summary-grid">
+
+
+            <div class="summary-card">
+
+                <div class="label">
+                    Total Income
+                </div>
+
+                <div
+                    class="amount"
+                    id="totalIncome"
+                >
+                    ₹0
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="label">
+                    Total Expense
+                </div>
+
+                <div
+                    class="amount"
+                    id="totalExpense"
+                >
+                    ₹0
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="label">
+                    Net Balance
+                </div>
+
+                <div
+                    class="amount"
+                    id="netBalance"
+                >
+                    ₹0
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ================= ADD BUTTON ================= -->
+
+        <div class="add-section">
+
+            <button
+                class="add-btn"
+                onclick="openAddTransaction()"
+            >
+
+                <i class="fa fa-plus"></i>
+
+                Add Income / Expense
+
+            </button>
+
+        </div>
+
+
+        <!-- ================= TRANSACTION TABLE ================= -->
+
+        <div class="table-container">
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Date
+                        </th>
+
+                        <th>
+                            Type
+                        </th>
+
+                        <th>
+                            Category
+                        </th>
+
+                        <th>
+                            Sub Category
+                        </th>
+
+                        <th>
+                            Description
+                        </th>
+
+                        <th>
+                            Amount
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="transactionTableBody">
+
+                    <tr>
+
+                        <td
+                            colspan="7"
+                            class="empty-row"
+                        >
+                            No transactions found
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
+    </div>
+
+
+    <script>
+
+        const API_BASE =
+            "https://academy-backend-eatl.onrender.com";
+
+
+        let currentView =
+            "day";
+
+
+        // ================= SET DEFAULT DATE =================
+
+        function setDefaultDate() {
+
+            const today =
+                new Date();
+
+
+            const year =
+                today.getFullYear();
+
+
+            const month =
+                String(
+                    today.getMonth() + 1
+                ).padStart(2, "0");
+
+
+            const day =
+                String(
+                    today.getDate()
+                ).padStart(2, "0");
+
+
+            document.getElementById(
+                "filterDate"
+            ).value =
+                `${year}-${month}-${day}`;
+
+
+            document.getElementById(
+                "filterMonth"
+            ).value =
+                `${year}-${month}`;
+
+        }
+
+
+        // ================= SET VIEW =================
+
+        function setView(view) {
+
+            currentView =
+                view;
+
+
+            const dayButton =
+                document.getElementById(
+                    "dayViewBtn"
+                );
+
+
+            const monthButton =
+                document.getElementById(
+                    "monthViewBtn"
+                );
+
+
+            const dayFilter =
+                document.getElementById(
+                    "dayFilter"
+                );
+
+
+            const monthFilter =
+                document.getElementById(
+                    "monthFilter"
+                );
+
+
+            if (view === "day") {
+
+                dayButton.classList.add(
+                    "active"
+                );
+
+                monthButton.classList.remove(
+                    "active"
+                );
+
+                dayFilter.style.display =
+                    "flex";
+
+                monthFilter.style.display =
+                    "none";
+
+            } else {
+
+                dayButton.classList.remove(
+                    "active"
+                );
+
+                monthButton.classList.add(
+                    "active"
+                );
+
+                dayFilter.style.display =
+                    "none";
+
+                monthFilter.style.display =
+                    "flex";
+
+            }
+
+        }
+
+
+        // ================= LOAD TRANSACTIONS =================
+
+        async function loadTransactions() {
+
+            console.log(
+                "Loading finance transactions..."
+            );
+
+        }
+
+
+        // ================= ADD TRANSACTION =================
+
+        function openAddTransaction() {
+
+            alert(
+                "Add Income / Expense form will be added in the next block."
+            );
+
+        }
+
+
+        // ================= INITIAL LOAD =================
+
+        setDefaultDate();
+
+        loadTransactions();
+
+    </script>
+
+
+</body>
+
+</html>
