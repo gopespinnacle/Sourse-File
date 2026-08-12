@@ -1,1358 +1,679 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Student Fee - Gopes Pinnacle Academy</title>
-
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            color: #222;
-        }
-
-        /* =====================================================
-           SIDEBAR
-        ===================================================== */
-
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 250px;
-            height: 100vh;
-            background: #172033;
-            color: white;
-            padding: 20px 0;
-            overflow-y: auto;
-        }
-
-        .academy-title {
-            text-align: center;
-            padding: 10px 15px 25px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .academy-title i {
-            font-size: 30px;
-            margin-bottom: 8px;
-        }
-
-        .academy-title h2 {
-            font-size: 18px;
-        }
-
-        .menu {
-            list-style: none;
-            margin-top: 15px;
-        }
-
-        .menu li {
-            margin: 3px 10px;
-        }
-
-        .menu a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 13px 15px;
-            color: white;
-            text-decoration: none;
-            border-radius: 7px;
-            font-size: 14px;
-        }
-
-        .menu a:hover {
-            background: rgba(255,255,255,0.08);
-        }
-
-        .menu a.active {
-            background: #2563eb;
-        }
-
-        .menu i {
-            width: 20px;
-            text-align: center;
-        }
-
-        /* =====================================================
-           MAIN
-        ===================================================== */
-
-        .main {
-            margin-left: 250px;
-            padding: 25px;
-        }
-
-        .topbar {
-            background: white;
-            padding: 18px 22px;
-            border-radius: 10px;
-            margin-bottom: 22px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-
-        .topbar h1 {
-            font-size: 24px;
-            color: #172033;
-        }
-
-        .topbar p {
-            margin-top: 5px;
-            color: #6b7280;
-            font-size: 14px;
-        }
-
-        /* =====================================================
-           SUMMARY CARDS
-        ===================================================== */
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 22px;
-        }
-
-        .summary-card {
-            background: white;
-            border-radius: 10px;
-            padding: 18px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-
-        .summary-card .label {
-            font-size: 13px;
-            color: #6b7280;
-        }
-
-        .summary-card .value {
-            font-size: 25px;
-            font-weight: bold;
-            margin-top: 8px;
-            color: #172033;
-        }
-
-        /* =====================================================
-           SECTION
-        ===================================================== */
-
-        .section {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 22px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 18px;
-            flex-wrap: wrap;
-        }
-
-        .section-header h2 {
-            font-size: 18px;
-            color: #172033;
-        }
-
-        /* =====================================================
-           BUTTONS
-        ===================================================== */
-
-        .btn {
-            border: none;
-            padding: 10px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .btn-primary {
-            background: #2563eb;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #1d4ed8;
-        }
-
-        .btn-secondary {
-            background: #e5e7eb;
-            color: #111827;
-        }
-
-        /* =====================================================
-           FILTERS
-        ===================================================== */
-
-        .filters {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .field label {
-            display: block;
-            font-size: 12px;
-            color: #6b7280;
-            margin-bottom: 6px;
-        }
-
-        .field input,
-        .field select {
-            width: 100%;
-            height: 40px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            padding: 0 10px;
-            outline: none;
-            background: white;
-        }
-
-        .field input:focus,
-        .field select:focus {
-            border-color: #2563eb;
-        }
-
-        /* =====================================================
-           TABLE
-        ===================================================== */
-
-        .table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 1250px;
-        }
-
-        th {
-            background: #f1f5f9;
-            color: #374151;
-            font-size: 12px;
-            padding: 12px 10px;
-            text-align: left;
-            white-space: nowrap;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        td {
-            padding: 12px 10px;
-            border-bottom: 1px solid #edf0f3;
-            font-size: 13px;
-            white-space: nowrap;
-        }
-
-        tbody tr:hover {
-            background: #f8fafc;
-        }
-
-        .amount {
-            font-weight: 600;
-        }
-
-        /* =====================================================
-           STATUS
-        ===================================================== */
-
-        .status {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 5px 9px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            white-space: nowrap;
-        }
-
-        .status-pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-verified {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .status-not-found {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .status-mismatch {
-            background: #ffedd5;
-            color: #9a3412;
-        }
-
-        .status-duplicate {
-            background: #e0e7ff;
-            color: #3730a3;
-        }
-
-        .difference-positive {
-            color: #15803d;
-            font-weight: bold;
-        }
-
-        .difference-negative {
-            color: #dc2626;
-            font-weight: bold;
-        }
-
-        .difference-zero {
-            color: #15803d;
-            font-weight: bold;
-        }
-
-        /* =====================================================
-           BANK STATEMENT UPLOAD
-        ===================================================== */
-
-        .upload-box {
-            border: 2px dashed #cbd5e1;
-            border-radius: 10px;
-            padding: 25px;
-            text-align: center;
-            background: #f8fafc;
-        }
-
-        .upload-box i {
-            font-size: 35px;
-            color: #64748b;
-            margin-bottom: 10px;
-        }
-
-        .upload-box h3 {
-            font-size: 16px;
-            margin-bottom: 6px;
-        }
-
-        .upload-box p {
-            color: #6b7280;
-            font-size: 13px;
-            margin-bottom: 15px;
-        }
-
-        .upload-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .upload-controls select {
-            height: 40px;
-            padding: 0 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-        }
-
-        /* =====================================================
-           EMPTY STATE
-        ===================================================== */
-
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #6b7280;
-        }
-
-        .empty-state i {
-            font-size: 35px;
-            margin-bottom: 10px;
-        }
-
-        /* =====================================================
-           MOBILE
-        ===================================================== */
-
-        @media (max-width: 1000px) {
-
-            .summary-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .filters {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-        }
-
-        @media (max-width: 700px) {
-
-            .sidebar {
-                position: relative;
-                width: 100%;
-                height: auto;
-            }
-
-            .main {
-                margin-left: 0;
-                padding: 15px;
-            }
-
-            .summary-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .filters {
-                grid-template-columns: 1fr;
-            }
-
-        }
-
-    </style>
+
+<meta charset="UTF-8">
+
+<title>Monthly Fee Report</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+>
+
+<style>
+
+.fee-page {
+    padding: 25px;
+}
+
+.fee-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.fee-header h1 {
+    margin: 0;
+    color: #12395f;
+}
+
+.month-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.month-filter label {
+    font-weight: 600;
+}
+
+.month-filter select {
+    padding: 9px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+.fee-summary {
+    display: grid;
+    grid-template-columns:
+        repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.fee-card {
+    background: white;
+    border-radius: 10px;
+    padding: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.fee-card-title {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.fee-card-value {
+    font-size: 23px;
+    font-weight: 700;
+    color: #12395f;
+}
+
+.fee-table-wrapper {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    overflow-x: auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+#feeTable {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 850px;
+}
+
+#feeTable th,
+#feeTable td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #e5e5e5;
+    text-align: center;
+}
+
+#feeTable th {
+    background: #12395f;
+    color: white;
+    font-weight: 600;
+}
+
+#feeTable td:first-child,
+#feeTable td:nth-child(2) {
+    text-align: left;
+}
+
+#feeTable tfoot td {
+    font-weight: 700;
+    background: #f1f5f9;
+}
+
+.loading-row {
+    text-align: center !important;
+    padding: 30px !important;
+}
+
+@media(max-width: 900px) {
+
+    .fee-summary {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
+
+@media(max-width: 600px) {
+
+    .fee-page {
+        padding: 15px;
+    }
+
+    .fee-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .fee-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+}
+
+</style>
+
 </head>
 
-<body>
 
-<!-- =========================================================
-     SIDEBAR
-========================================================= -->
+<body class="dashboard-page">
 
-<aside class="sidebar">
 
-    <div class="academy-title">
+<!-- SIDEBAR -->
 
-        <i class="fa-solid fa-graduation-cap"></i>
-
-        <h2>GOPES PINNACLE</h2>
-
-    </div>
-
-    <ul class="menu">
-
-        <li>
-            <a href="founder-dashboard.html">
-                <i class="fa-solid fa-chart-line"></i>
-                Dashboard
-            </a>
-        </li>
-
-        <li>
-            <a href="founder-students.html">
-                <i class="fa-solid fa-user-graduate"></i>
-                Students
-            </a>
-        </li>
-
-        <li>
-            <a href="founder-teachers.html">
-                <i class="fa-solid fa-chalkboard-user"></i>
-                Teachers
-            </a>
-        </li>
-
-        <li>
-            <a href="founder-admission-parents.html">
-                <i class="fa-solid fa-file-signature"></i>
-                Admissions
-            </a>
-        </li>
-
-        <li>
-            <a href="founder-fees.html" class="active">
-                <i class="fa-solid fa-money-check-dollar"></i>
-                Student Fee
-            </a>
-        </li>
-
-    </ul>
-
-</aside>
-
-
-<!-- =========================================================
-     MAIN CONTENT
-========================================================= -->
-
-<main class="main">
-
-    <!-- TOP BAR -->
-
-    <div class="topbar">
-
-        <h1>
-            Student Fee
-        </h1>
-
-        <p>
-            Fee collection, payment references and bank reconciliation
-        </p>
-
-    </div>
-
-
-    <!-- =====================================================
-         SUMMARY
-    ====================================================== -->
-
-    <div class="summary-grid">
-
-        <div class="summary-card">
-
-            <div class="label">
-                Total Fee Due
-            </div>
-
-            <div class="value" id="totalFeeDue">
-                ₹0
-            </div>
-
-        </div>
-
-
-        <div class="summary-card">
-
-            <div class="label">
-                Payment Submitted
-            </div>
-
-            <div class="value" id="paymentSubmitted">
-                ₹0
-            </div>
-
-        </div>
-
-
-        <div class="summary-card">
-
-            <div class="label">
-                Verified
-            </div>
-
-            <div class="value" id="verifiedAmount">
-                ₹0
-            </div>
-
-        </div>
-
-
-        <div class="summary-card">
-
-            <div class="label">
-                Pending Verification
-            </div>
-
-            <div class="value" id="pendingCount">
-                0
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- =====================================================
-         BANK STATEMENT UPLOAD
-    ====================================================== -->
-
-    <section class="section">
-
-        <div class="section-header">
-
-            <h2>
-                <i class="fa-solid fa-building-columns"></i>
-                Bank Statement Reconciliation
-            </h2>
-
-        </div>
-
-
-        <div class="upload-box">
-
-            <i class="fa-solid fa-file-arrow-up"></i>
-
-            <h3>
-                Upload Bank Statement
-            </h3>
-
-            <p>
-                Upload SBI or Bank of Baroda statement to match
-                payment references and verify student fees.
-            </p>
-
-
-            <div class="upload-controls">
-
-                <select id="bankSelect">
-
-                    <option value="">
-                        Select Bank
-                    </option>
-
-                    <option value="SBI">
-                        SBI
-                    </option>
-
-                    <option value="BOB">
-                        Bank of Baroda
-                    </option>
-
-                </select>
-
-
-                <input
-                    type="file"
-                    id="bankStatementFile"
-                    accept=".csv,.xlsx,.xls"
-                >
-
-
-                <button
-                    type="button"
-                    class="btn btn-primary"
-                    onclick="uploadBankStatement()"
-                >
-                    <i class="fa-solid fa-upload"></i>
-                    Upload & Reconcile
-                </button>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         FEE RECONCILIATION
-    ====================================================== -->
-
-    <section class="section">
-
-        <div class="section-header">
-
-            <h2>
-                <i class="fa-solid fa-list-check"></i>
-                Fee Reconciliation
-            </h2>
-
-            <button
-                type="button"
-                class="btn btn-secondary"
-                onclick="refreshPayments()"
-            >
-                <i class="fa-solid fa-rotate"></i>
-                Refresh
-            </button>
-
-        </div>
-
-
-        <!-- FILTERS -->
-
-        <div class="filters">
-
-            <div class="field">
-
-                <label>
-                    Student
-                </label>
-
-                <input
-                    type="text"
-                    id="studentFilter"
-                    placeholder="Search student"
-                    oninput="filterPayments()"
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label>
-                    Student ID
-                </label>
-
-                <input
-                    type="text"
-                    id="studentIdFilter"
-                    placeholder="Search ID"
-                    oninput="filterPayments()"
-                >
-
-            </div>
-
-
-            <div class="field">
-
-                <label>
-                    Bank Match Status
-                </label>
-
-                <select
-                    id="statusFilter"
-                    onchange="filterPayments()"
-                >
-
-                    <option value="">
-                        All Status
-                    </option>
-
-                    <option value="PENDING">
-                        🟡 Pending
-                    </option>
-
-                    <option value="VERIFIED">
-                        🟢 Verified
-                    </option>
-
-                    <option value="REFERENCE_NOT_FOUND">
-                        🔴 Reference Not Found
-                    </option>
-
-                    <option value="AMOUNT_MISMATCH">
-                        🟠 Amount Mismatch
-                    </option>
-
-                    <option value="DUPLICATE_REFERENCE">
-                        🔵 Duplicate Reference
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div class="field">
-
-                <label>
-                    Bank
-                </label>
-
-                <select
-                    id="bankFilter"
-                    onchange="filterPayments()"
-                >
-
-                    <option value="">
-                        All Banks
-                    </option>
-
-                    <option value="SBI">
-                        SBI
-                    </option>
-
-                    <option value="BOB">
-                        Bank of Baroda
-                    </option>
-
-                </select>
-
-            </div>
-
-        </div>
-
-
-        <!-- TABLE -->
-
-        <div class="table-wrapper">
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            Student Name
-                        </th>
-
-                        <th>
-                            Student ID
-                        </th>
-
-                        <th>
-                            Payment Reference
-                        </th>
-
-                        <th>
-                            Payment Reference (Bank)
-                        </th>
-
-                        <th>
-                            Actual Fee
-                        </th>
-
-                        <th>
-                            Fee Pay Done
-                        </th>
-
-                        <th>
-                            Difference Amount
-                        </th>
-
-                        <th>
-                            Bank Match Status
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody id="paymentTableBody">
-
-                    <tr>
-
-                        <td colspan="8">
-
-                            <div class="empty-state">
-
-                                <i class="fa-solid fa-receipt"></i>
-
-                                <p>
-                                    No payment records available.
-                                </p>
-
-                            </div>
-
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </section>
-
-</main>
+<div id="sidebar-container"></div>
 
 
 <script>
 
-    /*
-    ==========================================================
-    GOPES PINNACLE ACADEMY
-    STUDENT FEE - FOUNDER PAGE
+fetch("sidebar.html")
 
-    IMPORTANT:
-    This is FRONTEND ONLY for BLOCK 1.
+.then(res => res.text())
 
-    API / MongoDB connection will be added in later blocks.
+.then(data => {
 
-    FROZEN STATUS VALUES:
+    document.getElementById(
+        "sidebar-container"
+    ).innerHTML = data;
 
-    PENDING
-    VERIFIED
-    REFERENCE_NOT_FOUND
-    AMOUNT_MISMATCH
-    DUPLICATE_REFERENCE
-    ==========================================================
-    */
+});
+
+</script>
 
 
-    let allPayments = [];
+
+<!-- MAIN CONTENT -->
+
+<div class="main-content fee-page">
 
 
-    /*
-    ==========================================================
-    INITIAL PAGE
-    ==========================================================
-    */
+    <div class="fee-header">
 
-    document.addEventListener("DOMContentLoaded", function () {
+        <h1>
+            <i class="fa fa-money-bill-wave"></i>
+            Monthly Fee Report
+        </h1>
 
-        refreshPayments();
+
+        <div class="month-filter">
+
+            <label for="feeMonth">
+                Month:
+            </label>
+
+            <select id="feeMonth">
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- SUMMARY -->
+
+    <div class="fee-summary">
+
+
+        <div class="fee-card">
+
+            <div class="fee-card-title">
+                Total Actual Fee
+            </div>
+
+            <div
+                class="fee-card-value"
+                id="totalActualFee"
+            >
+                ₹0
+            </div>
+
+        </div>
+
+
+
+        <div class="fee-card">
+
+            <div class="fee-card-title">
+                Total Fee Paid
+            </div>
+
+            <div
+                class="fee-card-value"
+                id="totalFeePaid"
+            >
+                ₹0
+            </div>
+
+        </div>
+
+
+
+        <div class="fee-card">
+
+            <div class="fee-card-title">
+                Total Teacher Fee
+            </div>
+
+            <div
+                class="fee-card-value"
+                id="totalTeacherFee"
+            >
+                ₹0
+            </div>
+
+        </div>
+
+
+
+        <div class="fee-card">
+
+            <div class="fee-card-title">
+                Total Academy Fee
+            </div>
+
+            <div
+                class="fee-card-value"
+                id="totalAcademyFee"
+            >
+                ₹0
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- TABLE -->
+
+    <div class="fee-table-wrapper">
+
+        <table id="feeTable">
+
+            <thead>
+
+                <tr>
+
+                    <th>Student ID</th>
+
+                    <th>Student Name</th>
+
+                    <th>Actual Fee</th>
+
+                    <th>Fee Paid</th>
+
+                    <th>Fee to Teacher</th>
+
+                    <th>Fee to Academy</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="feeTableBody">
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="loading-row"
+                    >
+                        Loading...
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+
+            <tfoot>
+
+                <tr>
+
+                    <td colspan="2">
+                        TOTAL
+                    </td>
+
+                    <td id="tableTotalActual">
+                        ₹0
+                    </td>
+
+                    <td id="tableTotalPaid">
+                        ₹0
+                    </td>
+
+                    <td id="tableTotalTeacher">
+                        ₹0
+                    </td>
+
+                    <td id="tableTotalAcademy">
+                        ₹0
+                    </td>
+
+                </tr>
+
+            </tfoot>
+
+        </table>
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+const API_BASE =
+"https://academy-backend-eatl.onrender.com";
+
+
+const monthNames = [
+
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+
+];
+
+
+function formatCurrency(value){
+
+    return "₹ " +
+        Number(value || 0)
+        .toLocaleString("en-IN");
+
+}
+
+
+
+function populateMonthDropdown(){
+
+    const select =
+        document.getElementById("feeMonth");
+
+    select.innerHTML = "";
+
+    const currentYear =
+        new Date().getFullYear();
+
+    for(
+        let year = currentYear;
+        year >= currentYear - 2;
+        year--
+    ){
+
+        for(
+            let month = 11;
+            month >= 0;
+            month--
+        ){
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                `${month + 1}-${year}`;
+
+            option.textContent =
+                `${monthNames[month]} ${year}`;
+
+            select.appendChild(option);
+
+        }
+
+    }
+
+    const currentMonth =
+        new Date().getMonth() + 1;
+
+    select.value =
+        `${currentMonth}-${currentYear}`;
+
+}
+
+
+
+async function loadFeeReport(){
+
+    const select =
+        document.getElementById("feeMonth");
+
+    const [month, year] =
+        select.value.split("-")
+        .map(Number);
+
+    const token =
+        localStorage.getItem("token");
+
+
+    document.getElementById(
+        "feeTableBody"
+    ).innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="6"
+                class="loading-row"
+            >
+                Loading...
+            </td>
+
+        </tr>
+
+    `;
+
+
+    try{
+
+        const response =
+            await fetch(
+
+                `${API_BASE}/api/founder/fee-report?month=${month}&year=${year}`,
+
+                {
+
+                    method: "GET",
+
+                    headers: {
+
+                        "Authorization":
+                        "Bearer " + token
+
+                    }
+
+                }
+
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data.message ||
+                "Failed to load fee report"
+            );
+
+        }
+
+
+        renderFeeReport(data);
+
+
+    }catch(error){
+
+        console.error(
+            "FEE REPORT ERROR:",
+            error
+        );
+
+
+        document.getElementById(
+            "feeTableBody"
+        ).innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="loading-row"
+                >
+                    Error loading fee report
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+
+function renderFeeReport(data){
+
+    const tbody =
+        document.getElementById(
+            "feeTableBody"
+        );
+
+    tbody.innerHTML = "";
+
+
+    data.report.forEach(student => {
+
+        const row =
+            document.createElement("tr");
+
+
+        row.innerHTML = `
+
+            <td>
+                ${student.studentId || "-"}
+            </td>
+
+            <td>
+                ${student.studentName || "-"}
+            </td>
+
+            <td>
+                ${formatCurrency(student.actualFee)}
+            </td>
+
+            <td>
+                ${formatCurrency(student.feePaid)}
+            </td>
+
+            <td>
+                ${formatCurrency(student.teacherFee)}
+            </td>
+
+            <td>
+                ${formatCurrency(student.academyFee)}
+            </td>
+
+        `;
+
+
+        tbody.appendChild(row);
 
     });
 
 
-    /*
-    ==========================================================
-    REFRESH PAYMENT RECORDS
-    ==========================================================
-    */
+    // ================= TOTALS =================
 
-    function refreshPayments() {
 
-        /*
-        Backend connection will be added later.
+    const totals =
+        data.totals;
 
-        DO NOT add fake payment records here.
-        */
 
-        allPayments = [];
+    document.getElementById(
+        "totalActualFee"
+    ).innerText =
+        formatCurrency(totals.actualFee);
 
-        renderPayments(allPayments);
 
-        updateSummary(allPayments);
+    document.getElementById(
+        "totalFeePaid"
+    ).innerText =
+        formatCurrency(totals.feePaid);
 
-    }
 
+    document.getElementById(
+        "totalTeacherFee"
+    ).innerText =
+        formatCurrency(totals.teacherFee);
 
-    /*
-    ==========================================================
-    RENDER PAYMENT TABLE
-    ==========================================================
-    */
 
-    function renderPayments(payments) {
+    document.getElementById(
+        "totalAcademyFee"
+    ).innerText =
+        formatCurrency(totals.academyFee);
 
-        const tbody =
-            document.getElementById("paymentTableBody");
 
 
-        if (!payments.length) {
+    // TABLE TOTALS
 
-            tbody.innerHTML = `
-                <tr>
 
-                    <td colspan="8">
+    document.getElementById(
+        "tableTotalActual"
+    ).innerText =
+        formatCurrency(totals.actualFee);
 
-                        <div class="empty-state">
 
-                            <i class="fa-solid fa-receipt"></i>
+    document.getElementById(
+        "tableTotalPaid"
+    ).innerText =
+        formatCurrency(totals.feePaid);
 
-                            <p>
-                                No payment records available.
-                            </p>
 
-                        </div>
+    document.getElementById(
+        "tableTotalTeacher"
+    ).innerText =
+        formatCurrency(totals.teacherFee);
 
-                    </td>
 
-                </tr>
-            `;
+    document.getElementById(
+        "tableTotalAcademy"
+    ).innerText =
+        formatCurrency(totals.academyFee);
 
-            return;
+}
 
-        }
 
 
-        tbody.innerHTML = payments.map(payment => {
+document.getElementById(
+    "feeMonth"
+).addEventListener(
+    "change",
+    loadFeeReport
+);
 
-            const actualFee =
-                Number(payment.actualFee || 0);
 
-            const feePaid =
-                Number(payment.feePaid || 0);
+populateMonthDropdown();
 
-            const difference =
-                feePaid - actualFee;
+loadFeeReport();
 
-
-            let differenceClass =
-                "difference-zero";
-
-
-            if (difference > 0) {
-
-                differenceClass =
-                    "difference-positive";
-
-            }
-            else if (difference < 0) {
-
-                differenceClass =
-                    "difference-negative";
-
-            }
-
-
-            return `
-
-                <tr>
-
-                    <td>
-                        ${escapeHtml(payment.studentName || "-")}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(payment.studentId || "-")}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(payment.paymentReference || "-")}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(payment.bankReference || "-")}
-                    </td>
-
-                    <td class="amount">
-                        ₹${formatAmount(actualFee)}
-                    </td>
-
-                    <td class="amount">
-                        ${payment.feePaid !== null &&
-                          payment.feePaid !== undefined
-                            ? "₹" + formatAmount(feePaid)
-                            : "-"
-                        }
-                    </td>
-
-                    <td class="${differenceClass}">
-                        ${
-                            payment.feePaid !== null &&
-                            payment.feePaid !== undefined
-                                ? formatDifference(difference)
-                                : "-"
-                        }
-                    </td>
-
-                    <td>
-                        ${getStatusBadge(payment.bankMatchStatus)}
-                    </td>
-
-                </tr>
-
-            `;
-
-        }).join("");
-
-    }
-
-
-    /*
-    ==========================================================
-    STATUS BADGE
-    ==========================================================
-    */
-
-    function getStatusBadge(status) {
-
-        switch (status) {
-
-            case "PENDING":
-
-                return `
-                    <span class="status status-pending">
-                        🟡 Pending
-                    </span>
-                `;
-
-
-            case "VERIFIED":
-
-                return `
-                    <span class="status status-verified">
-                        🟢 Verified
-                    </span>
-                `;
-
-
-            case "REFERENCE_NOT_FOUND":
-
-                return `
-                    <span class="status status-not-found">
-                        🔴 Reference Not Found
-                    </span>
-                `;
-
-
-            case "AMOUNT_MISMATCH":
-
-                return `
-                    <span class="status status-mismatch">
-                        🟠 Amount Mismatch
-                    </span>
-                `;
-
-
-            case "DUPLICATE_REFERENCE":
-
-                return `
-                    <span class="status status-duplicate">
-                        🔵 Duplicate Reference
-                    </span>
-                `;
-
-
-            default:
-
-                return `
-                    <span class="status status-pending">
-                        🟡 Pending
-                    </span>
-                `;
-
-        }
-
-    }
-
-
-    /*
-    ==========================================================
-    DIFFERENCE FORMAT
-    ==========================================================
-    */
-
-    function formatDifference(amount) {
-
-        const number =
-            Number(amount || 0);
-
-        if (number > 0) {
-
-            return "+₹" + formatAmount(number);
-
-        }
-
-        if (number < 0) {
-
-            return "-₹" + formatAmount(Math.abs(number));
-
-        }
-
-        return "₹0";
-
-    }
-
-
-    /*
-    ==========================================================
-    FILTER
-    ==========================================================
-    */
-
-    function filterPayments() {
-
-        const student =
-            document.getElementById("studentFilter")
-                .value
-                .trim()
-                .toLowerCase();
-
-
-        const studentId =
-            document.getElementById("studentIdFilter")
-                .value
-                .trim()
-                .toLowerCase();
-
-
-        const status =
-            document.getElementById("statusFilter")
-                .value;
-
-
-        const bank =
-            document.getElementById("bankFilter")
-                .value;
-
-
-        const filtered =
-            allPayments.filter(payment => {
-
-                const matchesStudent =
-                    !student ||
-                    String(payment.studentName || "")
-                        .toLowerCase()
-                        .includes(student);
-
-
-                const matchesStudentId =
-                    !studentId ||
-                    String(payment.studentId || "")
-                        .toLowerCase()
-                        .includes(studentId);
-
-
-                const matchesStatus =
-                    !status ||
-                    payment.bankMatchStatus === status;
-
-
-                const matchesBank =
-                    !bank ||
-                    payment.bank === bank;
-
-
-                return (
-                    matchesStudent &&
-                    matchesStudentId &&
-                    matchesStatus &&
-                    matchesBank
-                );
-
-            });
-
-
-        renderPayments(filtered);
-
-    }
-
-
-    /*
-    ==========================================================
-    SUMMARY
-    ==========================================================
-    */
-
-    function updateSummary(payments) {
-
-        let totalFeeDue = 0;
-        let paymentSubmitted = 0;
-        let verifiedAmount = 0;
-        let pendingCount = 0;
-
-
-        payments.forEach(payment => {
-
-            totalFeeDue +=
-                Number(payment.actualFee || 0);
-
-
-            if (
-                payment.feePaid !== null &&
-                payment.feePaid !== undefined
-            ) {
-
-                paymentSubmitted +=
-                    Number(payment.feePaid || 0);
-
-            }
-
-
-            if (
-                payment.bankMatchStatus === "VERIFIED"
-            ) {
-
-                verifiedAmount +=
-                    Number(payment.feePaid || 0);
-
-            }
-
-
-            if (
-                payment.bankMatchStatus === "PENDING"
-            ) {
-
-                pendingCount++;
-
-            }
-
-        });
-
-
-        document.getElementById("totalFeeDue")
-            .textContent =
-            "₹" + formatAmount(totalFeeDue);
-
-
-        document.getElementById("paymentSubmitted")
-            .textContent =
-            "₹" + formatAmount(paymentSubmitted);
-
-
-        document.getElementById("verifiedAmount")
-            .textContent =
-            "₹" + formatAmount(verifiedAmount);
-
-
-        document.getElementById("pendingCount")
-            .textContent =
-            pendingCount;
-
-    }
-
-
-    /*
-    ==========================================================
-    BANK STATEMENT UPLOAD
-    ==========================================================
-    */
-
-    function uploadBankStatement() {
-
-        const bank =
-            document.getElementById("bankSelect").value;
-
-
-        const file =
-            document.getElementById("bankStatementFile").files[0];
-
-
-        if (!bank) {
-
-            alert("Please select the bank.");
-
-            return;
-
-        }
-
-
-        if (!file) {
-
-            alert("Please select a bank statement file.");
-
-            return;
-
-        }
-
-
-        /*
-        Backend upload and reconciliation will be added
-        in a later development block.
-
-        DO NOT connect this to a temporary API.
-        */
-
-        alert(
-            "Bank statement upload will be connected in the backend development block."
-        );
-
-    }
-
-
-    /*
-    ==========================================================
-    HELPERS
-    ==========================================================
-    */
-
-    function formatAmount(amount) {
-
-        return Number(amount || 0)
-            .toLocaleString("en-IN");
-
-    }
-
-
-    function escapeHtml(value) {
-
-        return String(value)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-
-    }
 
 </script>
 
+
 </body>
+
 </html>
