@@ -75,21 +75,21 @@ document.getElementById("sidebar-container").innerHTML = data;
 
     <div class="table-wrapper">
 <table id="studentTable">
-        <thead>
-            <tr>
-              <th>Name</th>
-<th>Grade</th>
-<th>Subjects</th>  <!-- ADD THIS -->
-<th>ECA</th>
-<th>Language</th>
-<th>Board</th>
-<th>Parent Mobile</th>
-<th>WhatsApp</th>
-<th>Login ID</th>
-<th>Password</th>
-<th>Actions</th>
-            </tr>
-        </thead>
+        <tr>
+    <th>Student ID</th>
+    <th>Name</th>
+    <th>Grade</th>
+    <th>Monthly Fee</th>
+    <th>Subjects</th>
+    <th>ECA</th>
+    <th>Language</th>
+    <th>Board</th>
+    <th>Parent Mobile</th>
+    <th>WhatsApp</th>
+    <th>Login ID</th>
+    <th>Password</th>
+    <th>Actions</th>
+</tr>
         <tbody>
         </tbody>
     </table>
@@ -183,11 +183,17 @@ Gopes Pinnacle Academy`
 
 tbody.innerHTML += `
 <tr>
+
+<td>${student.studentId || "-"}</td>
+
 <td style="cursor:pointer;color:#007bff;font-weight:600"
 onclick="openStudentPage('${student._id}')">
 ${student.name}
 </td>
+
 <td>${student.grade}</td>
+
+<td>₹ ${Number(student.monthlyFee || 0).toLocaleString("en-IN")}</td>
 <td>${student.subject ? student.subject.join(", ") : "-"}</td>
 <td>${student.eca ? student.eca.join(", ") : "-"}</td>
 <td>${student.language ? student.language.join(", ") : "-"}</td>
