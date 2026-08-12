@@ -50,6 +50,14 @@ document.getElementById("sidebar-container").innerHTML = data;
 
 <label>Parent WhatsApp</label>
 <input type="text" id="studentMobile">
+
+<label>Monthly Fee</label>
+<input
+    type="number"
+    id="studentMonthlyFee"
+    placeholder="Enter monthly fee"
+    min="0"
+>
 <label>Select Subjects</label>
 <div id="studentSubjects" class="tag-container"></div>
 
@@ -215,7 +223,10 @@ document.getElementById("studentName").value="";
 document.getElementById("studentGrade").value="";
 document.getElementById("studentBoard").value="";
 document.getElementById("studentMobile").value="";
+document.getElementById("studentMonthlyFee").value="";
+
 loadCategoriesForStudent();
+
 document.getElementById("studentPopup").style.display="flex";
 
 }
@@ -251,6 +262,9 @@ let grade = document.getElementById("studentGrade").value;
 let board = document.getElementById("studentBoard").value;
 let mobile = document.getElementById("studentMobile").value;
 
+let monthlyFee =
+    document.getElementById("studentMonthlyFee").value;
+
 if(!name){
 alert("Enter student name");
 return;
@@ -282,13 +296,16 @@ headers:{
 "Authorization":"Bearer " + token
 },
 body: JSON.stringify({
-name,
-grade,
-board,
-mobile,
-subject: selectedSubjects,
-eca: selectedECA,
-language: selectedLanguages
+    name,
+    grade,
+    board,
+    mobile,
+
+    monthlyFee: Number(monthlyFee) || 0,
+
+    subject: selectedSubjects,
+    eca: selectedECA,
+    language: selectedLanguages
 })
 });
 
@@ -343,6 +360,8 @@ document.getElementById("studentName").value = student.name;
 document.getElementById("studentGrade").value = student.grade;
 document.getElementById("studentBoard").value = student.board || "";
 document.getElementById("studentMobile").value = student.mobile || "";
+document.getElementById("studentMonthlyFee").value =
+    student.monthlyFee || 0;
 
 /* LOAD TAGS */
 loadCategoriesForStudent().then(()=>{
