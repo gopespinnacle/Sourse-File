@@ -146,6 +146,59 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 
 }
 
+.fee-input {
+
+    width: 100px;
+
+    padding: 7px 8px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 5px;
+
+    text-align: right;
+
+    font-size: 14px;
+
+    box-sizing: border-box;
+
+}
+
+
+.fee-input:focus {
+
+    outline: none;
+
+    border-color: #12395f;
+
+}
+
+
+.save-fee-btn {
+
+    background: #12395f;
+
+    color: white;
+
+    border: none;
+
+    padding: 7px 12px;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    font-weight: 600;
+
+}
+
+
+.save-fee-btn:hover {
+
+    opacity: 0.9;
+
+}
+
 </style>
 
 </head>
@@ -288,25 +341,27 @@ fetch("sidebar.html")
 
         <table id="feeTable">
 
-            <thead>
+           <thead>
 
-                <tr>
+    <tr>
 
-                    <th>Student ID</th>
+        <th>Student ID</th>
 
-                    <th>Student Name</th>
+        <th>Student Name</th>
 
-                    <th>Actual Fee</th>
+        <th>Actual Fee</th>
 
-                    <th>Fee Paid</th>
+        <th>Fee Paid</th>
 
-                    <th>Fee to Teacher</th>
+        <th>Fee to Teacher</th>
 
-                    <th>Fee to Academy</th>
+        <th>Fee to Academy</th>
 
-                </tr>
+        <th>Action</th>
 
-            </thead>
+    </tr>
+
+</thead>
 
 
             <tbody id="feeTableBody">
@@ -314,9 +369,9 @@ fetch("sidebar.html")
                 <tr>
 
                     <td
-                        colspan="6"
-                        class="loading-row"
-                    >
+    colspan="7"
+    class="loading-row"
+>
                         Loading...
                     </td>
 
@@ -331,27 +386,37 @@ fetch("sidebar.html")
 
                     <td colspan="2">
                         TOTAL
-                    </td>
+                    <tfoot>
 
-                    <td id="tableTotalActual">
-                        ₹0
-                    </td>
+    <tr>
 
-                    <td id="tableTotalPaid">
-                        ₹0
-                    </td>
+        <td colspan="2">
+            TOTAL
+        </td>
 
-                    <td id="tableTotalTeacher">
-                        ₹0
-                    </td>
+        <td id="tableTotalActual">
+            ₹0
+        </td>
 
-                    <td id="tableTotalAcademy">
-                        ₹0
-                    </td>
+        <td id="tableTotalPaid">
+            ₹0
+        </td>
 
-                </tr>
+        <td id="tableTotalTeacher">
+            ₹0
+        </td>
 
-            </tfoot>
+        <td id="tableTotalAcademy">
+            ₹0
+        </td>
+
+        <td>
+            -
+        </td>
+
+    </tr>
+
+</tfoot>
 
         </table>
 
@@ -544,6 +609,158 @@ async function loadFeeReport(){
 
 }
 
+async function saveFeeRecord(studentId, actualFee) {
+
+    const select =
+        document.getElementById("feeMonth");
+
+    const [month, year] =
+        select.value
+            .split("-")
+            .map(Number);
+
+
+    const paidInput =
+        document.getElementById(
+            `paid-${studentId}`
+        );
+
+    const teacherInput =
+        document.getElementById(
+            `teacher-${studentId}`
+        );
+
+
+    const feePaid =
+        Number(paidInput.value || 0);
+
+    const teacherFee =
+        Number(teacherInput.value || 0);
+
+
+    // ================= VALIDATION =================
+
+    if (feePaid < 0) {
+
+        alert("Fee Paid cannot be negative.");
+
+        return;
+
+    }
+
+
+    if (teacherFee < 0) {
+
+        alert("Fee to Teacher cannot be negative.");
+
+        return;
+
+    }
+
+
+    if (teacherFee > feePaid) {
+
+        alert(
+            "Fee to Teacher cannot be greater than Fee Paid."
+        );
+
+        return;
+
+    }
+
+
+    const academyFee =
+        feePaid - teacherFee;
+
+
+    // Show calculated Academy Fee immediately
+
+    document.getElementById(
+        `academy-${studentId}`
+    ).innerText =
+        formatCurrency(academyFee);
+
+
+    const token =
+        localStorage.getItem("token");
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_BASE}/api/founder/fee-record`,
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " + token
+
+                    },
+
+                    body: JSON.stringify({
+
+                        studentId,
+
+                        month,
+
+                        year,
+
+                        feePaid,
+
+                        teacherFee
+
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "Failed to save fee"
+            );
+
+        }
+
+
+        alert(
+            "Monthly fee saved successfully."
+        );
+
+
+        // Reload report so totals update
+
+        loadFeeReport();
+
+
+    } catch (error) {
+
+        console.error(
+            "SAVE FEE ERROR:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Error saving monthly fee."
+        );
+
+    }
+
+}
 
 
 function renderFeeReport(data){
@@ -564,31 +781,69 @@ function renderFeeReport(data){
 
         row.innerHTML = `
 
-            <td>
-                ${student.studentId || "-"}
-            </td>
+    <td>
+        ${student.studentId || "-"}
+    </td>
 
-            <td>
-                ${student.studentName || "-"}
-            </td>
+    <td>
+        ${student.studentName || "-"}
+    </td>
 
-            <td>
-                ${formatCurrency(student.actualFee)}
-            </td>
+    <td>
+        ${formatCurrency(student.actualFee)}
+    </td>
 
-            <td>
-                ${formatCurrency(student.feePaid)}
-            </td>
+    <td>
 
-            <td>
-                ${formatCurrency(student.teacherFee)}
-            </td>
+        <input
+            type="number"
+            min="0"
+            step="1"
+            class="fee-input"
+            id="paid-${student.studentId}"
+            value="${student.feePaid || 0}"
+        >
 
-            <td>
-                ${formatCurrency(student.academyFee)}
-            </td>
+    </td>
 
-        `;
+    <td>
+
+        <input
+            type="number"
+            min="0"
+            step="1"
+            class="fee-input"
+            id="teacher-${student.studentId}"
+            value="${student.teacherFee || 0}"
+        >
+
+    </td>
+
+    <td>
+
+        <span
+            id="academy-${student.studentId}"
+        >
+            ${formatCurrency(student.academyFee)}
+        </span>
+
+    </td>
+
+    <td>
+
+        <button
+            class="save-fee-btn"
+            onclick="saveFeeRecord(
+                '${student.studentId}',
+                ${student.actualFee}
+            )"
+        >
+            Save
+        </button>
+
+    </td>
+
+`;
 
 
         tbody.appendChild(row);
