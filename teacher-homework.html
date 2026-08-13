@@ -1398,69 +1398,301 @@ cursor:pointer;
 
     async function createOrEditHomework(){
 
-        window.editLessonPlanId = null;
+    /*
+    =====================================================
+    CREATE IS ALLOWED ONLY IF NO HOMEWORK EXISTS
+    =====================================================
+    */
 
-document.getElementById("addTopicBtn").style.display = "inline-block";
+    const teacherId =
+        sessionStorage.getItem("teacherId");
 
-showCreateHomeworkPanel();
+    const className =
+        sessionStorage.getItem("homeworkClass");
+
+    const subject =
+        sessionStorage.getItem("homeworkSubject");
+
+    const date =
+        new Date()
+        .toISOString()
+        .split("T")[0];
+
+
+    if(
+        !teacherId ||
+        !className ||
+        !subject
+    ){
+
+        alert(
+            "Homework class information is missing."
+        );
+
+        return;
 
     }
 
-    async function checkExistingLessonPlan(){
 
-        const teacherId = sessionStorage.getItem("teacherId");
-
-        const className = sessionStorage.getItem("homeworkClass");
-
-        const subject = sessionStorage.getItem("homeworkSubject");
-
-        const date = new Date().toISOString().split("T")[0];
+    try{
 
         const res = await fetch(
 
-            "https://academy-backend-eatl.onrender.com/api/lesson-plans?teacherId=" + teacherId
+            "https://academy-backend-eatl.onrender.com/api/lesson-plans?teacherId=" +
+            encodeURIComponent(teacherId)
 
         );
 
-        const result = await res.json();
 
-        if(!result.success) return;
+        const result =
+            await res.json();
 
-        const existing = result.data.find(plan =>
 
-            plan.date === date &&
+        if(!result.success){
 
-            plan.className === className &&
-
-            plan.subject === subject
-
-        );
-
-        if(existing){
-
-            editLessonPlan(existing._id);
+            alert(
+                "Unable to check existing homework."
+            );
 
             return;
 
         }
 
-        document.getElementById("createHomeworkPanel").style.display="block";
 
-        document.getElementById("hwDate").value = date;
+        /*
+        =====================================================
+        SAME TEACHER + CLASS + SUBJECT + DATE
+        =====================================================
+        */
 
-        document.getElementById("hwTeacher").value =
-        sessionStorage.getItem("teacherName") || "";
+        const existing =
+            result.data.find(plan =>
 
-        document.getElementById("hwClass").value = className;
+                plan.date === date &&
 
-        document.getElementById("hwSubject").value = subject;
+                String(plan.className).trim()
+                ===
+                String(className).trim() &&
 
-        document.getElementById("topicContainer").innerHTML="";
+                String(plan.subject).trim()
+                ===
+                String(subject).trim()
 
-        addTopicCard();
+            );
+
+
+        /*
+        =====================================================
+        HOMEWORK ALREADY EXISTS
+        =====================================================
+        */
+
+        if(existing){
+
+            updateCreateHomeworkButton(true);
+
+            alert(
+                "Homework has already been created for this period and date.\n\nYou can use the Edit button to update it."
+            );
+
+            return;
+
+        }
+
+
+        /*
+        =====================================================
+        NO HOMEWORK EXISTS
+        CREATE NEW
+        =====================================================
+        */
+
+        window.editLessonPlanId = null;
+
+
+        document.getElementById(
+            "addTopicBtn"
+        ).style.display =
+            "inline-block";
+
+
+        showCreateHomeworkPanel();
+
+
+    }catch(error){
+
+        console.error(
+            "Create homework check error:",
+            error
+        );
+
+        alert(
+            "Unable to check existing homework."
+        );
 
     }
 
+}
+    /* =========================================================
+   CREATE HOMEWORK BUTTON STATE
+   CREATE = ONCE
+   EDIT = UNLIMITED
+   ========================================================= */
+
+function updateCreateHomeworkButton(isCreated){
+
+    const button =
+        document.getElementById(
+            "createHomeworkBtn"
+        );
+
+    if(!button){
+
+        return;
+
+    }
+
+
+    if(isCreated){
+
+        button.disabled = true;
+
+        button.innerText =
+            "✓ Homework Already Created";
+
+        button.style.background =
+            "#94a3b8";
+
+        button.style.cursor =
+            "not-allowed";
+
+        button.style.opacity =
+            "0.75";
+
+    }else{
+
+        button.disabled = false;
+
+        button.innerText =
+            "+ Create Homework";
+
+        button.style.background =
+            "green";
+
+        button.style.cursor =
+            "pointer";
+
+        button.style.opacity =
+            "1";
+
+    }
+
+}
+
+    async function checkExistingLessonPlan(){
+
+    const teacherId =
+        sessionStorage.getItem("teacherId");
+
+    const className =
+        sessionStorage.getItem("homeworkClass");
+
+    const subject =
+        sessionStorage.getItem("homeworkSubject");
+
+    const date =
+        new Date()
+        .toISOString()
+        .split("T")[0];
+
+
+    if(
+        !teacherId ||
+        !className ||
+        !subject
+    ){
+
+        return;
+
+    }
+
+
+    try{
+
+        const res = await fetch(
+
+            "https://academy-backend-eatl.onrender.com/api/lesson-plans?teacherId=" +
+            encodeURIComponent(teacherId)
+
+        );
+
+
+        const result =
+            await res.json();
+
+
+        if(!result.success){
+
+            return;
+
+        }
+
+
+        const existing =
+            result.data.find(plan =>
+
+                plan.date === date &&
+
+                String(plan.className).trim()
+                ===
+                String(className).trim() &&
+
+                String(plan.subject).trim()
+                ===
+                String(subject).trim()
+
+            );
+
+
+        if(existing){
+
+            /*
+            =================================================
+            HOMEWORK EXISTS
+
+            ONLY CREATE IS DISABLED.
+
+            EDIT REMAINS AVAILABLE.
+            =================================================
+            */
+
+            updateCreateHomeworkButton(true);
+
+        }else{
+
+            /*
+            =================================================
+            NO HOMEWORK
+
+            CREATE IS AVAILABLE.
+            =================================================
+            */
+
+            updateCreateHomeworkButton(false);
+
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "Check existing homework error:",
+            error
+        );
+
+    }
+
+}
 
 
     function showCreateHomeworkPanel(){
@@ -1939,10 +2171,46 @@ showCreateHomeworkPanel();
 
     if(data.success){
 
-        alert("Homework Saved Successfully");
+    alert("Homework Saved Successfully");
 
-        // Reset Edit Mode
-        window.editLessonPlanId = null;
+
+    /*
+    =====================================================
+    CREATE / EDIT RESULT
+    =====================================================
+    */
+
+    if(window.editLessonPlanId){
+
+        /*
+        -----------------------------------------------
+        EDIT MODE
+
+        Keep Create button disabled.
+        Editing can happen unlimited times.
+        -----------------------------------------------
+        */
+
+        updateCreateHomeworkButton(true);
+
+    }else{
+
+        /*
+        -----------------------------------------------
+        CREATE MODE
+
+        Homework has now been created.
+        Disable Create.
+        -----------------------------------------------
+        */
+
+        updateCreateHomeworkButton(true);
+
+    }
+
+
+    // Reset Edit Mode
+    window.editLessonPlanId = null;
 
         const saveBtn = document.querySelector(
             'button[onclick="saveHomeworkDraft()"]'
