@@ -68,6 +68,107 @@ body {
     box-shadow:0 2px 6px rgba(0,0,0,0.08);
 }
 
+/* =========================================================
+   ACADEMIC CONTINUITY NOTICE
+   ========================================================= */
+
+.academic-continuity-section {
+    margin-top: 25px;
+    display: none;
+}
+
+.academic-continuity-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.continuity-notice {
+    background: linear-gradient(
+        135deg,
+        #fffdf5,
+        #ffffff
+    );
+
+    border-left: 6px solid #d4a017;
+
+    border-radius: 12px;
+
+    padding: 24px 28px;
+
+    margin-bottom: 18px;
+
+    box-shadow:
+        0 4px 15px rgba(0,0,0,0.10);
+
+    position: relative;
+}
+
+.continuity-notice::before {
+    content: "✨";
+
+    position: absolute;
+
+    top: 18px;
+    right: 22px;
+
+    font-size: 28px;
+}
+
+.continuity-heading {
+    color: #173b67;
+
+    font-size: 21px;
+
+    font-weight: 800;
+
+    margin-bottom: 15px;
+}
+
+.continuity-message {
+    color: #263238;
+
+    font-size: 16px;
+
+    line-height: 1.7;
+
+    margin-bottom: 12px;
+}
+
+.continuity-message strong {
+    color: #173b67;
+}
+
+.continuity-compensation {
+    background: #eef6ff;
+
+    border: 1px solid #b8d8ff;
+
+    border-radius: 9px;
+
+    padding: 14px 18px;
+
+    margin-top: 15px;
+
+    color: #173b67;
+
+    font-size: 16px;
+
+    line-height: 1.6;
+}
+
+.continuity-footer {
+    margin-top: 16px;
+
+    font-style: italic;
+
+    color: #5f6368;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
 </style>
 </head>
 
@@ -96,6 +197,23 @@ body {
 <div class="class-box">
 <h3>My Classes</h3>
 <div id="classList"></div>
+</div>
+
+<!-- =====================================================
+     ACADEMIC CONTINUITY NOTICES
+     ===================================================== -->
+
+<div
+    id="academicContinuitySection"
+    class="academic-continuity-section"
+>
+
+    <div class="academic-continuity-title">
+        📢 Important Academic Notice
+    </div>
+
+    <div id="academicContinuityList"></div>
+
 </div>
 <div class="class-box">
 
@@ -304,34 +422,440 @@ window.location.href =
     }
 }
 async function loadRecordings(){
-    const subject = document.getElementById("subjectFilter").value;
 
-    const className = localStorage.getItem("className");
+    const subject =
+        document.getElementById(
+            "subjectFilter"
+        ).value;
+
+    const className =
+        localStorage.getItem(
+            "className"
+        );
 
     const res = await fetch(
-    `https://academy-backend-eatl.onrender.com/api/recordings/${className}?subject=${subject}`,
-    {
-        headers:{
-            "Authorization": "Bearer " + token
+
+        `https://academy-backend-eatl.onrender.com/api/recordings/${className}?subject=${subject}`,
+
+        {
+            headers:{
+                "Authorization":
+                    "Bearer " + token
+            }
         }
-    }
-);
-    const data = await res.json();
+
+    );
+
+    const data =
+        await res.json();
 
     let html = "";
 
     data.data.forEach(r => {
+
         html += `
-        <div style="background:white; padding:10px; margin-bottom:10px;">
+
+        <div
+        style="
+        background:white;
+        padding:10px;
+        margin-bottom:10px;
+        ">
+
             📘 ${r.subject}<br>
-            📅 ${new Date(r.createdAt).toLocaleString()}<br>
-            <video width="300" controls src="${r.videoUrl}"></video>
+
+            📅
+            ${new Date(
+                r.createdAt
+            ).toLocaleString()}
+
+            <br>
+
+            <video
+            width="300"
+            controls
+            src="${r.videoUrl}">
+            </video>
+
         </div>
+
         `;
+
     });
 
-    document.getElementById("recordingList").innerHTML = html;
+    document.getElementById(
+        "recordingList"
+    ).innerHTML = html;
+
 }
+
+
+/* =========================================================
+   ACADEMIC CONTINUITY NOTICE
+   ========================================================= */
+
+async function loadAcademicContinuity(){
+
+    try{
+
+        const studentId =
+            localStorage.getItem("studentId");
+
+        const section =
+            document.getElementById(
+                "academicContinuitySection"
+            );
+
+        const list =
+            document.getElementById(
+                "academicContinuityList"
+            );
+
+
+        /*
+        =====================================================
+        STUDENT ID CHECK
+        =====================================================
+        */
+
+        if(!studentId){
+
+            console.warn(
+                "Student ID not found."
+            );
+
+            return;
+
+        }
+
+
+        /*
+        =====================================================
+        FETCH APPROVED LEAVES
+        =====================================================
+        */
+
+        const res = await fetch(
+
+            "https://academy-backend-eatl.onrender.com/api/student/academic-continuity/" +
+            encodeURIComponent(studentId),
+
+            {
+
+                headers:{
+
+                    "Authorization":
+                        "Bearer " + token
+
+                }
+
+            }
+
+        );
+
+
+        if(!res.ok){
+
+            console.error(
+                "Academic continuity API failed:",
+                res.status
+            );
+
+            return;
+
+        }
+
+
+        const result =
+            await res.json();
+
+
+        if(
+            !result.success ||
+            !Array.isArray(result.data) ||
+            result.data.length === 0
+        ){
+
+            section.style.display = "none";
+
+            list.innerHTML = "";
+
+            return;
+
+        }
+
+
+        /*
+        =====================================================
+        BUILD NOTICES
+        =====================================================
+        */
+
+        let html = "";
+
+
+        result.data.forEach(leave => {
+
+            const leaveDate =
+                formatContinuityDate(
+                    leave.leaveDate
+                );
+
+
+            const compensationDate =
+                formatContinuityDate(
+                    leave.compensationDate
+                );
+
+
+            const periodTime =
+                formatContinuityTime(
+                    leave.startTime
+                )
+                +
+                " – "
+                +
+                formatContinuityTime(
+                    leave.endTime
+                );
+
+
+            let compensationText =
+                "Compensation class details will be updated by the Academy.";
+
+
+            if(
+                leave.compensationDate &&
+                leave.compensationStartTime &&
+                leave.compensationEndTime
+            ){
+
+                compensationText =
+
+                    `<strong>
+                        ${compensationDate}
+                    </strong>
+                    |
+                    ${formatContinuityTime(
+                        leave.compensationStartTime
+                    )}
+                    –
+                    ${formatContinuityTime(
+                        leave.compensationEndTime
+                    )}`;
+
+            }
+
+
+            html += `
+
+                <div class="continuity-notice">
+
+                    <div class="continuity-heading">
+
+                        ✨ ACADEMIC CONTINUITY NOTICE
+
+                    </div>
+
+
+                    <div class="continuity-message">
+
+                        Your scheduled class on
+
+                        <strong>
+                            ${leaveDate}
+                        </strong>,
+
+                        from
+
+                        <strong>
+                            ${periodTime}
+                        </strong>,
+
+                        will be rescheduled as your teacher
+                        will be unavailable on this day.
+
+                    </div>
+
+
+                    <div class="continuity-message">
+
+                        <strong>
+                            Your learning will continue
+                            without interruption.
+                        </strong>
+
+                    </div>
+
+
+                    <div class="continuity-compensation">
+
+                        📚
+                        <strong>
+                            Compensation Class:
+                        </strong>
+
+                        <br>
+
+                        ${compensationText}
+
+                    </div>
+
+
+                    <div class="continuity-footer">
+
+                        Gopes Pinnacle Academy has arranged
+                        the compensation session to ensure
+                        that your academic progress remains
+                        uninterrupted.
+
+                    </div>
+
+                </div>
+
+            `;
+
+        });
+
+
+        /*
+        =====================================================
+        DISPLAY
+        =====================================================
+        */
+
+        list.innerHTML = html;
+
+        section.style.display = "block";
+
+
+    }catch(error){
+
+        console.error(
+            "Academic continuity error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   DATE FORMAT
+   ========================================================= */
+
+function formatContinuityDate(value){
+
+    if(!value){
+
+        return "";
+
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if(isNaN(date.getTime())){
+
+        return value;
+
+    }
+
+
+    return date.toLocaleDateString(
+        "en-GB",
+        {
+            day: "2-digit",
+            month: "long",
+            year: "numeric"
+        }
+    );
+
+}
+
+
+/* =========================================================
+   TIME FORMAT
+   ========================================================= */
+
+function formatContinuityTime(value){
+
+    if(!value){
+
+        return "";
+
+    }
+
+
+    if(
+        value.includes("AM") ||
+        value.includes("PM")
+    ){
+
+        return value;
+
+    }
+
+
+    const parts =
+        value.split(":");
+
+
+    if(parts.length < 2){
+
+        return value;
+
+    }
+
+
+    let hour =
+        parseInt(
+            parts[0],
+            10
+        );
+
+
+    const minute =
+        parts[1];
+
+
+    const ampm =
+        hour >= 12
+            ? "PM"
+            : "AM";
+
+
+    hour =
+        hour % 12;
+
+
+    if(hour === 0){
+
+        hour = 12;
+
+    }
+
+
+    return (
+        hour +
+        ":" +
+        minute +
+        " " +
+        ampm
+    );
+
+}
+
+
+/* =========================================================
+   INITIAL LOAD
+   ========================================================= */
+
+loadAcademicContinuity();
+
 loadRecordings();
 </script>
 
