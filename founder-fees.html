@@ -654,16 +654,7 @@ async function saveFeeRecord(studentId, actualFee) {
     }
 
 
-    if (teacherFee > feePaid) {
-
-        alert(
-            "Fee to Teacher cannot be greater than Fee Paid."
-        );
-
-        return;
-
-    }
-
+    
 
     const academyFee =
         feePaid - teacherFee;
