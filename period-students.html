@@ -804,14 +804,59 @@ sessionStorage.setItem(
     sessionData.sessionId
 );
 console.log("periodId =", periodId);
+
+/* =====================================================
+   OPEN NEW VIRTUAL CLASSROOM
+   ===================================================== */
+
+const teacherName =
+    sessionStorage.getItem("teacherName");
+
+
+console.log(
+    "=========================================="
+);
+
+console.log(
+    "OPENING WHITEBOARD"
+);
+
+console.log(
+    "Teacher ID:",
+    teacherId
+);
+
+console.log(
+    "Teacher Name:",
+    teacherName
+);
+
+console.log(
+    "Room:",
+    room
+);
+
+console.log(
+    "Period ID:",
+    periodId
+);
+
+console.log(
+    "=========================================="
+);
+
+
 window.location.href =
 `whiteboard.html?room=${encodeURIComponent(room)}
 &periodId=${encodeURIComponent(periodId)}
 &role=teacher
+&userId=${encodeURIComponent(teacherId || "")}
+&name=${encodeURIComponent(teacherName || "")}
 &className=${encodeURIComponent(className)}
 &subject=${encodeURIComponent(subject)}
 &day=${encodeURIComponent(day)}
-&startTime=${encodeURIComponent(startTime)}`;
+&startTime=${encodeURIComponent(startTime)}
+&endTime=${encodeURIComponent(params.get("endTime") || "")}`;
 
 document.getElementById("endClassBtn").style.display = "block";
 

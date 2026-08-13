@@ -544,9 +544,10 @@
            ===================================================== */
 
         const meetingUserId =
-            urlParams.get("userId") ||
-            localStorage.getItem("meetingUserId") ||
-            "";
+    urlParams.get("userId") ||
+    sessionStorage.getItem("teacherId") ||
+    localStorage.getItem("meetingUserId") ||
+    "";
 
 
         /* =====================================================
@@ -554,9 +555,10 @@
            ===================================================== */
 
         const meetingUserName =
-            urlParams.get("name") ||
-            localStorage.getItem("meetingUserName") ||
-            "";
+    urlParams.get("name") ||
+    sessionStorage.getItem("teacherName") ||
+    localStorage.getItem("meetingUserName") ||
+    "";
 
 
         /* =====================================================
