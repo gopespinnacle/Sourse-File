@@ -978,14 +978,17 @@ function joinMeetingRoom() {
             meetingUserId || null,
 
         studentId:
-            meetingRole === "student"
-                ? (
-                    localStorage.getItem(
-                        "studentId"
-                    ) ||
-                    null
-                )
-                : null,
+    meetingRole === "student"
+        ? (
+            sessionStorage.getItem(
+                "studentId"
+            ) ||
+            localStorage.getItem(
+                "studentId"
+            ) ||
+            null
+        )
+        : null,
 
         periodId:
             urlParams.get("periodId") ||
