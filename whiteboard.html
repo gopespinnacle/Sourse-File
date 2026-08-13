@@ -20,8 +20,11 @@
          ===================================================== -->
 
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-    <script src="assets/js/meeting/meetingParticipantsV2.js"></script>
+
+<script src="assets/js/meeting/meetingParticipantsV2.js"></script>
 <script src="assets/js/meeting/meetingUIV2.js"></script>
+
+<script src="assets/js/meeting/video/mediaManagerV2.js"></script>
 
 
 
@@ -1190,6 +1193,26 @@ socket.on(
             "MeetingConfig updated:",
             window.MeetingConfig
         );
+
+        /*
+=====================================================
+START CAMERA + MICROPHONE AUTOMATICALLY
+=====================================================
+*/
+
+if (
+    window.MediaManagerV2 &&
+    typeof MediaManagerV2.startMedia === "function"
+) {
+
+    console.log(
+        "STARTING CAMERA + MICROPHONE"
+    );
+
+
+    MediaManagerV2.startMedia();
+
+}
 
     }
 );
