@@ -1,5256 +1,942 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-        
-<meta name="viewport"
-content="width=device-width,initial-scale=1,viewport-fit=cover">
 
-<meta name="theme-color"
-content="#000000">
+    <meta charset="UTF-8">
 
-<meta charset="UTF-8">
-<title></title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<style>
+    <title>
+        Gopes Pinnacle Academy - Virtual Classroom
+    </title>
 
-    /* 🔥 REMOVE BLUE DEBUG TEXT */
-body > pre,
-body > code {
-    display: none !important;
-}
 
-body > div[style*="white-space"] {
-    display: none !important;
-}
-#meetingContainer{
+    <!-- =====================================================
+         SOCKET.IO
+         ===================================================== -->
 
-position:fixed;
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 
-top:42px;
-left:0;
 
-width:100vw;
-height:calc(100vh - 60px);
+    <!-- =====================================================
+         BASIC CLASSROOM STYLE
+         ===================================================== -->
 
-display:flex;
+    <style>
 
-overflow:hidden;
-}
+        * {
+            box-sizing: border-box;
+        }
 
-#mainStage{
 
-flex:1;
+        html,
+        body {
 
-position:relative;
+            width: 100%;
+            height: 100%;
 
-overflow:hidden;
+            margin: 0;
+            padding: 0;
 
-background:black;
-}
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
 
+            background: #111827;
 
+            color: white;
 
-/* ==========================================
-   SCREEN SHARING MODE
-   PARTICIPANT VIDEOS BECOME SMALL
-========================================== */
+            overflow: hidden;
 
-#participantStrip.screen-sharing {
+        }
 
-    position: fixed !important;
 
-    top: 50px !important;
+        /* =====================================================
+           CLASSROOM
+           ===================================================== */
 
-    right: 10px !important;
+        #classroom {
 
-    left: auto !important;
+            width: 100%;
+            height: 100%;
 
-    bottom: 90px !important;
+            display: flex;
 
-    width: 80px !important;
+            flex-direction: column;
 
-    max-width: 80px !important;
+        }
 
-    display: flex !important;
 
-    flex-direction: column !important;
+        /* =====================================================
+           TOP BAR
+           ===================================================== */
 
-    align-items: center !important;
+        #topBar {
 
-    gap: 8px !important;
+            height: 60px;
 
-    padding: 0 !important;
+            flex-shrink: 0;
 
-    z-index: 1000010 !important;
+            display: flex;
 
-}
+            align-items: center;
 
+            justify-content: space-between;
 
-#participantStrip.screen-sharing .participant-card {
+            padding: 0 20px;
 
-    width: 70px !important;
+            background: #1f2937;
 
-    min-width: 70px !important;
+            border-bottom:
+                1px solid #374151;
 
-    max-width: 70px !important;
+        }
 
-    height: 120px !important;
 
-    min-height: 120px !important;
+        #academyTitle {
 
-    max-height: 120px !important;
+            font-size: 18px;
 
-    flex: 0 0 70px !important;
+            font-weight: 600;
 
-    flex-shrink: 0 !important;
+        }
 
-}
 
+        #meetingInfo {
 
-#participantStrip.screen-sharing .participant-card video {
+            display: flex;
 
-    width: 100% !important;
+            align-items: center;
 
-    height: 100% !important;
+            gap: 18px;
 
-    object-fit: cover !important;
+            font-size: 14px;
 
-    display: block !important;
+        }
 
-}
 
-.participant-card{
+        /* =====================================================
+           ROLE
+           ===================================================== */
 
-    width:100%;
+        #userRole {
 
-    height:100%;
+            font-weight: 600;
 
-    border-radius:12px;
+        }
 
-    overflow:hidden;
 
-    background:#111;
+        /* =====================================================
+           CONNECTION STATUS
+           ===================================================== */
 
-    border:2px solid white;
+        #connectionStatus {
 
-    position:relative;
+            display: flex;
 
-}
+            align-items: center;
 
-.participant-card video{
+            gap: 7px;
 
-    width:100%;
+        }
 
-    height:100%;
 
-    object-fit:cover;
+        #connectionDot {
 
-    display:block;
+            width: 10px;
 
-}
+            height: 10px;
 
-body {
-    margin:0;
-    font-family:sans-serif;
-    background:#0f172a;
-}
+            border-radius: 50%;
 
-.toolbar {
-    background:#1e293b;
+            background: #f59e0b;
 
-    padding:5px 6px;
+        }
 
-    display:flex;
 
-    gap:5px;
+        #connectionText {
 
-    position:relative;
+            color: #d1d5db;
 
-    z-index:1000;
+        }
 
-    align-items:center;
 
-    flex-wrap:wrap;
-}
+        /* =====================================================
+           MAIN AREA
+           ===================================================== */
 
-button,
-select,
-input {
+        #mainArea {
 
-    height:30px;
+            flex: 1;
 
-    padding:3px 8px;
+            position: relative;
 
-    border:none;
+            display: flex;
 
-    border-radius:5px;
+            align-items: center;
 
-    cursor:pointer;
+            justify-content: center;
 
-    font-size:12px;
-}
+        }
 
-.teacher-tools {
-    display:none;
-}
 
-canvas {
-    display:block;
-}
+        #welcomeMessage {
 
-#board {
-    background:white;
-}
+            text-align: center;
 
-#drawLayer {
-    position:absolute;
-  top:42px;
-    left:0;
-    width:100%;
-    height:calc(100% - 80px);
+            color: #d1d5db;
 
-    background:transparent;
+        }
 
-    z-index:5;
-    pointer-events:auto;
-}
 
-video {
-    background: black;
-}
-#mainBoard{
+        #welcomeMessage h2 {
 
-position:absolute;
+            margin: 0 0 10px 0;
 
-top:50px;
+            font-size: 26px;
 
-left:0;
+        }
 
-width:100%;
 
-height:calc(100vh - 50px);
+        #welcomeMessage p {
 
-background:white;
+            margin: 7px 0;
 
-z-index:1;
+            font-size: 14px;
 
-pointer-events:auto;
+        }
 
-}
 
-/* HEADER */
-#pipHeader {
-    height: 30px;
-    background: rgba(0,0,0,0.7);
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 10px;
-    cursor: move;
-    font-size: 12px;
-}
+        /* =====================================================
+           PARTICIPANT CAPACITY
+           ===================================================== */
 
-/* VIDEO */
+        #capacityInfo {
 
-#screenDraw{
+            margin-top: 18px;
 
-position:absolute;
+            padding: 10px 16px;
 
-top:50px;
+            border-radius: 8px;
 
-left:0;
+            background: #1f2937;
 
-width:100%;
+            color: #9ca3af;
 
-height:calc(100vh - 50px);
+            font-size: 13px;
 
-background:transparent;
+        }
 
-z-index:20;
 
-pointer-events:none;
+        /* =====================================================
+           BOTTOM BAR
+           ===================================================== */
 
-}
-/* 🔥 STUDENT SMALL VIDEO */
-#remoteVideo{
-position:absolute;
-top:0;
-left:0;
-    width:100%;
-    height:100%;
+        #bottomBar {
 
-    object-fit:contain;
+            height: 60px;
 
-    display:none;
-    visibility:visible !important;
-    opacity:1 !important;
+            flex-shrink: 0;
 
-    background:black;
+            display: flex;
 
-    z-index:1;
-}
+            align-items: center;
 
-/* 🔥 SMALL TEACHER VIDEO INSIDE BOX */
-#localVideoBox{
+            justify-content: center;
 
-    position:fixed;
+            background: #1f2937;
 
-    right:10px;
+            border-top:
+                1px solid #374151;
 
-    bottom:10px;
+        }
 
-   width:220px;
-height:160px;
 
-    border-radius:12px;
+        #systemStatus {
 
-    overflow:hidden;
+            font-size: 13px;
 
-    border:2px solid #fff;
+            color: #9ca3af;
 
-    background:#000;
+        }
 
-    z-index:100000;
 
-}
+        /* =====================================================
+           MOBILE
+           ===================================================== */
 
-#localVideo{
+        @media (max-width: 700px) {
 
-    width:100%;
-    height:100%;
+            #topBar {
 
-    object-fit:cover;
+                height: auto;
 
-}
-#jeeFaceFilterCanvas{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    z-index:100;
-    pointer-events:none;
-    border-radius:10px;
-}
+                min-height: 60px;
 
-#arOverlay{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    z-index:101;
-    pointer-events:none;
-}
-/* 🔥 TEACHER SMALL VIDEO */
+                padding: 10px 12px;
 
-#screenContainer {
+                gap: 10px;
 
-    position: fixed;
+            }
 
-    top: 50px;
-    left: 0;
 
-    right: 130px;
-    bottom: 0;
+            #academyTitle {
 
-    background: #000;
+                font-size: 14px;
 
-    overflow: hidden;
+            }
 
-    z-index: 9999;
 
-    display: block;
+            #meetingInfo {
 
-}
+                gap: 8px;
 
-#screenVideo {
+                font-size: 11px;
 
-    width: 100%;
-    height: 100%;
+            }
 
-    display: block;
 
-    object-fit: contain;
+            #welcomeMessage h2 {
 
-    background: #000;
+                font-size: 21px;
 
-}
-/* MINIMIZE */
-.minimized {
-    height: 40px !important;
-    width: 200px !important;
-}
+            }
 
+        }
 
-/* ================= CLEAN MOBILE LAYOUT ================= */
+    </style>
 
-.menu-overlay{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.5);
-    display:none;
-    z-index:99998;
-}
-
-.menu-overlay.show{
-
-display:block;
-
-pointer-events:auto;
-
-}
-/* DESKTOP */
-#menuBtn{
-
-display:flex !important;
-
-position:absolute;
-
-right:5px;
-
-top:10px;
-
-z-index:10000000;
-
-}
-
-/* DESKTOP */
-/* DESKTOP */
-/* DESKTOP */
-#mobileMenu{
-
-display:flex;
-
-flex-direction:row;
-
-gap:5px;
-
-align-items:center;
-
-position:static;
-
-background:transparent;
-
-width:auto;
-
-height:auto;
-
-padding:0;
-
-overflow:visible;
-}
-
-#bottomControls{
-
-position:fixed;
-
-bottom:20px;
-
-left:50%;
-
-transform:translateX(-50%);
-
-display:flex;
-
-gap:5px;
-
-padding:8px 12px;
-
-background:#202124;
-
-border-radius:28px;
-
-box-shadow:0 5px 25px rgba(0,0,0,.4);
-
-z-index:1000010;
-
-}
-
-
-#deviceBar{
-
-position:fixed;
-
-bottom:78px;
-
-left:50%;
-
-transform:translateX(-50%);
-
-display:flex;
-
-gap:4px;
-
-padding:3px 6px;
-
-background:#202124;
-
-border-radius:10px;
-
-color:white;
-
-z-index:999999;
-
-align-items:center;
-
-font-size:11px;
-
-}
-
-#deviceBar span{
-
-font-size:12px;
-
-}
-
-#deviceBar select{
-
-width:90px;
-
-min-width:90px;
-
-height:24px;
-
-font-size:10px;
-
-padding:0 4px;
-
-}
-
-#bottomControls button{
-
-width:32px;
-
-height:32px;
-
-font-size:14px;
-
-border-radius:50%;
-
-background:#3c4043;
-
-color:white;
-
-padding:0;
-
-}
-
-#bottomControls button:last-child{
-
-background:#ea4335;
-
-}
-
-#meetTopBar{
-
-position:fixed;
-
-top:0;
-
-left:0;
-
-
-
-width:100%;
-
-height:50px;
-
-background:#1e293b;
-
-display:flex;
-
-align-items:center;
-
-justify-content:space-between;
-
-padding:0 20px;
-
-box-sizing:border-box;
-
-z-index:999999;
-
-color:white;
-
-font-weight:600;
-
-}
-
-#academyLogo{
-
-width:90px;
-
-height:50px;
-
-object-fit:contain;
-
-}
-
-#meetTitle{
-
-font-size:18px;
-
-}
-
-#meetTime{
-
-color:#8ab4f8;
-
-font-size:14px;
-
-}
-
-@media(max-width:768px){
-
-#mobileMenu{
-
-position:fixed;
-
-top:60px;
-
-right:-300px;
-
-overscroll-behavior:contain;
-
-pointer-events:auto;
-
-width:260px;
-
-height:calc(100vh - 60px);
-
-background:#1e293b;
-
-display:flex;
-
-flex-direction:column;
-
-padding:20px;
-
-overflow-y:auto;
-scrollbar-width:none;
--ms-overflow-style:none;
-
--webkit-overflow-scrolling:touch;
-
-touch-action:pan-y;
-
-transition:right .3s;
-
-z-index:999999;
-}
-
-#mobileMenu::-webkit-scrollbar{
-
-    display:none;
-
-}
-
-#mobileMenu.show{
-
-right:0;
-}
-
-.toolbar{
-
-justify-content:flex-end;
-}
-
-.toolbar > *:not(#menuBtn):not(#mobileMenu):not(#meetTopBar){
-
-display:none !important;
-
-}
-
-}
-
-
-/* MOBILE ONLY */
-
-
-  /* FULL MOBILE LAYOUT */
-@media(max-width:768px){
-
-    #menuBtn{
-    display:none !important;
-}
-
-.toolbar{
-    justify-content:flex-end;
-}
-
-    body{
-        overflow-x:hidden;
-    }
-
-    .toolbar{
-
-position:fixed;
-
-top:0;
-
-left:0;
-
-width:100%;
-
-height:50px;
-
-background:transparent;
-
-display:flex;
-
-justify-content:flex-end;
-
-align-items:center;
-
-padding:0;
-
-z-index:999990;
-
-pointer-events:none;
-
-}
-
-
-   #meetTopBar{
-
-position:fixed;
-
-top:0;
-
-left:0;
-
-width:100%;
-
-height:50px;
-
-background:#1e293b;
-
-display:flex;
-
-align-items:center;
-
-justify-content:space-between;
-
-padding:0 8px;
-
-box-sizing:border-box;
-
-z-index:999999;
-
-}
-
-#meetTopBar button{
-
-width:30px;
-
-height:30px;
-
-font-size:14px;
-
-padding:0;
-
-}
-
-#academyLogo{
-
-width:90px;
-
-height:50px;
-
-object-fit:contain;
-
-}
-
-#meetTitle{
-
-position:absolute;
-
-left:50%;
-
-top:50%;
-
-transform:translate(-50%,-50%);
-
-font-size:14px;
-
-font-weight:600;
-
-color:white;
-
-z-index:9999999;
-
-display:block !important;
-
-visibility:visible !important;
-
-opacity:1 !important;
-
-}
-
-#meetTime{
-
-font-size:12px;
-
-color:#8ab4f8;
-
-min-width:45px;
-
-text-align:right;
-
-}
-    /* HIDE NORMAL TOOLBAR */
-    /*#mobileMenu{
-
-        position:fixed;
-
-        top:0;
-        right:-280px;
-
-        width:260px;
-        height:100vh;
-
-        background:#1e293b;
-
-        display:flex;
-
-        flex-direction:column;
-
-        padding:80px 15px 20px;
-
-        gap:12px;
-
-        transition:0.3s ease;
-
-        z-index:99999;
-
-        overflow-y:auto;
-    }*/
-
-    #mobileMenu.show{
-        right:0;
-    }
-
-    .menu-overlay.show{
-        display:block;
-    }
-
-    #mobileMenu button,
-    #mobileMenu select,
-    #mobileMenu input{
-
-        width:100%;
-        min-height:48px;
-    }
-
-    #mainBoard,
-    #drawLayer{
-
-        top:42px !important;
-
-        width:100vw !important;
-
-        height:calc(100vh - 42px) !important;
-    }
-
-}
-
-    @media (max-width:768px){
-
-    #screenContainer{
-
-    position:fixed;
-
-    top:50px;
-    left:0;
-
-    right:130px;
-
-    width:100vw;
-    height:calc(100vh - 50px);
-
-    overflow:hidden;
-
-    background:transparent;
-
-    border:none;
-
-    box-shadow:none;
-
-    z-index:5;
-
-}
-
-     
-
-    #localVideoBox{
-
-    position:fixed;
-
-    right:10px;
-
-    bottom:20px;
-
-    top:auto;
-
-width:150px;
-height:200px;
-
-    z-index:100000;
-
-}
-
-   
-    #meetTopBar,
-#mobileMenu,
-#bottomControls,
-#localVideoBox,
-#participantStrip{
-
-    pointer-events:auto;
-
-}
-
-    .participant-card{
-
-    width:100%;
-
-    height:100%;
-
-    min-height:120px;
-
-}
-    .participant-card video{
-
-        width:100%;
-        height:100%;
-
-        object-fit:cover;
-
-        display:block;
-
-    }
-
-    }
-
-
-
-#emojiPopup{
-
-    position:fixed;
-
-    top:70px;
-    left:10px;
-
-    width:350px;
-    height:430px;
-
-    background:white;
-
-    border-radius:20px;
-
-    overflow:hidden;
-
-    box-shadow:0 10px 40px rgba(0,0,0,0.3);
-
-    z-index:999999;
-
-    display:none;
-}
-
-
-@media(max-width:768px){
-
-#bottomControls button{
-
-width:34px;
-
-height:34px;
-
-font-size:15px;
-
-padding:0;
-
-border-radius:50%;
-
-background:#3c4043;
-
-color:white;
-
-border:none;
-
-}
-
-#bottomControls button:last-child{
-
-background:#ea4335;
-
-}
-
-#bottomControls button{
-
-background:none;
-
-border:none;
-
-color:white;
-
-font-size:24px;
-
-height:auto;
-
-padding:0;
-
-}
-
-#localVideoBox{
-
-bottom:20px !important;
-
-top:auto !important;
-
-right:10px !important;
-
-}
-
-}
-
-html,
-body{
-
-width:100%;
-height:100%;
-
-margin:0;
-
-overflow-x:hidden;
-
-background:black;
-}
-
-
-#participantsPanel{
-
-position:fixed;
-
-top:0;
-
-right:-320px;
-
-width:280px;
-
-height:100vh;
-
-background:white;
-
-z-index:999999;
-
-box-shadow:-5px 0 20px rgba(0,0,0,.2);
-
-transition:right .3s ease;
-
-overflow-y:auto;
-
-}
-
-#participantsPanel.show{
-
-right:0;
-
-}
-
-.participants-header{
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-padding:15px;
-
-font-weight:bold;
-
-font-size:18px;
-
-border-bottom:1px solid #ddd;
-
-}
-
-#participantsList{
-
-padding:15px;
-
-display:flex;
-
-flex-direction:column;
-
-gap:12px;
-
-}
-
-#teacherParticipant{
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-padding:10px;
-
-background:#f8fafc;
-
-border-radius:10px;
-
-}
-
-#teacherMicStatus{
-
-font-size:12px;
-
-font-weight:bold;
-
-color:green;
-
-}
-
-#chatPanel{
-
-position:fixed;
-
-top:10px;
-
-right:-320px;
-
-width:280px;
-
-height:calc(100vh - 80px);
-
-background:white;
-
-z-index:999999;
-
-box-shadow:-5px 0 20px rgba(0,0,0,.2);
-
-transition:right .3s ease;
-
-display:flex;
-
-flex-direction:column;
-
-border-radius:12px 0 0 12px;
-
-}
-
-#chatPanel.show{
-
-right:0;
-
-}
-
-#chatMessages{
-
-flex:1;
-
-overflow-y:auto;
-
-padding:10px;
-
-}
-
-#chatInputArea{
-
-display:flex;
-
-gap:5px;
-
-padding:10px;
-
-border-top:1px solid #ddd;
-
-}
-
-#chatInput{
-
-flex:1;
-
-height:40px;
-
-}
-
-.chat-msg{
-
-background:#f1f5f9;
-
-padding:8px;
-
-margin-bottom:8px;
-
-border-radius:8px;
-
-}
-
-.video-off{
-
-position:relative;
-
-}
-
-.video-off::after{
-
-content:"❌";
-
-position:absolute;
-
-right:-3px;
-
-top:-3px;
-
-font-size:10px;
-
-color:red;
-
-}
-
-/* ===========================
-LIVE ATTENDANCE
-=========================== */
-
-#attendancePanel{
-
-    position:fixed;
-
-    top:70px;
-
-    right:-265px;
-
-    width:250px;
-
-    max-height:400px;
-
-    overflow-y:auto;
-
-    background:#fff;
-
-    border-radius:12px 0 0 12px;
-
-    padding:10px;
-
-    box-shadow:0 8px 24px rgba(0,0,0,.25);
-
-    transition:right .35s ease;
-
-    z-index:999999;
-
-}
-
-#attendancePanel.open{
-
-    right:15px;
-
-}
-
-#attendancePanel h3{
-
-margin:0 0 10px;
-
-text-align:center;
-
-font-size:18px;
-
-}
-
-#attendanceList{
-
-display:flex;
-
-flex-direction:column;
-
-gap:8px;
-
-}
-
-.attendance-item{
-
-background:#f5f5f5;
-
-padding:8px;
-
-border-radius:8px;
-
-font-size:14px;
-
-}
-
-.student-name{
-
-    font-weight:bold;
-
-    font-size:16px;
-
-    margin-bottom:6px;
-
-}
-
-.student-status{
-
-    color:#1aa11a;
-
-    font-weight:600;
-
-    margin-bottom:6px;
-
-}
-
-.student-info{
-
-    color:#666;
-
-    font-size:13px;
-
-    margin-top:2px;
-
-}
-
-.student-controls{
-
-    display:flex;
-
-    gap:6px;
-
-    margin-top:8px;
-
-}
-
-.student-controls button{
-
-    flex:1;
-
-    border:none;
-
-    border-radius:6px;
-
-    padding:6px;
-
-    cursor:pointer;
-
-    font-size:12px;
-
-    font-weight:600;
-
-}
-
-.student-controls button:hover{
-
-    opacity:.9;
-
-}
-
-.student-controls button:nth-child(1){
-
-    background:#ffb300;
-
-    color:#000;
-
-}
-
-.student-controls button:nth-child(2){
-
-    background:#1976d2;
-
-    color:#fff;
-
-}
-
-.student-controls button:nth-child(3){
-
-    background:#d32f2f;
-
-    color:#fff;
-
-}
-
-/*====================================
-        SCREEN SHARE
-=====================================*/
-
-#screenShareContainer{
-
-    position:absolute;
-
-    top:0;
-
-    left:0;
-
-    width:100%;
-
-    height:100%;
-
-    display:none;
-
-    background:black;
-
-    z-index:20;
-
-}
-
-#screenShareVideo{
-
-    width:100%;
-    height:100%;
-
-    object-fit:cover;
-
-    background:black;
-
-}
-
-#screenVideo{
-
-    width:100%;
-
-    height:100%;
-
-    object-fit:contain;
-
-    object-position:center center;
-
-    background:black;
-
-}
-
-/* ==========================================
-   GOOGLE MEET LAYOUT MENU
-========================================== */
-
-#layoutMenu{
-
-    position:fixed;
-
-    top:70px;
-
-    right:20px;
-
-    width:260px;
-
-    background:#202124;
-
-    color:white;
-
-    border-radius:14px;
-
-    padding:18px;
-
-    box-shadow:0 8px 30px rgba(0,0,0,.35);
-
-    z-index:999999;
-
-    display:none;
-
-}
-
-#layoutMenu .layout-title{
-
-    font-size:20px;
-
-    font-weight:bold;
-
-    margin-bottom:18px;
-
-}
-
-#layoutMenu button{
-
-    width:100%;
-
-    padding:14px;
-
-    margin-bottom:10px;
-
-    border:none;
-
-    border-radius:10px;
-
-    background:#303134;
-
-    color:white;
-
-    font-size:16px;
-
-    cursor:pointer;
-
-    text-align:left;
-
-    transition:.25s;
-
-}
-
-#layoutMenu button:hover{
-
-    background:#3c4043;
-
-}
-
-/* ==========================================
-   GOOGLE MEET SPOTLIGHT LAYOUT
-========================================== */
-
-body.layout-spotlight #screenContainer{
-
-    position:fixed;
-
-    top:50px;
-
-    left:0;
-
-    right:0;
-
-    bottom:0;
-
-    width:auto;
-
-    height:auto;
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    background:black;
-
-    z-index:1;
-
-}
-
-
-#participantsToggleBtn{
-
-    position:fixed;
-
-    right:18px;
-
-    top:50%;
-
-    transform:translateY(-50%);
-
-    width:52px;
-
-    height:52px;
-
-    border:none;
-
-    border-radius:50%;
-
-    background:#1f2937;
-
-    color:white;
-
-    font-size:24px;
-
-    cursor:pointer;
-
-    z-index:100001;
-
-    box-shadow:0 8px 24px rgba(0,0,0,.35);
-
-}
-
-
-
-#attendanceFab{
-
-    position:fixed;
-
-    right:20px;
-
-    bottom:170px;
-
-    width:60px;
-
-    height:60px;
-
-    border:none;
-
-    border-radius:50%;
-
-    background:#202124;
-
-    color:white;
-
-    font-size:24px;
-
-    cursor:pointer;
-
-    z-index:999999;
-
-    box-shadow:0 6px 20px rgba(0,0,0,.35);
-
-}
-
-#attendanceFab:hover{
-
-    background:#303134;
-
-}
-
-#attendanceBadge{
-
-    position:absolute;
-
-    top:-5px;
-
-    right:-5px;
-
-    width:22px;
-
-    height:22px;
-
-    border-radius:50%;
-
-    background:#ea4335;
-
-    color:white;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    font-size:12px;
-
-    font-weight:bold;
-
-}
-
-/* ======================================
-   MOBILE LANDSCAPE
-====================================== */
-
-@media (max-width:768px) and (orientation:landscape){
-
-    #meetTopBar{
-        height:40px;
-    }
-
-    
-
-   #localVideoBox{
-
-    width:60px !important;
-    height:60px !important;
-
-    right:10px !important;
-    bottom:10px !important;
-
-}
-
-    #bottomControls{
-
-        bottom:10px;
-
-    }
-
-}
-
-#videoStack{
-
-    position:fixed;
-
-    right:10px;
-
-    bottom:10px;
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:flex-end;
-
-    gap:3px;
-
-    z-index:99999;
-
-    pointer-events:none;
-
-}
-
-
-#videoStack > *{
-
-    pointer-events:auto;
-
-}
-
-/* =========================================================
-   SCREEN SHARE - SMALL PARTICIPANT VIDEOS
-   ========================================================= */
-
-#participantStrip.screen-sharing {
-
-    display: flex !important;
-
-    flex-direction: column !important;
-
-    width: 70px !important;
-
-    min-width: 70px !important;
-
-    max-width: 70px !important;
-
-    gap: 6px !important;
-
-}
-
-
-#participantStrip.screen-sharing
-.participant-card {
-
-    width: 70px !important;
-
-    min-width: 70px !important;
-
-    max-width: 70px !important;
-
-    height: 120px !important;
-
-    min-height: 120px !important;
-
-    max-height: 120px !important;
-
-    flex: 0 0 70px !important;
-
-    overflow: hidden !important;
-
-    margin: 0 !important;
-
-    padding: 0 !important;
-
-}
-
-
-#participantStrip.screen-sharing
-.participant-card video {
-
-    width: 100% !important;
-
-    height: 100% !important;
-
-    min-width: 100% !important;
-
-    min-height: 100% !important;
-
-    max-width: 100% !important;
-
-    max-height: 100% !important;
-
-    object-fit: cover !important;
-
-}
-
-
-/* MOBILE */
-
-@media (max-width: 768px){
-
-    #participantStrip.screen-sharing {
-
-        width: 70px !important;
-
-        min-width: 70px !important;
-
-        max-width: 70px !important;
-
-    }
-
-    #participantStrip.screen-sharing
-    .participant-card {
-
-        width: 70px !important;
-
-        min-width: 70px !important;
-
-        max-width: 70px !important;
-
-        height: 120px !important;
-
-        min-height: 120px !important;
-
-        max-height: 120px !important;
-
-        flex: 0 0 70px !important;
-
-    }
-
-}
-</style>
 </head>
+
 
 <body>
 
-<div id="bottomControls">
 
-<button
-id="videoBtn"
-onclick="toggleVideo(this)">
-🎥
-</button>
+    <!-- =====================================================
+         CLASSROOM
+         ===================================================== -->
 
-<button onclick="toggleAudio(this)">🎤</button>
+    <div id="classroom">
 
-<button onclick="openEmojiPopup()">😊</button>
 
-<button onclick="openParticipants()">👥</button>
+        <!-- =================================================
+             TOP BAR
+             ================================================= -->
 
+        <header id="topBar">
 
-<button
-id="screenShareBtn"
-onclick="startScreenShare()">
-🖥️
-</button>
 
+            <div id="academyTitle">
 
+                GOPES PINNACLE ACADEMY
 
-<button onclick="toggleDeviceBar()">⋮</button>
+            </div>
 
-<button onclick="leaveClass()">📞</button>
 
-<button onclick="toggleLayoutMenu()">
-    ⋮
-</button>
+            <div id="meetingInfo">
 
-</div>
 
-    <div id="layoutMenu">
+                <div>
 
-    <div class="layout-title">
-        Adjust View
-    </div>
+                    Room:
 
-    <button onclick="MeetingLayout.set('auto')">
-        ⭐ Auto
-    </button>
+                    <strong id="roomName">
+                        -
+                    </strong>
 
-    <button onclick="MeetingLayout.set('spotlight')">
-        🎥 Spotlight
-    </button>
+                </div>
 
-    <button onclick="MeetingLayout.set('sidebar')">
-        📑 Sidebar
-    </button>
 
-    <button onclick="MeetingLayout.set('grid')">
-        🔲 Grid
-    </button>
+                <div>
 
-</div>
-<div class="menu-overlay" onclick="toggleMobileMenu()"></div>
-<div class="toolbar">
+                    Role:
 
-    <div id="meetTopBar">
+                    <strong id="userRole">
+                        -
+                    </strong>
 
-<img
-id="academyLogo"
-src="images/logo.png"
-alt="Logo">
+                </div>
 
-<div id="meetTitle">
 
-Grade 6 Maths
+                <div id="connectionStatus">
 
-</div>
+                    <span id="connectionDot"></span>
 
-<div id="meetTime">
+                    <span id="connectionText">
+                        Connecting...
+                    </span>
 
-00:00
+                </div>
 
-</div>
 
-</div>
+            </div>
 
-    <!-- MOBILE MENU BUTTON -->
-    
-    <!-- ALL TOOLS INSIDE MENU -->
-    <div id="mobileMenu">
-       
-      
+        </header>
 
-        
-<div id="participantsPanel">
 
-<div class="participants-header">
-👥 Participants
-<span onclick="closeParticipants()">✖</span>
-</div>
+        <!-- =================================================
+             MAIN AREA
+             ================================================= -->
 
-<div id="participantsList">
+        <main id="mainArea">
 
-<div id="teacherParticipant">
 
-🟢 Teacher
-<span id="teacherMicStatus">🎤 ON</span>
+            <div id="welcomeMessage">
 
-</div>
 
-</div>
+                <h2>
+                    Virtual Classroom
+                </h2>
 
-</div>
 
-<div id="chatPanel">
+                <p>
+                    Gopes Pinnacle Academy
+                </p>
 
-<div class="participants-header">
-💬 Class Chat
-<span onclick="closeChat()">✖</span>
-</div>
 
-<div id="chatMessages"></div>
+                <p id="systemStatus">
+                    Connecting to classroom server...
+                </p>
 
-<div id="chatInputArea">
 
-<input
-id="chatInput"
-placeholder="Type message...">
+                <div id="capacityInfo">
 
-<button onclick="sendChatMessage()">
-Send
-</button>
+                    Maximum Classroom Capacity:
+                    <strong>
+                        1 Founder + 2 Teachers + 10 Students
+                    </strong>
 
-</div>
+                    <br>
 
-</div>
+                    <span>
+                        Maximum 13 participants
+                    </span>
 
-<div id="deviceBar" style="display:none;">
+                </div>
 
-<div style="
-display:flex;
-flex-direction:column;
-gap:8px;
-">
 
-<button onclick="openChat()">
-💬 Chat
-</button>
+            </div>
 
-<hr style="
-border:none;
-border-top:1px solid #555;
-width:100%;
-">
 
-<span>📷 Camera</span>
+        </main>
 
-<select id="cameraSelect"
-onchange="switchCamera(this.value)">
-</select>
 
-<span>🎤 Audio</span>
+        <!-- =================================================
+             BOTTOM BAR
+             ================================================= -->
 
-<select id="audioSelect">
-<option>Default Microphone</option>
-</select>
+        <footer id="bottomBar">
 
-</div>
+            <div id="systemStatusFooter">
 
-</div>
+                Gopes Pinnacle Academy
 
+            </div>
 
+        </footer>
 
-<div id="emojiPopup">
-
-    <div id="emojiPicker"></div>
-
-</div>
-
-<button onclick="annotationMode='pen'">✏️ Pen</button>
-
-<button onclick="annotationMode='eraser'">🧽 Eraser</button>
-
-<button onclick="clearAnnotations()">🗑 Clear</button>
-
-</div>
-
-
-
-    <!-- HEADER -->
-    <div id="pipHeader" style="display:none;">
-        <span>📺 Live</span>
-        <div>
-            <button onclick="minimizePiP()">➖</button>
-            <button onclick="resetPiP()">🔲</button>
-        </div>
-    </div>
-    
-</div>
-
-<div id="screenContainer">
-
-    <video
-        id="screenVideo"
-        autoplay
-        playsinline
-        muted
-    ></video>
-
-</div>
-
-<!-- REMOTE VIDEO -->
-
-
-<!-- DRAW -->
-<canvas id="screenDraw"></canvas>
-<!-- LOCAL SMALL PREVIEW -->
-    
-<div id="pdfTab" style="
-    display:none;
-    position:absolute;
-    top:60px;
-    left:10px;
-    background:#1e293b;
-    color:white;
-    padding:8px 12px;
-    border-radius:6px;
-    cursor:pointer;
-">
-    📄 PDF
-</div>
-<!-- VIDEO STACK -->
-<div id="videoStack">
-
-    <div id="participantStrip"></div>
-
-    <div id="localVideoBox">
-
-        <video
-            id="localVideo"
-            autoplay
-            muted
-            playsinline></video>
 
     </div>
 
-</div>
 
-<canvas id="mainBoard" style="
-    position:absolute;
-    top:50px;
-    left:0;
-    width:100%;
-    bottom:0;   /* 🔥 THIS IS THE FIX */
-    background:white;
-    z-index:1;
-"></canvas>
-<div id="pdfWindow" style="
-    position:absolute;
-    top:60px;
-    left:60px;
-    width:80%;
-    height:80%;
-    background:white;
-    border:2px solid black;
-    display:none;
-    overflow:auto;
-    z-index:10;
-">
+    <!-- =====================================================
+         NEW MEETING FRONTEND
+         PHASE 1
+         ===================================================== -->
 
-    <!-- HEADER -->
-    <div style="
-        height:40px;
-        background:#1e293b;
-        display:flex;
-        justify-content:flex-end;
-        align-items:center;
-        gap:10px;
-        padding:5px;
-    ">
-        <button onclick="minimizePDF()">🗕</button>
-        <button onclick="maximizePDF()">🗖</button>
-        <button onclick="closePDF()">❌</button>
-    </div>
+    <script>
 
-    <!-- CANVAS -->
-    <canvas id="board"></canvas>
-    <canvas id="drawLayer" style="
-    position:absolute;
-    top:0;
-    left:0;
-    z-index:50;
-"></canvas>
+        /*
+        ========================================================
+        GOPES PINNACLE ACADEMY
+        VIRTUAL CLASSROOM
+        ========================================================
 
+        PHASE 1
 
+        This module currently handles ONLY:
 
+        1. Server connection
+        2. Room information
+        3. User role
+        4. Socket connection status
 
-</div>
+        NOT YET IMPLEMENTED:
 
-<!-- SOCKET.IO -->
-<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<link
-rel="stylesheet"
-href="https://cdn.jsdelivr.net/npm/emoji-mart@latest/css/emoji-mart.css">
+        - WebRTC
+        - Camera
+        - Microphone
+        - Participants
+        - Whiteboard
+        - PDF
+        - Screen sharing
+        - Chat
+        - Recording
+        - Attendance
 
-<script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
+        ========================================================
+        */
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-<script src="https://appstatic.jeeliz.com/faceFilter/jeelizFaceFilter.js"></script>
+        /* =====================================================
+           SERVER
+           ===================================================== */
 
-<script src="assets/js/meeting/meetingUtils.js"></script>
+        const SERVER_URL =
+            "https://academy-backend-eatl.onrender.com";
 
-<script src="assets/js/meeting/meetingDebug.js"></script>
 
-<script src="assets/js/meeting/meetingScenarioDebugger.js"></script>
+        /* =====================================================
+           MAXIMUM CLASSROOM CAPACITY
+           ===================================================== */
 
-<script src="assets/js/meeting/meetingSocket.js"></script>
-<script src="assets/js/meeting/meetingWebRTC.js"></script>
-<script src="meeting-manager.js"></script>
+        const MAX_FOUNDERS = 1;
 
-<script src="assets/js/meeting/ui/participantLayout.js"></script>
-<script src="assets/js/meeting/ui/localVideoLayout.js"></script>
-<script src="assets/js/meeting/ui/meetingLayout.js"></script>
-<script src="assets/js/meeting/ui/meetingToolbar.js"></script>
+        const MAX_TEACHERS = 2;
 
-<!-- ==========================================
-     SCREEN SHARE V3
-========================================== -->
+        const MAX_STUDENTS = 10;
 
-<script src="assets/js/meeting/screen/screenLayout.js"></script>
-<script src="assets/js/meeting/screen/screenAnnotation.js"></script>
-<script src="assets/js/meeting/screen/screenShare.js"></script>
+        const MAX_PARTICIPANTS =
+            MAX_FOUNDERS +
+            MAX_TEACHERS +
+            MAX_STUDENTS;
 
-<script>
 
-const params = new URLSearchParams(window.location.search);
-const room = params.get("room");
-const role = params.get("role");
+        /* =====================================================
+           READ URL PARAMETERS
+           ===================================================== */
 
-const periodId = params.get("periodId");
-console.log("Period ID:", periodId);
-console.log("Role:", role);
-let token;
-
-if (role === "teacher") {
-    token = sessionStorage.getItem("token");
-} else {
-    token = localStorage.getItem("token");
-}
-
-console.log("Role:", role);
-console.log("Token:", token);
-/*
-if (
-    role === "teacher" &&
-    (!token || teacherRole !== "teacher")
-) {
-    alert("Please login first");
-    window.location.href = "teacher-login.html";
-}
-    */
-
-    
-const socket = MeetingSocket.connect(
-"https://academy-backend-eatl.onrender.com"
-);
-
-socket.on("userJoined", async (data) => {
-
-    console.log("USER JOINED:", data.socketId);
-
-    if (role !== "student") return;
-
-    if (peers[data.socketId]) return;
-
-    await createPeer(data.socketId);
-
-    // Let teacher know we are ready
-    socket.emit("studentReady", {
-
-        teacherSocketId: data.socketId
-
-    });
-
-});
-
-socket.onAny((event, ...args) => {
-
-    console.log(
-        "SOCKET EVENT:",
-        event,
-        args
-    );
-
-});
-
-function sendNetworkQuality(){
-
-    if(!socket.connected) return;
-
-    const connection =
-        navigator.connection ||
-        navigator.mozConnection ||
-        navigator.webkitConnection;
-
-    let quality = "Excellent";
-
-    if(connection){
-
-        const type = connection.effectiveType;
-
-        if(type === "slow-2g" || type === "2g"){
-
-            quality = "Poor";
-
-        }else if(type === "3g"){
-
-            quality = "Good";
-
-        }
-
-    }
-
-    socket.emit("networkStatus",{
-
-        quality
-
-    });
-
-}
-setInterval(sendNetworkQuality,5000);
-
-// ===========================
-// BATTERY STATUS
-// ===========================
-
-async function sendBatteryStatus(){
-
-    if(!socket.connected) return;
-
-    if(!navigator.getBattery){
-
-        socket.emit("batteryStatus",{
-
-            level: -1,
-
-            charging: false
-
-        });
-
-        return;
-
-    }
-
-    const battery = await navigator.getBattery();
-
-    socket.emit("batteryStatus",{
-
-        level: Math.round(battery.level * 100),
-
-        charging: battery.charging
-
-    });
-
-}
-
-setInterval(sendBatteryStatus,30000);
-
-sendBatteryStatus();
-
-// ===========================
-// DEVICE INFORMATION
-// ===========================
-
-function sendDeviceInfo(){
-
-    const ua = navigator.userAgent;
-
-    let device = "Unknown";
-
-    if(/Android/i.test(ua)){
-
-        device = /Mobile/i.test(ua)
-            ? "Android Phone"
-            : "Android Tablet";
-
-    }
-    else if(/iPhone/i.test(ua)){
-
-        device = "iPhone";
-
-    }
-    else if(/iPad/i.test(ua)){
-
-        device = "iPad";
-
-    }
-    else if(/Windows/i.test(ua)){
-
-        device = "Windows";
-
-    }
-    else if(/Macintosh|Mac OS X/i.test(ua)){
-
-        device = "macOS";
-
-    }
-    else if(/Linux/i.test(ua)){
-
-        device = "Linux";
-
-    }
-
-    socket.emit("deviceInfo",{
-
-        device
-
-    });
-
-}
-
-
-
-const canvas = document.getElementById("board");
-const ctx = canvas.getContext(
-    "2d",
-    { willReadFrequently:true }
-);
-const drawCanvas = document.getElementById("drawLayer");
-const dctx = drawCanvas.getContext("2d", {
-    willReadFrequently: true
-});
-
-// 🔥 ADD HERE (exactly here)
-const mainBoard = document.getElementById("mainBoard");
-const mainCtx = mainBoard.getContext("2d", {
-    willReadFrequently: true
-});
-// 🔥 SCREEN DRAW SETUP
-const screenCanvas = document.getElementById("screenDraw");
-const screenCtx = screenCanvas.getContext("2d");
-
-// match size properly
-function resizeScreenCanvas(){
-
-    const container =
-    document.getElementById(
-        "screenContainer"
-    );
-
-    screenCanvas.width =
-        container.clientWidth;
-
-    screenCanvas.height =
-        container.clientHeight;
-}
-resizeScreenCanvas();
-window.addEventListener("resize", resizeScreenCanvas);
-
-
-// ✅ DRAW ONLY ON MAIN BOARD (NEW ADDITION)
-// ===== UNIVERSAL DRAW (MOBILE + MOUSE + STYLUS) =====
-
-let isDrawingPointer = false;
-let annotationMode = "pen";
-
-
-// 🔥 SCREEN DRAW POINTER EVENTS
-screenCanvas.addEventListener("pointerdown", (e) => {
-    if(role !== "teacher") return;
-
-    isDrawingPointer = true;
-
-    const rect = screenCanvas.getBoundingClientRect();
-
-    prevX = (e.clientX - rect.left) * (screenCanvas.width / rect.width);
-    prevY = (e.clientY - rect.top) * (screenCanvas.height / rect.height);
-});
-
-screenCanvas.addEventListener("pointermove", (e) => {
-
-    if(!isDrawingPointer) return;
-    if(role !== "teacher") return;
-
-    const rect = screenCanvas.getBoundingClientRect();
-
-    const x = (e.clientX - rect.left) * (screenCanvas.width / rect.width);
-    const y = (e.clientY - rect.top) * (screenCanvas.height / rect.height);
-
-    screenCtx.beginPath();
-
-screenCtx.moveTo(prevX, prevY);
-
-screenCtx.lineTo(x, y);
-
-screenCtx.lineCap = "round";
-
-if(annotationMode === "eraser"){
-
-    screenCtx.globalCompositeOperation =
-    "destination-out";
-
-    screenCtx.lineWidth = 30;
-
-}else{
-
-    screenCtx.globalCompositeOperation =
-    "source-over";
-
-    screenCtx.strokeStyle = "red";
-
-    screenCtx.lineWidth = 5;
-}
-
-screenCtx.stroke();
-
-    socket.emit("screenDraw", {
-        room,
-        prevX,
-        prevY,
-        x,
-        y,
-       
-    });
-
-    prevX = x;
-    prevY = y;
-});
-
-screenCanvas.addEventListener("pointerup", () => {
-    isDrawingPointer = false;
-});
-
-screenCanvas.addEventListener("pointerleave", () => {
-    isDrawingPointer = false;
-});
-// 🔥 ADD THIS (important)
-
-// full screen size
-mainBoard.width = window.innerWidth;
-mainBoard.height = window.innerHeight - 90;
-
-// match size
-
-
-// ✅ allow scroll by default
-drawCanvas.style.pointerEvents = "none";
-
-
-canvas.width = canvas.parentElement.clientWidth;
-canvas.height = canvas.parentElement.clientHeight - 40;
-drawCanvas.width = window.innerWidth;
-drawCanvas.height = window.innerHeight - 90;
-
-let prevX = 0;
-let prevY = 0;
-
-let localStream;
-let currentCameraId = null;
-(async () => {
-
-    // Load camera & microphone
-    await initMedia();
-    await loadCameraList();
-
-    // Verify class access first
-    try {
-
-        const api =
-    role === "teacher"
-        ? `https://academy-backend-eatl.onrender.com/api/teacher/verify-class/${periodId}`
-        : `https://academy-backend-eatl.onrender.com/api/student/verify-class/${periodId}`;
-
-const response = await fetch(api, {
-    headers: {
-        Authorization: "Bearer " + token
-    }
-});
-
-        const result = await response.json();
-
-        console.log(result);
-
-        if (!result.allowed) {
-            alert(result.message || "You are not allowed to join this class.");
-            window.location.href = "teacher-dashboard.html";
-            return;
-        }
-
-    } catch (err) {
-
-        console.error(err);
-        alert("Unable to verify class.");
-        return;
-
-    }
-
-    // Join socket only after verification
-    const studentName =
-sessionStorage.getItem("studentName") ||
-localStorage.getItem("studentName") ||
-params.get("student") ||
-"Student";
-
-// Teacher creates session FIRST
-if(role === "teacher"){
-
-    await MeetingManager.startTeacherSession({
-
-        room,
-        periodId
-
-    });
-
-}
-
-// Everyone joins afterwards
-
-ScenarioDebugger.start(
-
-    role === "teacher"
-
-    ? "Teacher Joining"
-
-    : "Student Joining"
-
-);
-
-ScenarioDebugger.step(
-
-    "Joining Room"
-
-);
-
-socket.emit("joinRoom", {
-
-    room,
-
-    role,
-
-    name: studentName,
-
-    studentId: localStorage.getItem("studentId"),
-
-    periodId
-
-});
-
-if (role === "student") {
-
-    const waitTeacher = setInterval(() => {
-
-        if (window.teacherSocketId) {
-
-            socket.emit("studentReady", {
-
-    teacherSocketId: window.teacherSocketId,
-    studentSocketId: socket.id
-
-});
-            clearInterval(waitTeacher);
-
-        }
-
-    }, 500);
-
-}
-
-ScenarioDebugger.success(
-    "joinRoom emitted"
-);
-
-ScreenShare.init({
-
-    socket: socket,
-
-    room: room,
-
-    peers: peers,
-
-    role: role,
-
-    screenCanvas: screenCanvas
-
-});
-
-// ===============================
-// NEW SCREEN SHARE SOCKET HANDLERS
-// ===============================
-
-// Teacher started sharing
-
-
-// Teacher already sharing (student refresh / rejoin)
-
-// Teacher already sharing (student refresh / rejoin)
-
-socket.on("screenAlreadySharing", async (data)=>{
-
-    window.teacherSocketId = data.teacherSocketId;
-
-    if(role === "student"){
-
-        await ScreenShare.createStudentPeer(
-            data.teacherSocketId
-        );
-
-    }
-
-});
-
-/*==========================================================
-SCREEN SHARE SOCKET EVENTS - V3
-==========================================================*/
-
-socket.on("screen-start",(data)=>{
-
-    console.log("SCREEN START RECEIVED",data);
-
-    if(role !== "student") return;
-
-    window.teacherSocketId = data.teacherSocketId;
-
-    ScreenShare.createStudentPeer(
-        data.teacherSocketId
-    );
-
-});
-
-socket.on("screen-request",(data)=>{
-
-    console.log("SCREEN REQUEST RECEIVED",data);
-
-    if(role !== "teacher") return;
-
-    ScreenShare.createTeacherPeer(
-        data.studentSocketId
-    );
-
-});
-
-socket.on("screen-offer",async(data)=>{
-
-    console.log("SCREEN OFFER RECEIVED BY SOCKET");
-
-    await ScreenShare.handleOffer(data);
-
-});
-
-socket.on("screen-answer",async(data)=>{
-
-    console.log("SCREEN ANSWER RECEIVED BY SOCKET");
-
-    await ScreenShare.handleAnswer(data);
-
-});
-
-socket.on("screen-ice",async(data)=>{
-
-    await ScreenShare.handleIceCandidate(data);
-
-});
-
-socket.on("screen-stop",()=>{
-
-    console.log("SCREEN STOP RECEIVED");
-
-    ScreenShare.stop(false);
-
-});
-
-console.log("JOINED ROOM:", room);
-sendDeviceInfo();
-
-if(role === "teacher"){
-
-    socket.emit("teacherJoined",{ room });
-
-}
-
-})();
-
-// 🔥 LOAD HISTORY AFTER REFRESH
-window.addEventListener("load", () => {
-
-    
-
-    
-    // ✅ ADD THIS PART (PDF RESTORE)
-    const savedPDF = sessionStorage.getItem("currentPDF");
-const pdfOpen = sessionStorage.getItem("pdfOpen");
-
-if(savedPDF && pdfOpen === "true"){
-    loadPDFToCanvas(savedPDF);
-}
-
-});
-
-
-
-
-
-// SEND OFFER
-async function createOffer(socketId){
-
-    console.log("CREATING OFFER FOR:", socketId);
-
-    const pc = peers[socketId];
-
-    if(!pc){
-        console.log("NO PEER");
-        return;
-    }
-
-    console.log("SIGNAL:", pc.signalingState);
-
-    if (pc.signalingState !== "stable") {
-
-    console.log(
-        "Skipping offer:",
-        pc.signalingState
-    );
-
-    return;
-
-}
-
-const offer = await pc.createOffer();
-
-    console.log("OFFER CREATED");
-
-    await pc.setLocalDescription(offer);
-
-    console.log("LOCAL DESCRIPTION SET");
-
-    socket.emit("offer",{
-
-        room,
-        targetSocketId: socketId,
-        offer
-
-    });
-
-    console.log("OFFER SENT");
-
-}
-
-// RECEIVE OFFER
-socket.on("offer", async(data)=>{
-
-    const teacherSocketId = data.teacherSocketId;
-
-    window.teacherSocketId = teacherSocketId;
-
-    let pc = peers[teacherSocketId];
-
-if (!pc) {
-
-    pc = await createPeer(teacherSocketId);
-
-}
-
-    if(
-    pc.signalingState !== "stable"
-){
-
-    console.log(
-        "Offer ignored:",
-        pc.signalingState
-    );
-
-    return;
-
-}
-
-    await pc.setRemoteDescription(
-
-        new RTCSessionDescription(data.offer)
-
-    );
-
-    if (pendingCandidates[teacherSocketId]) {
-
-    for (const candidate of pendingCandidates[teacherSocketId]) {
-
-        await pc.addIceCandidate(
-            new RTCIceCandidate(candidate)
-        );
-
-    }
-
-    delete pendingCandidates[teacherSocketId];
-
-}
-
-    const answer = await pc.createAnswer();
-
-    await pc.setLocalDescription(answer);
-
-    socket.emit("answer",{
-
-        teacherSocketId,
-
-        answer
-
-    });
-
-});
-// RECEIVE ANSWER
-
-
-
-
-socket.on("answer", async (data) => {
-
-    console.log("ANSWER FROM:", data.studentSocketId);
-
-    const pc = peers[data.studentSocketId];
-
-    if (!pc) return;
-
-    console.log(
-        "Teacher signaling state:",
-        pc.signalingState
-    );
-
-    // Only accept an answer when we're waiting for one.
-    if (pc.signalingState !== "have-local-offer") {
-
-        console.log(
-            "Duplicate answer ignored:",
-            pc.signalingState
-        );
-
-        return;
-
-    }
-
-    try {
-
-        await pc.setRemoteDescription(
-            new RTCSessionDescription(data.answer)
-        );
-
-        if (pendingCandidates[data.studentSocketId]) {
-
-    for (const candidate of pendingCandidates[data.studentSocketId]) {
-
-        await pc.addIceCandidate(
-            new RTCIceCandidate(candidate)
-        );
-
-    }
-
-    delete pendingCandidates[data.studentSocketId];
-
-}
-
-        console.log("Answer accepted");
-
-    } catch (err) {
-
-        console.error(
-            "setRemoteDescription failed:",
-            err
-        );
-
-    }
-
-});
-
-socket.on("studentJoined", async (data) => {
-
-    ScenarioDebugger.socket(
-    "studentJoined",
-    data
-);
-
-    if (role !== "teacher") return;
-
-   if (data.reconnect) {
-
-    console.log("Student reconnected");
-
-    // Wait for screenPeerReady.
-    return;
-
-}
-
-    console.log("Student Joined:", data);
-
-    if (data.reconnect && peers[data.socketId]) {
-
-    peers[data.socketId].close();
-
-    delete peers[data.socketId];
-
-}
-
-    const exists = liveStudents.find(
-
-    s => s.socketId === data.socketId
-
-);
-
-if(!exists){
-
-    liveStudents.push({
-
-    socketId: data.socketId,
-
-    name: data.studentName,
-
-    joinedAt: new Date(),
-
-    duration: 0,
-
-    camera: true,
-
-    mic: true
-
-});
-
-
-
-
-}
-
-updateAttendanceList(liveStudents);
-
-    // Already connected? Don't create another peer.
-    
-delete offerSent[data.socketId];
-
-delete pendingCandidates[data.socketId];
-
-
-
-    if (peers[data.socketId]) {
-
-    try{
-        peers[data.socketId].close();
-    }catch(e){}
-
-    delete peers[data.socketId];
-}
-
-const oldVideo = document.getElementById("remote_" + data.socketId);
-
-if(oldVideo){
-
-    oldVideo.remove();
-
-}
-
-const pc = await createPeer(data.socketId);
-
-if (pc.signalingState === "stable") {
-
-    await createOffer(data.socketId);
-
-}
-
-
-});
-
-socket.on("studentReady", async (data) => {
-
-    if (role !== "teacher") return;
-
-    console.log("Student Ready:", data.studentSocketId);
-
-    if (!peers[data.studentSocketId]) {
-
-        await createPeer(data.studentSocketId);
-
-    }
-
-    const pc = peers[data.studentSocketId];
-
-    if (pc && pc.signalingState === "stable") {
-
-        await createOffer(data.studentSocketId);
-
-    }
-
-});
-
-socket.on("existingStudents", async (students) => {
-
-    if (role !== "teacher") return;
-
-    console.log("Existing Students", students);
-
-    for (const student of students) {
-
-    if (peers[student.socketId]) {
-        continue;
-    }
-
-    const exists = liveStudents.find(
-        s => s.socketId === student.socketId
-    );
-
-    if (!exists) {
-
-        liveStudents.push({
-            socketId: student.socketId,
-            name: student.name || student.studentName,
-            joinedAt: new Date(),
-            camera: student.camera,
-            mic: student.mic,
-            network: student.network,
-            battery: student.battery,
-            charging: student.charging,
-            device: student.device,
-            visibility: student.visibility,
-            micLocked: student.micLocked,
-            cameraLocked: student.cameraLocked
-        });
-
-    }
-
-    updateAttendanceList(liveStudents);
-
-   const pc = await createPeer(student.socketId);
-
-await new Promise(resolve => setTimeout(resolve,300));
-
-if (pc.signalingState === "stable") {
-
-    await createOffer(student.socketId);
-
-}
-
-}
-
-});
-
-socket.on("studentReconnecting", (data) => {
-
-    const student = liveStudents.find(
-
-        s => s.socketId === data.socketId
-
-    );
-
-    if(!student) return;
-
-    student.status = "Reconnecting";
-
-    updateAttendanceList(liveStudents);
-
-});
-
-socket.on("studentSocketChanged", async (data) => {
-
-    console.log("Student got new socket");
-
-    const oldSocketId = data.oldSocketId;
-    const newSocketId = data.newSocketId;
-
-    const student = liveStudents.find(
-
-        s => s.socketId === oldSocketId
-
-    );
-
-    if(student){
-
-        student.socketId = newSocketId;
-        student.status = "Online";
-
-        updateAttendanceList(liveStudents);
-
-    }
-
-    if(peers[oldSocketId]){
-
-    peers[oldSocketId].close();
-
-    delete peers[oldSocketId];
-
-}
-
-delete offerSent[oldSocketId];
-
-delete pendingCandidates[oldSocketId];
-
-    if (peers[newSocketId]) {
-
-    try {
-        peers[newSocketId].close();
-    } catch(e){}
-
-    delete peers[newSocketId];
-}
-
-ParticipantLayout.removeVideoCard(oldSocketId);
-
-await createPeer(newSocketId);
-
-await createOffer(newSocketId);
-
-});
-
-socket.on("studentStatusChanged", (data) => {
-
-    const student = liveStudents.find(
-
-        s => s.socketId === data.socketId
-
-    );
-
-    if(!student) return;
-
-    student.status = data.status;
-
-    updateAttendanceList(liveStudents);
-
-});
-
-socket.on("userDisconnected",(socketId)=>{
-
-    if(peers[socketId]){
-
-    peers[socketId].close();
-
-    delete peers[socketId];
-    const oldVideo = document.getElementById("remote_" + socketId);
-
-if (oldVideo) {
-
-    if (oldVideo.srcObject) {
-
-        oldVideo.srcObject.getTracks().forEach(track => track.stop());
-
-        oldVideo.srcObject = null;
-
-    }
-
-    oldVideo.remove();
-
-}
-
-}
-
-delete offerSent[socketId];
-
-delete pendingCandidates[socketId];
-
-    ParticipantLayout.removeParticipant(socketId);
-
-    // =========================
-    // REMOVE FROM LIVE ATTENDANCE
-    // =========================
-
-    const index = liveStudents.findIndex(
-
-        s => s.socketId === socketId
-
-    );
-
-    if(index !== -1){
-
-        liveStudents.splice(index,1);
-
-        updateAttendanceList(liveStudents);
-
-    }
-
-});
-
-socket.on("mediaStatus", (data) => {
-
-    const student = liveStudents.find(
-
-        s => s.socketId === data.socketId
-
-    );
-
-    if (!student) return;
-
-    student.camera = data.camera;
-
-    student.mic = data.mic;
-
-    updateAttendanceList(liveStudents);
-
-});
-
-socket.on("networkStatus",(data)=>{
-
-    const student = liveStudents.find(
-
-        s => s.socketId === data.socketId
-
-    );
-
-    if(!student) return;
-
-    student.network = data.quality;
-
-    updateAttendanceList(liveStudents);
-
-});
-
-socket.on("batteryStatus",(data)=>{
-
-    const student = liveStudents.find(
-
-        s => s.socketId === data.socketId
-
-    );
-
-    if(!student) return;
-
-    student.battery = data.level;
-
-    student.charging = data.charging;
-
-    updateAttendanceList(liveStudents);
-
-});
-
-socket.on("deviceInfo",(data)=>{
-
-    const student = liveStudents.find(
-
-        s => s.socketId === data.socketId
-
-    );
-
-    if(!student) return;
-
-    student.device = data.device;
-
-    updateAttendanceList(liveStudents);
-
-});
-
-socket.on("visibilityStatus",(data)=>{
-
-    const student = liveStudents.find(
-
-        s => s.socketId === data.socketId
-
-    );
-
-    if(!student) return;
-
-    student.visibility = data.visibility;
-
-    updateAttendanceList(liveStudents);
-
-});
-
-socket.on("studentControlUpdated", (data) => {
-
-    const student = liveStudents.find(
-        s => s.socketId === data.socketId
-    );
-
-    if(!student) return;
-
-    if(data.mic !== undefined){
-
-        student.mic = data.mic;
-
-    }
-
-    if(data.camera !== undefined){
-
-        student.camera = data.camera;
-
-    }
-
-    if(data.micMuted !== undefined){
-
-        student.mic = !data.micMuted;
-
-    }
-
-    if(data.cameraStopped !== undefined){
-
-        student.camera = !data.cameraStopped;
-
-    }
-
-    if(data.micLocked !== undefined){
-
-        student.micLocked = data.micLocked;
-
-    }
-
-    if(data.cameraLocked !== undefined){
-
-        student.cameraLocked = data.cameraLocked;
-
-    }
-
-    updateAttendanceList(liveStudents);
-
-});
-
-socket.on("forceMute", (data) => {
-
-    if(!localStream) return;
-
-    const audioTrack = localStream.getAudioTracks()[0];
-
-    if(!audioTrack) return;
-
-    audioTrack.enabled = !data.muted;
-
-    isAudioOn = !data.muted;
-
-    updateMicBadge();
-
-    socket.emit("mediaStatus",{
-
-        camera: localStream.getVideoTracks()[0]?.enabled ?? false,
-
-        mic: !data.muted
-
-    });
-
-    if(data.muted){
-
-        alert("🔇 Teacher muted your microphone.");
-
-    }else{
-
-        alert("🎤 Teacher unmuted your microphone.");
-
-    }
-
-});
-
-let micLocked = false;
-
-socket.on("micLockChanged", (data) => {
-
-    micLocked = data.locked;
-
-    if(micLocked){
-
-        alert("🔒 Teacher locked your microphone.");
-
-    }else{
-
-        alert("🔓 Teacher unlocked your microphone.");
-
-    }
-
-});
-
-// ==========================
-// ADD THIS ENTIRE BLOCK HERE
-// ==========================
-
-socket.on("forceStopCamera", (data) => {
-
-    if(!localStream) return;
-
-    const videoTrack = localStream.getVideoTracks()[0];
-
-    if(!videoTrack) return;
-
-    videoTrack.enabled = !data.stopped;
-
-    isVideoOn = !data.stopped;
-
-    updateVideoBadge();
-
-    socket.emit("mediaStatus",{
-
-        camera: !data.stopped,
-
-        mic: localStream.getAudioTracks()[0]?.enabled ?? false
-
-    });
-
-    if(data.stopped){
-
-        alert("📷 Teacher turned OFF your camera.");
-
-    }else{
-
-        alert("📷 Teacher turned ON your camera.");
-
-    }
-
-});
-
-let cameraLocked = false;
-
-socket.on("cameraLockChanged", (data) => {
-
-    cameraLocked = data.locked;
-
-    if(cameraLocked){
-
-        alert("🔒 Teacher locked your camera.");
-
-    }else{
-
-        alert("🔓 Teacher unlocked your camera.");
-
-    }
-
-});
-
-socket.on("removedFromClass", () => {
-
-    alert("You have been removed from the class by the teacher.");
-
-    window.location.href = "student-dashboard.html";
-
-});
-
-socket.on("ice-candidate", async (data) => {
-
-    const pc = peers[data.senderSocketId];
-
-    if (!pc) return;
-
-    try {
-
-        if (pc.remoteDescription) {
-
-            await pc.addIceCandidate(
-                new RTCIceCandidate(data.candidate)
+        const urlParams =
+            new URLSearchParams(
+                window.location.search
             );
 
-        } else {
 
-            if (!pendingCandidates[data.senderSocketId]) {
-                pendingCandidates[data.senderSocketId] = [];
-            }
+        /* =====================================================
+           ROOM
+           ===================================================== */
 
-            pendingCandidates[data.senderSocketId].push(data.candidate);
+        const meetingRoom =
+            urlParams.get("room") ||
+            localStorage.getItem("meetingRoom") ||
+            "";
 
-        }
 
-    } catch (err) {
+        /* =====================================================
+           ROLE
+           ===================================================== */
 
-        console.log("ICE Error", err);
+        const meetingRole =
+            (
+                urlParams.get("role") ||
+                localStorage.getItem("meetingRole") ||
+                ""
+            ).toLowerCase();
 
-    }
 
-});
+        /* =====================================================
+           USER ID
+           ===================================================== */
 
+        const meetingUserId =
+            urlParams.get("userId") ||
+            localStorage.getItem("meetingUserId") ||
+            "";
 
 
+        /* =====================================================
+           USER NAME
+           ===================================================== */
 
+        const meetingUserName =
+            urlParams.get("name") ||
+            localStorage.getItem("meetingUserName") ||
+            "";
 
-// ✅ ✅ ADD EXACTLY HERE (NEW CODE)
-socket.on("emojiReaction", (data) => {
 
-    showFloatingEmoji(data.emoji);
-});
-socket.on("screenDraw", (data) => {
+        /* =====================================================
+           VALID ROLES
+           ===================================================== */
 
-    screenCtx.beginPath();
+        const VALID_ROLES = [
+            "founder",
+            "teacher",
+            "student"
+        ];
 
-    screenCtx.moveTo(
-        data.prevX,
-        data.prevY
-    );
 
-    screenCtx.lineTo(
-        data.x,
-        data.y
-    );
+        /* =====================================================
+           ROLE VALIDATION
+           ===================================================== */
 
-    screenCtx.lineWidth = 3;
+        if (
+            meetingRole &&
+            !VALID_ROLES.includes(meetingRole)
+        ) {
 
-    screenCtx.strokeStyle = "red";
-
-    screenCtx.lineCap = "round";
-
-    screenCtx.stroke();
-});
-
-
-
-function leaveClass(){
-
-    // ✅ ONLY FOR STUDENT
-    if(role === "student"){
-
-        window.location.href = "student-dashboard.html";
-
-        return;
-    }
-
-    // ✅ TEACHER OLD FLOW (UNCHANGED)
-    const params = new URLSearchParams(window.location.search);
-
-    const room = params.get("room");
-
-    const className = params.get("className");
-
-    const student = params.get("student");
-
-    const startTime = params.get("startTime");
-    const day = params.get("day");
-    const subject =
-params.get("subject");
-
-    const teacher =
-sessionStorage.getItem("teacherName") || "";
-
-    const outTime = new Date().toISOString();
-sessionStorage.setItem(
-"teacherOutTime",
-new Date().toISOString()
-);
-    window.location.href =
-`teacher-class-summary.html
-?showSummary=true
-&room=${encodeURIComponent(room)}
-&className=${encodeURIComponent(className)}
-&subject=${encodeURIComponent(subject)}
-&student=${encodeURIComponent(student)}
-&startTime=${encodeURIComponent(startTime)}
-&day=${encodeURIComponent(day)}
-&teacher=${encodeURIComponent(teacher)}
-&outTime=${encodeURIComponent(outTime)}`;
-
-}
-
-socket.on("loadPDF", (data) => {
-    sessionStorage.setItem("currentPDF", data.url);
-    loadPDFToCanvas(data.url);
-});
-
-socket.on("closePDF", () => {
-
-    document.getElementById("pdfWindow").style.display = "none";
-    document.getElementById("pdfTab").style.display = "none";
-
-    dctx.clearRect(0,0,drawCanvas.width,drawCanvas.height);
-
-    drawCanvas.style.pointerEvents = "none";
-
-    drawCanvas.width = 0;
-    drawCanvas.height = 0;
-
-    sessionStorage.setItem("pdfOpen", "false");
-});
-async function loadPDFToCanvas(url){
-    drawCanvas.style.pointerEvents = "auto";
-sessionStorage.setItem("pdfOpen", "true");
-    document.getElementById("pdfWindow").style.display = "block";
-    dctx.clearRect(0,0,drawCanvas.width,drawCanvas.height);
-    document.getElementById("pdfTab").style.display = "none";
-
-    const loadingTask = pdfjsLib.getDocument(url);
-    const pdf = await loadingTask.promise;
-
-    const container = document.getElementById("pdfWindow");
-
-    // 🔥 REMOVE OLD PAGES
-    const oldCanvases = container.querySelectorAll("canvas.pdfPage");
-    oldCanvases.forEach(c => c.remove());
-
-    for(let i = 1; i <= pdf.numPages; i++){
-
-        const page = await pdf.getPage(i);
-        const viewport = page.getViewport({ scale: 1.2 });
-
-        const pageCanvas = document.createElement("canvas");
-        pageCanvas.className = "pdfPage";
-
-        pageCanvas.width = viewport.width;
-        pageCanvas.height = viewport.height;
-
-        const pageCtx = pageCanvas.getContext("2d");
-
-        await page.render({
-            canvasContext: pageCtx,
-            viewport: viewport
-        }).promise;
-
-        container.appendChild(pageCanvas);
-    }
-    drawCanvas.width = container.scrollWidth;
-drawCanvas.height = container.scrollHeight;
-
-
-}
-
-function minimizePDF(){
-    document.getElementById("pdfWindow").style.display = "none";
-    document.getElementById("pdfTab").style.display = "block";
-}
-
-function maximizePDF(){
-    const win = document.getElementById("pdfWindow");
-
-    win.style.top = "60px";   // 🔥 keep below toolbar
-    win.style.left = "0";
-    win.style.width = "100%";
-    win.style.height = "calc(100% - 60px)";  // 🔥 reduce height
-}
-
-function closePDF(){
-    document.getElementById("pdfWindow").style.display = "none";
-    document.getElementById("pdfTab").style.display = "none";
-
-    // ✅ clear drawing
-    dctx.clearRect(0,0,drawCanvas.width,drawCanvas.height);
-
-    // ✅ disable drawing layer interaction
-    drawCanvas.style.pointerEvents = "none";
-
-    // ✅ OPTIONAL: reset size (prevents ghost area)
-    drawCanvas.width = 0;
-    drawCanvas.height = 0;
-
-    // ✅ mark PDF closed
-    sessionStorage.setItem("pdfOpen", "false");
-    socket.emit("closePDF", { room });
-}
-document.getElementById("pdfTab").onclick = function(){
-    document.getElementById("pdfWindow").style.display = "block";
-    document.getElementById("pdfTab").style.display = "none";
-};
-
-
-
-async function saveAsPDF(){
-
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF();
-
-    const isPDFOpen = document.getElementById("pdfWindow").style.display === "block";
-
-    // ================= CASE 1 & 2 (WHITE / LINES) =================
-    if(!isPDFOpen){
-
-        // convert mainBoard to image
-        const imgData = mainBoard.toDataURL("image/png");
-
-        pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
-        pdf.save("whiteboard.pdf");
-
-        return;
-    }
-
-    // ================= CASE 3 (UPLOADED PDF + DRAWING) =================
-
-    const pages = document.querySelectorAll(".pdfPage");
-
-    for(let i = 0; i < pages.length; i++){
-
-        const pageCanvas = pages[i];
-
-        // create temp canvas
-        const tempCanvas = document.createElement("canvas");
-        tempCanvas.width = pageCanvas.width;
-        tempCanvas.height = pageCanvas.height;
-
-        const tempCtx = tempCanvas.getContext("2d");
-
-        // draw PDF page
-        tempCtx.drawImage(pageCanvas, 0, 0);
-
-        // draw annotations
-        tempCtx.drawImage(drawCanvas, 0, 0);
-
-        const imgData = tempCanvas.toDataURL("image/png");
-
-        if(i > 0) pdf.addPage();
-
-        pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
-    }
-
-    pdf.save("annotated.pdf");
-}
-
-
-
-let ARREADY = false;
-
-async function initARFilter(){
-
-    if(ARREADY) return;
-
-    ARREADY = true;
-const dogImg = new Image();
-
-dogImg.src = "images/dogears.png";
-    JEELIZFACEFILTER.init({
-
-        canvasId: "jeeFaceFilterCanvas",
-
-        NNCPath:
-        "https://appstatic.jeeliz.com/faceFilter/",
-
-        callbackReady: function(errCode){
-
-            if(errCode){
-
-                console.log(
-                    "AR ERROR:",
-                    errCode
-                );
-
-                return;
-            }
-
-            console.log(
-                "✅ AR FILTER READY"
+            console.warn(
+                "Unknown meeting role:",
+                meetingRole
             );
-        },
-        
-callbackTrack: function(detectState){
 
-    const canvas =
-    document.getElementById(
-        "arOverlay"
-    );
-    const ctx =
-        canvas.getContext("2d");
-
-    // MATCH SIZE
-    canvas.width =
-        canvas.offsetWidth;
-
-    canvas.height =
-        canvas.offsetHeight;
-
-    // CLEAR
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width, 
-        canvas.height
-    );
-
-    // FACE FOUND
-    if(detectState.detected > 0.6){
-
-        // CENTER
-        const x =
-            canvas.width / 2;
-
-        const y =
-            canvas.height / 2;
-
-        // SCALE
-        const scale =
-            detectState.s * 220;
-
-        // ROTATION
-        const rot =
-            detectState.ry;
-
-        ctx.save();
-
-        // MOVE TO HEAD
-        ctx.translate(
-            x,
-            y - 80
-        );
-
-        // ROTATE WITH HEAD
-        ctx.rotate(rot);
-
-        // DRAW FILTER
-        ctx.drawImage(
-            dogImg,
-            -scale/2,
-            -scale/1.2,
-            scale,
-            scale * 0.7
-        );
-
-        ctx.restore();
-    }
-}
-    });
-}
-
-async function initMedia(cameraId = null){
-
-    try{
-
-        // Stop previous camera & mic
-        if(localStream){
-            localStream.getTracks().forEach(track => track.stop());
         }
 
-        // Try selected camera
-        localStream = await navigator.mediaDevices.getUserMedia({
 
-            video: cameraId
-                ? {
-                    deviceId:{
-                        exact:cameraId
-                    }
-                }
-                : true,
+        /* =====================================================
+           DISPLAY ROOM
+           ===================================================== */
 
-            audio:true
-
-        });
-
-    }catch(err){
-
-        console.error("Selected camera not available:", err);
-
-        alert("Selected camera not found. Switching to default camera.");
-
-        // Fallback to default camera
-        localStream = await navigator.mediaDevices.getUserMedia({
-
-            video:true,
-            audio:true
-
-        });
-
-        socket.emit("mediaStatus", {
-
-    camera: localStream.getVideoTracks()[0]?.enabled ?? false,
-
-    mic: localStream.getAudioTracks()[0]?.enabled ?? false
-
-});
-
-    }
-
-    const localVideo = document.getElementById("localVideo");
-
-    if(localVideo){
-
-        localVideo.srcObject = localStream;
-
-        try{
-            await localVideo.play();
-        }catch(e){
-            console.log("Video autoplay blocked", e);
-        }
-
-    }
-
-    // Refresh camera list
-    await loadCameraList();
-
-}
-const peers = {};
-
-// Dedicated peers for screen sharing
-const screenPeers = {};
-
-
-
-// =========================
-// LIVE ATTENDANCE
-// =========================
-
-const liveStudents = [];
-const offerSent = {};
-
-
-const pendingCandidates = {};
-async function loadCameraList(){
-
-    const devices =
-    await navigator.mediaDevices.enumerateDevices();
-
-    const cams =
-        devices.filter(
-            d => d.kind === "videoinput"
-        );
-
-    const select =
         document.getElementById(
-            "cameraSelect"
-        );
+            "roomName"
+        ).textContent =
+            meetingRoom || "Not specified";
 
-    select.innerHTML = "";
 
-    cams.forEach(cam => {
+        /* =====================================================
+           DISPLAY ROLE
+           ===================================================== */
 
-        const option =
-            document.createElement(
-                "option"
-            );
+        document.getElementById(
+            "userRole"
+        ).textContent =
+            meetingRole || "Not specified";
 
-        option.value = cam.deviceId;
 
-        option.text =
-            cam.label ||
-            "Camera";
-
-        select.appendChild(option);
-    });
-}
-async function switchCamera(deviceId){
-
-    currentCameraId = deviceId;
-
-    await initMedia(deviceId);
-
-    Object.values(peers).forEach(peer=>{
-
-    const sender = peer.getSenders().find(s=>
-
-        s.track &&
-        s.track.kind==="video"
-
-    );
-
-    if(sender){
-
-        sender.replaceTrack(
-
-            localStream.getVideoTracks()[0]
-
-        );
-
-    }
-
-});
-}
-async function createPeer(socketId){
-
-    console.log(
-        "CREATE PEER CALLED FOR:",
-        socketId
-    );
-
-
-    /*
-    =========================================================
-    EXISTING PEER CHECK
-    =========================================================
-    */
-
-    if(peers[socketId]){
-
-        const pc = peers[socketId];
-
-        if(
-            pc.connectionState === "connected" ||
-            pc.connectionState === "connecting"
-        ){
-
-            return pc;
-
-        }
-
-        try{
-
-            pc.close();
-
-        }catch(e){}
-
-        delete peers[socketId];
-
-
-        /*
-        REMOVE OLD REMOTE VIDEO
-        */
-
-        const oldVideo =
-            document.getElementById(
-                "remote_" + socketId
-            );
-
-        if(oldVideo){
-
-            if(oldVideo.srcObject){
-
-                oldVideo.srcObject
-                    .getTracks()
-                    .forEach(track=>{
-
-                        try{
-
-                            track.stop();
-
-                        }catch(e){}
-
-                    });
-
-                oldVideo.srcObject = null;
-
-            }
-
-            oldVideo.remove();
-
-        }
-
-    }
-
-
-    /*
-    =========================================================
-    LOCAL MEDIA
-    =========================================================
-    */
-
-    if(!localStream){
-
-        await initMedia();
-
-    }
-
-
-    /*
-    =========================================================
-    CREATE NORMAL CAMERA / AUDIO PEER
-    =========================================================
-    */
-
-    const pc =
-        await PeerManager.create(
-            socketId,
-            localStream
-        );
-
-    peers[socketId] = pc;
-
-
-    console.log(
-        "NEW PEER CREATED:",
-        socketId
-    );
-
-
-    /*
-    =========================================================
-    DISABLE OLD HANDLERS
-    =========================================================
-    */
-
-    pc.onnegotiationneeded = null;
-
-    pc.onicecandidate = null;
-
-    pc.ontrack = null;
-
-    pc.onconnectionstatechange = null;
-
-    pc.oniceconnectionstatechange = null;
-
-
-    /*
-    =========================================================
-    LOCAL MEDIA DEBUG
-    =========================================================
-    */
-
-    console.log(
-        "LOCAL STREAM:",
-        localStream
-    );
-
-    console.log(
-        "VIDEO TRACKS:",
-        localStream.getVideoTracks()
-    );
-
-    console.log(
-        "AUDIO TRACKS:",
-        localStream.getAudioTracks()
-    );
-
-
-    /*
-    =========================================================
-    NORMAL CAMERA / AUDIO TRACK RECEIVER
-    =========================================================
-
-    IMPORTANT:
-    This function MUST NOT touch ScreenLayout.
-
-    ScreenShare V3 has its own RTCPeerConnection and
-    its own screenVideo handling.
-    =========================================================
-    */
-
-    pc.ontrack = (event) => {
+        /* =====================================================
+           DEBUG INFORMATION
+           ===================================================== */
 
         console.log(
-            "NORMAL TRACK RECEIVED:",
-            event.track.kind
+            "=========================================="
         );
-
-
-        let video =
-            ParticipantLayout.getVideo(
-                socketId
-            );
-
-
-        if(
-            !video &&
-            event.track.kind === "video"
-        ){
-
-            video =
-                ParticipantLayout.createVideoCard(
-                    socketId
-                );
-
-        }
-
-
-        /*
-        =====================================================
-        ALWAYS SEND NORMAL CAMERA/AUDIO TO
-        PARTICIPANT LAYOUT
-        =====================================================
-        */
-
-        ParticipantLayout.attachTrack(
-            socketId,
-            event.track
-        );
-
-    };
-
-
-    /*
-    =========================================================
-    CONNECTION STATE
-    =========================================================
-    */
-
-    pc.onconnectionstatechange = async () => {
 
         console.log(
-            "STATE:",
-            pc.connectionState
+            "GOPES PINNACLE ACADEMY"
         );
-
-
-        if(
-            pc.connectionState === "failed"
-        ){
-
-            console.log(
-                "ICE Restart"
-            );
-
-            try{
-
-                if(
-                    pc.signalingState !== "stable"
-                ){
-
-                    return;
-
-                }
-
-            }catch(e){
-
-                console.log(e);
-
-            }
-
-        }
-
-
-        if(
-            pc.connectionState === "connected"
-        ){
-
-            console.log(
-                "Connection Restored"
-            );
-
-        }
-
-    };
-
-
-    /*
-    =========================================================
-    ICE CONNECTION STATE
-    =========================================================
-    */
-
-    pc.oniceconnectionstatechange = () => {
 
         console.log(
-            "ICE:",
-            pc.iceConnectionState
+            "NEW VIRTUAL CLASSROOM"
         );
 
-    };
+        console.log(
+            "PHASE 1"
+        );
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log(
+            "Server:",
+            SERVER_URL
+        );
+
+        console.log(
+            "Room:",
+            meetingRoom
+        );
+
+        console.log(
+            "Role:",
+            meetingRole
+        );
+
+        console.log(
+            "User ID:",
+            meetingUserId
+        );
+
+        console.log(
+            "User Name:",
+            meetingUserName
+        );
+
+        console.log(
+            "Maximum Participants:",
+            MAX_PARTICIPANTS
+        );
+
+        console.log(
+            "=========================================="
+        );
 
 
-    /*
-    =========================================================
-    SEND ICE CANDIDATES
-    =========================================================
-    */
+        /* =====================================================
+           SOCKET.IO CONNECTION
+           ===================================================== */
 
-    pc.onicecandidate = (event) => {
-
-        if(event.candidate){
-
-            socket.emit(
-                "ice-candidate",
+        const socket =
+            io(
+                SERVER_URL,
                 {
 
-                    targetSocketId:
-                        socketId,
+                    transports: [
+                        "websocket",
+                        "polling"
+                    ],
 
-                    candidate:
-                        event.candidate
+                    reconnection: true,
+
+                    reconnectionAttempts: Infinity,
+
+                    reconnectionDelay: 1000
 
                 }
             );
 
-        }
 
-    };
+        /* =====================================================
+           SOCKET CONNECT
+           ===================================================== */
 
+        socket.on(
+            "connect",
+            () => {
 
-    return pc;
+                console.log(
+                    "=========================================="
+                );
 
-}
-window.addEventListener("resize", handleResize);
-document.addEventListener("visibilitychange", () => {
+                console.log(
+                    "SOCKET CONNECTED"
+                );
 
-    socket.emit("visibilityStatus",{
+                console.log(
+                    "Socket ID:",
+                    socket.id
+                );
 
-        visibility: document.hidden
-            ? "Away"
-            : "Active"
+                console.log(
+                    "=========================================="
+                );
 
-    });
 
-});
+                document.getElementById(
+                    "connectionDot"
+                ).style.background =
+                    "#22c55e";
 
-window.addEventListener("offline", () => {
 
-    console.log("Internet Lost");
+                document.getElementById(
+                    "connectionText"
+                ).textContent =
+                    "Connected";
 
-    socket.emit("studentReconnecting");
 
-});
+                document.getElementById(
+                    "systemStatus"
+                ).textContent =
+                    "Connected to classroom server";
 
-window.addEventListener("online", async () => {
 
-    console.log("Internet Restored");
+                /*
+                ==================================================
+                IMPORTANT
 
-    // Wait until socket reconnects
-    if (!socket.connected) {
+                DO NOT JOIN ROOM YET.
 
-        await new Promise(resolve => {
+                We will implement the room protocol after
+                checking the existing server-side
+                meetingSocket.js.
 
-            socket.once("connect", resolve);
+                ==================================================
+                */
 
-        });
-
-    }
-
-    // Join room again
-
-    DebugMeeting.step(
-    "Rejoining Room After Reconnect"
-);
-    socket.emit("joinRoom", {
-
-        room,
-
-        role,
-
-        name:
-            sessionStorage.getItem("studentName") ||
-            localStorage.getItem("studentName") ||
-            params.get("student") ||
-            "Student",
-
-        studentId: localStorage.getItem("studentId"),
-
-        periodId
-
-    });
-
-    
-
-});
-window.addEventListener("load", () => {
-
-    socket.emit("visibilityStatus",{
-
-        visibility: "Active"
-
-    });
-
-});
-function applyOrientationLayout(){
-
-    const isMobile = window.innerWidth <= 768;
-
-    if(!isMobile) return;
-
-    const isLandscape = window.innerWidth > window.innerHeight;
-
-    const topBar = document.getElementById("meetTopBar");
-    const screenContainer = document.getElementById("screenContainer");
-    const localVideoBox = document.getElementById("localVideoBox");
-
-    if(isLandscape){
-
-    topBar.style.height = "40px";
-
-    screenContainer.style.top = "40px";
-    screenContainer.style.height = "calc(100vh - 40px)";
-
-    localVideoBox.style.width = "70px";
-localVideoBox.style.height = "120px";
-localVideoBox.style.right = "10px";
-localVideoBox.style.bottom = "10px";
-
-}else{
-
-        topBar.style.height = "50px";
-
-        screenContainer.style.top = "50px";
-        screenContainer.style.height = "calc(100vh - 50px)";
-
-        localVideoBox.style.width = "70px";
-        localVideoBox.style.height = "120px";
-        localVideoBox.style.bottom = "80px";
-
-    }
-
-    handleResize();
-
-if (window.MeetingLayout) {
-    MeetingLayout.update();
-}
-
-if (window.LocalVideoLayout) {
-    LocalVideoLayout.updateLayout();
-}
-
-}
-
-window.addEventListener("orientationchange", () => {
-
-    setTimeout(applyOrientationLayout,300);
-
-});
-
-window.addEventListener("resize", applyOrientationLayout);
-
-window.addEventListener("load", applyOrientationLayout);
-
-
-function handleResize(){
-
-    // ONLY resize canvases
-
-    mainBoard.style.width = "100vw";
-    mainBoard.style.height = "calc(100vh - 90px)";
-
-    drawCanvas.style.width = "100vw";
-    drawCanvas.style.height = "calc(100vh - 90px)";
-}
-
-</script>
-<script>
-// 🔥 FORCE REMOVE DEBUG TEXT (FINAL FIX)
-setTimeout(() => {
-    document.querySelectorAll("pre, code").forEach(el => el.remove());
-
-    // remove any top floating text
-    document.querySelectorAll("body > div").forEach(el => {
-        if(el.innerText && el.innerText.includes("server.js")){
-            el.remove();
-        }
-    });
-}, 500);
-
-
-let screenStream;
-
-async function startScreenShare(){
-
-    return ScreenShare.start();
-
-}
-
-async function stopScreenShare(){
-
-    return ScreenShare.stop();
-
-}
-
-const pip = document.getElementById("screenContainer");
-const header = document.getElementById("pipHeader");
-
-let isDragging = false;
-let offsetX, offsetY;
-
-header.addEventListener("mousedown", (e) => {
-    isDragging = true;
-    offsetX = e.clientX - pip.offsetLeft;
-    offsetY = e.clientY - pip.offsetTop;
-});
-
-document.addEventListener("mousemove", (e) => {
-    if (!isDragging) return;
-
-    pip.style.left = (e.clientX - offsetX) + "px";
-    pip.style.top = (e.clientY - offsetY) + "px";
-    pip.style.right = "auto";
-});
-
-document.addEventListener("mouseup", () => {
-    isDragging = false;
-});
-
-// MINIMIZE
-function minimizePiP(){
-    pip.classList.toggle("minimized");
-}
-
-// RESET
-let isMaximized = false;
-
-function resetPiP(){
-
-    if(!isMaximized){
-
-        // 🔥 FULL SCREEN
-        pip.style.top = "60px";
-        pip.style.left = "0";
-        pip.style.right = "0";
-
-        pip.style.width = "100vw";
-        pip.style.height = "calc(100vh - 60px)";
-        // Hide participant strip while screen sharing
-document.getElementById("participantStrip").style.display = "none";
-
-// Hide local camera
-document.getElementById("localVideoBox").style.display = "none";
-
-        pip.style.zIndex = "9999";
-
-        isMaximized = true;
-
-    }else{
-
-        // 🔥 BACK TO SMALL SIZE
-        pip.style.top = "90px";
-        pip.style.right = "10px";
-        pip.style.left = "auto";
-
-        pip.style.width = "180px";
-        pip.style.height = "120px";
-
-        isMaximized = false;
-    }
-
-    pip.classList.remove("minimized");
-}
-let isAudioOn = true;
-
-function updateMicBadge(){
-
-const badge =
-document.getElementById(
-"teacherMicStatus"
-);
-
-if(!badge) return;
-
-if(isAudioOn){
-
-badge.innerHTML =
-"🎤 ON";
-
-badge.style.color =
-"green";
-
-}else{
-
-badge.innerHTML =
-"🔇 OFF";
-
-badge.style.color =
-"red";
-
-}
-
-}
-let isVideoOn = true;
-
-// 🎤 TOGGLE AUDIO
-function toggleAudio(btn){
-
-    if(micLocked){
-
-    alert("Your microphone is locked by the teacher.");
-
-    return;
-
-}
-
-    if(!localStream) return;
-
-    const audioTrack =
-    localStream.getAudioTracks()[0];
-
-    if(!audioTrack) return;
-
-    isAudioOn = !isAudioOn;
-
-    audioTrack.enabled = isAudioOn;
-
-    socket.emit("mediaStatus", {
-
-    camera: localStream.getVideoTracks()[0]?.enabled ?? false,
-
-    mic: localStream.getAudioTracks()[0]?.enabled ?? false
-
-});
-    
-    
-
-updateMicBadge();
-
-    btn.innerText =
-    isAudioOn ? "🎤" : "🔇";
-}
-
-// 📷 TOGGLE VIDEO
-function toggleVideo(btn){
-
-    if(cameraLocked){
-
-    alert("Your camera is locked by the teacher.");
-
-    return;
-
-}
-
-    if(!localStream) return;
-
-    const videoTrack =
-    localStream.getVideoTracks()[0];
-
-    if(!videoTrack) return;
-
-    isVideoOn = !isVideoOn;
-
-    videoTrack.enabled = isVideoOn;
-    socket.emit("mediaStatus", {
-
-    camera: localStream.getVideoTracks()[0]?.enabled ?? false,
-
-    mic: localStream.getAudioTracks()[0]?.enabled ?? false
-
-});
-
-    if(isVideoOn){
-
-        btn.classList.remove("video-off");
-
-    }else{
-
-        btn.classList.add("video-off");
-
-    }
-}
-
-async function startPiP(){
-
-    const video = document.querySelector(
-        "#participantStrip video"
-    );
-
-    if(!video){
-
-        alert("No student video available");
-
-        return;
-
-    }
-
-    if(!document.pictureInPictureElement){
-
-        await video.requestPictureInPicture();
-
-    }else{
-
-        await document.exitPictureInPicture();
-
-    }
-
-}
- 
-
- function toggleMobileMenu(){
-
-const menu =
-document.getElementById(
-"mobileMenu"
-);
-
-menu.classList.toggle(
-"show"
-);
-
-document
-.querySelector(".menu-overlay")
-.classList.toggle("show");
-
-const opened =
-menu.classList.contains(
-"show"
-);
-
-document.body.style.overflowX = "hidden";
-}
-
-let emojiOpened = false;
-
-function openEmojiPopup(){
-
-    const popup =
-        document.getElementById("emojiPopup");
-
-    emojiOpened = !emojiOpened;
-
-    popup.style.display =
-        emojiOpened ? "block" : "none";
-}
-
-// CREATE PICKER
-const picker = new EmojiMart.Picker({
-
-    theme: "light",
-
-    previewPosition: "none",
-
-    skinTonePosition: "none",
-
-    onEmojiSelect: (emoji) => {
-
-    // SHOW LOCALLY
-    showFloatingEmoji(emoji.native);
-
-    // SEND TO STUDENTS
-    socket.emit("emojiReaction", {
-
-        room,
-        emoji: emoji.native
-    });
-}
-});
-
-document
-.getElementById("emojiPicker")
-.appendChild(picker);
-
-// FLOATING EFFECT
-function showFloatingEmoji(emoji){
-
-    const div =
-        document.createElement("div");
-
-    div.innerHTML = emoji;
-
-    div.style.position = "fixed";
-
-    div.style.bottom = "100px";
-
-    div.style.left =
-        Math.random()*80 + "%";
-
-    div.style.fontSize = "70px";
-
-    div.style.zIndex = "999999";
-
-    div.style.transition =
-        "all 2s ease";
-
-    document.body.appendChild(div);
-
-    setTimeout(()=>{
-
-        div.style.transform =
-            "translateY(-300px)";
-
-        div.style.opacity = "0";
-
-    },100);
-
-    setTimeout(()=>{
-
-        div.remove();
-
-    },2200);
-}
-
-function clearAnnotations(){
-
-screenCtx.clearRect(
-0,
-0,
-screenCanvas.width,
-screenCanvas.height
-);
-
-}
-
-function openParticipants(){
-
-document
-.getElementById(
-"participantsPanel"
-)
-.classList.add("show");
-
-}
-
-function closeParticipants(){
-
-document
-.getElementById(
-"participantsPanel"
-)
-.classList.remove("show");
-
-}
-
-// ===============================
-// LIVE ATTENDANCE LIST
-// ===============================
-
-function updateAttendanceList(students){
-
-    const list = document.getElementById("attendanceList");
-
-    if(!list) return;
-
-    list.innerHTML = "";
-
-    const badge =
-document.getElementById("attendanceBadge");
-
-if(badge){
-
-    badge.innerText = students.length;
-
-}
-
-    students.forEach(student=>{
-
-        const div = document.createElement("div");
-
-        div.className = "attendance-item";
-
-        const duration = Math.floor(
-
-    (new Date() - student.joinedAt) / 1000
-
-);
-
-const hours = String(Math.floor(duration / 3600)).padStart(2, "0");
-
-const minutes = String(Math.floor((duration % 3600) / 60)).padStart(2, "0");
-
-const seconds = String(duration % 60).padStart(2, "0");
-
-const joinedTime = student.joinedAt
-    ? new Date(student.joinedAt).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit"
-      })
-    : "--:--";
-
-div.innerHTML = `
-<div class="student-name">${student.name}</div>
-
-<div class="student-status">
-
-${student.status === "Reconnecting"
-? "🟡 Reconnecting..."
-: student.status === "Offline"
-? "🔴 Offline"
-: "🟢 Online"}
-
-</div>
-
-<div class="student-info">
-🎥 Camera : ${student.camera ? "ON" : "OFF"}
-
-${student.cameraLocked ? "<br>🔒 Camera Locked" : ""}
-</div>
-
-<div class="student-info">
-🎤 Mic : ${student.mic ? "ON" : "OFF"}
-
-${student.micLocked ? "<br>🔒 Microphone Locked" : ""}
-</div>
-
-<div class="student-info">
-
-💻 Device :
-
-${student.device || "Detecting..."}
-
-</div>
-
-<div class="student-info">
-
-👀 Viewing :
-
-${student.visibility === "Away"
-? "🟡 Away"
-: "🟢 Active"}
-
-</div>
-<div class="student-info">
-
-📶 Network :
-
-${student.network === "Excellent"
-? "🟢 Excellent"
-: student.network === "Good"
-? "🟡 Good"
-: student.network === "Poor"
-? "🔴 Poor"
-: "⚪ Checking..."}
-
-<div class="student-info">
-
-🔋 Battery :
-
-${student.battery === -1
-
-? "Not Supported"
-
-: `${student.battery}% ${student.charging ? "⚡ Charging" : "🔌 Battery"}`}
-
-</div>
-
-</div>
-<div class="student-info">
-🕒 Joined : ${joinedTime}
-</div>
-
-<div class="student-info">
-    🕓 Duration : ${hours}:${minutes}:${seconds}
-</div>
-
-<hr>
-
-<div class="student-controls">
-
-<button onclick="muteStudent('${student.socketId}')">
-
-${student.mic ? "🔇 Mute" : "🔊 Unmute"}
-
-</button>
-
-<button onclick="stopCamera('${student.socketId}')">
-
-${student.camera ? "📷 Stop" : "📷 Start"}
-
-</button>
-
-<button onclick="lockMic('${student.socketId}')">
-${student.micLocked ? "🔓 Unlock Mic" : "🔒 Lock Mic"}
-</button>
-
-<button onclick="lockCamera('${student.socketId}')">
-${student.cameraLocked ? "🔓 Unlock Cam" : "🔒 Lock Cam"}
-</button>
-
-<button onclick="removeStudent('${student.socketId}')">
-
-🚪 Remove
-
-</button>
-
-</div>
-
-`;
-
-        list.appendChild(div);
-
-    });
-
-}
-
-setInterval(() => {
-
-    updateAttendanceList(liveStudents);
-
-}, 1000);
-
-function openChat(){
-
-document
-.getElementById(
-"chatPanel"
-)
-.classList.add("show");
-
-}
-
-function closeChat(){
-
-document
-.getElementById(
-"chatPanel"
-)
-.classList.remove("show");
-
-}
-
-function sendChatMessage(){
-
-const input =
-document.getElementById(
-"chatInput"
-);
-
-const msg =
-input.value.trim();
-
-if(!msg) return;
-
-document
-.getElementById(
-"chatMessages"
-)
-.innerHTML +=
-`
-<div class="chat-msg">
-${msg}
-</div>
-`;
-
-input.value="";
-
-}
-
-function muteStudent(socketId){
-
-    socket.emit("muteStudent",{
-
-        socketId
-
-    });
-
-}
-
-function stopCamera(socketId){
-
-    socket.emit("stopCamera",{
-
-        socketId
-
-    });
-
-}
-
-function removeStudent(socketId){
-
-    const confirmRemove = confirm(
-        "Remove this student from the class?"
-    );
-
-    if(!confirmRemove) return;
-
-    socket.emit("removeStudent",{
-
-        socketId
-
-    });
-
-}
-
-function lockMic(socketId){
-
-    socket.emit("lockMic",{
-
-        socketId
-
-    });
-
-}
-
-function lockCamera(socketId){
-
-    socket.emit("lockCamera",{
-
-        socketId
-
-    });
-
-}
-
-function toggleDeviceBar(){
-
-const bar =
-document.getElementById(
-"deviceBar"
-);
-
-if(
-bar.style.display === "none"
-||
-bar.style.display === ""
-){
-
-bar.style.display = "flex";
-
-}else{
-
-bar.style.display = "none";
-
-}
-
-}
-
-// Restore timer after refresh
-let meetingStartTime =
-sessionStorage.getItem("meetingStartTime");
-
-if(!meetingStartTime){
-
-    meetingStartTime = Date.now();
-
-    sessionStorage.setItem(
-        "meetingStartTime",
-        meetingStartTime
-    );
-
-}
-
-setInterval(()=>{
-
-    const elapsed =
-    Math.floor(
-        (Date.now()-meetingStartTime)/1000
-    );
-
-    const mins =
-    Math.floor(elapsed/60);
-
-    const secs =
-    elapsed%60;
-
-    const timer =
-    document.getElementById("meetTime");
-
-    if(timer){
-
-        timer.innerText =
-        String(mins).padStart(2,"0")
-        +":"
-        +String(secs).padStart(2,"0");
-
-    }
-
-},1000);
-
-updateMicBadge();
-
-
-updateMicBadge();
-
-updateMicBadge();
-
-</script>
-
-<!-- =========================
-LIVE ATTENDANCE PANEL
-========================= -->
-
-<div id="attendancePanel">
-
-    <button id="attendanceFab" onclick="toggleAttendancePanel()">
-
-    👥
-
-    <span id="attendanceBadge">0</span>
-
-</button>
-
-
-
-
-    <h3>📋 Live Attendance</h3>
-
-    <div id="attendanceList"></div>
-
-</div>
-
-<script>
-
-window.addEventListener(
-"androidScreenGranted",
-async function(){
-
-alert("ANDROID SCREEN SHARE APPROVED");
-
-alert(
-"getDisplayMedia = " +
-typeof navigator.mediaDevices.getDisplayMedia
-);
-
-}
-);
-</script>
-
-<script>
-
-window.addEventListener("load", async () => {
-
-    const isMobile =
-        /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
-
-    if (!isMobile) return;
-
-    try {
-
-        await screen.orientation.unlock();
-
-        console.log("Landscape Locked");
-
-    } catch (err) {
-
-        console.log("Orientation Lock Failed");
-
-    }
-
-});
-
-function toggleLayoutMenu(){
-
-    const menu = document.getElementById("layoutMenu");
-
-    menu.style.display =
-        menu.style.display==="block"
-        ? "none"
-        : "block";
-
-}
-
-const attendancePanel =
-document.getElementById("attendancePanel");
-
-const attendanceFab =
-document.getElementById("attendanceFab");
-
-if(attendanceFab){
-
-    attendanceFab.onclick = function(e){
-
-        e.stopPropagation();
-
-        attendancePanel.classList.toggle("open");
-
-    };
-
-}
-
-document.addEventListener("click",function(e){
-
-    if(
-
-        attendancePanel &&
-        attendancePanel.classList.contains("open") &&
-        !attendancePanel.contains(e.target)
-
-    ){
-
-        attendancePanel.classList.remove("open");
-
-    }
-
-});
-
-document.addEventListener("click",function(e){
-
-    const menu=document.getElementById("layoutMenu");
-
-    if(!menu.contains(e.target) &&
-       e.target.innerText.trim()!=="⋮"){
-
-        menu.style.display="none";
-
-    }
-
-    
-
-});
-
-
-
-Object.assign(MeetingLayout, {
-
-    current:"auto",
-
-    set(layout){
-
-        this.current = layout;
-
-        document.body.classList.remove(
-            "layout-auto",
-            "layout-spotlight",
-            "layout-sidebar",
-            "layout-grid"
+            }
         );
 
-        document.body.classList.add(
-            "layout-"+layout
+
+        /* =====================================================
+           SOCKET DISCONNECT
+           ===================================================== */
+
+        socket.on(
+            "disconnect",
+            (reason) => {
+
+                console.warn(
+                    "SOCKET DISCONNECTED:",
+                    reason
+                );
+
+
+                document.getElementById(
+                    "connectionDot"
+                ).style.background =
+                    "#ef4444";
+
+
+                document.getElementById(
+                    "connectionText"
+                ).textContent =
+                    "Disconnected";
+
+
+                document.getElementById(
+                    "systemStatus"
+                ).textContent =
+                    "Connection lost";
+
+            }
         );
 
-        document.getElementById("layoutMenu").style.display="none";
 
-    }
+        /* =====================================================
+           CONNECTION ERROR
+           ===================================================== */
 
-});
+        socket.on(
+            "connect_error",
+            (error) => {
 
-
-
-function toggleAttendancePanel(){
-
-    document
-        .getElementById("attendancePanel")
-        .classList.toggle("open");
-
-}
-
-</script>
+                console.error(
+                    "SOCKET CONNECTION ERROR:",
+                    error
+                );
 
 
-
-<!-- Video -->
-<script src="assets/js/meeting/video/constants.js"></script>
-<script src="assets/js/meeting/video/peerConnection.js"></script>
-<script src="assets/js/meeting/video/participantManager.js"></script>
-<script src="assets/js/meeting/video/videoManager.js"></script>
-<script src="assets/js/meeting/video/meetingController.js"></script>
-<script src="assets/js/meeting/video/mediaManager.js"></script>
-<script src="assets/js/meeting/video/socketManager.js"></script>
-<script src="assets/js/meeting/video/streamManager.js"></script>
-<script src="assets/js/meeting/video/signaling.js"></script>
-<script src="assets/js/meeting/video/signalingManager.js"></script>
-<script src="assets/js/meeting/video/reconnectManager.js"></script>
-
-<script>
+                document.getElementById(
+                    "connectionDot"
+                ).style.background =
+                    "#ef4444";
 
 
+                document.getElementById(
+                    "connectionText"
+                ).textContent =
+                    "Connection Error";
 
-</script>
+
+                document.getElementById(
+                    "systemStatus"
+                ).textContent =
+                    "Unable to connect to classroom server";
+
+            }
+        );
+
+
+        /* =====================================================
+           RECONNECT ATTEMPT
+           ===================================================== */
+
+        socket.io.on(
+            "reconnect_attempt",
+            (attempt) => {
+
+                console.log(
+                    "RECONNECT ATTEMPT:",
+                    attempt
+                );
+
+
+                document.getElementById(
+                    "connectionDot"
+                ).style.background =
+                    "#f59e0b";
+
+
+                document.getElementById(
+                    "connectionText"
+                ).textContent =
+                    "Reconnecting...";
+
+            }
+        );
+
+
+        /* =====================================================
+           RECONNECTED
+           ===================================================== */
+
+        socket.io.on(
+            "reconnect",
+            (attempt) => {
+
+                console.log(
+                    "SOCKET RECONNECTED:",
+                    attempt
+                );
+
+
+                document.getElementById(
+                    "connectionDot"
+                ).style.background =
+                    "#22c55e";
+
+
+                document.getElementById(
+                    "connectionText"
+                ).textContent =
+                    "Connected";
+
+
+                document.getElementById(
+                    "systemStatus"
+                ).textContent =
+                    "Connection restored";
+
+            }
+        );
+
+
+        /* =====================================================
+           GLOBAL MEETING OBJECT
+           ===================================================== */
+
+        window.MeetingConfig = {
+
+            serverURL:
+                SERVER_URL,
+
+            room:
+                meetingRoom,
+
+            role:
+                meetingRole,
+
+            userId:
+                meetingUserId,
+
+            userName:
+                meetingUserName,
+
+            maxFounders:
+                MAX_FOUNDERS,
+
+            maxTeachers:
+                MAX_TEACHERS,
+
+            maxStudents:
+                MAX_STUDENTS,
+
+            maxParticipants:
+                MAX_PARTICIPANTS
+
+        };
+
+
+        /* =====================================================
+           GLOBAL SOCKET
+           ===================================================== */
+
+        window.MeetingSocket =
+            socket;
+
+
+        console.log(
+            "MeetingConfig:",
+            window.MeetingConfig
+        );
+
+    </script>
+
 
 </body>
+
 </html>
