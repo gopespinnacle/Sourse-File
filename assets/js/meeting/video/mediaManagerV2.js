@@ -270,25 +270,24 @@ const MediaManagerV2 = {
     */
 
     const participants =
-        window.MeetingParticipants;
+    window.MeetingParticipants;
 
-    const config =
-        window.MeetingConfig;
+const config =
+    window.MeetingConfig;
 
 
-    if (
-        !participants ||
-        !config ||
-        !config.userId
-    ) {
+if (
+    !participants ||
+    !config
+) {
 
-        console.warn(
-            "Meeting participant system not ready."
-        );
+    console.warn(
+        "Meeting participant system not ready."
+    );
 
-        return;
+    return;
 
-    }
+}
 
 
     /*
@@ -298,9 +297,9 @@ const MediaManagerV2 = {
     */
 
     const currentUser =
-        participants.get(
-            config.userId
-        );
+    participants.get(
+        config.socketId
+    );
 
 
     if (!currentUser) {
@@ -450,15 +449,15 @@ attachLocalVideoWhenReady() {
 
 
         if (
-            participants &&
-            config &&
-            config.userId
-        ) {
+    participants &&
+    config &&
+    config.socketId
+) {
 
-            const currentUser =
-                participants.get(
-                    config.userId
-                );
+    const currentUser =
+        participants.get(
+            config.socketId
+        );
 
 
             if (
