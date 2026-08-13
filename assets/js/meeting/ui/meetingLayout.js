@@ -56,59 +56,252 @@ const MeetingLayout = {
     // SCREEN SHARING
     // ===========================================
 
-    if (screenSharing) {
+    // ===========================================
+// SCREEN SHARING
+// ===========================================
 
-        // One participant → Full screen
-        
+if (screenSharing) {
 
-        // Multiple participants → bottom-right stack
+    /*
+    =================================================
+    SCREEN SHARE = MAIN AREA
+    PARTICIPANTS = SMALL VIDEO STACK
+    =================================================
+    */
 
-        strip.style.position = "fixed";
-strip.style.right = "10px";
-strip.style.left = "auto";
-strip.style.top = "auto";
+    strip.style.setProperty(
+        "position",
+        "fixed",
+        "important"
+    );
 
-const localBox = document.getElementById("localVideoBox");
+    strip.style.setProperty(
+        "right",
+        "10px",
+        "important"
+    );
 
-const localHeight = localBox
-    ? localBox.getBoundingClientRect().height
-    : 150;
+    strip.style.setProperty(
+        "left",
+        "auto",
+        "important"
+    );
 
-// Place participant just ABOVE local video
-strip.style.bottom = (localHeight + 11) + "px";
+    strip.style.setProperty(
+        "top",
+        "auto",
+        "important"
+    );
 
-strip.style.display = "flex";
-strip.style.flexDirection = "column";
-strip.style.alignItems = "flex-end";
-strip.style.gap = "1px";
 
-        
+    /*
+    =================================================
+    KEEP PARTICIPANTS ABOVE LOCAL VIDEO
+    =================================================
+    */
 
-const width = localBox
-    ? localBox.offsetWidth
-    : (isMobile ? (isPortrait ? 90 : 70) : 120);
+    const localBox =
+        document.getElementById("localVideoBox");
 
-const height = localBox
-    ? localBox.offsetHeight
-    : (isMobile ? (isPortrait ? 150 : 120) : 180);
+    const localHeight =
+        localBox
+            ? localBox.getBoundingClientRect().height
+            : 150;
 
-        Object.values(ParticipantLayout.participants).forEach(p => {
+    strip.style.setProperty(
+        "bottom",
+        (localHeight + 11) + "px",
+        "important"
+    );
 
-    if (!p.card) return;
 
-    p.card.style.width = width + "px";
-    p.card.style.height = height + "px";
-    p.card.style.minWidth = width + "px";
-    p.card.style.minHeight = height + "px";
-    p.card.style.maxWidth = width + "px";
-    p.card.style.maxHeight = height + "px";
-    p.card.style.flex = "none";
+    /*
+    =================================================
+    PARTICIPANT STRIP
+    =================================================
+    */
 
-});
+    strip.style.setProperty(
+        "display",
+        "flex",
+        "important"
+    );
 
-        return;
+    strip.style.setProperty(
+        "flex-direction",
+        "column",
+        "important"
+    );
+
+    strip.style.setProperty(
+        "align-items",
+        "flex-end",
+        "important"
+    );
+
+    strip.style.setProperty(
+        "gap",
+        "6px",
+        "important"
+    );
+
+    strip.style.setProperty(
+        "width",
+        "90px",
+        "important"
+    );
+
+
+    /*
+    =================================================
+    PARTICIPANT VIDEO SIZE
+    SAME SIZE AS LOCAL VIDEO
+    =================================================
+    */
+
+    let participantWidth = 90;
+
+    let participantHeight = 150;
+
+
+    if (isMobile) {
+
+        if (isPortrait) {
+
+            participantWidth = 90;
+
+            participantHeight = 150;
+
+        } else {
+
+            participantWidth = 70;
+
+            participantHeight = 120;
+
+        }
+
+    } else {
+
+        participantWidth = 120;
+
+        participantHeight = 180;
 
     }
+
+
+    /*
+    =================================================
+    FORCE EVERY PARTICIPANT CARD
+    =================================================
+    */
+
+    Object.values(
+        ParticipantLayout.participants
+    ).forEach(p => {
+
+        if (!p || !p.card) return;
+
+
+        const card = p.card;
+
+
+        card.style.setProperty(
+            "width",
+            participantWidth + "px",
+            "important"
+        );
+
+        card.style.setProperty(
+            "height",
+            participantHeight + "px",
+            "important"
+        );
+
+        card.style.setProperty(
+            "min-width",
+            participantWidth + "px",
+            "important"
+        );
+
+        card.style.setProperty(
+            "min-height",
+            participantHeight + "px",
+            "important"
+        );
+
+        card.style.setProperty(
+            "max-width",
+            participantWidth + "px",
+            "important"
+        );
+
+        card.style.setProperty(
+            "max-height",
+            participantHeight + "px",
+            "important"
+        );
+
+        card.style.setProperty(
+            "flex",
+            "0 0 " + participantWidth + "px",
+            "important"
+        );
+
+        card.style.setProperty(
+            "position",
+            "relative",
+            "important"
+        );
+
+        card.style.setProperty(
+            "overflow",
+            "hidden",
+            "important"
+        );
+
+
+        /*
+        ---------------------------------------------
+        PARTICIPANT VIDEO
+        ---------------------------------------------
+        */
+
+        if (p.video) {
+
+            p.video.style.setProperty(
+                "width",
+                "100%",
+                "important"
+            );
+
+            p.video.style.setProperty(
+                "height",
+                "100%",
+                "important"
+            );
+
+            p.video.style.setProperty(
+                "object-fit",
+                "cover",
+                "important"
+            );
+
+        }
+
+    });
+
+
+    console.log(
+        "SCREEN SHARE LAYOUT:",
+        participantWidth,
+        "x",
+        participantHeight
+    );
+
+
+    return;
+
+}
 
     // ===========================================
     // NORMAL MEETING
