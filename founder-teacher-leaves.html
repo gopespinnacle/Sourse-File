@@ -1128,16 +1128,9 @@ const API =
 "https://academy-backend-eatl.onrender.com/api";
 
 const token =
-sessionStorage.getItem("token");
+localStorage.getItem("token");
 
-const role =
-sessionStorage.getItem("role");
-
-
-if(
-    !token ||
-    role !== "founder"
-){
+if(!token){
 
     alert(
         "Please login as Founder."
@@ -2146,10 +2139,10 @@ function go(page){
 
 function logout(){
 
-    sessionStorage.clear();
+    localStorage.removeItem("token");
 
     window.location.href =
-    "founder-login.html";
+        "founder-login.html";
 
 }
 
