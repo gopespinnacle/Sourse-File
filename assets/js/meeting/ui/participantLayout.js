@@ -218,11 +218,9 @@ ParticipantLayout.showScreenShare = function(){
         document.getElementById("participantStrip");
 
 
-    /*
-    =========================================================
-    SHOW SCREEN
-    =========================================================
-    */
+    /* =====================================================
+       SHOW SCREEN SHARE
+       ===================================================== */
 
     if(screenContainer){
 
@@ -243,32 +241,45 @@ ParticipantLayout.showScreenShare = function(){
     }
 
 
-    /*
-    =========================================================
-    ADD SCREEN-SHARING MODE
-    =========================================================
-    */
+    /* =====================================================
+       ENABLE SCREEN SHARING MODE
+       ===================================================== */
 
     if(strip){
 
-        strip.classList.add(
-            "screen-sharing"
-        );
+        strip.classList.add("screen-sharing");
 
     }
 
 
-    /*
-    =========================================================
-    SHRINK ALL EXISTING PARTICIPANT VIDEOS
-    =========================================================
-    */
+    /* =====================================================
+       FORCE SMALL PARTICIPANT VIDEOS
+       ===================================================== */
+
+    if(strip){
+
+        strip.style.display = "flex";
+        strip.style.flexDirection = "column";
+        strip.style.width = "70px";
+        strip.style.minWidth = "70px";
+        strip.style.maxWidth = "70px";
+        strip.style.height = "auto";
+        strip.style.gap = "6px";
+        strip.style.overflow = "visible";
+
+    }
+
+
+    /* =====================================================
+       FORCE EVERY PARTICIPANT CARD SMALL
+       ===================================================== */
 
     Object.values(
         ParticipantLayout.participants
     ).forEach(participant => {
 
         if(!participant) return;
+
 
         const card =
             participant.card;
@@ -280,14 +291,24 @@ ParticipantLayout.showScreenShare = function(){
         if(card){
 
             card.style.width = "70px";
-
-            card.style.height = "120px";
-
             card.style.minWidth = "70px";
-
             card.style.maxWidth = "70px";
 
-            card.style.flex = "none";
+            card.style.height = "120px";
+            card.style.minHeight = "120px";
+            card.style.maxHeight = "120px";
+
+            card.style.flex = "0 0 70px";
+
+            card.style.display = "block";
+
+            card.style.position = "relative";
+
+            card.style.margin = "0";
+
+            card.style.padding = "0";
+
+            card.style.overflow = "hidden";
 
         }
 
@@ -295,26 +316,30 @@ ParticipantLayout.showScreenShare = function(){
         if(video){
 
             video.style.width = "100%";
-
             video.style.height = "100%";
 
+            video.style.minWidth = "100%";
+            video.style.minHeight = "100%";
+
+            video.style.maxWidth = "100%";
+            video.style.maxHeight = "100%";
+
             video.style.objectFit = "cover";
+
+            video.style.display = "block";
 
         }
 
     });
 
 
-    /*
-    =========================================================
-    UPDATE MEETING LAYOUT
-    =========================================================
-    */
+    /* =====================================================
+       DO NOT ALLOW LAYOUT MANAGER TO ENLARGE THEM
+       ===================================================== */
 
     if(
         window.MeetingLayout &&
-        typeof MeetingLayout.update ===
-        "function"
+        typeof MeetingLayout.update === "function"
     ){
 
         MeetingLayout.update();
@@ -323,15 +348,82 @@ ParticipantLayout.showScreenShare = function(){
 
 
     /*
-    =========================================================
-    UPDATE LOCAL VIDEO
-    =========================================================
+    IMPORTANT:
+    MeetingLayout.update() may change the participant
+    sizes, so force the small size AGAIN after update.
     */
+
+    if(strip){
+
+        strip.style.display = "flex";
+        strip.style.flexDirection = "column";
+        strip.style.width = "70px";
+        strip.style.minWidth = "70px";
+        strip.style.maxWidth = "70px";
+
+    }
+
+
+    Object.values(
+        ParticipantLayout.participants
+    ).forEach(participant => {
+
+        if(!participant || !participant.card) return;
+
+        const card = participant.card;
+
+        card.style.setProperty(
+            "width",
+            "70px",
+            "important"
+        );
+
+        card.style.setProperty(
+            "height",
+            "120px",
+            "important"
+        );
+
+        card.style.setProperty(
+            "min-width",
+            "70px",
+            "important"
+        );
+
+        card.style.setProperty(
+            "max-width",
+            "70px",
+            "important"
+        );
+
+        card.style.setProperty(
+            "min-height",
+            "120px",
+            "important"
+        );
+
+        card.style.setProperty(
+            "max-height",
+            "120px",
+            "important"
+        );
+
+        card.style.setProperty(
+            "flex",
+            "0 0 70px",
+            "important"
+        );
+
+    });
+
+
+    /* =====================================================
+       LOCAL VIDEO LAYOUT
+       ===================================================== */
 
     if(
         window.LocalVideoLayout &&
-        typeof LocalVideoLayout.updateLayout ===
-        "function"
+        typeof LocalVideoLayout.updateLayout === "function"
     ){
 
         LocalVideoLayout.updateLayout();
@@ -340,7 +432,7 @@ ParticipantLayout.showScreenShare = function(){
 
 
     console.log(
-        "ALL PARTICIPANT VIDEOS SHRUNK"
+        "SCREEN SHARE ACTIVE - PARTICIPANTS FORCED TO 70x120"
     );
 
 };
