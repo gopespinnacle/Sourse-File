@@ -1,0 +1,1001 @@
+/*
+==========================================================
+GOPES PINNACLE ACADEMY
+MEETING V2
+GOOGLE MEET STYLE
+==========================================================
+*/
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #202124;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+}
+
+
+/* ======================================================
+   MEETING ROOT
+   ====================================================== */
+
+#meetingApp {
+
+    position: fixed;
+
+    inset: 0;
+
+    width: 100vw;
+
+    height: 100vh;
+
+    background: #202124;
+
+    color: #fff;
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+/* ======================================================
+   TOP BAR
+   ====================================================== */
+
+#meetingTopBar {
+
+    height: 64px;
+
+    min-height: 64px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 18px;
+
+    background: #202124;
+
+    border-bottom: 1px solid rgba(255,255,255,.08);
+
+    z-index: 100;
+
+}
+
+
+.meeting-brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    min-width: 0;
+
+}
+
+
+.meeting-logo {
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    letter-spacing: .3px;
+
+    white-space: nowrap;
+
+}
+
+
+.meeting-class-info {
+
+    color: #bdc1c6;
+
+    font-size: 13px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+}
+
+
+.meeting-room-info {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: #bdc1c6;
+
+    font-size: 13px;
+
+}
+
+
+.connection-dot {
+
+    width: 9px;
+
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: #34a853;
+
+}
+
+
+.connection-dot.disconnected {
+
+    background: #ea4335;
+
+}
+
+
+.connection-dot.connecting {
+
+    background: #fbbc04;
+
+}
+
+
+/* ======================================================
+   MAIN MEETING AREA
+   ====================================================== */
+
+#meetingMain {
+
+    position: relative;
+
+    flex: 1;
+
+    min-height: 0;
+
+    display: flex;
+
+    overflow: hidden;
+
+}
+
+
+/* ======================================================
+   STAGE
+   ====================================================== */
+
+#meetingStage {
+
+    position: relative;
+
+    flex: 1;
+
+    min-width: 0;
+
+    min-height: 0;
+
+    padding: 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+/* ======================================================
+   PARTICIPANT GRID
+   ====================================================== */
+
+#participantGrid {
+
+    width: 100%;
+
+    height: 100%;
+
+    display: grid;
+
+    gap: 10px;
+
+    align-content: center;
+
+    justify-content: center;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(
+                240px,
+                1fr
+            )
+        );
+
+    grid-auto-rows: minmax(
+        180px,
+        1fr
+    );
+
+}
+
+
+/* ======================================================
+   PARTICIPANT TILE
+   ====================================================== */
+
+.meeting-participant {
+
+    position: relative;
+
+    min-width: 0;
+
+    min-height: 0;
+
+    overflow: hidden;
+
+    border-radius: 12px;
+
+    background: #3c4043;
+
+    border: 1px solid rgba(255,255,255,.08);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    cursor: pointer;
+
+    transition:
+        transform .15s ease,
+        border-color .15s ease;
+
+}
+
+
+.meeting-participant:hover {
+
+    border-color:
+        rgba(255,255,255,.35);
+
+}
+
+
+.meeting-participant.pinned {
+
+    border:
+        2px solid #8ab4f8;
+
+}
+
+
+/* ======================================================
+   VIDEO
+   ====================================================== */
+
+.meeting-participant video {
+
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+    background: #202124;
+
+}
+
+
+/* ======================================================
+   AVATAR
+   ====================================================== */
+
+.participant-avatar {
+
+    width: 74px;
+
+    height: 74px;
+
+    border-radius: 50%;
+
+    background: #5f6368;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 28px;
+
+    font-weight: 600;
+
+    color: white;
+
+}
+
+
+/* ======================================================
+   NAME LABEL
+   ====================================================== */
+
+.participant-name {
+
+    position: absolute;
+
+    left: 10px;
+
+    bottom: 10px;
+
+    padding: 6px 9px;
+
+    border-radius: 7px;
+
+    background:
+        rgba(0,0,0,.65);
+
+    color: white;
+
+    font-size: 13px;
+
+    max-width: 75%;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+
+    z-index: 5;
+
+}
+
+
+/* ======================================================
+   ROLE LABEL
+   ====================================================== */
+
+.participant-role {
+
+    position: absolute;
+
+    left: 10px;
+
+    top: 10px;
+
+    padding: 4px 7px;
+
+    border-radius: 6px;
+
+    background:
+        rgba(0,0,0,.55);
+
+    color: #e8eaed;
+
+    font-size: 10px;
+
+    text-transform: uppercase;
+
+    letter-spacing: .5px;
+
+    z-index: 5;
+
+}
+
+
+/* ======================================================
+   MEDIA INDICATORS
+   ====================================================== */
+
+.participant-status {
+
+    position: absolute;
+
+    right: 10px;
+
+    bottom: 10px;
+
+    display: flex;
+
+    gap: 5px;
+
+    z-index: 5;
+
+}
+
+
+.media-indicator {
+
+    width: 28px;
+
+    height: 28px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+        rgba(0,0,0,.65);
+
+    font-size: 13px;
+
+}
+
+
+/* ======================================================
+   ACTIVE SPEAKER
+   ====================================================== */
+
+.meeting-participant.active-speaker {
+
+    border:
+        3px solid #8ab4f8;
+
+}
+
+
+/* ======================================================
+   MAIN STAGE MODE
+   ====================================================== */
+
+#meetingStage.main-stage-mode {
+
+    padding: 8px;
+
+}
+
+
+#meetingStage.main-stage-mode
+#participantGrid {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+#meetingStage.main-stage-mode
+.meeting-participant {
+
+    width: 100%;
+
+    height: 100%;
+
+}
+
+
+/* ======================================================
+   PEOPLE PANEL
+   ====================================================== */
+
+#peoplePanel {
+
+    width: 320px;
+
+    max-width: 90vw;
+
+    background: #292a2d;
+
+    border-left:
+        1px solid rgba(255,255,255,.1);
+
+    display: none;
+
+    flex-direction: column;
+
+    z-index: 50;
+
+}
+
+
+#peoplePanel.open {
+
+    display: flex;
+
+}
+
+
+.panel-header {
+
+    height: 60px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 18px;
+
+    border-bottom:
+        1px solid rgba(255,255,255,.1);
+
+}
+
+
+.panel-title {
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+}
+
+
+.panel-count {
+
+    color: #9aa0a6;
+
+    font-size: 13px;
+
+}
+
+
+#peopleList {
+
+    flex: 1;
+
+    overflow-y: auto;
+
+    padding: 10px;
+
+}
+
+
+.people-section-title {
+
+    color: #9aa0a6;
+
+    font-size: 11px;
+
+    text-transform: uppercase;
+
+    margin: 12px 8px 7px;
+
+}
+
+
+.people-item {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 10px;
+
+    border-radius: 8px;
+
+}
+
+
+.people-item:hover {
+
+    background: rgba(255,255,255,.06);
+
+}
+
+
+.people-avatar {
+
+    width: 36px;
+
+    height: 36px;
+
+    border-radius: 50%;
+
+    background: #5f6368;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+}
+
+
+.people-info {
+
+    flex: 1;
+
+    min-width: 0;
+
+}
+
+
+.people-name {
+
+    font-size: 13px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+}
+
+
+.people-role {
+
+    color: #9aa0a6;
+
+    font-size: 11px;
+
+}
+
+
+.people-online {
+
+    width: 8px;
+
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: #34a853;
+
+}
+
+
+/* ======================================================
+   BOTTOM CONTROL BAR
+   ====================================================== */
+
+#meetingControls {
+
+    height: 78px;
+
+    min-height: 78px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    padding: 10px 18px;
+
+    background: #202124;
+
+    z-index: 100;
+
+}
+
+
+.meeting-control {
+
+    width: 48px;
+
+    height: 48px;
+
+    border: 0;
+
+    border-radius: 50%;
+
+    background: #3c4043;
+
+    color: white;
+
+    font-size: 20px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    cursor: pointer;
+
+}
+
+
+.meeting-control:hover {
+
+    background: #4b4d50;
+
+}
+
+
+.meeting-control.active {
+
+    background: #8ab4f8;
+
+    color: #202124;
+
+}
+
+
+.meeting-control.danger {
+
+    width: 58px;
+
+    border-radius: 24px;
+
+    background: #ea4335;
+
+}
+
+
+.meeting-control.danger:hover {
+
+    background: #d93025;
+
+}
+
+
+/* ======================================================
+   SYSTEM STATUS
+   ====================================================== */
+
+#systemStatus {
+
+    position: absolute;
+
+    left: 50%;
+
+    bottom: 90px;
+
+    transform: translateX(-50%);
+
+    padding: 8px 14px;
+
+    border-radius: 8px;
+
+    background: rgba(0,0,0,.65);
+
+    color: #e8eaed;
+
+    font-size: 12px;
+
+    pointer-events: none;
+
+    z-index: 200;
+
+}
+
+
+/* ======================================================
+   EMPTY ROOM
+   ====================================================== */
+
+#emptyRoom {
+
+    text-align: center;
+
+    color: #9aa0a6;
+
+}
+
+
+#emptyRoom h2 {
+
+    color: #e8eaed;
+
+    margin-bottom: 8px;
+
+}
+
+
+/* ======================================================
+   MOBILE
+   ====================================================== */
+
+@media (max-width: 768px) {
+
+    #meetingTopBar {
+
+        height: 52px;
+
+        min-height: 52px;
+
+        padding: 0 10px;
+
+    }
+
+
+    .meeting-logo {
+
+        font-size: 13px;
+
+    }
+
+
+    .meeting-class-info {
+
+        display: none;
+
+    }
+
+
+    .meeting-room-info {
+
+        font-size: 11px;
+
+    }
+
+
+    #meetingStage {
+
+        padding: 6px;
+
+    }
+
+
+    #participantGrid {
+
+        gap: 6px;
+
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(
+                    0,
+                    1fr
+                )
+            );
+
+        grid-auto-rows:
+            minmax(
+                120px,
+                1fr
+            );
+
+    }
+
+
+    .meeting-participant {
+
+        border-radius: 8px;
+
+    }
+
+
+    .participant-avatar {
+
+        width: 54px;
+
+        height: 54px;
+
+        font-size: 20px;
+
+    }
+
+
+    .participant-name {
+
+        font-size: 11px;
+
+        left: 6px;
+
+        bottom: 6px;
+
+        padding: 4px 6px;
+
+    }
+
+
+    .participant-role {
+
+        left: 6px;
+
+        top: 6px;
+
+        font-size: 8px;
+
+    }
+
+
+    #meetingControls {
+
+        height: 68px;
+
+        min-height: 68px;
+
+        gap: 7px;
+
+        padding: 8px;
+
+    }
+
+
+    .meeting-control {
+
+        width: 42px;
+
+        height: 42px;
+
+        font-size: 17px;
+
+    }
+
+
+    .meeting-control.danger {
+
+        width: 52px;
+
+    }
+
+
+    #peoplePanel {
+
+        position: absolute;
+
+        top: 0;
+
+        right: 0;
+
+        bottom: 0;
+
+        width: 86vw;
+
+    }
+
+}
+
+
+/* ======================================================
+   SMALL MOBILE
+   ====================================================== */
+
+@media (max-width: 420px) {
+
+    #participantGrid {
+
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(
+                    0,
+                    1fr
+                )
+            );
+
+        grid-auto-rows:
+            minmax(
+                100px,
+                1fr
+            );
+
+    }
+
+}

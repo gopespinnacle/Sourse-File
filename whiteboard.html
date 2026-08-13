@@ -20,6 +20,9 @@
          ===================================================== -->
 
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="assets/js/meeting/meetingParticipantsV2.js"></script>
+<script src="assets/js/meeting/meetingUIV2.js"></script>
+
 
 
     <!-- =====================================================
@@ -311,137 +314,238 @@
 
     </style>
 
+    <link
+    rel="stylesheet"
+    href="assets/css/meeting/meetingV2.css">
+
 </head>
 
 
 <body>
 
-
     <!-- =====================================================
-         CLASSROOM
-         ===================================================== -->
+     GOPES PINNACLE ACADEMY
+     GOOGLE MEET STYLE CLASSROOM V2
+     ===================================================== -->
 
-    <div id="classroom">
+<div id="meetingApp">
 
+    <!-- =================================================
+         TOP BAR
+         ================================================= -->
 
-        <!-- =================================================
-             TOP BAR
-             ================================================= -->
+    <header id="meetingTopBar">
 
-        <header id="topBar">
+        <div class="meeting-brand">
 
-
-            <div id="academyTitle">
-
+            <div class="meeting-logo">
                 GOPES PINNACLE ACADEMY
+            </div>
+
+            <div
+                id="meetingClassInfo"
+                class="meeting-class-info">
+                Virtual Classroom
+            </div>
+
+        </div>
+
+
+        <div class="meeting-room-info">
+
+            <span
+                id="connectionDot"
+                class="connection-dot connecting">
+            </span>
+
+            <span id="connectionText">
+                Connecting
+            </span>
+
+        </div>
+
+    </header>
+
+
+    <!-- =================================================
+         MAIN
+         ================================================= -->
+
+    <main id="meetingMain">
+
+
+        <!-- =============================================
+             STAGE
+             ============================================= -->
+
+        <section id="meetingStage">
+
+            <div id="participantGrid">
+
+                <div id="emptyRoom">
+
+                    <h2>
+                        Virtual Classroom
+                    </h2>
+
+                    <div>
+                        Waiting for participants...
+                    </div>
+
+                </div>
 
             </div>
 
+        </section>
 
-            <div id="meetingInfo">
 
+        <!-- =============================================
+             PEOPLE PANEL
+             ============================================= -->
+
+        <aside id="peoplePanel">
+
+            <div class="panel-header">
 
                 <div>
 
-                    Room:
+                    <div class="panel-title">
+                        People
+                    </div>
 
-                    <strong id="roomName">
-                        -
-                    </strong>
+                    <div class="panel-count">
 
-                </div>
+                        <span id="peopleCount">
+                            0
+                        </span>
 
+                        participants
 
-                <div>
-
-                    Role:
-
-                    <strong id="userRole">
-                        -
-                    </strong>
+                    </div>
 
                 </div>
 
 
-                <div id="connectionStatus">
+                <button
+                    id="closePeople"
+                    class="meeting-control">
 
-                    <span id="connectionDot"></span>
+                    ✕
 
-                    <span id="connectionText">
-                        Connecting...
-                    </span>
-
-                </div>
-
-
-            </div>
-
-        </header>
-
-
-        <!-- =================================================
-             MAIN AREA
-             ================================================= -->
-
-        <main id="mainArea">
-
-
-            <div id="welcomeMessage">
-
-
-                <h2>
-                    Virtual Classroom
-                </h2>
-
-
-                <p>
-                    Gopes Pinnacle Academy
-                </p>
-
-
-                <p id="systemStatus">
-                    Connecting to classroom server...
-                </p>
-
-
-                <div id="capacityInfo">
-
-                    Maximum Classroom Capacity:
-                    <strong>
-                        1 Founder + 2 Teachers + 10 Students
-                    </strong>
-
-                    <br>
-
-                    <span>
-                        Maximum 13 participants
-                    </span>
-
-                </div>
-
+                </button>
 
             </div>
 
 
-        </main>
+            <div id="peopleList"></div>
+
+        </aside>
+
+    </main>
 
 
-        <!-- =================================================
-             BOTTOM BAR
-             ================================================= -->
+    <!-- =================================================
+         SYSTEM STATUS
+         ================================================= -->
 
-        <footer id="bottomBar">
-
-            <div id="systemStatusFooter">
-
-                Gopes Pinnacle Academy
-
-            </div>
-
-        </footer>
-
-
+    <div id="systemStatus">
+        Waiting for meeting...
     </div>
+
+
+    <!-- =================================================
+         BOTTOM CONTROLS
+         ================================================= -->
+
+    <footer id="meetingControls">
+
+        <button
+            id="micButton"
+            class="meeting-control"
+            title="Microphone">
+
+            🎤
+
+        </button>
+
+
+        <button
+            id="cameraButton"
+            class="meeting-control"
+            title="Camera">
+
+            📹
+
+        </button>
+
+
+        <button
+            id="raiseHandButton"
+            class="meeting-control"
+            title="Raise hand">
+
+            ✋
+
+        </button>
+
+
+        <button
+            id="screenShareButton"
+            class="meeting-control"
+            title="Present">
+
+            🖥️
+
+        </button>
+
+
+        <button
+            id="peopleButton"
+            class="meeting-control"
+            title="People">
+
+            👥
+
+        </button>
+
+
+        <button
+            id="chatButton"
+            class="meeting-control"
+            title="Chat">
+
+            💬
+
+        </button>
+
+
+        <button
+            id="moreButton"
+            class="meeting-control"
+            title="More options">
+
+            ⋮
+
+        </button>
+
+
+        <button
+            id="leaveButton"
+            class="meeting-control danger"
+            title="Leave meeting">
+
+            ☎
+
+        </button>
+
+    </footer>
+
+</div>
+
+
+   
+
+    
 
 
     <!-- =====================================================
@@ -589,24 +693,24 @@
         }
 
 
-        /* =====================================================
-           DISPLAY ROOM
-           ===================================================== */
+       /* =====================================================
+   DISPLAY MEETING INFORMATION
+   ===================================================== */
 
-        document.getElementById(
-            "roomName"
-        ).textContent =
-            meetingRoom || "Not specified";
+const meetingClassInfo =
+    document.getElementById(
+        "meetingClassInfo"
+    );
 
 
-        /* =====================================================
-           DISPLAY ROLE
-           ===================================================== */
+if (meetingClassInfo) {
 
-        document.getElementById(
-            "userRole"
-        ).textContent =
-            meetingRole || "Not specified";
+    meetingClassInfo.textContent =
+        `${meetingRoom || "Virtual Classroom"} • ${
+            meetingRole || "Participant"
+        }`;
+
+}
 
 
         /* =====================================================
@@ -1098,11 +1202,11 @@ socket.on(
         );
 
         console.log(
-            "EXISTING PARTICIPANTS"
+            "PARTICIPANT LIST"
         );
 
         console.log(
-            data.participants
+            data
         );
 
         console.log(
@@ -1110,20 +1214,25 @@ socket.on(
         );
 
 
-        window.MeetingConfig.participants =
-            data.participants || [];
+        MeetingParticipants.clear();
 
 
-        console.log(
-            "Current participant count:",
-            window.MeetingConfig
-                .participants
-                .length
-        );
+        (data.participants || [])
+            .forEach(
+                participant => {
+
+                    MeetingParticipants.set(
+                        participant
+                    );
+
+                }
+            );
+
+
+        MeetingUI.render();
 
     }
 );
-
 /* =====================================================
    PARTICIPANT JOINED
    ===================================================== */
@@ -1137,7 +1246,7 @@ socket.on(
         );
 
         console.log(
-            "NEW PARTICIPANT JOINED"
+            "PARTICIPANT JOINED"
         );
 
         console.log(
@@ -1149,57 +1258,116 @@ socket.on(
         );
 
 
-        const participant =
-            data.participant;
+        if (!data.participant) {
 
-
-        if (!participant) {
             return;
-        }
-
-
-        if (
-            !window.MeetingConfig.participants
-        ) {
-
-            window.MeetingConfig.participants =
-                [];
 
         }
 
 
-        /*
-        -------------------------------------------------
-        AVOID DUPLICATES
-        -------------------------------------------------
-        */
+        MeetingParticipants.set(
+            data.participant
+        );
 
-        const alreadyExists =
-            window.MeetingConfig.participants
-                .some(
-                    existing =>
-                        existing.socketId ===
-                        participant.socketId
+
+        MeetingUI.render();
+
+
+        MeetingUI.setStatus(
+            `${data.participant.name} joined the classroom.`
+        );
+
+
+        setTimeout(
+            () => {
+
+                MeetingUI.setStatus(
+                    "You have joined the classroom."
                 );
 
-
-        if (!alreadyExists) {
-
-            window.MeetingConfig.participants
-                .push(
-                    participant
-                );
-
-        }
-
-
-        console.log(
-            "Current participants:",
-            window.MeetingConfig.participants
+            },
+            2500
         );
 
     }
 );
+
+
+/* =====================================================
+   PARTICIPANT RECONNECTED
+   ===================================================== */
+
+socket.on(
+    "participantReconnected",
+    (data) => {
+
+        console.log(
+            "PARTICIPANT RECONNECTED",
+            data
+        );
+
+
+        if (!data.participant) {
+
+            return;
+
+        }
+
+
+        if (data.oldSocketId) {
+
+            MeetingParticipants.remove(
+                data.oldSocketId
+            );
+
+        }
+
+
+        MeetingParticipants.set(
+            data.participant
+        );
+
+
+        MeetingUI.render();
+
+    }
+);
+
+/* =====================================================
+   PARTICIPANT LEFT
+   ===================================================== */
+
+socket.on(
+    "participantLeft",
+    (data) => {
+
+        console.log(
+            "PARTICIPANT LEFT",
+            data
+        );
+
+
+        MeetingParticipants.remove(
+            data.socketId
+        );
+
+
+        MeetingUI.render();
+
+
+        if (data.name) {
+
+            MeetingUI.setStatus(
+                `${data.name} left the classroom.`
+            );
+
+        }
+
+    }
+);
+/* =====================================================
+   ROOM PARTICIPANTS
+   ===================================================== */
 
 /* =====================================================
    ROOM PARTICIPANTS
@@ -1226,8 +1394,19 @@ socket.on(
         );
 
 
-        window.MeetingConfig.participants =
-            data.participants || [];
+        MeetingParticipants.clear();
+
+
+        (data.participants || [])
+            .forEach(
+                participant => {
+
+                    MeetingParticipants.set(
+                        participant
+                    );
+
+                }
+            );
 
 
         window.MeetingConfig.counts =
@@ -1238,20 +1417,26 @@ socket.on(
             data.capacity || {};
 
 
+        MeetingUI.render();
+
+
         console.log(
             "Founder:",
             data.counts?.founder
         );
+
 
         console.log(
             "Teachers:",
             data.counts?.teachers
         );
 
+
         console.log(
             "Students:",
             data.counts?.students
         );
+
 
         console.log(
             "Total:",
@@ -1260,7 +1445,6 @@ socket.on(
 
     }
 );
-
 
         /* =====================================================
            SOCKET DISCONNECT
@@ -1427,9 +1611,24 @@ socket.on(
                 MAX_STUDENTS,
 
             maxParticipants:
-                MAX_PARTICIPANTS
+    MAX_PARTICIPANTS,
 
-        };
+participants:
+    [],
+
+counts:
+    {},
+
+capacity:
+    {},
+
+socketId:
+    null,
+
+joined:
+    false
+
+};
 
 
         /* =====================================================
@@ -1444,6 +1643,19 @@ socket.on(
             "MeetingConfig:",
             window.MeetingConfig
         );
+
+        /* =====================================================
+   INITIALIZE MEETING UI
+   ===================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        MeetingUI.init();
+
+    }
+);
 
     </script>
 
