@@ -94,7 +94,31 @@ window.MeetingWebRTC = (() => {
             }
         );
 
+        /*
+===========================================================
+USE MEDIA MANAGER V2 LOCAL STREAM
+===========================================================
+*/
+
+if (
+    window.MediaManagerV2 &&
+    typeof MediaManagerV2.getLocalStream === "function"
+) {
+
+    localStream =
+        MediaManagerV2.getLocalStream();
+
+
+    console.log(
+        "WEBRTC LOCAL STREAM:",
+        localStream
+    );
+
+}
+
         initialized = true;
+
+        
 
     }
 
@@ -106,13 +130,79 @@ window.MeetingWebRTC = (() => {
 
     async function startCamera() {
 
-        if (localStream) {
+    /*
+    ===========================================================
+    USE MEDIA MANAGER V2
+    ===========================================================
+    */
+
+    if (
+        window.MediaManagerV2 &&
+        typeof MediaManagerV2.getLocalStream === "function"
+    ) {
+
+        const existingStream =
+            MediaManagerV2.getLocalStream();
+
+
+        if (existingStream) {
+
+            localStream =
+                existingStream;
+
+            console.log(
+                "WEBRTC USING EXISTING MEDIA V2 STREAM"
+            );
 
             return localStream;
 
         }
 
-        localStream = await navigator.mediaDevices.getUserMedia({
+
+        /*
+        -------------------------------------------------------
+        If MediaManagerV2 has not started yet,
+        start it here.
+        -------------------------------------------------------
+        */
+
+        if (
+            typeof MediaManagerV2.startMedia === "function"
+        ) {
+
+            localStream =
+                await MediaManagerV2.startMedia();
+
+            console.log(
+                "WEBRTC RECEIVED MEDIA V2 STREAM"
+            );
+
+            return localStream;
+
+        }
+
+    }
+
+
+    /*
+    ===========================================================
+    FALLBACK
+    ===========================================================
+
+    This is only a safety fallback.
+    Normally MediaManagerV2 should provide the stream.
+    ===========================================================
+    */
+
+    if (localStream) {
+
+        return localStream;
+
+    }
+
+
+    localStream =
+        await navigator.mediaDevices.getUserMedia({
 
             video: {
 
@@ -136,13 +226,15 @@ window.MeetingWebRTC = (() => {
 
         });
 
-        MeetingUtils.success(
-            "Camera Started"
-        );
 
-        return localStream;
+    MeetingUtils.success(
+        "Camera Started"
+    );
 
-    }
+
+    return localStream;
+
+}
 
     /*
     ===========================================================
