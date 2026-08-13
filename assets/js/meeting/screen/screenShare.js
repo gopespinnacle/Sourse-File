@@ -406,15 +406,95 @@ const ScreenShare = {
         =====================================================
         */
 
-        if(
-            window.ParticipantLayout &&
-            typeof ParticipantLayout.showScreenShare ===
-            "function"
-        ){
+        /*
+=========================================================
+FORCE SCREEN SHARE TO FRONT
+=========================================================
+*/
 
-            ParticipantLayout.showScreenShare();
+const screenContainer =
+    document.getElementById("screenContainer");
 
-        }
+const screenVideo =
+    document.getElementById("screenVideo");
+
+if(screenContainer){
+
+    screenContainer.style.setProperty(
+        "display",
+        "block",
+        "important"
+    );
+
+    screenContainer.style.setProperty(
+        "visibility",
+        "visible",
+        "important"
+    );
+
+    screenContainer.style.setProperty(
+        "opacity",
+        "1",
+        "important"
+    );
+
+    screenContainer.style.setProperty(
+        "z-index",
+        "9999999",
+        "important"
+    );
+
+}
+
+if(screenVideo){
+
+    screenVideo.style.setProperty(
+        "display",
+        "block",
+        "important"
+    );
+
+    screenVideo.style.setProperty(
+        "visibility",
+        "visible",
+        "important"
+    );
+
+    screenVideo.style.setProperty(
+        "opacity",
+        "1",
+        "important"
+    );
+
+    screenVideo.style.setProperty(
+        "z-index",
+        "99999999",
+        "important"
+    );
+
+    screenVideo.style.setProperty(
+        "width",
+        "100%",
+        "important"
+    );
+
+    screenVideo.style.setProperty(
+        "height",
+        "100%",
+        "important"
+    );
+
+    screenVideo.style.setProperty(
+        "object-fit",
+        "contain",
+        "important"
+    );
+
+}
+
+console.log(
+    "SCREEN SHARE FORCED TO FRONT"
+);
 
     };
 
