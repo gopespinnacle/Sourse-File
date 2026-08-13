@@ -1981,6 +1981,14 @@ href="https://cdn.jsdelivr.net/npm/emoji-mart@latest/css/emoji-mart.css">
 <script src="assets/js/meeting/ui/meetingLayout.js"></script>
 <script src="assets/js/meeting/ui/meetingToolbar.js"></script>
 
+<!-- ==========================================
+     SCREEN SHARE V3
+========================================== -->
+
+<script src="assets/js/meeting/screen/screenLayout.js"></script>
+<script src="assets/js/meeting/screen/screenAnnotation.js"></script>
+<script src="assets/js/meeting/screen/screenShare.js"></script>
+
 <script>
 
 const params = new URLSearchParams(window.location.search);
@@ -3778,161 +3786,306 @@ async function switchCamera(deviceId){
 });
 }
 async function createPeer(socketId){
-console.log("CREATE PEER CALLED FOR:", socketId);
 
-    if (peers[socketId]) {
+    console.log(
+        "CREATE PEER CALLED FOR:",
+        socketId
+    );
 
-    const pc = peers[socketId];
 
-    if (
-        pc.connectionState === "connected" ||
-        pc.connectionState === "connecting"
-    ) {
+    /*
+    =========================================================
+    EXISTING PEER CHECK
+    =========================================================
+    */
 
-        return pc;
+    if(peers[socketId]){
 
-    }
+        const pc = peers[socketId];
 
-    try {
+        if(
+            pc.connectionState === "connected" ||
+            pc.connectionState === "connecting"
+        ){
 
-    pc.close();
+            return pc;
 
-} catch(e){}
+        }
 
-delete peers[socketId];
+        try{
 
-// 🔥 Remove old remote video if it exists
-const oldVideo = document.getElementById("remote_" + socketId);
+            pc.close();
 
-if (oldVideo) {
+        }catch(e){}
 
-    if (oldVideo.srcObject) {
+        delete peers[socketId];
 
-        oldVideo.srcObject.getTracks().forEach(track => track.stop());
 
-        oldVideo.srcObject = null;
+        /*
+        REMOVE OLD REMOTE VIDEO
+        */
 
-    }
+        const oldVideo =
+            document.getElementById(
+                "remote_" + socketId
+            );
 
-    oldVideo.remove();
+        if(oldVideo){
 
-}delete peers[socketId];
+            if(oldVideo.srcObject){
 
-}
+                oldVideo.srcObject
+                    .getTracks()
+                    .forEach(track=>{
 
-    if(!localStream){
-        await initMedia();
-    }
+                        try{
 
-    const pc = await PeerManager.create(socketId, localStream);
+                            track.stop();
 
-    peers[socketId] = pc;
+                        }catch(e){}
 
-    console.log("NEW PEER CREATED:", socketId);
+                    });
 
-pc.onnegotiationneeded = null;
-pc.onicecandidate = null;
-pc.ontrack = null;
-pc.onconnectionstatechange = null;
-pc.oniceconnectionstatechange = null;
+                oldVideo.srcObject = null;
 
-    // send your video/audio
-    console.log("LOCAL STREAM:", localStream);
-
-console.log(
-    "VIDEO TRACKS:",
-    localStream.getVideoTracks()
-);
-
-console.log(
-    "AUDIO TRACKS:",
-    localStream.getAudioTracks()
-);
-    
-
-    // receive other person video
-    
-
-pc.ontrack = (event) => {
-
-    console.log("TRACK RECEIVED:", event.track.kind);
-
-    let video = ParticipantLayout.getVideo(socketId);
-
-if (!video && event.track.kind === "video") {
-
-    video = ParticipantLayout.createVideoCard(socketId);
-
-}
-
-    if (
-    window.teacherSharing &&
-    event.track.kind === "video"
-) {
-
-    ScreenLayout.attachRemoteTrack(event.track);
-
-} else {
-
-    ParticipantLayout.attachTrack(socketId, event.track);
-
-}
-
-};
-pc.onconnectionstatechange = async () => {
-
-    console.log("STATE:", pc.connectionState);
-
-    if (pc.connectionState === "failed") {
-
-        console.log("ICE Restart");
-
-        try {
-
-            if (pc.signalingState !== "stable") {
-                return;
             }
 
-            
-
-        } catch (e) {
-
-            console.log(e);
+            oldVideo.remove();
 
         }
 
     }
 
-    if (pc.connectionState === "connected") {
 
-        console.log("Connection Restored");
+    /*
+    =========================================================
+    LOCAL MEDIA
+    =========================================================
+    */
+
+    if(!localStream){
+
+        await initMedia();
 
     }
 
-};
-pc.oniceconnectionstatechange = () => {
-    console.log("ICE:", pc.iceConnectionState);
-};
-    // 🔥 VERY IMPORTANT (send ICE)
+
+    /*
+    =========================================================
+    CREATE NORMAL CAMERA / AUDIO PEER
+    =========================================================
+    */
+
+    const pc =
+        await PeerManager.create(
+            socketId,
+            localStream
+        );
+
+    peers[socketId] = pc;
+
+
+    console.log(
+        "NEW PEER CREATED:",
+        socketId
+    );
+
+
+    /*
+    =========================================================
+    DISABLE OLD HANDLERS
+    =========================================================
+    */
+
+    pc.onnegotiationneeded = null;
+
+    pc.onicecandidate = null;
+
+    pc.ontrack = null;
+
+    pc.onconnectionstatechange = null;
+
+    pc.oniceconnectionstatechange = null;
+
+
+    /*
+    =========================================================
+    LOCAL MEDIA DEBUG
+    =========================================================
+    */
+
+    console.log(
+        "LOCAL STREAM:",
+        localStream
+    );
+
+    console.log(
+        "VIDEO TRACKS:",
+        localStream.getVideoTracks()
+    );
+
+    console.log(
+        "AUDIO TRACKS:",
+        localStream.getAudioTracks()
+    );
+
+
+    /*
+    =========================================================
+    NORMAL CAMERA / AUDIO TRACK RECEIVER
+    =========================================================
+
+    IMPORTANT:
+    This function MUST NOT touch ScreenLayout.
+
+    ScreenShare V3 has its own RTCPeerConnection and
+    its own screenVideo handling.
+    =========================================================
+    */
+
+    pc.ontrack = (event) => {
+
+        console.log(
+            "NORMAL TRACK RECEIVED:",
+            event.track.kind
+        );
+
+
+        let video =
+            ParticipantLayout.getVideo(
+                socketId
+            );
+
+
+        if(
+            !video &&
+            event.track.kind === "video"
+        ){
+
+            video =
+                ParticipantLayout.createVideoCard(
+                    socketId
+                );
+
+        }
+
+
+        /*
+        =====================================================
+        ALWAYS SEND NORMAL CAMERA/AUDIO TO
+        PARTICIPANT LAYOUT
+        =====================================================
+        */
+
+        ParticipantLayout.attachTrack(
+            socketId,
+            event.track
+        );
+
+    };
+
+
+    /*
+    =========================================================
+    CONNECTION STATE
+    =========================================================
+    */
+
+    pc.onconnectionstatechange = async () => {
+
+        console.log(
+            "STATE:",
+            pc.connectionState
+        );
+
+
+        if(
+            pc.connectionState === "failed"
+        ){
+
+            console.log(
+                "ICE Restart"
+            );
+
+            try{
+
+                if(
+                    pc.signalingState !== "stable"
+                ){
+
+                    return;
+
+                }
+
+            }catch(e){
+
+                console.log(e);
+
+            }
+
+        }
+
+
+        if(
+            pc.connectionState === "connected"
+        ){
+
+            console.log(
+                "Connection Restored"
+            );
+
+        }
+
+    };
+
+
+    /*
+    =========================================================
+    ICE CONNECTION STATE
+    =========================================================
+    */
+
+    pc.oniceconnectionstatechange = () => {
+
+        console.log(
+            "ICE:",
+            pc.iceConnectionState
+        );
+
+    };
+
+
+    /*
+    =========================================================
+    SEND ICE CANDIDATES
+    =========================================================
+    */
+
     pc.onicecandidate = (event) => {
 
-    if(event.candidate){
+        if(event.candidate){
 
-        socket.emit("ice-candidate",{
+            socket.emit(
+                "ice-candidate",
+                {
 
-            targetSocketId: socketId,
+                    targetSocketId:
+                        socketId,
 
-            candidate: event.candidate
+                    candidate:
+                        event.candidate
 
-        });
+                }
+            );
 
-    }
+        }
 
-};
+    };
+
+
     return pc;
+
 }
-
-
 window.addEventListener("resize", handleResize);
 document.addEventListener("visibilitychange", () => {
 
@@ -4949,14 +5102,7 @@ function toggleAttendancePanel(){
 
 </script>
 
-<!-- UI -->
 
-
-
-<!-- Screen -->
-<script src="assets/js/meeting/screen/screenLayout.js"></script>
-<script src="assets/js/meeting/screen/screenAnnotation.js"></script>
-<script src="assets/js/meeting/screen/screenShare.js"></script>
 
 <!-- Video -->
 <script src="assets/js/meeting/video/constants.js"></script>
