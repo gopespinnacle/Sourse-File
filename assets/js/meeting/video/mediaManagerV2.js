@@ -252,10 +252,29 @@ const MediaManagerV2 = {
 
     attachLocalVideo() {
 
+    console.log(
+        "=========================================="
+    );
+
+    console.log(
+        "ATTACHING LOCAL CAMERA"
+    );
+
+    console.log(
+        "=========================================="
+    );
+
+
+    /*
+    ==================================================
+    CHECK LOCAL MEDIA
+    ==================================================
+    */
+
     if (!this.localStream) {
 
         console.warn(
-            "No local stream available."
+            "LOCAL STREAM NOT AVAILABLE"
         );
 
         return;
@@ -264,48 +283,19 @@ const MediaManagerV2 = {
 
 
     /*
-    ======================================================
-    FIND CURRENT USER
-    ======================================================
+    ==================================================
+    GET MEETING CONFIG
+    ==================================================
     */
 
-    const participants =
-    window.MeetingParticipants;
-
-const config =
-    window.MeetingConfig;
+    const config =
+        window.MeetingConfig;
 
 
-if (
-    !participants ||
-    !config
-) {
-
-    console.warn(
-        "Meeting participant system not ready."
-    );
-
-    return;
-
-}
-
-
-    /*
-    ======================================================
-    FIND CURRENT PARTICIPANT
-    ======================================================
-    */
-
-    const currentUser =
-    participants.get(
-        config.socketId
-    );
-
-
-    if (!currentUser) {
+    if (!config) {
 
         console.warn(
-            "Current participant not found."
+            "MEETING CONFIG NOT AVAILABLE"
         );
 
         return;
@@ -314,19 +304,49 @@ if (
 
 
     /*
-    ======================================================
+    ==================================================
+    SOCKET ID
+    ==================================================
+    */
+
+    const socketId =
+        config.socketId;
+
+
+    console.log(
+        "LOCAL SOCKET ID:",
+        socketId
+    );
+
+
+    if (!socketId) {
+
+        console.warn(
+            "LOCAL SOCKET ID NOT AVAILABLE"
+        );
+
+        return;
+
+    }
+
+
+    /*
+    ==================================================
     FIND PARTICIPANT CARD
-    ======================================================
+    ==================================================
     */
 
     const card =
-        currentUser.card;
+        document.querySelector(
+            `.meeting-participant[data-socket-id="${socketId}"]`
+        );
 
 
     if (!card) {
 
         console.warn(
-            "Current participant card not found."
+            "LOCAL PARTICIPANT CARD NOT FOUND:",
+            socketId
         );
 
         return;
@@ -334,98 +354,114 @@ if (
     }
 
 
+    console.log(
+        "LOCAL PARTICIPANT CARD FOUND:",
+        card
+    );
+
+
     /*
-    ======================================================
-    FIND / CREATE VIDEO
-    ======================================================
+    ==================================================
+    FIND VIDEO ELEMENT
+    ==================================================
     */
 
     let video =
-        card.querySelector(
-            "video"
-        );
+        card.querySelector("video");
 
+
+    /*
+    ==================================================
+    CREATE VIDEO IF NOT PRESENT
+    ==================================================
+    */
 
     if (!video) {
 
         video =
-            document.createElement(
-                "video"
-            );
+            document.createElement("video");
+
+
+        video.className =
+            "participant-video";
 
 
         video.autoplay =
             true;
 
-        video.muted =
-            true;
 
         video.playsInline =
             true;
 
-        video.className =
-            "participant-video";
+
+        video.muted =
+            true;
 
 
         card.appendChild(
             video
         );
 
+
+        console.log(
+            "LOCAL VIDEO ELEMENT CREATED"
+        );
+
     }
 
 
     /*
-    ======================================================
-    ATTACH CAMERA STREAM
-    ======================================================
+    ==================================================
+    ATTACH MEDIA STREAM
+    ==================================================
     */
 
     video.srcObject =
         this.localStream;
 
 
-    video.autoplay =
-        true;
+    /*
+    ==================================================
+    VIDEO SETTINGS
+    ==================================================
+    */
 
-    video.muted =
+    video.autoplay =
         true;
 
     video.playsInline =
         true;
 
+    video.muted =
+        true;
+
 
     /*
-    ======================================================
+    ==================================================
     START VIDEO
-    ======================================================
+    ==================================================
     */
 
     video.play()
+        .then(
+            () => {
+
+                console.log(
+                    "LOCAL CAMERA ATTACHED"
+                );
+
+            }
+        )
         .catch(
             error => {
 
-                console.log(
-                    "Local video play waiting:",
+                console.warn(
+                    "LOCAL VIDEO PLAY FAILED:",
                     error
                 );
 
             }
         );
-
-
-    /*
-    ======================================================
-    MARK AS LOCAL VIDEO
-    ======================================================
-    */
-
-    video.dataset.local =
-        "true";
-
-
-    console.log(
-        "LOCAL CAMERA ATTACHED"
-    );
 
 },
 
