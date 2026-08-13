@@ -797,6 +797,57 @@ if (meetingClassInfo) {
 
 
             /* =====================================================
+   GLOBAL MEETING OBJECT
+   ===================================================== */
+
+window.MeetingConfig = {
+
+    serverURL:
+        SERVER_URL,
+
+    room:
+        meetingRoom,
+
+    role:
+        meetingRole,
+
+    userId:
+        meetingUserId,
+
+    userName:
+        meetingUserName,
+
+    maxFounders:
+        MAX_FOUNDERS,
+
+    maxTeachers:
+        MAX_TEACHERS,
+
+    maxStudents:
+        MAX_STUDENTS,
+
+    maxParticipants:
+        MAX_PARTICIPANTS,
+
+    participants:
+        [],
+
+    counts:
+        {},
+
+    capacity:
+        {},
+
+    socketId:
+        null,
+
+    joined:
+        false
+
+};
+
+
+            /* =====================================================
    JOIN MEETING ROOM
    ===================================================== */
 
@@ -1365,9 +1416,6 @@ socket.on(
 
     }
 );
-/* =====================================================
-   ROOM PARTICIPANTS
-   ===================================================== */
 
 /* =====================================================
    ROOM PARTICIPANTS
@@ -1578,57 +1626,7 @@ socket.on(
 
             }
         );
-
-
-        /* =====================================================
-           GLOBAL MEETING OBJECT
-           ===================================================== */
-
-        window.MeetingConfig = {
-
-            serverURL:
-                SERVER_URL,
-
-            room:
-                meetingRoom,
-
-            role:
-                meetingRole,
-
-            userId:
-                meetingUserId,
-
-            userName:
-                meetingUserName,
-
-            maxFounders:
-                MAX_FOUNDERS,
-
-            maxTeachers:
-                MAX_TEACHERS,
-
-            maxStudents:
-                MAX_STUDENTS,
-
-            maxParticipants:
-    MAX_PARTICIPANTS,
-
-participants:
-    [],
-
-counts:
-    {},
-
-capacity:
-    {},
-
-socketId:
-    null,
-
-joined:
-    false
-
-};
+       
 
 
         /* =====================================================
@@ -1648,14 +1646,7 @@ joined:
    INITIALIZE MEETING UI
    ===================================================== */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        MeetingUI.init();
-
-    }
-);
+MeetingUI.init();
 
     </script>
 
