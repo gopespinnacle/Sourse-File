@@ -690,6 +690,216 @@
             );
 
 
+            /* =====================================================
+   JOIN MEETING ROOM
+   ===================================================== */
+
+function joinMeetingRoom() {
+
+    /*
+    -----------------------------------------------------
+    BASIC ROOM CHECK
+    -----------------------------------------------------
+    */
+
+    if (!meetingRoom) {
+
+        console.error(
+            "Cannot join meeting: room is missing."
+        );
+
+        document.getElementById(
+            "systemStatus"
+        ).textContent =
+            "Meeting room is missing.";
+
+        return;
+
+    }
+
+
+    /*
+    -----------------------------------------------------
+    ROLE CHECK
+    -----------------------------------------------------
+    */
+
+    if (
+        !VALID_ROLES.includes(
+            meetingRole
+        )
+    ) {
+
+        console.error(
+            "Cannot join meeting: invalid role.",
+            meetingRole
+        );
+
+        document.getElementById(
+            "systemStatus"
+        ).textContent =
+            "Invalid meeting role.";
+
+        return;
+
+    }
+
+
+    /*
+    -----------------------------------------------------
+    NAME
+
+    For now we read the name from:
+
+    1. URL ?name=
+    2. localStorage meetingUserName
+
+    We do NOT invent a real user name.
+    -----------------------------------------------------
+    */
+
+    const participantName =
+        meetingUserName;
+
+
+    /*
+    -----------------------------------------------------
+    NAME CHECK
+    -----------------------------------------------------
+    */
+
+    if (!participantName) {
+
+        console.error(
+            "Cannot join meeting: participant name is missing."
+        );
+
+        document.getElementById(
+            "systemStatus"
+        ).textContent =
+            "Participant name is missing.";
+
+        return;
+
+    }
+
+
+    /*
+    -----------------------------------------------------
+    BUILD JOIN DATA
+    -----------------------------------------------------
+    */
+
+    const joinData = {
+
+        room:
+            meetingRoom,
+
+        role:
+            meetingRole,
+
+        name:
+            participantName,
+
+        userId:
+            meetingUserId || null,
+
+        studentId:
+            meetingRole === "student"
+                ? (
+                    localStorage.getItem(
+                        "studentId"
+                    ) ||
+                    null
+                )
+                : null,
+
+        periodId:
+            urlParams.get("periodId") ||
+            null
+
+    };
+
+
+    /*
+    -----------------------------------------------------
+    DEBUG
+    -----------------------------------------------------
+    */
+
+    console.log(
+        "=========================================="
+    );
+
+    console.log(
+        "JOINING MEETING ROOM"
+    );
+
+    console.log(
+        "=========================================="
+    );
+
+    console.log(
+        "Room:",
+        joinData.room
+    );
+
+    console.log(
+        "Role:",
+        joinData.role
+    );
+
+    console.log(
+        "Name:",
+        joinData.name
+    );
+
+    console.log(
+        "User ID:",
+        joinData.userId
+    );
+
+    console.log(
+        "Student ID:",
+        joinData.studentId
+    );
+
+    console.log(
+        "Period ID:",
+        joinData.periodId
+    );
+
+    console.log(
+        "=========================================="
+    );
+
+
+    /*
+    -----------------------------------------------------
+    SEND JOIN REQUEST
+    -----------------------------------------------------
+    */
+
+    socket.emit(
+        "joinRoom",
+        joinData
+    );
+
+
+    /*
+    -----------------------------------------------------
+    UI
+    -----------------------------------------------------
+    */
+
+    document.getElementById(
+        "systemStatus"
+    ).textContent =
+        "Joining classroom...";
+
+}
+
+
         /* =====================================================
            SOCKET CONNECT
            ===================================================== */
@@ -734,21 +944,320 @@
                     "Connected to classroom server";
 
 
-                /*
-                ==================================================
-                IMPORTANT
+              /*
+==================================================
+JOIN MEETING ROOM
+==================================================
+*/
 
-                DO NOT JOIN ROOM YET.
-
-                We will implement the room protocol after
-                checking the existing server-side
-                meetingSocket.js.
-
-                ==================================================
-                */
+joinMeetingRoom();
 
             }
         );
+
+
+        /* =====================================================
+   JOIN ACCEPTED
+   ===================================================== */
+
+socket.on(
+    "joinAccepted",
+    (data) => {
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log(
+            "JOIN ACCEPTED"
+        );
+
+        console.log(
+            data
+        );
+
+        console.log(
+            "=========================================="
+        );
+
+
+        document.getElementById(
+            "systemStatus"
+        ).textContent =
+            "You have joined the classroom.";
+
+
+        /*
+        -------------------------------------------------
+        SAVE CURRENT SOCKET ID
+        -------------------------------------------------
+        */
+
+        window.MeetingConfig.socketId =
+            data.socketId;
+
+
+        /*
+        -------------------------------------------------
+        SAVE JOIN STATE
+        -------------------------------------------------
+        */
+
+        window.MeetingConfig.joined =
+            true;
+
+
+        /*
+        -------------------------------------------------
+        SAVE SERVER CAPACITY
+        -------------------------------------------------
+        */
+
+        window.MeetingConfig.maxParticipants =
+            data.maxParticipants;
+
+
+        window.MeetingConfig.maxFounders =
+            data.maxFounders;
+
+
+        window.MeetingConfig.maxTeachers =
+            data.maxTeachers;
+
+
+        window.MeetingConfig.maxStudents =
+            data.maxStudents;
+
+
+        console.log(
+            "MeetingConfig updated:",
+            window.MeetingConfig
+        );
+
+    }
+);
+
+/* =====================================================
+   JOIN REJECTED
+   ===================================================== */
+
+socket.on(
+    "joinRejected",
+    (data) => {
+
+        console.error(
+            "=========================================="
+        );
+
+        console.error(
+            "JOIN REJECTED"
+        );
+
+        console.error(
+            data
+        );
+
+        console.error(
+            "=========================================="
+        );
+
+
+        document.getElementById(
+            "connectionDot"
+        ).style.background =
+            "#ef4444";
+
+
+        document.getElementById(
+            "connectionText"
+        ).textContent =
+            "Join rejected";
+
+
+        document.getElementById(
+            "systemStatus"
+        ).textContent =
+            data.reason ||
+            "Unable to join classroom.";
+
+    }
+);
+
+/* =====================================================
+   PARTICIPANT LIST
+   ===================================================== */
+
+socket.on(
+    "participantList",
+    (data) => {
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log(
+            "EXISTING PARTICIPANTS"
+        );
+
+        console.log(
+            data.participants
+        );
+
+        console.log(
+            "=========================================="
+        );
+
+
+        window.MeetingConfig.participants =
+            data.participants || [];
+
+
+        console.log(
+            "Current participant count:",
+            window.MeetingConfig
+                .participants
+                .length
+        );
+
+    }
+);
+
+/* =====================================================
+   PARTICIPANT JOINED
+   ===================================================== */
+
+socket.on(
+    "participantJoined",
+    (data) => {
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log(
+            "NEW PARTICIPANT JOINED"
+        );
+
+        console.log(
+            data.participant
+        );
+
+        console.log(
+            "=========================================="
+        );
+
+
+        const participant =
+            data.participant;
+
+
+        if (!participant) {
+            return;
+        }
+
+
+        if (
+            !window.MeetingConfig.participants
+        ) {
+
+            window.MeetingConfig.participants =
+                [];
+
+        }
+
+
+        /*
+        -------------------------------------------------
+        AVOID DUPLICATES
+        -------------------------------------------------
+        */
+
+        const alreadyExists =
+            window.MeetingConfig.participants
+                .some(
+                    existing =>
+                        existing.socketId ===
+                        participant.socketId
+                );
+
+
+        if (!alreadyExists) {
+
+            window.MeetingConfig.participants
+                .push(
+                    participant
+                );
+
+        }
+
+
+        console.log(
+            "Current participants:",
+            window.MeetingConfig.participants
+        );
+
+    }
+);
+
+/* =====================================================
+   ROOM PARTICIPANTS
+   ===================================================== */
+
+socket.on(
+    "roomParticipants",
+    (data) => {
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log(
+            "ROOM PARTICIPANTS"
+        );
+
+        console.log(
+            data
+        );
+
+        console.log(
+            "=========================================="
+        );
+
+
+        window.MeetingConfig.participants =
+            data.participants || [];
+
+
+        window.MeetingConfig.counts =
+            data.counts || {};
+
+
+        window.MeetingConfig.capacity =
+            data.capacity || {};
+
+
+        console.log(
+            "Founder:",
+            data.counts?.founder
+        );
+
+        console.log(
+            "Teachers:",
+            data.counts?.teachers
+        );
+
+        console.log(
+            "Students:",
+            data.counts?.students
+        );
+
+        console.log(
+            "Total:",
+            data.counts?.total
+        );
+
+    }
+);
 
 
         /* =====================================================
