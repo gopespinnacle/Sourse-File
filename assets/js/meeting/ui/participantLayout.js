@@ -55,13 +55,12 @@ ParticipantLayout.createVideoCard = function(socketId, isLocal = false){
 
     card.className = "participant-card";
 
-    if(document.getElementById("participantStrip")?.classList.contains("screen-sharing")){
-    card.style.width = "70px";
-    card.style.height = "120px";
-    card.style.flex = "none";
-}
-
     card.id = "participant_" + socketId;
+
+
+    /* =====================================================
+       CREATE VIDEO
+       ===================================================== */
 
     const video = document.createElement("video");
 
@@ -72,9 +71,10 @@ ParticipantLayout.createVideoCard = function(socketId, isLocal = false){
     video.playsInline = true;
 
     video.style.width = "100%";
-video.style.height = "100%";
-video.style.objectFit = "cover";
-video.style.display = "block";
+    video.style.height = "100%";
+    video.style.objectFit = "cover";
+    video.style.display = "block";
+
 
     if(isLocal){
 
@@ -82,15 +82,15 @@ video.style.display = "block";
 
     }
 
+
     card.appendChild(video);
 
     strip.appendChild(card);
 
-    console.log(
-    "CARD CREATED:",
-    socketId,
-    strip.children.length
-);
+
+    /* =====================================================
+       SAVE PARTICIPANT
+       ===================================================== */
 
     this.participants[socketId] = {
 
@@ -99,12 +99,172 @@ video.style.display = "block";
         video
 
     };
-    if (
-    window.MeetingLayout &&
-    typeof MeetingLayout.update === "function"
-) {
-    MeetingLayout.update();
-}
+
+
+    /* =====================================================
+       IF SCREEN SHARING IS ACTIVE
+       FORCE SMALL VIDEO
+       ===================================================== */
+
+    if(
+        strip.classList.contains("screen-sharing")
+    ){
+
+        card.style.setProperty(
+            "width",
+            "70px",
+            "important"
+        );
+
+        card.style.setProperty(
+            "height",
+            "120px",
+            "important"
+        );
+
+        card.style.setProperty(
+            "min-width",
+            "70px",
+            "important"
+        );
+
+        card.style.setProperty(
+            "max-width",
+            "70px",
+            "important"
+        );
+
+        card.style.setProperty(
+            "min-height",
+            "120px",
+            "important"
+        );
+
+        card.style.setProperty(
+            "max-height",
+            "120px",
+            "important"
+        );
+
+        card.style.setProperty(
+            "flex",
+            "0 0 70px",
+            "important"
+        );
+
+        card.style.setProperty(
+            "display",
+            "block",
+            "important"
+        );
+
+        card.style.setProperty(
+            "overflow",
+            "hidden",
+            "important"
+        );
+
+
+        video.style.setProperty(
+            "width",
+            "100%",
+            "important"
+        );
+
+        video.style.setProperty(
+            "height",
+            "100%",
+            "important"
+        );
+
+        video.style.setProperty(
+            "object-fit",
+            "cover",
+            "important"
+        );
+
+    }
+
+
+    console.log(
+        "CARD CREATED:",
+        socketId,
+        "SCREEN MODE:",
+        strip.classList.contains("screen-sharing")
+    );
+
+
+    /* =====================================================
+       MEETING LAYOUT
+       ===================================================== */
+
+    if(
+        window.MeetingLayout &&
+        typeof MeetingLayout.update === "function"
+    ){
+
+        MeetingLayout.update();
+
+    }
+
+
+    /* =====================================================
+       AFTER MEETING LAYOUT UPDATE
+       FORCE SMALL SIZE AGAIN
+       ===================================================== */
+
+    if(
+        strip.classList.contains("screen-sharing")
+    ){
+
+        requestAnimationFrame(() => {
+
+            card.style.setProperty(
+                "width",
+                "70px",
+                "important"
+            );
+
+            card.style.setProperty(
+                "height",
+                "120px",
+                "important"
+            );
+
+            card.style.setProperty(
+                "min-width",
+                "70px",
+                "important"
+            );
+
+            card.style.setProperty(
+                "max-width",
+                "70px",
+                "important"
+            );
+
+            card.style.setProperty(
+                "min-height",
+                "120px",
+                "important"
+            );
+
+            card.style.setProperty(
+                "max-height",
+                "120px",
+                "important"
+            );
+
+            card.style.setProperty(
+                "flex",
+                "0 0 70px",
+                "important"
+            );
+
+        });
+
+    }
+
 
     return video;
 
