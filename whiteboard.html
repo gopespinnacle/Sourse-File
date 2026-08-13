@@ -19,7 +19,11 @@
          SOCKET.IO
          ===================================================== -->
 
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+<script src="assets/js/meeting/meetingUtils.js"></script>
+<script src="assets/js/meeting/meetingSocket.js"></script>
+<script src="assets/js/meeting/meetingWebRTC.js"></script>
 
 <script src="assets/js/meeting/meetingParticipantsV2.js"></script>
 <script src="assets/js/meeting/meetingUIV2.js"></script>
@@ -775,28 +779,15 @@ if (meetingClassInfo) {
         );
 
 
+
         /* =====================================================
-           SOCKET.IO CONNECTION
-           ===================================================== */
+   SOCKET CONNECTION
+   ===================================================== */
 
-        const socket =
-            io(
-                SERVER_URL,
-                {
-
-                    transports: [
-                        "websocket",
-                        "polling"
-                    ],
-
-                    reconnection: true,
-
-                    reconnectionAttempts: Infinity,
-
-                    reconnectionDelay: 1000
-
-                }
-            );
+const socket =
+    MeetingSocket.connect(
+        SERVER_URL
+    );
 
 
             /* =====================================================
@@ -1200,6 +1191,12 @@ START CAMERA + MICROPHONE AUTOMATICALLY
 =====================================================
 */
 
+/*
+=====================================================
+START CAMERA + MICROPHONE AUTOMATICALLY
+=====================================================
+*/
+
 if (
     window.MediaManagerV2 &&
     typeof MediaManagerV2.startMedia === "function"
@@ -1210,7 +1207,56 @@ if (
     );
 
 
-    MediaManagerV2.startMedia();
+    MediaManagerV2.startMedia()
+        .then(
+            stream => {
+
+                if (!stream) {
+
+                    console.warn(
+                        "Media stream was not created."
+                    );
+
+                    return;
+
+                }
+
+
+                console.log(
+                    "CAMERA STREAM READY"
+                );
+
+
+                /*
+                ------------------------------------------------
+                CONNECT CAMERA STREAM TO WEBRTC
+                ------------------------------------------------
+                */
+
+                if (
+                    window.MeetingWebRTC &&
+                    typeof MeetingWebRTC.setLocalStream ===
+                    "function"
+                ) {
+
+                    MeetingWebRTC.setLocalStream(
+                        stream
+                    );
+
+                }
+
+            }
+        )
+        .catch(
+            error => {
+
+                console.error(
+                    "MEDIA START ERROR:",
+                    error
+                );
+
+            }
+        );
 
 }
 
@@ -1346,6 +1392,40 @@ socket.on(
 
         MeetingUI.render();
 
+        /*
+=====================================================
+AUTOMATIC WEBRTC CONNECTION
+=====================================================
+*/
+
+if (
+    window.MeetingWebRTC &&
+    data.participant.socketId &&
+    MeetingWebRTC.getLocalStream()
+) {
+
+    console.log(
+        "CREATING AUTOMATIC WEBRTC OFFER FOR:",
+        data.participant.socketId
+    );
+
+
+    MeetingWebRTC.createOffer(
+        data.participant.socketId
+    )
+    .catch(
+        error => {
+
+            console.error(
+                "WEBRTC OFFER ERROR:",
+                error
+            );
+
+        }
+    );
+
+}
+
 
         MeetingUI.setStatus(
             `${data.participant.name} joined the classroom.`
@@ -1366,7 +1446,158 @@ socket.on(
     }
 );
 
+/* =====================================================
+   WEBRTC OFFER
+   ===================================================== */
 
+socket.on(
+    "offer",
+    async (data) => {
+
+        console.log(
+            "WEBRTC OFFER RECEIVED:",
+            data
+        );
+
+
+        if (
+            !window.MeetingWebRTC ||
+            !data.senderSocketId ||
+            !data.offer
+        ) {
+
+            return;
+
+        }
+
+
+        try {
+
+            await MeetingWebRTC.receiveOffer(
+                data.senderSocketId,
+                data.offer
+            );
+
+
+            console.log(
+                "WEBRTC OFFER PROCESSED"
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "WEBRTC OFFER PROCESSING ERROR:",
+                error
+            );
+
+        }
+
+    }
+);
+
+/* =====================================================
+   WEBRTC ANSWER
+   ===================================================== */
+
+socket.on(
+    "answer",
+    async (data) => {
+
+        console.log(
+            "WEBRTC ANSWER RECEIVED:",
+            data
+        );
+
+
+        if (
+            !window.MeetingWebRTC ||
+            !data.senderSocketId ||
+            !data.answer
+        ) {
+
+            return;
+
+        }
+
+
+        try {
+
+            await MeetingWebRTC.receiveAnswer(
+                data.senderSocketId,
+                data.answer
+            );
+
+
+            console.log(
+                "WEBRTC ANSWER PROCESSED"
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "WEBRTC ANSWER PROCESSING ERROR:",
+                error
+            );
+
+        }
+
+    }
+);
+
+/* =====================================================
+   WEBRTC ICE CANDIDATE
+   ===================================================== */
+
+socket.on(
+    "ice-candidate",
+    async (data) => {
+
+        console.log(
+            "WEBRTC ICE RECEIVED:",
+            data
+        );
+
+
+        if (
+            !window.MeetingWebRTC ||
+            !data.senderSocketId ||
+            !data.candidate
+        ) {
+
+            return;
+
+        }
+
+
+        try {
+
+            await MeetingWebRTC.receiveIce(
+                data.senderSocketId,
+                data.candidate
+            );
+
+
+            console.log(
+                "WEBRTC ICE PROCESSED"
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "WEBRTC ICE PROCESSING ERROR:",
+                error
+            );
+
+        }
+
+    }
+);
 /* =====================================================
    PARTICIPANT RECONNECTED
    ===================================================== */

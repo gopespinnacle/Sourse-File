@@ -249,6 +249,48 @@ if (
     }
 
     /*
+===========================================================
+SET LOCAL STREAM
+Connect MediaManagerV2 camera to WebRTC
+===========================================================
+*/
+
+function setLocalStream(stream) {
+
+    if (!stream) {
+
+        console.warn(
+            "MeetingWebRTC: local stream is missing."
+        );
+
+        return;
+
+    }
+
+
+    localStream =
+        stream;
+
+
+    console.log(
+        "MeetingWebRTC: LOCAL STREAM CONNECTED"
+    );
+
+
+    console.log(
+        "Video tracks:",
+        localStream.getVideoTracks()
+    );
+
+
+    console.log(
+        "Audio tracks:",
+        localStream.getAudioTracks()
+    );
+
+}
+
+    /*
     ===========================================================
     GET SCREEN STREAM
     ===========================================================
@@ -822,7 +864,9 @@ if (
 
         getLocalStream,
 
-        getScreenStream,
+setLocalStream,
+
+getScreenStream,
 
         getPeers,
 
