@@ -160,117 +160,316 @@ const ScreenShare = {
 
         async createStudentPeer(teacherSocketId){
 
-        if(this.screenPeers[teacherSocketId]){
+    if(this.screenPeers[teacherSocketId]){
+
+        try{
+
+            this.screenPeers[teacherSocketId].close();
+
+        }catch(e){}
+
+        delete this.screenPeers[teacherSocketId];
+
+    }
+
+    console.log(
+        "Student Peer ->",
+        teacherSocketId
+    );
+
+    const pc =
+    new RTCPeerConnection({
+
+        iceServers:[
+            {
+                urls:"stun:stun.l.google.com:19302"
+            }
+        ]
+
+    });
+
+    this.screenPeers[teacherSocketId] = pc;
+
+
+    /* =====================================================
+       STUDENT RECEIVES TEACHER SCREEN
+       ===================================================== */
+
+    pc.ontrack = async (event) => {
+
+        console.log(
+            "================================="
+        );
+
+        console.log(
+            "SCREEN TRACK RECEIVED"
+        );
+
+        console.log(
+            "SCREEN STREAM:",
+            event.streams[0]
+        );
+
+        console.log(
+            "SCREEN TRACK:",
+            event.track
+        );
+
+        console.log(
+            "================================="
+        );
+
+
+        const track = event.track;
+
+        if(!track){
+
+            console.error(
+                "SCREEN TRACK MISSING"
+            );
+
+            return;
+
+        }
+
+
+        const video =
+        document.getElementById("screenVideo");
+
+
+        if(!video){
+
+            console.error(
+                "screenVideo element NOT FOUND"
+            );
+
+            return;
+
+        }
+
+
+        /*
+        =====================================================
+        USE THE ACTUAL REMOTE STREAM
+        =====================================================
+        */
+
+        let remoteStream =
+            event.streams && event.streams[0];
+
+
+        /*
+        =====================================================
+        FALLBACK
+        =====================================================
+        */
+
+        if(!remoteStream){
+
+            remoteStream =
+            new MediaStream();
+
+            remoteStream.addTrack(track);
+
+        }
+
+
+        console.log(
+            "ATTACHING REMOTE SCREEN STREAM"
+        );
+
+
+        video.srcObject =
+        remoteStream;
+
+        video.autoplay = true;
+
+        video.playsInline = true;
+
+        video.muted = true;
+
+
+        /*
+        =====================================================
+        SHOW SCREEN CONTAINER
+        =====================================================
+        */
+
+        const container =
+        document.getElementById(
+            "screenContainer"
+        );
+
+
+        if(container){
+
+            container.style.display =
+            "block";
+
+        }
+
+
+        /*
+        =====================================================
+        HIDE WHITEBOARD
+        =====================================================
+        */
+
+        const mainBoard =
+        document.getElementById(
+            "mainBoard"
+        );
+
+        const drawLayer =
+        document.getElementById(
+            "drawLayer"
+        );
+
+
+        if(mainBoard){
+
+            mainBoard.style.display =
+            "none";
+
+        }
+
+
+        if(drawLayer){
+
+            drawLayer.style.display =
+            "none";
+
+        }
+
+
+        /*
+        =====================================================
+        PLAY SCREEN
+        =====================================================
+        */
+
+        try{
+
+            await video.play();
+
+            console.log(
+                "STUDENT SCREEN VIDEO PLAYING"
+            );
+
+        }catch(err){
+
+            console.error(
+                "STUDENT SCREEN VIDEO PLAY ERROR:",
+                err
+            );
+
+        }
+
+
+        /*
+        =====================================================
+        SCREEN LAYOUT
+        =====================================================
+        */
+
+        if(
+            window.ScreenLayout &&
+            typeof ScreenLayout.attachRemoteTrack ===
+            "function"
+        ){
 
             try{
 
-                this.screenPeers[teacherSocketId].close();
+                ScreenLayout.attachRemoteTrack(
+                    track
+                );
 
-            }catch(e){}
+                console.log(
+                    "SCREEN ATTACHED THROUGH ScreenLayout"
+                );
 
-            delete this.screenPeers[teacherSocketId];
+            }catch(err){
 
-        }
-
-        console.log(
-            "Student Peer ->",
-            teacherSocketId
-        );
-
-        const pc =
-        new RTCPeerConnection({
-
-            iceServers:[
-                {
-                    urls:"stun:stun.l.google.com:19302"
-                }
-            ]
-
-        });
-
-        this.screenPeers[teacherSocketId] = pc;
-
-        pc.onicecandidate = (event)=>{
-
-            if(event.candidate){
-
-                this.socket.emit("screen-ice",{
-
-                    targetSocketId:teacherSocketId,
-
-                    candidate:event.candidate
-
-                });
+                console.error(
+                    "ScreenLayout attach error:",
+                    err
+                );
 
             }
 
-        };
-
-       pc.ontrack = async (event) => {
-
-    console.log("SCREEN TRACK RECEIVED");
-
-    const track = event.track;
-
-    if (!track) {
-        console.error("SCREEN TRACK MISSING");
-        return;
-    }
-
-    console.log("SCREEN TRACK:", track.kind);
-    console.log("SCREEN TRACK STATE:", track.readyState);
-    console.log("SCREEN TRACK ENABLED:", track.enabled);
-
-    if (
-        window.ScreenLayout &&
-        typeof ScreenLayout.attachRemoteTrack === "function"
-    ) {
-
-        ScreenLayout.attachRemoteTrack(track);
-
-        console.log("SCREEN ATTACHED THROUGH ScreenLayout");
-
-    } else {
-
-        console.error("ScreenLayout.attachRemoteTrack NOT FOUND");
-
-        const video =
-            document.getElementById("screenVideo");
-
-        if (!video) {
-            console.error("screenVideo missing");
-            return;
         }
 
-        const stream =
-            event.streams[0] ||
-            new MediaStream([track]);
 
-        video.srcObject = stream;
-        video.autoplay = true;
-        video.playsInline = true;
-        video.muted = true;
+        /*
+        =====================================================
+        PARTICIPANT LAYOUT
+        =====================================================
+        */
 
-        try {
-            await video.play();
-        } catch (err) {
-            console.error(
-                "Screen video play error:",
-                err
+        if(
+            window.ParticipantLayout &&
+            typeof ParticipantLayout.showScreenShare ===
+            "function"
+        ){
+
+            ParticipantLayout.showScreenShare();
+
+        }
+
+    };
+
+
+    /*
+    =========================================================
+    ICE CANDIDATES
+    =========================================================
+    */
+
+    pc.onicecandidate = (event)=>{
+
+        if(event.candidate){
+
+            this.socket.emit(
+                "screen-ice",
+                {
+
+                    targetSocketId:
+                        teacherSocketId,
+
+                    candidate:
+                        event.candidate
+
+                }
             );
+
         }
 
-        const container =
-            document.getElementById("screenContainer");
+    };
 
-        if (container) {
-            container.style.display = "block";
+
+    /*
+    =========================================================
+    IMPORTANT:
+    ASK TEACHER FOR CURRENT SCREEN
+    =========================================================
+    */
+
+    console.log(
+        "REQUESTING TEACHER SCREEN"
+    );
+
+
+    this.socket.emit(
+        "screen-request",
+        {
+
+            teacherSocketId:
+                teacherSocketId
+
         }
-    }
+    );
 
-};
-
-    },
+},
 
     async handleOffer(data){
 
