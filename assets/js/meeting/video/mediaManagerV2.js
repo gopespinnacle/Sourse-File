@@ -477,45 +477,90 @@ attachLocalVideoWhenReady() {
         attempts++;
 
 
-        const participants =
-            window.MeetingParticipants;
-
         const config =
             window.MeetingConfig;
 
 
+        /*
+        ==================================================
+        CHECK MEETING CONFIG
+        ==================================================
+        */
+
         if (
-    participants &&
-    config &&
-    config.socketId
-) {
-
-    const currentUser =
-        participants.get(
-            config.socketId
-        );
-
+            !config ||
+            !config.socketId
+        ) {
 
             if (
-                currentUser &&
-                currentUser.card
+                attempts >= maxAttempts
             ) {
 
-                this.attachLocalVideo();
+                console.warn(
+                    "Unable to get local socket ID."
+                );
 
                 return;
 
             }
 
+
+            setTimeout(
+                attach,
+                100
+            );
+
+            return;
+
         }
 
+
+        /*
+        ==================================================
+        FIND ACTUAL DOM PARTICIPANT CARD
+        ==================================================
+        */
+
+        const card =
+            document.querySelector(
+                `.meeting-participant[data-socket-id="${config.socketId}"]`
+            );
+
+
+        /*
+        ==================================================
+        CARD FOUND
+        ==================================================
+        */
+
+        if (card) {
+
+            console.log(
+                "LOCAL PARTICIPANT CARD FOUND:",
+                card
+            );
+
+
+            this.attachLocalVideo();
+
+            return;
+
+        }
+
+
+        /*
+        ==================================================
+        CARD NOT READY YET
+        ==================================================
+        */
 
         if (
             attempts >= maxAttempts
         ) {
 
             console.warn(
-                "Unable to find local participant card."
+                "Unable to find local participant card.",
+                config.socketId
             );
 
             return;
@@ -534,7 +579,6 @@ attachLocalVideoWhenReady() {
     attach();
 
 },
-
 
     /*
     ======================================================
