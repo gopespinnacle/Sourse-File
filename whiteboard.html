@@ -51,44 +51,71 @@ background:black;
 
 
 /* ==========================================
-   Screen Sharing Mode
+   SCREEN SHARING MODE
+   PARTICIPANT VIDEOS BECOME SMALL
 ========================================== */
 
-#participantStrip.screen-sharing{
+#participantStrip.screen-sharing {
 
-    position:fixed;
+    position: fixed !important;
 
-    top:50px;
+    top: 50px !important;
 
-    right:10px;
+    right: 10px !important;
 
-    left:auto;
+    left: auto !important;
 
-    bottom:90px;
+    bottom: 90px !important;
 
-    width:180px;
+    width: 80px !important;
 
-    display:flex !important;
+    max-width: 80px !important;
 
-    flex-direction:column;
+    display: flex !important;
 
-    gap:8px;
+    flex-direction: column !important;
 
-    padding:0;
+    align-items: center !important;
 
-    z-index:9999;
+    gap: 8px !important;
+
+    padding: 0 !important;
+
+    z-index: 1000010 !important;
 
 }
 
-#participantStrip.screen-sharing .participant-card{
 
-    width:120px;
+#participantStrip.screen-sharing .participant-card {
 
-    height:90px;
+    width: 70px !important;
 
-    min-height:90px;
+    min-width: 70px !important;
 
-    flex:none;
+    max-width: 70px !important;
+
+    height: 120px !important;
+
+    min-height: 120px !important;
+
+    max-height: 120px !important;
+
+    flex: 0 0 70px !important;
+
+    flex-shrink: 0 !important;
+
+}
+
+
+#participantStrip.screen-sharing .participant-card video {
+
+    width: 100% !important;
+
+    height: 100% !important;
+
+    object-fit: cover !important;
+
+    display: block !important;
 
 }
 
