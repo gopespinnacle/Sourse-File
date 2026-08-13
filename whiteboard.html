@@ -657,9 +657,19 @@
 
         const meetingUserId =
     urlParams.get("userId") ||
-    sessionStorage.getItem("teacherId") ||
-    localStorage.getItem("meetingUserId") ||
-    "";
+    (
+        meetingRole === "student"
+            ? (
+                sessionStorage.getItem("studentId") ||
+                localStorage.getItem("studentId") ||
+                ""
+            )
+            : (
+                sessionStorage.getItem("teacherId") ||
+                localStorage.getItem("meetingUserId") ||
+                ""
+            )
+    );
 
 
         /* =====================================================
@@ -668,9 +678,20 @@
 
         const meetingUserName =
     urlParams.get("name") ||
-    sessionStorage.getItem("teacherName") ||
-    localStorage.getItem("meetingUserName") ||
-    "";
+    (
+        meetingRole === "student"
+            ? (
+                sessionStorage.getItem("studentName") ||
+                localStorage.getItem("studentName") ||
+                urlParams.get("student") ||
+                ""
+            )
+            : (
+                sessionStorage.getItem("teacherName") ||
+                localStorage.getItem("meetingUserName") ||
+                ""
+            )
+    );
 
 
         /* =====================================================
