@@ -203,27 +203,145 @@ ParticipantLayout.removeParticipant = function(socketId){
 
 ParticipantLayout.showScreenShare = function(){
 
-    document.getElementById("screenContainer").style.display="block";
+    console.log("SCREEN SHARING MODE ON");
 
-    document.getElementById("mainBoard").style.display="none";
+    const screenContainer =
+        document.getElementById("screenContainer");
 
-    document.getElementById("drawLayer").style.display="none";
+    const mainBoard =
+        document.getElementById("mainBoard");
 
-    document
-    .getElementById("participantStrip")
-    ?.classList.add("screen-sharing");
+    const drawLayer =
+        document.getElementById("drawLayer");
 
-    
-if (
-    window.MeetingLayout &&
-    typeof MeetingLayout.update === "function"
-) {
-    MeetingLayout.update();
-}
+    const strip =
+        document.getElementById("participantStrip");
 
-if(window.LocalVideoLayout){
-    LocalVideoLayout.updateLayout();
-}
+
+    /*
+    =========================================================
+    SHOW SCREEN
+    =========================================================
+    */
+
+    if(screenContainer){
+
+        screenContainer.style.display = "block";
+
+    }
+
+    if(mainBoard){
+
+        mainBoard.style.display = "none";
+
+    }
+
+    if(drawLayer){
+
+        drawLayer.style.display = "none";
+
+    }
+
+
+    /*
+    =========================================================
+    ADD SCREEN-SHARING MODE
+    =========================================================
+    */
+
+    if(strip){
+
+        strip.classList.add(
+            "screen-sharing"
+        );
+
+    }
+
+
+    /*
+    =========================================================
+    SHRINK ALL EXISTING PARTICIPANT VIDEOS
+    =========================================================
+    */
+
+    Object.values(
+        ParticipantLayout.participants
+    ).forEach(participant => {
+
+        if(!participant) return;
+
+        const card =
+            participant.card;
+
+        const video =
+            participant.video;
+
+
+        if(card){
+
+            card.style.width = "70px";
+
+            card.style.height = "120px";
+
+            card.style.minWidth = "70px";
+
+            card.style.maxWidth = "70px";
+
+            card.style.flex = "none";
+
+        }
+
+
+        if(video){
+
+            video.style.width = "100%";
+
+            video.style.height = "100%";
+
+            video.style.objectFit = "cover";
+
+        }
+
+    });
+
+
+    /*
+    =========================================================
+    UPDATE MEETING LAYOUT
+    =========================================================
+    */
+
+    if(
+        window.MeetingLayout &&
+        typeof MeetingLayout.update ===
+        "function"
+    ){
+
+        MeetingLayout.update();
+
+    }
+
+
+    /*
+    =========================================================
+    UPDATE LOCAL VIDEO
+    =========================================================
+    */
+
+    if(
+        window.LocalVideoLayout &&
+        typeof LocalVideoLayout.updateLayout ===
+        "function"
+    ){
+
+        LocalVideoLayout.updateLayout();
+
+    }
+
+
+    console.log(
+        "ALL PARTICIPANT VIDEOS SHRUNK"
+    );
 
 };
 
