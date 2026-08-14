@@ -1340,6 +1340,20 @@ window.ScreenShare = (() => {
         "SCREEN V3: LOCAL PRESENTATION ACTIVE"
     );
 
+    /*
+==========================================================
+PRESENTATION LAYOUT V2
+==========================================================
+*/
+
+if (
+    window.PresentationLayoutV2
+) {
+
+    PresentationLayoutV2.show();
+
+}
+
 }
 
 
@@ -1447,6 +1461,20 @@ window.ScreenShare = (() => {
         "SCREEN V3: REMOTE PRESENTATION ACTIVE"
     );
 
+    /*
+==========================================================
+PRESENTATION LAYOUT V2
+==========================================================
+*/
+
+if (
+    window.PresentationLayoutV2
+) {
+
+    PresentationLayoutV2.show();
+
+}
+
 }
 
 
@@ -1534,6 +1562,20 @@ window.ScreenShare = (() => {
         "SCREEN V3: REMOTE PRESENTATION HIDDEN"
     );
 
+    /*
+==========================================================
+PRESENTATION LAYOUT V2
+==========================================================
+*/
+
+if (
+    window.PresentationLayoutV2
+) {
+
+    PresentationLayoutV2.hide();
+
+}
+
 }
 
 
@@ -1604,6 +1646,20 @@ window.ScreenShare = (() => {
     console.log(
         "SCREEN V3: LOCAL PRESENTATION HIDDEN"
     );
+
+    /*
+==========================================================
+PRESENTATION LAYOUT V2
+==========================================================
+*/
+
+if (
+    window.PresentationLayoutV2
+) {
+
+    PresentationLayoutV2.hide();
+
+}
 
 }
 
