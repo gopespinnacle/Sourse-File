@@ -1275,13 +1275,12 @@ CAMERA READY
 NOW CONNECT TEACHER TO EXISTING STUDENTS
 =====================================================
 */
-
 if (
-    role === "teacher" &&
     window.MeetingConfig &&
-    Array.isArray(
-        window.MeetingConfig.participants
-    )
+    window.MeetingConfig.role === "teacher" &&
+    window.MeetingParticipants &&
+    window.MeetingWebRTC &&
+    MeetingWebRTC.getLocalStream()
 ) {
 
     window.MeetingConfig
@@ -1438,7 +1437,8 @@ CONNECT TEACHER TO EXISTING STUDENTS
 */
 
 if (
-    role === "teacher" &&
+    window.MeetingConfig &&
+    window.MeetingConfig.role === "teacher" &&
     window.MeetingWebRTC &&
     MeetingWebRTC.getLocalStream()
 ) {
@@ -1539,7 +1539,8 @@ Student NEVER creates an offer.
 */
 
 if (
-    role === "teacher" &&
+    window.MeetingConfig &&
+window.MeetingConfig.role === "teacher" &&
     window.MeetingWebRTC &&
     data.participant.socketId &&
     MeetingWebRTC.getLocalStream()
