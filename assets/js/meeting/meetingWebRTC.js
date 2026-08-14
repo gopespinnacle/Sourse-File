@@ -874,24 +874,189 @@ if (
 }
 
     /*
+===========================================================
+RECEIVE ANSWER
+===========================================================
+*/
+
+async function receiveAnswer(
+    remoteSocketId,
+    answer
+) {
+
+    console.log(
+        "=========================================="
+    );
+
+    console.log(
+        "WEBRTC RECEIVE ANSWER"
+    );
+
+    console.log(
+        "Remote Socket:",
+        remoteSocketId
+    );
+
+    console.log(
+        "=========================================="
+    );
+
+
+    /*
     ===========================================================
-    RECEIVE ANSWER
+    FIND PEER
     ===========================================================
     */
 
-    async function receiveAnswer(remoteSocketId, answer) {
+    const peer =
+        peers[remoteSocketId];
 
-        const peer = peers[remoteSocketId];
 
-        if (!peer) return;
+    if (!peer) {
+
+        console.warn(
+            "WEBRTC ANSWER RECEIVED BUT PEER NOT FOUND:",
+            remoteSocketId
+        );
+
+        return;
+
+    }
+
+
+    /*
+    ===========================================================
+    SET REMOTE ANSWER
+    ===========================================================
+    */
+
+    try {
 
         await peer.setRemoteDescription(
 
-            new RTCSessionDescription(answer)
+            new RTCSessionDescription(
+                answer
+            )
 
         );
 
+
+        console.log(
+            "WEBRTC ANSWER REMOTE DESCRIPTION SET:",
+            remoteSocketId
+        );
+
+
     }
+    catch (error) {
+
+        console.error(
+            "WEBRTC SET ANSWER ERROR:",
+            remoteSocketId,
+            error
+        );
+
+        return;
+
+    }
+
+
+    /*
+    ===========================================================
+    PROCESS QUEUED ICE CANDIDATES
+    ===========================================================
+
+    IMPORTANT:
+
+    ICE candidates may have arrived BEFORE the answer.
+
+    receiveIce() therefore placed them inside:
+
+        pendingIceCandidates[remoteSocketId]
+
+    Now that the remote answer has been set,
+    we can safely add those candidates.
+    ===========================================================
+    */
+
+    if (
+        pendingIceCandidates[
+            remoteSocketId
+        ]
+    ) {
+
+        console.log(
+            "WEBRTC PROCESSING QUEUED ICE AFTER ANSWER:",
+            remoteSocketId
+        );
+
+
+        for (
+            const candidate
+            of pendingIceCandidates[
+                remoteSocketId
+            ]
+        ) {
+
+            try {
+
+                await peer.addIceCandidate(
+
+                    new RTCIceCandidate(
+                        candidate
+                    )
+
+                );
+
+
+                console.log(
+                    "WEBRTC QUEUED ICE ADDED:",
+                    remoteSocketId
+                );
+
+            }
+            catch (error) {
+
+                console.error(
+                    "WEBRTC QUEUED ICE ERROR AFTER ANSWER:",
+                    remoteSocketId,
+                    error
+                );
+
+            }
+
+        }
+
+
+        delete pendingIceCandidates[
+            remoteSocketId
+        ];
+
+    }
+
+
+    /*
+    ===========================================================
+    FINAL STATE
+    ===========================================================
+    */
+
+    console.log(
+        "WEBRTC ANSWER PROCESSED:",
+        remoteSocketId
+    );
+
+    console.log(
+        "Signaling State:",
+        peer.signalingState
+    );
+
+    console.log(
+        "Connection State:",
+        peer.connectionState
+    );
+
+}
 
     /*
     ===========================================================
