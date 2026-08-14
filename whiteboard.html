@@ -1404,9 +1404,7 @@ socket.on(
    PARTICIPANT LIST
    ===================================================== */
 
-/* =====================================================
-   PARTICIPANT LIST
-   ===================================================== */
+
 
 socket.on(
     "participantList",
@@ -1796,36 +1794,290 @@ socket.on(
 
 socket.on(
     "participantReconnected",
-    (data) => {
+    async (data) => {
 
         console.log(
-            "PARTICIPANT RECONNECTED",
+            "=========================================="
+        );
+
+        console.log(
+            "PARTICIPANT RECONNECTED"
+        );
+
+        console.log(
             data
         );
 
+        console.log(
+            "=========================================="
+        );
 
-        if (!data.participant) {
+
+        if (
+            !data ||
+            !data.participant
+        ) {
+
+            console.warn(
+                "RECONNECT DATA HAS NO PARTICIPANT"
+            );
 
             return;
 
         }
 
 
-        if (data.oldSocketId) {
+        /*
+        =================================================
+        OLD SOCKET ID
+        =================================================
+        */
+
+        const oldSocketId =
+            data.oldSocketId;
+
+
+        /*
+        =================================================
+        NEW SOCKET ID
+        =================================================
+        */
+
+        const newSocketId =
+            data.participant.socketId;
+
+
+        /*
+        =================================================
+        MY SOCKET ID
+        =================================================
+        */
+
+        const mySocketId =
+            socket.id;
+
+
+        console.log(
+            "OLD SOCKET ID:",
+            oldSocketId
+        );
+
+        console.log(
+            "NEW SOCKET ID:",
+            newSocketId
+        );
+
+        console.log(
+            "MY SOCKET ID:",
+            mySocketId
+        );
+
+
+        /*
+        =================================================
+        REMOVE OLD PARTICIPANT
+        =================================================
+        */
+
+        if (oldSocketId) {
 
             MeetingParticipants.remove(
-                data.oldSocketId
+                oldSocketId
             );
+
+
+            /*
+            ---------------------------------------------
+            REMOVE OLD WEBRTC PEER
+            ---------------------------------------------
+            */
+
+            if (
+                window.MeetingWebRTC &&
+                typeof MeetingWebRTC.removePeer ===
+                    "function"
+            ) {
+
+                console.log(
+                    "REMOVING OLD WEBRTC PEER:",
+                    oldSocketId
+                );
+
+
+                MeetingWebRTC.removePeer(
+                    oldSocketId
+                );
+
+            }
 
         }
 
+
+        /*
+        =================================================
+        ADD PARTICIPANT WITH NEW SOCKET ID
+        =================================================
+        */
 
         MeetingParticipants.set(
             data.participant
         );
 
 
+        /*
+        =================================================
+        RENDER UI
+        =================================================
+        */
+
         MeetingUI.render();
+
+
+        /*
+        =================================================
+        DO NOT CONNECT TO OUR OWN SOCKET
+        =================================================
+        */
+
+        if (
+            !newSocketId ||
+            newSocketId === mySocketId
+        ) {
+
+            console.log(
+                "RECONNECTED PARTICIPANT IS LOCAL USER"
+            );
+
+            return;
+
+        }
+
+
+        /*
+        =================================================
+        ONLY TEACHER CREATES OFFER
+        =================================================
+        */
+
+        if (
+            window.MeetingConfig &&
+            window.MeetingConfig.role !== "teacher"
+        ) {
+
+            console.log(
+                "LOCAL USER IS NOT TEACHER."
+            );
+
+            return;
+
+        }
+
+
+        /*
+        =================================================
+        CHECK WEBRTC
+        =================================================
+        */
+
+        if (
+            !window.MeetingWebRTC
+        ) {
+
+            console.warn(
+                "MeetingWebRTC NOT AVAILABLE"
+            );
+
+            return;
+
+        }
+
+
+        /*
+        =================================================
+        CHECK LOCAL STREAM
+        =================================================
+        */
+
+        let localStream =
+            MeetingWebRTC.getLocalStream();
+
+
+        /*
+        =================================================
+        FALLBACK TO MEDIA MANAGER
+        =================================================
+        */
+
+        if (
+            !localStream &&
+            window.MediaManagerV2 &&
+            typeof MediaManagerV2.getLocalStream ===
+                "function"
+        ) {
+
+            localStream =
+                MediaManagerV2.getLocalStream();
+
+        }
+
+
+        if (!localStream) {
+
+            console.warn(
+                "TEACHER LOCAL STREAM NOT READY."
+            );
+
+            return;
+
+        }
+
+
+        /*
+        =================================================
+        RECONNECT TEACHER → STUDENT
+        =================================================
+        */
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log(
+            "TEACHER RECONNECTING STUDENT"
+        );
+
+        console.log(
+            "STUDENT NEW SOCKET:",
+            newSocketId
+        );
+
+        console.log(
+            "=========================================="
+        );
+
+
+        try {
+
+            await MeetingWebRTC.createOffer(
+                newSocketId
+            );
+
+
+            console.log(
+                "WEBRTC RECONNECT OFFER SENT:",
+                newSocketId
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "WEBRTC RECONNECT OFFER ERROR:",
+                error
+            );
+
+        }
 
     }
 );
@@ -1839,18 +2091,82 @@ socket.on(
     (data) => {
 
         console.log(
-            "PARTICIPANT LEFT",
+            "=========================================="
+        );
+
+        console.log(
+            "PARTICIPANT LEFT"
+        );
+
+        console.log(
             data
         );
 
+        console.log(
+            "=========================================="
+        );
+
+
+        if (
+            !data ||
+            !data.socketId
+        ) {
+
+            return;
+
+        }
+
+
+        /*
+        =================================================
+        REMOVE PARTICIPANT
+        =================================================
+        */
 
         MeetingParticipants.remove(
             data.socketId
         );
 
 
+        /*
+        =================================================
+        REMOVE OLD WEBRTC PEER
+        =================================================
+        */
+
+        if (
+            window.MeetingWebRTC &&
+            typeof MeetingWebRTC.removePeer ===
+                "function"
+        ) {
+
+            console.log(
+                "REMOVING WEBRTC PEER:",
+                data.socketId
+            );
+
+
+            MeetingWebRTC.removePeer(
+                data.socketId
+            );
+
+        }
+
+
+        /*
+        =================================================
+        RENDER UI
+        =================================================
+        */
+
         MeetingUI.render();
 
+
+        /*
+        =================================================
+        STATUS
+        =================================================
+        */
 
         if (data.name) {
 
@@ -2073,15 +2389,7 @@ socket.on(
             }
         );
        
-
-
-        /* =====================================================
-           GLOBAL SOCKET
-           ===================================================== */
-
-        window.MeetingSocket =
-            socket;
-
+   
 
         console.log(
             "MeetingConfig:",
