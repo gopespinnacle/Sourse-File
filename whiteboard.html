@@ -1738,13 +1738,12 @@ socket.on(
             */
 
             if (
-                remoteSocketId ===
-                MeetingSocket.getSocket()?.id
-            ) {
+    remoteSocketId === socket.id
+) {
 
-                return;
+    return;
 
-            }
+}
 
 
             /*
@@ -2618,8 +2617,7 @@ socket.on(
            GLOBAL SOCKET
            ===================================================== */
 
-        window.MeetingSocket =
-            socket;
+        
 
 
         console.log(
