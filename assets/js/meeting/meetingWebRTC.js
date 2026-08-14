@@ -56,9 +56,20 @@ window.MeetingWebRTC = (() => {
 
     let peers = {};
 
-    let remoteStreams = {};
+let remoteStreams = {};
 
-    let roomId = "";
+
+/*
+===========================================================
+OFFER STATE
+===========================================================
+*/
+
+let makingOffer = {};
+
+let pendingIceCandidates = {};
+
+let roomId = "";
 
     let role = "";
 
@@ -454,28 +465,135 @@ function setLocalStream(stream) {
 
     async function createOffer(remoteSocketId) {
 
-        const peer = await createPeerConnection(remoteSocketId);
+    if (!remoteSocketId) {
 
-        const offer = await peer.createOffer({
-
-            offerToReceiveAudio: true,
-
-            offerToReceiveVideo: true
-
-        });
-
-        await peer.setLocalDescription(offer);
-
-        MeetingSocket.emit("offer", {
-
-            targetSocketId: remoteSocketId,
-
-            offer
-
-        });
+        return;
 
     }
 
+
+    /*
+    =========================================================
+    PREVENT DUPLICATE OFFERS
+    =========================================================
+    */
+
+    if (makingOffer[remoteSocketId]) {
+
+        console.log(
+            "WEBRTC OFFER ALREADY IN PROGRESS:",
+            remoteSocketId
+        );
+
+        return;
+
+    }
+
+
+    makingOffer[remoteSocketId] = true;
+
+
+    try {
+
+        const peer =
+            await createPeerConnection(
+                remoteSocketId
+            );
+
+
+        /*
+        =====================================================
+        MAKE SURE PEER IS STABLE
+        =====================================================
+        */
+
+        if (
+            peer.signalingState !== "stable"
+        ) {
+
+            console.log(
+                "WEBRTC PEER NOT STABLE:",
+                remoteSocketId,
+                peer.signalingState
+            );
+
+            return;
+
+        }
+
+
+        /*
+        =====================================================
+        CREATE OFFER
+        =====================================================
+        */
+
+        const offer =
+            await peer.createOffer({
+
+                offerToReceiveAudio: true,
+
+                offerToReceiveVideo: true
+
+            });
+
+
+        await peer.setLocalDescription(
+            offer
+        );
+
+
+        console.log(
+            "WEBRTC OFFER CREATED:",
+            remoteSocketId
+        );
+
+
+        /*
+        =====================================================
+        SEND OFFER
+        =====================================================
+        */
+
+        MeetingSocket.emit(
+            "offer",
+            {
+
+                targetSocketId:
+                    remoteSocketId,
+
+                offer:
+                    peer.localDescription
+
+            }
+        );
+
+
+        console.log(
+            "WEBRTC OFFER SENT:",
+            remoteSocketId
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "WEBRTC CREATE OFFER ERROR:",
+            remoteSocketId,
+            error
+        );
+
+    }
+
+    finally {
+
+        makingOffer[remoteSocketId] =
+            false;
+
+    }
+
+}
     /*
     ===========================================================
     RECEIVE OFFER
@@ -637,6 +755,61 @@ function setLocalStream(stream) {
 
     );
 
+    /*
+===========================================================
+PROCESS QUEUED ICE CANDIDATES
+===========================================================
+*/
+
+if (
+    pendingIceCandidates[
+        remoteSocketId
+    ]
+) {
+
+    console.log(
+        "WEBRTC PROCESSING QUEUED ICE:",
+        remoteSocketId
+    );
+
+
+    for (
+        const candidate
+        of pendingIceCandidates[
+            remoteSocketId
+        ]
+    ) {
+
+        try {
+
+            await peer.addIceCandidate(
+
+                new RTCIceCandidate(
+                    candidate
+                )
+
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "WEBRTC QUEUED ICE ERROR:",
+                error
+            );
+
+        }
+
+    }
+
+
+    delete pendingIceCandidates[
+        remoteSocketId
+    ];
+
+}
+
 
     console.log(
         "WEBRTC REMOTE OFFER SET"
@@ -726,29 +899,139 @@ function setLocalStream(stream) {
     ===========================================================
     */
 
-    async function receiveIce(remoteSocketId, candidate) {
+    async function receiveIce(
+    remoteSocketId,
+    candidate
+) {
 
-        const peer = peers[remoteSocketId];
+    if (!remoteSocketId || !candidate) {
 
-        if (!peer) return;
-
-        try {
-
-            await peer.addIceCandidate(
-
-                new RTCIceCandidate(candidate)
-
-            );
-
-        }
-
-        catch (err) {
-
-            console.error(err);
-
-        }
+        return;
 
     }
+
+
+    const peer =
+        peers[remoteSocketId];
+
+
+    /*
+    =========================================================
+    PEER NOT READY
+    QUEUE ICE
+    =========================================================
+    */
+
+    if (!peer) {
+
+        console.log(
+            "WEBRTC ICE QUEUED - PEER NOT READY:",
+            remoteSocketId
+        );
+
+
+        if (
+            !pendingIceCandidates[
+                remoteSocketId
+            ]
+        ) {
+
+            pendingIceCandidates[
+                remoteSocketId
+            ] = [];
+
+        }
+
+
+        pendingIceCandidates[
+            remoteSocketId
+        ].push(
+            candidate
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+    =========================================================
+    REMOTE DESCRIPTION NOT READY
+    QUEUE ICE
+    =========================================================
+    */
+
+    if (
+        !peer.remoteDescription ||
+        !peer.remoteDescription.type
+    ) {
+
+        console.log(
+            "WEBRTC ICE QUEUED - REMOTE DESCRIPTION NOT READY:",
+            remoteSocketId
+        );
+
+
+        if (
+            !pendingIceCandidates[
+                remoteSocketId
+            ]
+        ) {
+
+            pendingIceCandidates[
+                remoteSocketId
+            ] = [];
+
+        }
+
+
+        pendingIceCandidates[
+            remoteSocketId
+        ].push(
+            candidate
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+    =========================================================
+    ADD ICE
+    =========================================================
+    */
+
+    try {
+
+        await peer.addIceCandidate(
+
+            new RTCIceCandidate(
+                candidate
+            )
+
+        );
+
+
+        console.log(
+            "WEBRTC ICE ADDED:",
+            remoteSocketId
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "WEBRTC ICE ERROR:",
+            error
+        );
+
+    }
+
+}
 
     /*
     ===========================================================
@@ -775,6 +1058,10 @@ function setLocalStream(stream) {
         }
 
         delete remoteStreams[remoteSocketId];
+
+        delete pendingIceCandidates[remoteSocketId];
+
+delete makingOffer[remoteSocketId];
 
         document.dispatchEvent(
 

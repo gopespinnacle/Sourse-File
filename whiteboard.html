@@ -1275,6 +1275,7 @@ CAMERA READY
 NOW CONNECT TEACHER TO EXISTING STUDENTS
 =====================================================
 */
+
 if (
     window.MeetingConfig &&
     window.MeetingConfig.role === "teacher" &&
@@ -1283,42 +1284,53 @@ if (
     MeetingWebRTC.getLocalStream()
 ) {
 
-    window.MeetingConfig
-        .participants
-        .forEach(
-            participant => {
-
-                if (
-                    participant.role !== "student"
-                ) {
-
-                    return;
-
-                }
+    const participants =
+        MeetingParticipants.getAll();
 
 
-                console.log(
-                    "CAMERA READY - CONNECTING TO STUDENT:",
-                    participant.socketId
-                );
+    participants.forEach(
+        participant => {
 
+            if (
+                participant.role !== "student"
+            ) {
 
-                MeetingWebRTC.createOffer(
-                    participant.socketId
-                )
-                .catch(
-                    error => {
-
-                        console.error(
-                            "CAMERA READY WEBRTC OFFER ERROR:",
-                            error
-                        );
-
-                    }
-                );
+                return;
 
             }
-        );
+
+
+            if (
+                !participant.socketId
+            ) {
+
+                return;
+
+            }
+
+
+            console.log(
+                "CAMERA READY - CONNECTING TO STUDENT:",
+                participant.socketId
+            );
+
+
+            MeetingWebRTC.createOffer(
+                participant.socketId
+            )
+            .catch(
+                error => {
+
+                    console.error(
+                        "CAMERA READY WEBRTC OFFER ERROR:",
+                        error
+                    );
+
+                }
+            );
+
+        }
+    );
 
 }
 
@@ -1392,6 +1404,10 @@ socket.on(
    PARTICIPANT LIST
    ===================================================== */
 
+/* =====================================================
+   PARTICIPANT LIST
+   ===================================================== */
+
 socket.on(
     "participantList",
     (data) => {
@@ -1413,10 +1429,26 @@ socket.on(
         );
 
 
+        /*
+        -------------------------------------------------
+        SAVE PARTICIPANTS IN CENTRAL CONFIG
+        -------------------------------------------------
+        */
+
+        window.MeetingConfig.participants =
+            data.participants || [];
+
+
+        /*
+        -------------------------------------------------
+        UPDATE PARTICIPANT MANAGER
+        -------------------------------------------------
+        */
+
         MeetingParticipants.clear();
 
 
-        (data.participants || [])
+        window.MeetingConfig.participants
             .forEach(
                 participant => {
 
@@ -1428,57 +1460,74 @@ socket.on(
             );
 
 
+        /*
+        -------------------------------------------------
+        RENDER UI
+        -------------------------------------------------
+        */
+
         MeetingUI.render();
 
+
         /*
-=====================================================
-CONNECT TEACHER TO EXISTING STUDENTS
-=====================================================
-*/
+        =================================================
+        CONNECT TEACHER TO EXISTING STUDENTS
+        =================================================
+        */
 
-if (
-    window.MeetingConfig &&
-    window.MeetingConfig.role === "teacher" &&
-    window.MeetingWebRTC &&
-    MeetingWebRTC.getLocalStream()
-) {
+        if (
+            window.MeetingConfig &&
+            window.MeetingConfig.role === "teacher" &&
+            window.MeetingWebRTC &&
+            MeetingWebRTC.getLocalStream()
+        ) {
 
-    (data.participants || []).forEach(
-        participant => {
+            window.MeetingConfig.participants
+                .forEach(
+                    participant => {
 
-            if (
-                participant.role !== "student"
-            ) {
+                        if (
+                            participant.role !== "student"
+                        ) {
 
-                return;
+                            return;
 
-            }
-
-
-            console.log(
-                "TEACHER CONNECTING TO EXISTING STUDENT:",
-                participant.socketId
-            );
+                        }
 
 
-            MeetingWebRTC.createOffer(
-                participant.socketId
-            )
-            .catch(
-                error => {
+                        if (
+                            !participant.socketId
+                        ) {
 
-                    console.error(
-                        "EXISTING STUDENT WEBRTC OFFER ERROR:",
-                        error
-                    );
+                            return;
 
-                }
-            );
+                        }
+
+
+                        console.log(
+                            "TEACHER CONNECTING TO EXISTING STUDENT:",
+                            participant.socketId
+                        );
+
+
+                        MeetingWebRTC.createOffer(
+                            participant.socketId
+                        )
+                        .catch(
+                            error => {
+
+                                console.error(
+                                    "EXISTING STUDENT WEBRTC OFFER ERROR:",
+                                    error
+                                );
+
+                            }
+                        );
+
+                    }
+                );
 
         }
-    );
-
-}
 
     }
 );
