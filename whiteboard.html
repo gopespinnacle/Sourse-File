@@ -1964,36 +1964,253 @@ document.addEventListener(
 
 socket.on(
     "participantReconnected",
-    (data) => {
+    async (data) => {
 
         console.log(
-            "PARTICIPANT RECONNECTED",
+            "=========================================="
+        );
+
+        console.log(
+            "PARTICIPANT RECONNECTED"
+        );
+
+        console.log(
             data
+        );
+
+        console.log(
+            "=========================================="
         );
 
 
         if (!data.participant) {
+
+            console.warn(
+                "RECONNECT DATA HAS NO PARTICIPANT"
+            );
 
             return;
 
         }
 
 
-        if (data.oldSocketId) {
+        /*
+        =================================================
+        GET OLD AND NEW SOCKET IDS
+        =================================================
+        */
+
+        const oldSocketId =
+            data.oldSocketId;
+
+        const newSocketId =
+            data.participant.socketId;
+
+        const mySocketId =
+            MeetingSocket.getId();
+
+
+        console.log(
+            "MY SOCKET ID:",
+            mySocketId
+        );
+
+        console.log(
+            "OLD SOCKET ID:",
+            oldSocketId
+        );
+
+        console.log(
+            "NEW SOCKET ID:",
+            newSocketId
+        );
+
+
+        /*
+        =================================================
+        REMOVE OLD PARTICIPANT
+        =================================================
+        */
+
+        if (oldSocketId) {
 
             MeetingParticipants.remove(
-                data.oldSocketId
+                oldSocketId
             );
+
+
+            /*
+            ---------------------------------------------
+            REMOVE OLD WEBRTC PEER
+            ---------------------------------------------
+            */
+
+            if (
+                window.MeetingWebRTC &&
+                typeof MeetingWebRTC.removePeer ===
+                    "function"
+            ) {
+
+                console.log(
+                    "REMOVING OLD WEBRTC PEER:",
+                    oldSocketId
+                );
+
+
+                MeetingWebRTC.removePeer(
+                    oldSocketId
+                );
+
+            }
 
         }
 
+
+        /*
+        =================================================
+        ADD PARTICIPANT WITH NEW SOCKET ID
+        =================================================
+        */
 
         MeetingParticipants.set(
             data.participant
         );
 
 
+        /*
+        =================================================
+        RENDER UPDATED PARTICIPANT TILE
+        =================================================
+        */
+
         MeetingUI.render();
+
+
+        /*
+        =================================================
+        DO NOT CONNECT TO OUR OWN SOCKET
+        =================================================
+        */
+
+        if (
+            !newSocketId ||
+            newSocketId === mySocketId
+        ) {
+
+            console.log(
+                "RECONNECTED USER IS LOCAL USER"
+            );
+
+            return;
+
+        }
+
+
+        /*
+        =================================================
+        CHECK WEBRTC MANAGER
+        =================================================
+        */
+
+        if (
+            !window.MeetingWebRTC
+        ) {
+
+            console.warn(
+                "MeetingWebRTC NOT AVAILABLE"
+            );
+
+            return;
+
+        }
+
+
+        /*
+        =================================================
+        CHECK LOCAL STREAM
+        =================================================
+        */
+
+        let localStream =
+            MeetingWebRTC.getLocalStream();
+
+
+        /*
+        -------------------------------------------------
+        FALLBACK TO MEDIA MANAGER
+        -------------------------------------------------
+        */
+
+        if (
+            !localStream &&
+            window.MediaManagerV2 &&
+            typeof MediaManagerV2.getLocalStream ===
+                "function"
+        ) {
+
+            localStream =
+                MediaManagerV2.getLocalStream();
+
+        }
+
+
+        if (!localStream) {
+
+            console.warn(
+                "LOCAL STREAM NOT READY FOR RECONNECT"
+            );
+
+            return;
+
+        }
+
+
+        /*
+        =================================================
+        CREATE NEW WEBRTC CONNECTION
+        =================================================
+        */
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log(
+            "RECONNECTING WEBRTC"
+        );
+
+        console.log(
+            "CONNECTING TO NEW SOCKET:",
+            newSocketId
+        );
+
+        console.log(
+            "=========================================="
+        );
+
+
+        try {
+
+            await MeetingWebRTC.createOffer(
+                newSocketId
+            );
+
+
+            console.log(
+                "WEBRTC RECONNECT OFFER SENT:",
+                newSocketId
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "WEBRTC RECONNECT OFFER ERROR:",
+                error
+            );
+
+        }
 
     }
 );
