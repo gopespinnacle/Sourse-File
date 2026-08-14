@@ -1531,8 +1531,112 @@ socket.on(
 
     }
 );
+/* =====================================================
+   PARTICIPANT JOINED
+   ===================================================== */
 
-  
+socket.on(
+    "participantJoined",
+    (data) => {
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log(
+            "PARTICIPANT JOINED"
+        );
+
+        console.log(
+            data.participant
+        );
+
+        console.log(
+            "=========================================="
+        );
+
+
+        if (!data.participant) {
+
+            return;
+
+        }
+
+
+        MeetingParticipants.set(
+            data.participant
+        );
+
+
+        MeetingUI.render();
+
+       /*
+=====================================================
+AUTOMATIC WEBRTC CONNECTION
+=====================================================
+
+ONLY TEACHER CREATES THE OFFER.
+
+Teacher:
+    OFFER
+        ↓
+Student:
+    ANSWER
+
+Student NEVER creates an offer.
+=====================================================
+*/
+
+if (
+    window.MeetingConfig &&
+window.MeetingConfig.role === "teacher" &&
+    window.MeetingWebRTC &&
+    data.participant.socketId &&
+    MeetingWebRTC.getLocalStream()
+) {
+
+    console.log(
+        "TEACHER CREATING WEBRTC OFFER FOR:",
+        data.participant.socketId
+    );
+
+
+    MeetingWebRTC.createOffer(
+        data.participant.socketId
+    )
+    .catch(
+        error => {
+
+            console.error(
+                "TEACHER WEBRTC OFFER ERROR:",
+                error
+            );
+
+        }
+    );
+
+}
+
+
+        MeetingUI.setStatus(
+            `${data.participant.name} joined the classroom.`
+        );
+
+
+        setTimeout(
+            () => {
+
+                MeetingUI.setStatus(
+                    "You have joined the classroom."
+                );
+
+            },
+            2500
+        );
+
+    }
+);
+
 /* =====================================================
    WEBRTC OFFER
    ===================================================== */
@@ -1639,409 +1743,45 @@ socket.on(
    WEBRTC ICE CANDIDATE
    ===================================================== */
 
-/* =====================================================
-   PARTICIPANT JOINED
-   ===================================================== */
-
 socket.on(
-    "participantJoined",
+    "ice-candidate",
     async (data) => {
 
         console.log(
-            "=========================================="
-        );
-
-        console.log(
-            "PARTICIPANT JOINED"
-        );
-
-        console.log(
+            "WEBRTC ICE RECEIVED:",
             data
         );
 
-        console.log(
-            "=========================================="
-        );
-
-
-        if (!data || !data.participant) {
-
-            console.warn(
-                "PARTICIPANT JOIN DATA MISSING"
-            );
-
-            return;
-
-        }
-
-
-        const participant =
-            data.participant;
-
-
-        const remoteSocketId =
-            participant.socketId;
-
-
-        /*
-        =================================================
-        SAVE PARTICIPANT
-        =================================================
-        */
-
-        MeetingParticipants.set(
-            participant
-        );
-
-
-        /*
-        =================================================
-        RENDER UI
-        =================================================
-        */
-
-        MeetingUI.render();
-
-
-        /*
-        =================================================
-        ONLY TEACHER CREATES OFFER
-        =================================================
-        */
 
         if (
-            window.MeetingConfig &&
-            window.MeetingConfig.role === "teacher"
+            !window.MeetingWebRTC ||
+            !data.senderSocketId ||
+            !data.candidate
         ) {
-
-            /*
-            ---------------------------------------------
-            CHECK SOCKET ID
-            ---------------------------------------------
-            */
-
-            if (!remoteSocketId) {
-
-                console.warn(
-                    "STUDENT SOCKET ID MISSING"
-                );
-
-                return;
-
-            }
-
-
-            /*
-            ---------------------------------------------
-            DO NOT CONNECT TO OUR OWN SOCKET
-            ---------------------------------------------
-            */
-
-            if (
-    remoteSocketId === socket.id
-) {
-
-    return;
-
-}
-
-
-            /*
-            ---------------------------------------------
-            CHECK LOCAL CAMERA
-            ---------------------------------------------
-            */
-
-            if (
-                !window.MeetingWebRTC ||
-                !MeetingWebRTC.getLocalStream()
-            ) {
-
-                console.warn(
-                    "TEACHER LOCAL STREAM NOT READY"
-                );
-
-                return;
-
-            }
-
-
-            /*
-            ---------------------------------------------
-            IMPORTANT:
-            IF AN OLD PEER EXISTS FOR THIS SOCKET,
-            REMOVE IT FIRST.
-            ---------------------------------------------
-            */
-
-            if (
-                typeof MeetingWebRTC.getPeers ===
-                    "function"
-            ) {
-
-                const peers =
-                    MeetingWebRTC.getPeers();
-
-
-                if (
-                    peers &&
-                    peers[remoteSocketId]
-                ) {
-
-                    console.log(
-                        "OLD WEBRTC PEER FOUND."
-                    );
-
-                    console.log(
-                        "REMOVING OLD PEER:",
-                        remoteSocketId
-                    );
-
-
-                    MeetingWebRTC.removePeer(
-                        remoteSocketId
-                    );
-
-                }
-
-            }
-
-
-            /*
-            ---------------------------------------------
-            CREATE FRESH WEBRTC OFFER
-            ---------------------------------------------
-            */
-
-            console.log(
-                "=========================================="
-            );
-
-            console.log(
-                "TEACHER RECONNECTING STUDENT"
-            );
-
-            console.log(
-                "Student Socket:",
-                remoteSocketId
-            );
-
-            console.log(
-                "=========================================="
-            );
-
-
-            try {
-
-                await MeetingWebRTC.createOffer(
-                    remoteSocketId
-                );
-
-
-                console.log(
-                    "TEACHER OFFER SENT TO STUDENT:",
-                    remoteSocketId
-                );
-
-            }
-
-            catch (error) {
-
-                console.error(
-                    "TEACHER WEBRTC OFFER ERROR:",
-                    error
-                );
-
-            }
-
-        }
-
-
-        /*
-        =================================================
-        STATUS
-        =================================================
-        */
-
-        MeetingUI.setStatus(
-            `${participant.name} joined the classroom.`
-        );
-
-
-        setTimeout(
-            () => {
-
-                MeetingUI.setStatus(
-                    "You have joined the classroom."
-                );
-
-            },
-            2500
-        );
-
-    }
-);
-/* =====================================================
-   REMOTE VIDEO STREAM
-   ===================================================== */
-
-document.addEventListener(
-    "meeting:remoteStream",
-    async (event) => {
-
-        console.log(
-            "=========================================="
-        );
-
-        console.log(
-            "REMOTE VIDEO STREAM RECEIVED"
-        );
-
-        console.log(
-            event.detail
-        );
-
-        console.log(
-            "=========================================="
-        );
-
-
-        const {
-            socketId,
-            stream
-        } = event.detail || {};
-
-
-        if (
-            !socketId ||
-            !stream
-        ) {
-
-            console.warn(
-                "REMOTE STREAM DATA MISSING"
-            );
 
             return;
 
         }
 
-
-        /*
-        -------------------------------------------------
-        FIND PARTICIPANT TILE
-        -------------------------------------------------
-        */
-
-        const card =
-            document.querySelector(
-                `.meeting-participant[data-socket-id="${socketId}"]`
-            );
-
-
-        if (!card) {
-
-            console.warn(
-                "REMOTE PARTICIPANT CARD NOT FOUND:",
-                socketId
-            );
-
-            return;
-
-        }
-
-
-        console.log(
-            "REMOTE PARTICIPANT CARD FOUND:",
-            card
-        );
-
-
-        /*
-        -------------------------------------------------
-        FIND / CREATE VIDEO
-        -------------------------------------------------
-        */
-
-        let video =
-            card.querySelector(
-                "video.participant-video"
-            );
-
-
-        if (!video) {
-
-            video =
-                document.createElement(
-                    "video"
-                );
-
-
-            video.className =
-                "participant-video";
-
-
-            video.autoplay =
-                true;
-
-
-            video.playsInline =
-                true;
-
-
-            card.appendChild(
-                video
-            );
-
-
-            console.log(
-                "REMOTE VIDEO ELEMENT CREATED"
-            );
-
-        }
-
-
-        /*
-        -------------------------------------------------
-        ATTACH REMOTE STREAM
-        -------------------------------------------------
-        */
-
-        video.srcObject =
-            stream;
-
-
-        /*
-        -------------------------------------------------
-        REMOTE VIDEO MUST NOT BE MUTED
-        -------------------------------------------------
-        */
-
-        video.muted =
-            false;
-
-
-        /*
-        -------------------------------------------------
-        START REMOTE VIDEO
-        -------------------------------------------------
-        */
 
         try {
 
-            await video.play();
+            await MeetingWebRTC.receiveIce(
+                data.senderSocketId,
+                data.candidate
+            );
 
 
             console.log(
-                "REMOTE VIDEO ATTACHED:",
-                socketId
+                "WEBRTC ICE PROCESSED"
             );
 
         }
 
         catch (error) {
 
-            console.warn(
-                "REMOTE VIDEO PLAY FAILED:",
+            console.error(
+                "WEBRTC ICE PROCESSING ERROR:",
                 error
             );
 
@@ -2055,253 +1795,36 @@ document.addEventListener(
 
 socket.on(
     "participantReconnected",
-    async (data) => {
+    (data) => {
 
         console.log(
-            "=========================================="
-        );
-
-        console.log(
-            "PARTICIPANT RECONNECTED"
-        );
-
-        console.log(
+            "PARTICIPANT RECONNECTED",
             data
-        );
-
-        console.log(
-            "=========================================="
         );
 
 
         if (!data.participant) {
-
-            console.warn(
-                "RECONNECT DATA HAS NO PARTICIPANT"
-            );
 
             return;
 
         }
 
 
-        /*
-        =================================================
-        GET OLD AND NEW SOCKET IDS
-        =================================================
-        */
-
-        const oldSocketId =
-            data.oldSocketId;
-
-        const newSocketId =
-            data.participant.socketId;
-
-        const mySocketId =
-            MeetingSocket.getId();
-
-
-        console.log(
-            "MY SOCKET ID:",
-            mySocketId
-        );
-
-        console.log(
-            "OLD SOCKET ID:",
-            oldSocketId
-        );
-
-        console.log(
-            "NEW SOCKET ID:",
-            newSocketId
-        );
-
-
-        /*
-        =================================================
-        REMOVE OLD PARTICIPANT
-        =================================================
-        */
-
-        if (oldSocketId) {
+        if (data.oldSocketId) {
 
             MeetingParticipants.remove(
-                oldSocketId
+                data.oldSocketId
             );
-
-
-            /*
-            ---------------------------------------------
-            REMOVE OLD WEBRTC PEER
-            ---------------------------------------------
-            */
-
-            if (
-                window.MeetingWebRTC &&
-                typeof MeetingWebRTC.removePeer ===
-                    "function"
-            ) {
-
-                console.log(
-                    "REMOVING OLD WEBRTC PEER:",
-                    oldSocketId
-                );
-
-
-                MeetingWebRTC.removePeer(
-                    oldSocketId
-                );
-
-            }
 
         }
 
-
-        /*
-        =================================================
-        ADD PARTICIPANT WITH NEW SOCKET ID
-        =================================================
-        */
 
         MeetingParticipants.set(
             data.participant
         );
 
 
-        /*
-        =================================================
-        RENDER UPDATED PARTICIPANT TILE
-        =================================================
-        */
-
         MeetingUI.render();
-
-
-        /*
-        =================================================
-        DO NOT CONNECT TO OUR OWN SOCKET
-        =================================================
-        */
-
-        if (
-            !newSocketId ||
-            newSocketId === mySocketId
-        ) {
-
-            console.log(
-                "RECONNECTED USER IS LOCAL USER"
-            );
-
-            return;
-
-        }
-
-
-        /*
-        =================================================
-        CHECK WEBRTC MANAGER
-        =================================================
-        */
-
-        if (
-            !window.MeetingWebRTC
-        ) {
-
-            console.warn(
-                "MeetingWebRTC NOT AVAILABLE"
-            );
-
-            return;
-
-        }
-
-
-        /*
-        =================================================
-        CHECK LOCAL STREAM
-        =================================================
-        */
-
-        let localStream =
-            MeetingWebRTC.getLocalStream();
-
-
-        /*
-        -------------------------------------------------
-        FALLBACK TO MEDIA MANAGER
-        -------------------------------------------------
-        */
-
-        if (
-            !localStream &&
-            window.MediaManagerV2 &&
-            typeof MediaManagerV2.getLocalStream ===
-                "function"
-        ) {
-
-            localStream =
-                MediaManagerV2.getLocalStream();
-
-        }
-
-
-        if (!localStream) {
-
-            console.warn(
-                "LOCAL STREAM NOT READY FOR RECONNECT"
-            );
-
-            return;
-
-        }
-
-
-        /*
-        =================================================
-        CREATE NEW WEBRTC CONNECTION
-        =================================================
-        */
-
-        console.log(
-            "=========================================="
-        );
-
-        console.log(
-            "RECONNECTING WEBRTC"
-        );
-
-        console.log(
-            "CONNECTING TO NEW SOCKET:",
-            newSocketId
-        );
-
-        console.log(
-            "=========================================="
-        );
-
-
-        try {
-
-            await MeetingWebRTC.createOffer(
-                newSocketId
-            );
-
-
-            console.log(
-                "WEBRTC RECONNECT OFFER SENT:",
-                newSocketId
-            );
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "WEBRTC RECONNECT OFFER ERROR:",
-                error
-            );
-
-        }
 
     }
 );
@@ -2315,80 +1838,18 @@ socket.on(
     (data) => {
 
         console.log(
-            "=========================================="
-        );
-
-        console.log(
-            "PARTICIPANT LEFT"
-        );
-
-        console.log(
+            "PARTICIPANT LEFT",
             data
         );
 
-        console.log(
-            "=========================================="
-        );
-
-
-        if (!data || !data.socketId) {
-
-            return;
-
-        }
-
-
-        /*
-        =================================================
-        REMOVE PARTICIPANT FROM CENTRAL MANAGER
-        =================================================
-        */
 
         MeetingParticipants.remove(
             data.socketId
         );
 
 
-        /*
-        =================================================
-        IMPORTANT:
-        REMOVE OLD WEBRTC PEER
-        =================================================
-        */
-
-        if (
-            window.MeetingWebRTC &&
-            typeof MeetingWebRTC.removePeer ===
-                "function"
-        ) {
-
-            console.log(
-                "REMOVING OLD WEBRTC PEER:",
-                data.socketId
-            );
-
-
-            MeetingWebRTC.removePeer(
-                data.socketId
-            );
-
-        }
-
-
-        /*
-        =================================================
-        RENDER PARTICIPANTS
-        =================================================
-        */
-
         MeetingUI.render();
 
-
-        /*
-        =================================================
-        STATUS
-        =================================================
-        */
 
         if (data.name) {
 
@@ -2617,7 +2078,8 @@ socket.on(
            GLOBAL SOCKET
            ===================================================== */
 
-        
+        window.MeetingSocket =
+            socket;
 
 
         console.log(
