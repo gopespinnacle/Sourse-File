@@ -1789,6 +1789,175 @@ socket.on(
 
     }
 );
+
+/* =====================================================
+   REMOTE VIDEO STREAM
+   ===================================================== */
+
+document.addEventListener(
+    "meeting:remoteStream",
+    async (event) => {
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log(
+            "REMOTE VIDEO STREAM RECEIVED"
+        );
+
+        console.log(
+            event.detail
+        );
+
+        console.log(
+            "=========================================="
+        );
+
+
+        const {
+            socketId,
+            stream
+        } = event.detail || {};
+
+
+        if (
+            !socketId ||
+            !stream
+        ) {
+
+            console.warn(
+                "REMOTE STREAM DATA MISSING"
+            );
+
+            return;
+
+        }
+
+
+        /*
+        -------------------------------------------------
+        FIND PARTICIPANT TILE
+        -------------------------------------------------
+        */
+
+        const card =
+            document.querySelector(
+                `.meeting-participant[data-socket-id="${socketId}"]`
+            );
+
+
+        if (!card) {
+
+            console.warn(
+                "REMOTE PARTICIPANT CARD NOT FOUND:",
+                socketId
+            );
+
+            return;
+
+        }
+
+
+        console.log(
+            "REMOTE PARTICIPANT CARD FOUND:",
+            card
+        );
+
+
+        /*
+        -------------------------------------------------
+        FIND / CREATE VIDEO
+        -------------------------------------------------
+        */
+
+        let video =
+            card.querySelector(
+                "video.participant-video"
+            );
+
+
+        if (!video) {
+
+            video =
+                document.createElement(
+                    "video"
+                );
+
+
+            video.className =
+                "participant-video";
+
+
+            video.autoplay =
+                true;
+
+
+            video.playsInline =
+                true;
+
+
+            card.appendChild(
+                video
+            );
+
+
+            console.log(
+                "REMOTE VIDEO ELEMENT CREATED"
+            );
+
+        }
+
+
+        /*
+        -------------------------------------------------
+        ATTACH REMOTE STREAM
+        -------------------------------------------------
+        */
+
+        video.srcObject =
+            stream;
+
+
+        /*
+        -------------------------------------------------
+        REMOTE VIDEO MUST NOT BE MUTED
+        -------------------------------------------------
+        */
+
+        video.muted =
+            false;
+
+
+        /*
+        -------------------------------------------------
+        START REMOTE VIDEO
+        -------------------------------------------------
+        */
+
+        try {
+
+            await video.play();
+
+
+            console.log(
+                "REMOTE VIDEO ATTACHED:",
+                socketId
+            );
+
+        }
+
+        catch (error) {
+
+            console.warn(
+                "REMOTE VIDEO PLAY FAILED:",
+                error
+            );
+
+        }
+
+    }
+);
 /* =====================================================
    PARTICIPANT RECONNECTED
    ===================================================== */

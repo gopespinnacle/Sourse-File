@@ -367,6 +367,38 @@ render() {
         tile.dataset.socketId =
             participant.socketId;
 
+            /*
+======================================================
+VIDEO ELEMENT
+======================================================
+*/
+
+const video =
+    document.createElement(
+        "video"
+    );
+
+video.className =
+    "participant-video";
+
+video.autoplay =
+    true;
+
+video.playsInline =
+    true;
+
+video.muted =
+    this.isLocal(
+        participant.socketId
+    );
+
+video.dataset.socketId =
+    participant.socketId;
+
+tile.appendChild(
+    video
+);
+
 
         /*
         --------------------------------------------------
