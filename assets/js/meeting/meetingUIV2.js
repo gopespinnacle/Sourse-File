@@ -146,24 +146,40 @@ const MeetingUI = {
     ======================================================
     */
 
-    render() {
+    /*
+======================================================
+RENDER
+======================================================
+*/
 
-        if (!this.grid) return;
+render() {
 
-        this.grid.innerHTML = "";
+    if (!this.grid) return;
 
 
-        const participants =
-            MeetingParticipants.sorted();
+    const participants =
+        MeetingParticipants.sorted();
 
+
+    /*
+    --------------------------------------------------
+    EMPTY ROOM
+    --------------------------------------------------
+    */
+
+    if (!participants.length) {
 
         /*
-        --------------------------------------------------
-        EMPTY
-        --------------------------------------------------
+        ----------------------------------------------
+        Only show empty room if there are no tiles.
+        ----------------------------------------------
         */
 
-        if (!participants.length) {
+        if (
+            !this.grid.querySelector(
+                ".meeting-participant"
+            )
+        ) {
 
             this.grid.innerHTML = `
 
@@ -181,31 +197,151 @@ const MeetingUI = {
 
             `;
 
-            return;
-
         }
 
+        return;
 
-        /*
-        --------------------------------------------------
-        CREATE PARTICIPANT TILES
-        --------------------------------------------------
-        */
+    }
 
-        participants.forEach(
-            participant => {
+
+    /*
+    --------------------------------------------------
+    REMOVE EMPTY ROOM MESSAGE
+    --------------------------------------------------
+    */
+
+    const emptyRoom =
+        document.getElementById(
+            "emptyRoom"
+        );
+
+
+    if (emptyRoom) {
+
+        emptyRoom.remove();
+
+    }
+
+
+    /*
+    --------------------------------------------------
+    REMOVE PARTICIPANTS WHO LEFT
+    --------------------------------------------------
+    */
+
+    const validSocketIds =
+        new Set(
+            participants.map(
+                participant =>
+                    participant.socketId
+            )
+        );
+
+
+    this.grid
+        .querySelectorAll(
+            ".meeting-participant"
+        )
+        .forEach(tile => {
+
+            const socketId =
+                tile.dataset.socketId;
+
+
+            if (
+                socketId &&
+                !validSocketIds.has(socketId)
+            ) {
+
+                tile.remove();
+
+            }
+
+        });
+
+
+    /*
+    --------------------------------------------------
+    CREATE ONLY NEW PARTICIPANT TILES
+    --------------------------------------------------
+    
+    IMPORTANT:
+    Existing tiles are NEVER destroyed.
+
+    This preserves:
+    
+    - video elements
+    - MediaStream
+    - audio
+    - local camera
+    - remote camera
+    - WebRTC connections
+    --------------------------------------------------
+    */
+
+    participants.forEach(
+        participant => {
+
+            let tile =
+                this.grid.querySelector(
+                    `[data-socket-id="${participant.socketId}"]`
+                );
+
+
+            /*
+            ------------------------------------------
+            CREATE TILE ONLY IF IT DOES NOT EXIST
+            ------------------------------------------
+            */
+
+            if (!tile) {
 
                 this.createParticipantTile(
                     participant
                 );
 
+                tile =
+                    this.grid.querySelector(
+                        `[data-socket-id="${participant.socketId}"]`
+                    );
+
             }
-        );
 
 
-        this.updatePeoplePanel();
+            /*
+            ------------------------------------------
+            KEEP PARTICIPANT ORDER
+            ------------------------------------------
+            
+            appendChild() moves the existing DOM
+            element without destroying it.
 
-    },
+            Therefore the video element and its
+            MediaStream remain attached.
+            ------------------------------------------
+            */
+
+            if (tile) {
+
+                this.grid.appendChild(
+                    tile
+                );
+
+            }
+
+        }
+    );
+
+
+    /*
+    --------------------------------------------------
+    UPDATE PEOPLE PANEL
+    --------------------------------------------------
+    */
+
+    this.updatePeoplePanel();
+
+},
 
 
     /*
