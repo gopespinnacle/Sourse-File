@@ -62,35 +62,141 @@ const MediaManagerV2 = {
             ----------------------------------------------
             */
 
-            const stream =
+            /*
+------------------------------------------------------
+REQUEST CAMERA + MICROPHONE
+------------------------------------------------------
+*/
+
+let stream = null;
+
+try {
+
+    /*
+    FIRST ATTEMPT
+    Normal classroom camera + microphone
+    */
+
+    stream =
+        await navigator.mediaDevices.getUserMedia({
+
+            video: true,
+
+            audio: true
+
+        });
+
+}
+catch (firstError) {
+
+    console.warn(
+        "FIRST MEDIA REQUEST FAILED:",
+        firstError.name,
+        firstError.message
+    );
+
+
+    /*
+    SECOND ATTEMPT
+    Ask for camera + microphone with
+    very simple constraints.
+    */
+
+    try {
+
+        stream =
+            await navigator.mediaDevices.getUserMedia({
+
+                video: {
+                    facingMode: "user"
+                },
+
+                audio: true
+
+            });
+
+    }
+    catch (secondError) {
+
+        console.error(
+            "SECOND MEDIA REQUEST FAILED:",
+            secondError.name,
+            secondError.message
+        );
+
+
+        /*
+        --------------------------------------------------
+        CAMERA + MICROPHONE FAILED
+        TRY CAMERA ONLY
+        --------------------------------------------------
+        */
+
+        try {
+
+            stream =
                 await navigator.mediaDevices.getUserMedia({
 
-                    video: {
-                        width: {
-                            ideal: 1280
-                        },
-
-                        height: {
-                            ideal: 720
-                        },
-
-                        frameRate: {
-                            ideal: 30,
-                            max: 30
-                        }
-                    },
-
-                    audio: {
-
-                        echoCancellation: true,
-
-                        noiseSuppression: true,
-
-                        autoGainControl: true
-
-                    }
+                    video: true
 
                 });
+
+            console.warn(
+                "CAMERA STARTED WITHOUT MICROPHONE"
+            );
+
+        }
+        catch (cameraError) {
+
+            console.error(
+                "CAMERA START FAILED:",
+                cameraError.name,
+                cameraError.message
+            );
+
+
+            /*
+            ------------------------------------------------
+            TRY MICROPHONE ONLY
+            ------------------------------------------------
+            */
+
+            try {
+
+                stream =
+                    await navigator.mediaDevices.getUserMedia({
+
+                        audio: true
+
+                    });
+
+                console.warn(
+                    "MICROPHONE STARTED WITHOUT CAMERA"
+                );
+
+            }
+            catch (audioError) {
+
+                console.error(
+                    "CAMERA AND MICROPHONE BOTH FAILED:",
+                    audioError.name,
+                    audioError.message
+                );
+
+
+                this.showMediaError(
+                    "Unable to access camera or microphone."
+                );
+
+                return null;
+
+            }
+
+        }
+
+    }
+
+}
 
 
             /*
@@ -180,66 +286,55 @@ const MediaManagerV2 = {
 
         catch (error) {
 
-            console.error(
-                "MEDIA V2 ERROR:",
-                error
-            );
+    console.error(
+        "MEDIA V2 ERROR:",
+        error
+    );
 
+    if (
+        error.name ===
+        "NotAllowedError"
+    ) {
 
-            /*
-            ----------------------------------------------
-            USER DENIED PERMISSION
-            ----------------------------------------------
-            */
+        this.showMediaError(
+            "Camera or microphone permission was denied."
+        );
 
-            if (
-                error.name ===
-                "NotAllowedError"
-            ) {
+    }
 
-                this.showMediaError(
-                    "Camera or microphone permission was denied."
-                );
+    else if (
+        error.name ===
+        "NotFoundError"
+    ) {
 
-            }
+        this.showMediaError(
+            "Camera or microphone was not found."
+        );
 
+    }
 
-            /*
-            ----------------------------------------------
-            NO DEVICE
-            ----------------------------------------------
-            */
+    else if (
+        error.name ===
+        "NotReadableError"
+    ) {
 
-            else if (
-                error.name ===
-                "NotFoundError"
-            ) {
+        this.showMediaError(
+            "Camera is currently unavailable. Please close other apps using the camera."
+        );
 
-                this.showMediaError(
-                    "Camera or microphone was not found."
-                );
+    }
 
-            }
+    else {
 
+        this.showMediaError(
+            "Unable to access camera or microphone."
+        );
 
-            /*
-            ----------------------------------------------
-            OTHER ERROR
-            ----------------------------------------------
-            */
+    }
 
-            else {
+    return null;
 
-                this.showMediaError(
-                    "Unable to start camera and microphone."
-                );
-
-            }
-
-
-            return null;
-
-        }
+}
 
     },
 
