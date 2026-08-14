@@ -484,27 +484,221 @@ function setLocalStream(stream) {
 
     async function receiveOffer(remoteSocketId, offer) {
 
-        const peer = await createPeerConnection(remoteSocketId);
+    /*
+    ===========================================================
+    RECEIVE OFFER
+    ===========================================================
 
-        await peer.setRemoteDescription(
+    IMPORTANT:
 
-            new RTCSessionDescription(offer)
+    The student may receive the teacher's offer BEFORE
+    MediaManagerV2 has finished creating the student's
+    local camera stream.
 
+    If we create the PeerConnection before the local
+    stream exists, createPeerConnection() cannot add the
+    student's camera/microphone tracks.
+
+    Therefore:
+
+    1. Make sure local media exists FIRST
+    2. THEN create PeerConnection
+    3. THEN set teacher's offer
+    4. THEN create answer
+
+    ===========================================================
+    */
+
+
+    console.log(
+        "=========================================="
+    );
+
+    console.log(
+        "WEBRTC RECEIVE OFFER"
+    );
+
+    console.log(
+        "Remote Socket:",
+        remoteSocketId
+    );
+
+    console.log(
+        "Local Stream Before:",
+        localStream
+    );
+
+    console.log(
+        "=========================================="
+    );
+
+
+    /*
+    ===========================================================
+    MAKE SURE LOCAL CAMERA/MICROPHONE EXISTS
+    ===========================================================
+    */
+
+    if (!localStream) {
+
+        console.log(
+            "WEBRTC LOCAL STREAM NOT READY"
         );
 
-        const answer = await peer.createAnswer();
+        console.log(
+            "Starting MediaManagerV2 before answering..."
+        );
 
-        await peer.setLocalDescription(answer);
 
-        MeetingSocket.emit("answer", {
+        try {
 
-            teacherSocketId: remoteSocketId,
+            localStream =
+                await startCamera();
 
-            answer
 
-        });
+        }
+        catch (error) {
+
+            console.error(
+                "WEBRTC FAILED TO START LOCAL MEDIA:",
+                error
+            );
+
+            throw error;
+
+        }
 
     }
+
+
+    /*
+    ===========================================================
+    CHECK LOCAL STREAM
+    ===========================================================
+    */
+
+    if (!localStream) {
+
+        throw new Error(
+            "Cannot answer WebRTC offer: local media stream is unavailable."
+        );
+
+    }
+
+
+    console.log(
+        "WEBRTC LOCAL STREAM READY BEFORE PEER CREATION:",
+        localStream
+    );
+
+
+    console.log(
+        "VIDEO TRACKS:",
+        localStream.getVideoTracks()
+    );
+
+
+    console.log(
+        "AUDIO TRACKS:",
+        localStream.getAudioTracks()
+    );
+
+
+    /*
+    ===========================================================
+    CREATE PEER CONNECTION
+    ===========================================================
+
+    IMPORTANT:
+
+    This MUST happen AFTER localStream exists.
+
+    createPeerConnection() adds the local tracks here.
+    ===========================================================
+    */
+
+    const peer =
+        await createPeerConnection(
+            remoteSocketId
+        );
+
+
+    /*
+    ===========================================================
+    SET REMOTE DESCRIPTION
+    ===========================================================
+    */
+
+    await peer.setRemoteDescription(
+
+        new RTCSessionDescription(
+            offer
+        )
+
+    );
+
+
+    console.log(
+        "WEBRTC REMOTE OFFER SET"
+    );
+
+
+    /*
+    ===========================================================
+    CREATE ANSWER
+    ===========================================================
+    */
+
+    const answer =
+        await peer.createAnswer();
+
+
+    /*
+    ===========================================================
+    SET LOCAL DESCRIPTION
+    ===========================================================
+    */
+
+    await peer.setLocalDescription(
+        answer
+    );
+
+
+    console.log(
+        "WEBRTC ANSWER CREATED"
+    );
+
+
+    /*
+    ===========================================================
+    SEND ANSWER
+    ===========================================================
+    */
+
+    MeetingSocket.emit(
+        "answer",
+        {
+
+            teacherSocketId:
+                remoteSocketId,
+
+            answer:
+                answer
+
+        }
+    );
+
+
+    console.log(
+        "WEBRTC ANSWER SENT"
+    );
+
+
+    console.log(
+        "=========================================="
+    );
+
+}
 
     /*
     ===========================================================
