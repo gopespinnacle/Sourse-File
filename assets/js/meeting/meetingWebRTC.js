@@ -399,37 +399,68 @@ function setLocalStream(stream) {
 
         peer.ontrack = (event) => {
 
-    remoteStreams[remoteSocketId] = event.streams[0];
+    console.log(
+        "WEBRTC NORMAL REMOTE TRACK RECEIVED:",
+        remoteSocketId,
+        event.track.kind
+    );
 
-    if(window.teacherSharing){
 
-        const videoTrack =
-            event.streams[0]
-                .getVideoTracks()[0];
+    const stream =
+        event.streams &&
+        event.streams[0];
 
-        if(videoTrack){
 
-            ScreenLayout.attachRemoteTrack(videoTrack);
+    if(!stream){
 
-        }
+        console.warn(
+            "WEBRTC REMOTE STREAM MISSING:",
+            remoteSocketId
+        );
 
         return;
 
     }
 
+
+    /*
+    =======================================================
+    IMPORTANT
+
+    This is the NORMAL camera/microphone connection.
+
+    It must NEVER send anything to ScreenLayout.
+
+    Screen sharing has its own separate
+    RTCPeerConnection inside ScreenShare V3.
+    =======================================================
+    */
+
+
+    remoteStreams[
+        remoteSocketId
+    ] = stream;
+
+
     document.dispatchEvent(
 
-        new CustomEvent("meeting:remoteStream",{
+        new CustomEvent(
+            "meeting:remoteStream",
+            {
 
-            detail:{
+                detail: {
 
-                socketId:remoteSocketId,
+                    socketId:
+                        remoteSocketId,
 
-                stream:event.streams[0]
+                    stream:
+                        stream
+
+                }
 
             }
 
-        })
+        )
 
     );
 
@@ -1401,64 +1432,136 @@ delete makingOffer[remoteSocketId];
     }
 
     /*
-    ===========================================================
-    START SCREEN SHARE
-    ===========================================================
-    */
+===========================================================
+SCREEN SHARE MEDIA CAPTURE
+===========================================================
+*/
 
-    async function startScreenShare(){
+/*
+-----------------------------------------------------------
+START SCREEN SHARE
 
-        screenStream = await navigator.mediaDevices.getDisplayMedia({
+IMPORTANT:
 
-            video:true,
+This function ONLY captures the screen.
 
-            audio:true
+It DOES NOT replace the camera track.
 
-        });
+Screen sharing uses a separate WebRTC connection
+managed by screenShareV3.js.
+-----------------------------------------------------------
+*/
 
-        const track = screenStream.getVideoTracks()[0];
+async function startScreenShare(){
 
-        await replaceVideoTrack(track);
+    if(screenStream){
 
-        track.onended = async()=>{
-
-            await stopScreenShare();
-
-        };
+        console.log(
+            "WEBRTC SCREEN SHARE ALREADY ACTIVE"
+        );
 
         return screenStream;
 
     }
 
-    /*
-    ===========================================================
-    STOP SCREEN SHARE
-    ===========================================================
-    */
 
-    async function stopScreenShare(){
+    screenStream =
+        await navigator.mediaDevices.getDisplayMedia({
 
-        if(!screenStream) return;
+            video: {
 
-        screenStream.getTracks().forEach(track=>{
+                frameRate: 30
+
+            },
+
+            audio: true
+
+        });
+
+
+    console.log(
+        "WEBRTC SCREEN STREAM CREATED:",
+        screenStream
+    );
+
+
+    const track =
+        screenStream.getVideoTracks()[0];
+
+
+    if(track){
+
+        track.onended = async()=>{
+
+            console.log(
+                "WEBRTC SCREEN SHARE ENDED BY BROWSER"
+            );
+
+
+            await stopScreenShare();
+
+
+            document.dispatchEvent(
+
+                new CustomEvent(
+                    "meeting:screenShareEnded"
+                )
+
+            );
+
+        };
+
+    }
+
+
+    return screenStream;
+
+}
+
+
+/*
+-----------------------------------------------------------
+STOP SCREEN SHARE
+
+IMPORTANT:
+
+This ONLY stops the screen capture.
+
+It does NOT touch the camera stream.
+-----------------------------------------------------------
+*/
+
+async function stopScreenShare(){
+
+    if(!screenStream){
+
+        return;
+
+    }
+
+
+    console.log(
+        "WEBRTC STOPPING SCREEN STREAM"
+    );
+
+
+    screenStream
+        .getTracks()
+        .forEach(track=>{
 
             track.stop();
 
         });
 
-        screenStream = null;
 
-        if(localStream){
+    screenStream = null;
 
-            await replaceVideoTrack(
 
-                localStream.getVideoTracks()[0]
+    console.log(
+        "WEBRTC SCREEN STREAM STOPPED"
+    );
 
-            );
-
-        }
-
-    }
+}
 
     /*
     ===========================================================

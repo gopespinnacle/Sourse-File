@@ -25,6 +25,7 @@
 <script src="assets/js/meeting/meetingUtils.js"></script>
 <script src="assets/js/meeting/meetingSocket.js"></script>
 <script src="assets/js/meeting/meetingWebRTC.js"></script>
+<script src="assets/js/meeting/video/screenShareV3.js"></script>
 
 <script src="assets/js/meeting/meetingParticipantsV2.js"></script>
 <script src="assets/js/meeting/meetingUIV2.js"></script>
@@ -326,6 +327,215 @@
     rel="stylesheet"
     href="assets/css/meeting/meetingV2.css">
 
+    <style>
+
+/*
+===========================================================
+GOOGLE MEET STYLE SCREEN PRESENTATION
+===========================================================
+*/
+
+#meetingStage{
+
+    position:relative;
+
+    width:100%;
+
+    height:100%;
+
+    overflow:hidden;
+
+}
+
+
+/*
+===========================================================
+SCREEN PRESENTATION
+===========================================================
+*/
+
+#screenPresentation{
+
+    position:absolute;
+
+    inset:0;
+
+    display:none;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:#000;
+
+    z-index:20;
+
+    overflow:hidden;
+
+}
+
+
+/*
+===========================================================
+SCREEN VIDEO
+===========================================================
+*/
+
+#screenPresentationVideo{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:contain;
+
+    background:#000;
+
+    display:block;
+
+}
+
+
+/*
+===========================================================
+PRESENTATION LABEL
+===========================================================
+*/
+
+#screenPresentationLabel{
+
+    position:absolute;
+
+    left:16px;
+
+    bottom:16px;
+
+    padding:7px 12px;
+
+    border-radius:6px;
+
+    background:rgba(0,0,0,.65);
+
+    color:#fff;
+
+    font-size:13px;
+
+    z-index:30;
+
+    pointer-events:none;
+
+}
+
+
+/*
+===========================================================
+PARTICIPANT GRID DURING PRESENTATION
+===========================================================
+*/
+
+#screenPresentation.active
+~ #participantGrid{
+
+    position:absolute;
+
+    left:16px;
+
+    right:16px;
+
+    bottom:16px;
+
+    height:110px;
+
+    z-index:40;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:flex-end;
+
+    pointer-events:none;
+
+}
+
+
+/*
+===========================================================
+PARTICIPANT CARDS DURING PRESENTATION
+===========================================================
+*/
+
+#screenPresentation.active
+~ #participantGrid
+.meeting-participant{
+
+    width:160px;
+
+    height:100px;
+
+    flex-shrink:0;
+
+    pointer-events:auto;
+
+}
+
+
+/*
+===========================================================
+MOBILE
+===========================================================
+*/
+
+@media(max-width:700px){
+
+    #screenPresentation{
+
+        inset:0;
+
+    }
+
+
+    #screenPresentationLabel{
+
+        left:10px;
+
+        bottom:10px;
+
+        font-size:11px;
+
+        padding:5px 8px;
+
+    }
+
+
+    #screenPresentation.active
+    ~ #participantGrid{
+
+        left:8px;
+
+        right:8px;
+
+        bottom:8px;
+
+        height:82px;
+
+    }
+
+
+    #screenPresentation.active
+    ~ #participantGrid
+    .meeting-participant{
+
+        width:120px;
+
+        height:75px;
+
+    }
+
+}
+
+</style>
+
 </head>
 
 
@@ -388,23 +598,53 @@
 
         <section id="meetingStage">
 
-            <div id="participantGrid">
+    <!-- =================================================
+         SCREEN PRESENTATION AREA
+         ================================================= -->
 
-                <div id="emptyRoom">
+    <div
+        id="screenPresentation"
+        class="screen-presentation">
 
-                    <h2>
-                        Virtual Classroom
-                    </h2>
+        <video
+            id="screenPresentationVideo"
+            autoplay
+            playsinline
+            muted>
+        </video>
 
-                    <div>
-                        Waiting for participants...
-                    </div>
+        <div
+            id="screenPresentationLabel"
+            class="screen-presentation-label">
 
-                </div>
+            You are presenting
 
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         PARTICIPANT GRID
+         ================================================= -->
+
+    <div id="participantGrid">
+
+        <div id="emptyRoom">
+
+            <h2>
+                Virtual Classroom
+            </h2>
+
+            <div>
+                Waiting for participants...
             </div>
 
-        </section>
+        </div>
+
+    </div>
+
+</section>
 
 
         <!-- =============================================
@@ -810,6 +1050,25 @@ const socket =
     MeetingSocket.connect(
         SERVER_URL
     );
+
+    /*
+=========================================================
+INITIALIZE SCREEN SHARE V3
+=========================================================
+*/
+
+ScreenShare.init({
+
+    socket:
+        socket,
+
+    room:
+        meetingRoom,
+
+    role:
+        meetingRole
+
+});
 
 
             /* =====================================================
@@ -2773,6 +3032,83 @@ socket.on(
             "MeetingConfig:",
             window.MeetingConfig
         );
+
+        /* =====================================================
+   SCREEN SHARE BUTTON
+   ===================================================== */
+
+const screenShareButton =
+    document.getElementById(
+        "screenShareButton"
+    );
+
+
+if (screenShareButton) {
+
+    screenShareButton.addEventListener(
+        "click",
+        async () => {
+
+            console.log(
+                "SCREEN SHARE BUTTON CLICKED"
+            );
+
+
+            if (
+                !window.ScreenShare
+            ) {
+
+                console.error(
+                    "ScreenShare V3 is not loaded."
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                if (
+                    ScreenShare.isSharing &&
+                    ScreenShare.isSharing()
+                ) {
+
+                    console.log(
+                        "STOPPING SCREEN SHARE"
+                    );
+
+
+                    ScreenShare.stop();
+
+                }
+
+                else {
+
+                    console.log(
+                        "STARTING SCREEN SHARE"
+                    );
+
+
+                    await ScreenShare.start();
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "SCREEN SHARE ERROR:",
+                    error
+                );
+
+            }
+
+        }
+    );
+
+}
 
         /* =====================================================
    INITIALIZE MEETING UI
