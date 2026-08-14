@@ -1265,8 +1265,63 @@ if (
                 ) {
 
                     MeetingWebRTC.setLocalStream(
-                        stream
-                    );
+    stream
+);
+
+
+/*
+=====================================================
+CAMERA READY
+NOW CONNECT TEACHER TO EXISTING STUDENTS
+=====================================================
+*/
+
+if (
+    role === "teacher" &&
+    window.MeetingConfig &&
+    Array.isArray(
+        window.MeetingConfig.participants
+    )
+) {
+
+    window.MeetingConfig
+        .participants
+        .forEach(
+            participant => {
+
+                if (
+                    participant.role !== "student"
+                ) {
+
+                    return;
+
+                }
+
+
+                console.log(
+                    "CAMERA READY - CONNECTING TO STUDENT:",
+                    participant.socketId
+                );
+
+
+                MeetingWebRTC.createOffer(
+                    participant.socketId
+                )
+                .catch(
+                    error => {
+
+                        console.error(
+                            "CAMERA READY WEBRTC OFFER ERROR:",
+                            error
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+}
 
                 }
 
@@ -1376,6 +1431,55 @@ socket.on(
 
         MeetingUI.render();
 
+        /*
+=====================================================
+CONNECT TEACHER TO EXISTING STUDENTS
+=====================================================
+*/
+
+if (
+    role === "teacher" &&
+    window.MeetingWebRTC &&
+    MeetingWebRTC.getLocalStream()
+) {
+
+    (data.participants || []).forEach(
+        participant => {
+
+            if (
+                participant.role !== "student"
+            ) {
+
+                return;
+
+            }
+
+
+            console.log(
+                "TEACHER CONNECTING TO EXISTING STUDENT:",
+                participant.socketId
+            );
+
+
+            MeetingWebRTC.createOffer(
+                participant.socketId
+            )
+            .catch(
+                error => {
+
+                    console.error(
+                        "EXISTING STUDENT WEBRTC OFFER ERROR:",
+                        error
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
+
     }
 );
 /* =====================================================
@@ -1417,20 +1521,32 @@ socket.on(
 
         MeetingUI.render();
 
-        /*
+       /*
 =====================================================
 AUTOMATIC WEBRTC CONNECTION
+=====================================================
+
+ONLY TEACHER CREATES THE OFFER.
+
+Teacher:
+    OFFER
+        ↓
+Student:
+    ANSWER
+
+Student NEVER creates an offer.
 =====================================================
 */
 
 if (
+    role === "teacher" &&
     window.MeetingWebRTC &&
     data.participant.socketId &&
     MeetingWebRTC.getLocalStream()
 ) {
 
     console.log(
-        "CREATING AUTOMATIC WEBRTC OFFER FOR:",
+        "TEACHER CREATING WEBRTC OFFER FOR:",
         data.participant.socketId
     );
 
@@ -1442,7 +1558,7 @@ if (
         error => {
 
             console.error(
-                "WEBRTC OFFER ERROR:",
+                "TEACHER WEBRTC OFFER ERROR:",
                 error
             );
 
