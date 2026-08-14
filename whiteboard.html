@@ -1743,53 +1743,249 @@ socket.on(
    WEBRTC ICE CANDIDATE
    ===================================================== */
 
+/* =====================================================
+   PARTICIPANT JOINED
+   ===================================================== */
+
 socket.on(
-    "ice-candidate",
+    "participantJoined",
     async (data) => {
 
         console.log(
-            "WEBRTC ICE RECEIVED:",
+            "=========================================="
+        );
+
+        console.log(
+            "PARTICIPANT JOINED"
+        );
+
+        console.log(
             data
         );
 
+        console.log(
+            "=========================================="
+        );
 
-        if (
-            !window.MeetingWebRTC ||
-            !data.senderSocketId ||
-            !data.candidate
-        ) {
+
+        if (!data || !data.participant) {
+
+            console.warn(
+                "PARTICIPANT JOIN DATA MISSING"
+            );
 
             return;
 
         }
 
 
-        try {
+        const participant =
+            data.participant;
 
-            await MeetingWebRTC.receiveIce(
-                data.senderSocketId,
-                data.candidate
-            );
 
+        const remoteSocketId =
+            participant.socketId;
+
+
+        /*
+        =================================================
+        SAVE PARTICIPANT
+        =================================================
+        */
+
+        MeetingParticipants.set(
+            participant
+        );
+
+
+        /*
+        =================================================
+        RENDER UI
+        =================================================
+        */
+
+        MeetingUI.render();
+
+
+        /*
+        =================================================
+        ONLY TEACHER CREATES OFFER
+        =================================================
+        */
+
+        if (
+            window.MeetingConfig &&
+            window.MeetingConfig.role === "teacher"
+        ) {
+
+            /*
+            ---------------------------------------------
+            CHECK SOCKET ID
+            ---------------------------------------------
+            */
+
+            if (!remoteSocketId) {
+
+                console.warn(
+                    "STUDENT SOCKET ID MISSING"
+                );
+
+                return;
+
+            }
+
+
+            /*
+            ---------------------------------------------
+            DO NOT CONNECT TO OUR OWN SOCKET
+            ---------------------------------------------
+            */
+
+            if (
+                remoteSocketId ===
+                MeetingSocket.getSocket()?.id
+            ) {
+
+                return;
+
+            }
+
+
+            /*
+            ---------------------------------------------
+            CHECK LOCAL CAMERA
+            ---------------------------------------------
+            */
+
+            if (
+                !window.MeetingWebRTC ||
+                !MeetingWebRTC.getLocalStream()
+            ) {
+
+                console.warn(
+                    "TEACHER LOCAL STREAM NOT READY"
+                );
+
+                return;
+
+            }
+
+
+            /*
+            ---------------------------------------------
+            IMPORTANT:
+            IF AN OLD PEER EXISTS FOR THIS SOCKET,
+            REMOVE IT FIRST.
+            ---------------------------------------------
+            */
+
+            if (
+                typeof MeetingWebRTC.getPeers ===
+                    "function"
+            ) {
+
+                const peers =
+                    MeetingWebRTC.getPeers();
+
+
+                if (
+                    peers &&
+                    peers[remoteSocketId]
+                ) {
+
+                    console.log(
+                        "OLD WEBRTC PEER FOUND."
+                    );
+
+                    console.log(
+                        "REMOVING OLD PEER:",
+                        remoteSocketId
+                    );
+
+
+                    MeetingWebRTC.removePeer(
+                        remoteSocketId
+                    );
+
+                }
+
+            }
+
+
+            /*
+            ---------------------------------------------
+            CREATE FRESH WEBRTC OFFER
+            ---------------------------------------------
+            */
 
             console.log(
-                "WEBRTC ICE PROCESSED"
+                "=========================================="
             );
+
+            console.log(
+                "TEACHER RECONNECTING STUDENT"
+            );
+
+            console.log(
+                "Student Socket:",
+                remoteSocketId
+            );
+
+            console.log(
+                "=========================================="
+            );
+
+
+            try {
+
+                await MeetingWebRTC.createOffer(
+                    remoteSocketId
+                );
+
+
+                console.log(
+                    "TEACHER OFFER SENT TO STUDENT:",
+                    remoteSocketId
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "TEACHER WEBRTC OFFER ERROR:",
+                    error
+                );
+
+            }
 
         }
 
-        catch (error) {
 
-            console.error(
-                "WEBRTC ICE PROCESSING ERROR:",
-                error
-            );
+        /*
+        =================================================
+        STATUS
+        =================================================
+        */
 
-        }
+        MeetingUI.setStatus(
+            `${participant.name} joined the classroom.`
+        );
+
+
+        setTimeout(
+            () => {
+
+                MeetingUI.setStatus(
+                    "You have joined the classroom."
+                );
+
+            },
+            2500
+        );
 
     }
 );
-
 /* =====================================================
    REMOTE VIDEO STREAM
    ===================================================== */
@@ -2224,18 +2420,80 @@ socket.on(
     (data) => {
 
         console.log(
-            "PARTICIPANT LEFT",
+            "=========================================="
+        );
+
+        console.log(
+            "PARTICIPANT LEFT"
+        );
+
+        console.log(
             data
         );
 
+        console.log(
+            "=========================================="
+        );
+
+
+        if (!data || !data.socketId) {
+
+            return;
+
+        }
+
+
+        /*
+        =================================================
+        REMOVE PARTICIPANT FROM CENTRAL MANAGER
+        =================================================
+        */
 
         MeetingParticipants.remove(
             data.socketId
         );
 
 
+        /*
+        =================================================
+        IMPORTANT:
+        REMOVE OLD WEBRTC PEER
+        =================================================
+        */
+
+        if (
+            window.MeetingWebRTC &&
+            typeof MeetingWebRTC.removePeer ===
+                "function"
+        ) {
+
+            console.log(
+                "REMOVING OLD WEBRTC PEER:",
+                data.socketId
+            );
+
+
+            MeetingWebRTC.removePeer(
+                data.socketId
+            );
+
+        }
+
+
+        /*
+        =================================================
+        RENDER PARTICIPANTS
+        =================================================
+        */
+
         MeetingUI.render();
 
+
+        /*
+        =================================================
+        STATUS
+        =================================================
+        */
 
         if (data.name) {
 
