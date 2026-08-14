@@ -1789,6 +1789,384 @@ socket.on(
 );
 
 /* =====================================================
+   REMOTE VIDEO STREAM
+   ===================================================== */
+
+document.addEventListener(
+    "meeting:remoteStream",
+    async (event) => {
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log(
+            "REMOTE VIDEO STREAM RECEIVED"
+        );
+
+        console.log(
+            event.detail
+        );
+
+        console.log(
+            "=========================================="
+        );
+
+
+        const {
+            socketId,
+            stream
+        } = event.detail || {};
+
+
+        /*
+        =================================================
+        BASIC VALIDATION
+        =================================================
+        */
+
+        if (
+            !socketId ||
+            !stream
+        ) {
+
+            console.warn(
+                "REMOTE STREAM DATA MISSING"
+            );
+
+            return;
+
+        }
+
+
+        console.log(
+            "REMOTE SOCKET ID:",
+            socketId
+        );
+
+        console.log(
+            "REMOTE STREAM:",
+            stream
+        );
+
+        console.log(
+            "REMOTE VIDEO TRACKS:",
+            stream.getVideoTracks()
+        );
+
+        console.log(
+            "REMOTE AUDIO TRACKS:",
+            stream.getAudioTracks()
+        );
+
+
+        /*
+        =================================================
+        FIND PARTICIPANT CARD
+        =================================================
+        */
+
+        let card =
+            document.querySelector(
+                `.meeting-participant[data-socket-id="${socketId}"]`
+            );
+
+
+        /*
+        =================================================
+        CARD MAY NOT BE READY YET
+        WAIT A LITTLE
+        =================================================
+        */
+
+        if (!card) {
+
+            console.warn(
+                "REMOTE PARTICIPANT CARD NOT FOUND YET:",
+                socketId
+            );
+
+
+            for (
+                let attempt = 0;
+                attempt < 20;
+                attempt++
+            ) {
+
+                await new Promise(
+                    resolve =>
+                        setTimeout(
+                            resolve,
+                            100
+                        )
+                );
+
+
+                card =
+                    document.querySelector(
+                        `.meeting-participant[data-socket-id="${socketId}"]`
+                    );
+
+
+                if (card) {
+
+                    console.log(
+                        "REMOTE PARTICIPANT CARD FOUND AFTER WAIT:",
+                        socketId
+                    );
+
+                    break;
+
+                }
+
+            }
+
+        }
+
+
+        /*
+        =================================================
+        FINAL CARD CHECK
+        =================================================
+        */
+
+        if (!card) {
+
+            console.error(
+                "REMOTE PARTICIPANT CARD STILL NOT FOUND:",
+                socketId
+            );
+
+            return;
+
+        }
+
+
+        console.log(
+            "REMOTE PARTICIPANT CARD FOUND:",
+            card
+        );
+
+
+        /*
+        =================================================
+        FIND EXISTING VIDEO
+        =================================================
+        */
+
+        let video =
+            card.querySelector(
+                "video.participant-video"
+            );
+
+
+        /*
+        =================================================
+        CREATE REMOTE VIDEO
+        =================================================
+        */
+
+        if (!video) {
+
+            video =
+                document.createElement(
+                    "video"
+                );
+
+
+            video.className =
+                "participant-video";
+
+
+            video.autoplay =
+                true;
+
+
+            video.playsInline =
+                true;
+
+
+            video.controls =
+                false;
+
+
+            video.muted =
+                true;
+
+
+            video.style.width =
+                "100%";
+
+
+            video.style.height =
+                "100%";
+
+
+            video.style.objectFit =
+                "cover";
+
+
+            video.style.display =
+                "block";
+
+
+            video.style.visibility =
+                "visible";
+
+
+            video.style.opacity =
+                "1";
+
+
+            card.appendChild(
+                video
+            );
+
+
+            console.log(
+                "REMOTE VIDEO ELEMENT CREATED:",
+                socketId
+            );
+
+        }
+
+
+        /*
+        =================================================
+        ATTACH REMOTE STREAM
+        =================================================
+        */
+
+        video.srcObject =
+            stream;
+
+
+        /*
+        =================================================
+        VIDEO SETTINGS
+        =================================================
+        */
+
+        video.autoplay =
+            true;
+
+
+        video.playsInline =
+            true;
+
+
+        video.controls =
+            false;
+
+
+        /*
+        =================================================
+        IMPORTANT
+        =================================================
+
+        Keep remote video muted.
+
+        This prevents browser autoplay
+        from blocking the remote video.
+
+        Audio can be handled separately later.
+        =================================================
+        */
+
+        video.muted =
+            true;
+
+
+        /*
+        =================================================
+        FORCE VIDEO VISIBLE
+        =================================================
+        */
+
+        video.style.display =
+            "block";
+
+
+        video.style.visibility =
+            "visible";
+
+
+        video.style.opacity =
+            "1";
+
+
+        /*
+        =================================================
+        WAIT FOR VIDEO METADATA
+        =================================================
+        */
+
+        video.onloadedmetadata =
+            async () => {
+
+                console.log(
+                    "REMOTE VIDEO METADATA READY:",
+                    socketId
+                );
+
+
+                try {
+
+                    await video.play();
+
+
+                    console.log(
+                        "REMOTE VIDEO PLAYING:",
+                        socketId
+                    );
+
+                }
+
+                catch (error) {
+
+                    console.warn(
+                        "REMOTE VIDEO PLAY FAILED:",
+                        socketId,
+                        error
+                    );
+
+                }
+
+            };
+
+
+        /*
+        =================================================
+        ATTEMPT IMMEDIATE PLAY
+        =================================================
+        */
+
+        try {
+
+            await video.play();
+
+
+            console.log(
+                "REMOTE VIDEO ATTACHED:",
+                socketId
+            );
+
+        }
+
+        catch (error) {
+
+            console.warn(
+                "REMOTE VIDEO INITIAL PLAY FAILED:",
+                socketId,
+                error
+            );
+
+        }
+
+    }
+);
+
+/* =====================================================
    PARTICIPANT RECONNECTED
    ===================================================== */
 
