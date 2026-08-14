@@ -1255,26 +1255,26 @@ window.ScreenShare = (() => {
     =======================================================
     */
 
-    function showLocalScreen(
-    stream
-){
+    function showLocalScreen(stream){
 
-    const presentation =
+    const screenContainer =
         document.getElementById(
-            "screenPresentation"
+            "screenContainer"
+        );
+
+    const screenVideo =
+        document.getElementById(
+            "screenVideo"
         );
 
 
-    const video =
-        document.getElementById(
-            "screenPresentationVideo"
-        );
-
-
-    if(!presentation || !video){
+    if(
+        !screenContainer ||
+        !screenVideo
+    ){
 
         console.error(
-            "SCREEN V3: Presentation elements not found."
+            "SCREEN V3: screenContainer or screenVideo not found."
         );
 
         return;
@@ -1282,30 +1282,48 @@ window.ScreenShare = (() => {
     }
 
 
-    video.srcObject =
+    /*
+    =======================================================
+    ATTACH LOCAL SCREEN
+    =======================================================
+    */
+
+    screenVideo.srcObject =
         stream;
 
 
-    video.muted =
+    screenVideo.autoplay =
         true;
 
-    video.autoplay =
+    screenVideo.playsInline =
         true;
 
-    video.playsInline =
+    screenVideo.muted =
         true;
 
 
-    presentation.classList.add(
-        "active"
+    /*
+    =======================================================
+    ACTIVATE PRESENTATION MODE
+    =======================================================
+    */
+
+    screenContainer.classList.add(
+        "screen-sharing-active"
     );
 
 
-    presentation.style.display =
-        "flex";
+    screenContainer.style.display =
+        "block";
 
 
-    video.play()
+    /*
+    =======================================================
+    PLAY SCREEN
+    =======================================================
+    */
+
+    screenVideo.play()
         .catch(
             error => {
 
@@ -1319,7 +1337,7 @@ window.ScreenShare = (() => {
 
 
     console.log(
-        "SCREEN V3: LOCAL PRESENTATION DISPLAYED"
+        "SCREEN V3: LOCAL PRESENTATION ACTIVE"
     );
 
 }
@@ -1331,26 +1349,26 @@ window.ScreenShare = (() => {
     =======================================================
     */
 
-    function showRemoteScreen(
-    stream
-){
+    function showRemoteScreen(stream){
 
-    const presentation =
+    const screenContainer =
         document.getElementById(
-            "screenPresentation"
+            "screenContainer"
+        );
+
+    const screenVideo =
+        document.getElementById(
+            "screenVideo"
         );
 
 
-    const video =
-        document.getElementById(
-            "screenPresentationVideo"
-        );
-
-
-    if(!presentation || !video){
+    if(
+        !screenContainer ||
+        !screenVideo
+    ){
 
         console.error(
-            "SCREEN V3: Remote presentation elements not found."
+            "SCREEN V3: screenContainer or screenVideo not found."
         );
 
         return;
@@ -1358,39 +1376,52 @@ window.ScreenShare = (() => {
     }
 
 
-    console.log(
-        "SCREEN V3: ATTACHING REMOTE PRESENTATION"
-    );
+    /*
+    =======================================================
+    ATTACH REMOTE SCREEN
+    =======================================================
+    */
 
-
-    video.srcObject =
+    screenVideo.srcObject =
         stream;
 
 
-    video.autoplay =
+    screenVideo.autoplay =
         true;
 
-    video.playsInline =
+    screenVideo.playsInline =
         true;
 
-    video.muted =
+    screenVideo.muted =
         true;
 
 
-    presentation.classList.add(
-        "active"
+    /*
+    =======================================================
+    PRESENTATION MODE
+    =======================================================
+    */
+
+    screenContainer.classList.add(
+        "screen-sharing-active"
     );
 
 
-    presentation.style.display =
-        "flex";
+    screenContainer.style.display =
+        "block";
 
 
     window.teacherSharing =
         true;
 
 
-    video.play()
+    /*
+    =======================================================
+    PLAY REMOTE SCREEN
+    =======================================================
+    */
+
+    screenVideo.play()
         .then(
             () => {
 
@@ -1404,7 +1435,7 @@ window.ScreenShare = (() => {
             error => {
 
                 console.warn(
-                    "SCREEN V3: REMOTE PRESENTATION PLAY ERROR:",
+                    "SCREEN V3 REMOTE SCREEN PLAY ERROR:",
                     error
                 );
 
@@ -1413,7 +1444,7 @@ window.ScreenShare = (() => {
 
 
     console.log(
-        "SCREEN V3: REMOTE PRESENTATION DISPLAYED"
+        "SCREEN V3: REMOTE PRESENTATION ACTIVE"
     );
 
 }
@@ -1427,15 +1458,14 @@ window.ScreenShare = (() => {
 
     function hideRemoteScreen(){
 
-    const presentation =
+    const screenContainer =
         document.getElementById(
-            "screenPresentation"
+            "screenContainer"
         );
 
-
-    const video =
+    const screenVideo =
         document.getElementById(
-            "screenPresentationVideo"
+            "screenVideo"
         );
 
 
@@ -1443,36 +1473,61 @@ window.ScreenShare = (() => {
         false;
 
 
-    if(video){
+    /*
+    =======================================================
+    STOP VIDEO
+    =======================================================
+    */
 
-        video.pause();
+    if(screenVideo){
 
-        video.srcObject =
+        screenVideo.pause();
+
+        screenVideo.srcObject =
             null;
 
     }
 
 
-    if(presentation){
+    /*
+    =======================================================
+    REMOVE PRESENTATION MODE
+    =======================================================
+    */
 
-        presentation.classList.remove(
-            "active"
+    if(screenContainer){
+
+        screenContainer.classList.remove(
+            "screen-sharing-active"
         );
 
 
-        presentation.style.display =
-            "none";
+        screenContainer.style.opacity =
+            "0";
+
+
+        setTimeout(
+            () => {
+
+                if(
+                    !screenContainer.classList.contains(
+                        "screen-sharing-active"
+                    )
+                ){
+
+                    screenContainer.style.display =
+                        "none";
+
+                    screenContainer.style.opacity =
+                        "";
+
+                }
+
+            },
+            200
+        );
 
     }
-
-
-    document.dispatchEvent(
-
-        new CustomEvent(
-            "meeting:remoteScreenStop"
-        )
-
-    );
 
 
     console.log(
@@ -1490,48 +1545,60 @@ window.ScreenShare = (() => {
 
     function hideLocalScreen(){
 
-    const presentation =
+    const screenContainer =
         document.getElementById(
-            "screenPresentation"
+            "screenContainer"
+        );
+
+    const screenVideo =
+        document.getElementById(
+            "screenVideo"
         );
 
 
-    const video =
-        document.getElementById(
-            "screenPresentationVideo"
-        );
+    if(screenVideo){
 
+        screenVideo.pause();
 
-    if(video){
-
-        video.pause();
-
-        video.srcObject =
+        screenVideo.srcObject =
             null;
 
     }
 
 
-    if(presentation){
+    if(screenContainer){
 
-        presentation.classList.remove(
-            "active"
+        screenContainer.classList.remove(
+            "screen-sharing-active"
         );
 
 
-        presentation.style.display =
-            "none";
+        screenContainer.style.opacity =
+            "0";
+
+
+        setTimeout(
+            () => {
+
+                if(
+                    !screenContainer.classList.contains(
+                        "screen-sharing-active"
+                    )
+                ){
+
+                    screenContainer.style.display =
+                        "none";
+
+                    screenContainer.style.opacity =
+                        "";
+
+                }
+
+            },
+            200
+        );
 
     }
-
-
-    document.dispatchEvent(
-
-        new CustomEvent(
-            "meeting:localScreenStop"
-        )
-
-    );
 
 
     console.log(

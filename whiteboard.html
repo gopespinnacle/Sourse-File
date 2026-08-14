@@ -331,6 +331,410 @@
 
 /*
 ===========================================================
+GOPES PINNACLE ACADEMY
+GOOGLE MEET STYLE PRESENTATION MODE
+===========================================================
+*/
+
+
+/*
+===========================================================
+SCREEN CONTAINER
+===========================================================
+*/
+
+#screenContainer{
+
+    position:fixed;
+
+    top:60px;
+
+    left:0;
+
+    right:0;
+
+    bottom:70px;
+
+    width:auto;
+
+    height:auto;
+
+    background:#202124;
+
+    z-index:500;
+
+    display:none;
+
+    overflow:hidden;
+
+    opacity:0;
+
+    transform:scale(.985);
+
+    transition:
+        opacity .18s ease,
+        transform .18s ease;
+
+}
+
+
+/*
+===========================================================
+PRESENTATION ACTIVE
+===========================================================
+*/
+
+#screenContainer.screen-sharing-active{
+
+    display:block;
+
+    opacity:1;
+
+    transform:scale(1);
+
+}
+
+
+/*
+===========================================================
+SCREEN VIDEO = MAIN STAGE
+===========================================================
+*/
+
+#screenContainer #screenVideo{
+
+    position:absolute !important;
+
+    top:0 !important;
+
+    left:0 !important;
+
+    width:100% !important;
+
+    height:100% !important;
+
+    object-fit:contain !important;
+
+    background:#202124;
+
+    z-index:1 !important;
+
+    display:block;
+
+}
+
+
+/*
+===========================================================
+PARTICIPANT STRIP
+===========================================================
+*/
+
+#screenContainer #participantStrip{
+
+    position:absolute;
+
+    right:16px;
+
+    bottom:16px;
+
+    width:auto;
+
+    max-width:calc(100% - 32px);
+
+    height:120px;
+
+    display:flex;
+
+    flex-direction:row;
+
+    align-items:center;
+
+    justify-content:flex-end;
+
+    gap:8px;
+
+    z-index:20;
+
+    overflow:visible;
+
+}
+
+
+/*
+===========================================================
+PARTICIPANT CARDS DURING PRESENTATION
+===========================================================
+*/
+
+#screenContainer
+#participantStrip
+.participant-card{
+
+    width:160px !important;
+
+    height:100px !important;
+
+    min-width:160px !important;
+
+    max-width:160px !important;
+
+    min-height:100px !important;
+
+    max-height:100px !important;
+
+    flex:0 0 160px !important;
+
+    position:relative;
+
+    overflow:hidden;
+
+    border-radius:10px;
+
+    background:#000;
+
+    box-shadow:
+        0 4px 14px
+        rgba(0,0,0,.45);
+
+    border:1px solid
+        rgba(255,255,255,.18);
+
+}
+
+
+/*
+===========================================================
+PARTICIPANT VIDEOS
+===========================================================
+*/
+
+#screenContainer
+#participantStrip
+.participant-card
+video{
+
+    width:100% !important;
+
+    height:100% !important;
+
+    object-fit:cover !important;
+
+    display:block;
+
+}
+
+
+/*
+===========================================================
+TEACHER CAMERA FLOATING TILE
+===========================================================
+*/
+
+#screenContainer #localVideoBox{
+
+    position:absolute !important;
+
+    right:20px !important;
+
+    bottom:145px !important;
+
+    width:180px !important;
+
+    height:120px !important;
+
+    min-width:180px !important;
+
+    min-height:120px !important;
+
+    z-index:30 !important;
+
+    border-radius:12px;
+
+    overflow:hidden;
+
+    background:#000;
+
+    border:2px solid rgba(255,255,255,.85);
+
+    box-shadow:
+        0 6px 24px
+        rgba(0,0,0,.55);
+
+    transition:
+        width .2s ease,
+        height .2s ease,
+        transform .2s ease;
+
+}
+
+
+/*
+===========================================================
+TEACHER LOCAL VIDEO
+===========================================================
+*/
+
+#screenContainer
+#localVideoBox
+#localVideo{
+
+    width:100% !important;
+
+    height:100% !important;
+
+    object-fit:cover !important;
+
+    display:block;
+
+}
+
+
+/*
+===========================================================
+PRESENTING HEADER
+===========================================================
+*/
+
+#screenContainer #pipHeader{
+
+    position:absolute;
+
+    top:10px;
+
+    left:10px;
+
+    right:10px;
+
+    height:40px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:0 10px;
+
+    background:rgba(0,0,0,.55);
+
+    color:white;
+
+    border-radius:8px;
+
+    z-index:40;
+
+}
+
+
+/*
+===========================================================
+ANNOTATION TOOLBAR
+===========================================================
+*/
+
+#screenContainer #annotationToolbar{
+
+    z-index:60 !important;
+
+}
+
+
+/*
+===========================================================
+SCREEN DRAW CANVAS
+===========================================================
+*/
+
+#screenContainer #screenDraw{
+
+    position:absolute;
+
+    inset:0;
+
+    width:100%;
+
+    height:100%;
+
+    z-index:10;
+
+    pointer-events:none;
+
+}
+
+
+/*
+===========================================================
+MOBILE
+===========================================================
+*/
+
+@media(max-width:700px){
+
+    #screenContainer{
+
+        top:50px;
+
+        bottom:70px;
+
+    }
+
+
+    #screenContainer
+    #participantStrip{
+
+        right:8px;
+
+        bottom:8px;
+
+        height:82px;
+
+        gap:6px;
+
+    }
+
+
+    #screenContainer
+    #participantStrip
+    .participant-card{
+
+        width:110px !important;
+
+        height:70px !important;
+
+        min-width:110px !important;
+
+        max-width:110px !important;
+
+        min-height:70px !important;
+
+        max-height:70px !important;
+
+        flex:0 0 110px !important;
+
+    }
+
+
+    #screenContainer #localVideoBox{
+
+        width:110px !important;
+
+        height:75px !important;
+
+        right:8px !important;
+
+        bottom:95px !important;
+
+    }
+
+}
+
+</style>
+
+    <style>
+
+/*
+===========================================================
 GOOGLE MEET STYLE SCREEN PRESENTATION
 ===========================================================
 */
