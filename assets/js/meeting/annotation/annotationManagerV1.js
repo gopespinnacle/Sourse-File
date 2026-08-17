@@ -36,11 +36,14 @@ window.AnnotationManagerV1 = (() => {
 
     let open = false;
 
+    let restoreAnnotationAfterRefresh = false;
+
     let workspace = null;
 
     let canvas = null;
 
     let annotateButton = null;
+
 
 
     /*
@@ -96,7 +99,36 @@ window.AnnotationManagerV1 = (() => {
             "ANNOTATION MANAGER V1: INITIALIZED"
         );
 
+        /*
+===================================================
+RESTORE ANNOTATION AFTER PAGE REFRESH
+===================================================
+*/
+
+if (
+    localStorage.getItem(
+        "gopesAnnotationOpen"
+    ) === "true"
+) {
+
+    console.log(
+        "ANNOTATION MANAGER V1: RESTORING AFTER REFRESH"
+    );
+
+    setTimeout(
+        () => {
+
+            openAnnotation();
+
+        },
+        300
+    );
+
+}
+
     }
+
+    
 
 
     /*
@@ -598,6 +630,17 @@ function createWorkspace() {
 
     function openAnnotation() {
 
+        /*
+===================================================
+REMEMBER ANNOTATION MODE
+===================================================
+*/
+
+localStorage.setItem(
+    "gopesAnnotationOpen",
+    "true"
+);
+
         if (!initialized) {
 
             init();
@@ -826,6 +869,10 @@ function close() {
 
 
     open = false;
+
+    localStorage.removeItem(
+    "gopesAnnotationOpen"
+);
 
 
     /*
