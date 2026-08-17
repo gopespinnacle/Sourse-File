@@ -559,6 +559,108 @@ if (eraserWidth) {
 }
 
 
+/*
+---------------------------------------------------
+PREVIOUS PAGE
+---------------------------------------------------
+*/
+
+const previousPage =
+    document.getElementById(
+        "annotationPreviousPageV1"
+    );
+
+
+if (previousPage) {
+
+    previousPage.addEventListener(
+        "click",
+        () => {
+
+            if (
+                window.AnnotationCanvasV1
+            ) {
+
+                AnnotationCanvasV1.previousPage();
+
+                updatePageIndicator();
+
+            }
+
+        }
+    );
+
+}
+
+
+/*
+---------------------------------------------------
+NEXT PAGE
+---------------------------------------------------
+*/
+
+const nextPage =
+    document.getElementById(
+        "annotationNextPageV1"
+    );
+
+
+if (nextPage) {
+
+    nextPage.addEventListener(
+        "click",
+        () => {
+
+            if (
+                window.AnnotationCanvasV1
+            ) {
+
+                AnnotationCanvasV1.nextPage();
+
+                updatePageIndicator();
+
+            }
+
+        }
+    );
+
+}
+
+
+/*
+---------------------------------------------------
+ADD NEW PAGE
+---------------------------------------------------
+*/
+
+const addPage =
+    document.getElementById(
+        "annotationAddPageV1"
+    );
+
+
+if (addPage) {
+
+    addPage.addEventListener(
+        "click",
+        () => {
+
+            if (
+                window.AnnotationCanvasV1
+            ) {
+
+                AnnotationCanvasV1.addPage();
+
+                updatePageIndicator();
+
+            }
+
+        }
+    );
+
+}
+
+
         /*
         ---------------------------------------------------
         UNDO
@@ -749,6 +851,63 @@ if (eraserWidth) {
 
     }
 
+    /*
+=======================================================
+PAGE INDICATOR
+=======================================================
+*/
+
+function updatePageIndicator() {
+
+    const indicator =
+        document.getElementById(
+            "annotationPageIndicatorV1"
+        );
+
+
+    if (!indicator) {
+
+        return;
+
+    }
+
+
+    if (
+        !window.AnnotationCanvasV1
+    ) {
+
+        return;
+
+    }
+
+
+    const pageInfo =
+        AnnotationCanvasV1.getPageInfo();
+
+
+    if (!pageInfo) {
+
+        return;
+
+    }
+
+
+    indicator.textContent =
+        "Page " +
+        pageInfo.currentPage +
+        " / " +
+        pageInfo.totalPages;
+
+
+    console.log(
+        "ANNOTATION TOOLBAR V1: PAGE",
+        pageInfo.currentPage,
+        "/",
+        pageInfo.totalPages
+    );
+
+}
+
 
     /*
     =======================================================
@@ -892,6 +1051,14 @@ if (eraserWidth) {
 
     toolbar.style.display =
         "flex";
+
+        /*
+===================================================
+UPDATE PAGE INDICATOR
+===================================================
+*/
+
+updatePageIndicator();
 
 }
 

@@ -69,11 +69,24 @@ let annotationPersistenceReady = false;
 
     let history = [];
 
-    let historyIndex = -1;
+let historyIndex = -1;
 
-    let lastPoint = null;
+let lastPoint = null;
 
-    let initialized = false;
+let initialized = false;
+
+
+/*
+===========================================================
+MULTI PAGE ANNOTATION V1
+===========================================================
+*/
+
+let annotationPages = [
+    []
+];
+
+let currentPageIndex = 0;
 
 
 /*
@@ -152,36 +165,138 @@ function initPersistence() {
     */
 
     annotationSocket.on(
-        "annotationLoaded",
-        data => {
+    "annotationLoaded",
+    data => {
+
+        if (
+            !data ||
+            data.room !== annotationRoom
+        ) {
+
+            return;
+
+        }
+
+
+        console.log(
+            "ANNOTATION V1: SAVED DATA RECEIVED"
+        );
+
+
+        /*
+        ===================================================
+        MULTI PAGE DATA
+        ===================================================
+        */
+
+        if (
+            data.data &&
+            Array.isArray(
+                data.data.pages
+            )
+        ) {
+
+            annotationPages =
+                JSON.parse(
+                    JSON.stringify(
+                        data.data.pages
+                    )
+                );
+
 
             if (
-                !data ||
-                data.room !== annotationRoom
+                annotationPages.length === 0
             ) {
 
-                return;
+                annotationPages = [
+                    []
+                ];
 
             }
+
+
+            currentPageIndex =
+                Number.isInteger(
+                    data.data.currentPage
+                )
+                    ? data.data.currentPage
+                    : 0;
+
+
+            if (
+                currentPageIndex < 0 ||
+                currentPageIndex >=
+                    annotationPages.length
+            ) {
+
+                currentPageIndex = 0;
+
+            }
+
+
+            history =
+                JSON.parse(
+                    JSON.stringify(
+                        annotationPages[
+                            currentPageIndex
+                        ] || []
+                    )
+                );
+
+
+            historyIndex =
+                history.length - 1;
+
+
+            redraw();
 
 
             console.log(
-                "ANNOTATION V1: SAVED DATA RECEIVED"
+                "ANNOTATION V1: PAGE RESTORED",
+                currentPageIndex + 1,
+                "/",
+                annotationPages.length
             );
 
 
-            if (
-                Array.isArray(data.data)
-            ) {
-
-                loadHistory(
-                    data.data
-                );
-
-            }
+            return;
 
         }
-    );
+
+
+        /*
+        ===================================================
+        OLD SINGLE PAGE DATA
+        ===================================================
+
+        Keeps existing saved annotations compatible.
+        ===================================================
+        */
+
+        if (
+            Array.isArray(data.data)
+        ) {
+
+            annotationPages = [
+                JSON.parse(
+                    JSON.stringify(
+                        data.data
+                    )
+                )
+            ];
+
+
+            currentPageIndex = 0;
+
+
+            loadHistory(
+                data.data
+            );
+
+        }
+
+    }
+);
 
 
     /*
@@ -205,14 +320,82 @@ function initPersistence() {
 
 
             if (
-                Array.isArray(data.data)
-            ) {
+    data.data &&
+    Array.isArray(
+        data.data.pages
+    )
+) {
 
-                loadHistory(
-                    data.data
-                );
+    annotationPages =
+        JSON.parse(
+            JSON.stringify(
+                data.data.pages
+            )
+        );
 
-            }
+
+    currentPageIndex =
+        Number.isInteger(
+            data.data.currentPage
+        )
+            ? data.data.currentPage
+            : 0;
+
+
+    if (
+        currentPageIndex < 0 ||
+        currentPageIndex >=
+            annotationPages.length
+    ) {
+
+        currentPageIndex = 0;
+
+    }
+
+
+    history =
+        JSON.parse(
+            JSON.stringify(
+                annotationPages[
+                    currentPageIndex
+                ] || []
+            )
+        );
+
+
+    historyIndex =
+        history.length - 1;
+
+
+    redraw();
+
+
+    console.log(
+        "ANNOTATION V1: LIVE PAGE UPDATED",
+        currentPageIndex + 1
+    );
+
+
+    return;
+
+}
+
+
+/*
+-----------------------------------------------------------
+OLD SINGLE PAGE COMPATIBILITY
+-----------------------------------------------------------
+*/
+
+if (
+    Array.isArray(data.data)
+) {
+
+    loadHistory(
+        data.data
+    );
+
+}
 
         }
     );
@@ -272,16 +455,285 @@ function saveAnnotationState() {
     }
 
 
+    /*
+    -------------------------------------------------------
+    SAVE CURRENT PAGE INTO PAGE ARRAY
+    -------------------------------------------------------
+    */
+
+    saveCurrentPage();
+
+
+    /*
+    -------------------------------------------------------
+    SAVE ALL PAGES
+    -------------------------------------------------------
+    */
+
     annotationSocket.emit(
         "annotationSave",
         {
             room:
                 annotationRoom,
 
-            data:
-                getHistory()
+            data: {
+
+                pages:
+                    JSON.parse(
+                        JSON.stringify(
+                            annotationPages
+                        )
+                    ),
+
+                currentPage:
+                    currentPageIndex
+
+            }
+
         }
     );
+
+}
+
+/*
+===========================================================
+MULTI PAGE MANAGEMENT
+===========================================================
+*/
+
+/*
+-----------------------------------------------------------
+SAVE CURRENT PAGE
+-----------------------------------------------------------
+*/
+
+function saveCurrentPage() {
+
+    annotationPages[
+        currentPageIndex
+    ] = getHistory();
+
+}
+
+
+/*
+-----------------------------------------------------------
+LOAD PAGE
+-----------------------------------------------------------
+*/
+
+function loadPage(pageIndex) {
+
+    if (
+        pageIndex < 0 ||
+        pageIndex >= annotationPages.length
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+    -------------------------------------------------------
+    SAVE CURRENT PAGE BEFORE SWITCHING
+    -------------------------------------------------------
+    */
+
+    saveCurrentPage();
+
+
+    /*
+    -------------------------------------------------------
+    CHANGE ACTIVE PAGE
+    -------------------------------------------------------
+    */
+
+    currentPageIndex =
+        pageIndex;
+
+
+    /*
+    -------------------------------------------------------
+    LOAD PAGE HISTORY
+    -------------------------------------------------------
+    */
+
+    history =
+        JSON.parse(
+            JSON.stringify(
+                annotationPages[
+                    currentPageIndex
+                ] || []
+            )
+        );
+
+
+    historyIndex =
+        history.length - 1;
+
+
+    /*
+    -------------------------------------------------------
+    REDRAW
+    -------------------------------------------------------
+    */
+
+    redraw();
+
+
+    console.log(
+        "ANNOTATION V1: PAGE LOADED",
+        currentPageIndex + 1
+    );
+
+}
+
+
+/*
+-----------------------------------------------------------
+ADD NEW PAGE
+-----------------------------------------------------------
+*/
+
+function addPage() {
+
+    /*
+    -------------------------------------------------------
+    SAVE CURRENT PAGE
+    -------------------------------------------------------
+    */
+
+    saveCurrentPage();
+
+
+    /*
+    -------------------------------------------------------
+    CREATE NEW EMPTY PAGE
+    -------------------------------------------------------
+    */
+
+    annotationPages.push([]);
+
+
+    /*
+    -------------------------------------------------------
+    MOVE TO NEW PAGE
+    -------------------------------------------------------
+    */
+
+    currentPageIndex =
+        annotationPages.length - 1;
+
+
+    history = [];
+
+    historyIndex = -1;
+
+
+    /*
+    -------------------------------------------------------
+    CLEAR CANVAS
+    -------------------------------------------------------
+    */
+
+    if (canvas) {
+
+        const rect =
+            canvas.getBoundingClientRect();
+
+
+        context.clearRect(
+            0,
+            0,
+            rect.width,
+            rect.height
+        );
+
+    }
+
+
+    console.log(
+        "ANNOTATION V1: NEW PAGE",
+        currentPageIndex + 1
+    );
+
+
+    /*
+    -------------------------------------------------------
+    SAVE ALL PAGES
+    -------------------------------------------------------
+    */
+
+    saveAnnotationState();
+
+}
+
+
+/*
+-----------------------------------------------------------
+NEXT PAGE
+-----------------------------------------------------------
+*/
+
+function nextPage() {
+
+    if (
+        currentPageIndex <
+        annotationPages.length - 1
+    ) {
+
+        loadPage(
+            currentPageIndex + 1
+        );
+
+        saveAnnotationState();
+
+    }
+
+}
+
+
+/*
+-----------------------------------------------------------
+PREVIOUS PAGE
+-----------------------------------------------------------
+*/
+
+function previousPage() {
+
+    if (
+        currentPageIndex > 0
+    ) {
+
+        loadPage(
+            currentPageIndex - 1
+        );
+
+        saveAnnotationState();
+
+    }
+
+}
+
+
+/*
+-----------------------------------------------------------
+GET PAGE INFORMATION
+-----------------------------------------------------------
+*/
+
+function getPageInfo() {
+
+    return {
+
+        currentPage:
+            currentPageIndex + 1,
+
+        totalPages:
+            annotationPages.length
+
+    };
 
 }
 
@@ -1424,7 +1876,24 @@ return history[
 
     initPersistence,
 
-    saveAnnotationState
+    saveAnnotationState,
+
+
+    /*
+    =======================================================
+    MULTI PAGE API
+    =======================================================
+    */
+
+    addPage,
+
+    nextPage,
+
+    previousPage,
+
+    loadPage,
+
+    getPageInfo
 
 };
 
