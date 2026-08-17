@@ -283,6 +283,55 @@ body{
 
 }
 
+/* =========================================================
+   VIEWER EXTRA CONTROLS
+   ========================================================= */
+
+.secondary-button{
+
+    background:#ffffff;
+
+    color:#173b67;
+
+    border:1px solid #cbd5e1;
+
+}
+
+
+.secondary-button:hover{
+
+    background:#f1f5f9;
+
+}
+
+
+.zoom-level{
+
+    min-width:55px;
+
+    text-align:center;
+
+    font-size:14px;
+
+    font-weight:700;
+
+    color:#173b67;
+
+}
+
+
+.control-separator{
+
+    width:1px;
+
+    height:28px;
+
+    background:#cbd5e1;
+
+    margin:0 3px;
+
+}
+
 
 .page-number{
 
@@ -562,32 +611,70 @@ body{
 
         <div class="viewer-controls">
 
-            <button
-                id="previousButton"
-                class="viewer-button"
-                type="button"
-            >
-                ◀ Previous
-            </button>
+    <button
+        id="previousButton"
+        class="viewer-button"
+        type="button"
+    >
+        ◀ Previous
+    </button>
 
 
-            <div
-                id="pageNumber"
-                class="page-number"
-            >
-                Page 1 / 1
-            </div>
+    <div
+        id="pageNumber"
+        class="page-number"
+    >
+        Page 1 / 1
+    </div>
 
 
-            <button
-                id="nextButton"
-                class="viewer-button"
-                type="button"
-            >
-                Next ▶
-            </button>
+    <button
+        id="nextButton"
+        class="viewer-button"
+        type="button"
+    >
+        Next ▶
+    </button>
 
-        </div>
+
+    <span class="control-separator"></span>
+
+
+    <button
+        id="zoomOutButton"
+        class="viewer-button secondary-button"
+        type="button"
+    >
+        −
+    </button>
+
+
+    <div
+        id="zoomLevel"
+        class="zoom-level"
+    >
+        100%
+    </div>
+
+
+    <button
+        id="zoomInButton"
+        class="viewer-button secondary-button"
+        type="button"
+    >
+        +
+    </button>
+
+
+    <button
+        id="fitButton"
+        class="viewer-button secondary-button"
+        type="button"
+    >
+        Fit
+    </button>
+
+</div>
 
     </div>
 
@@ -674,6 +761,19 @@ let material = null;
 let pages = [];
 
 let currentPage = 0;
+
+
+/* =========================================================
+   VIEWER ZOOM
+   ========================================================= */
+
+let zoomLevel = 1;
+
+const MIN_ZOOM = 0.5;
+
+const MAX_ZOOM = 2;
+
+const ZOOM_STEP = 0.1;
 
 
 /* =========================================================
@@ -986,6 +1086,8 @@ function renderPage(
     currentPage =
         pageIndex;
 
+        zoomLevel = 1;
+
 
     const page =
         pages[
@@ -1014,11 +1116,24 @@ function renderPage(
 
 
     canvas.width =
-        width;
+    width;
 
 
-    canvas.height =
-        height;
+canvas.height =
+    height;
+
+
+/*
+---------------------------------------------------------
+DISPLAY SIZE
+---------------------------------------------------------
+*/
+
+canvas.style.width =
+    `${width * zoomLevel}px`;
+
+canvas.style.height =
+    `${height * zoomLevel}px`;
 
 
     /*
@@ -1424,6 +1539,236 @@ function showError(
         message;
 
 }
+
+/* =========================================================
+   ZOOM IN
+   ========================================================= */
+
+function zoomIn(){
+
+    if(
+        zoomLevel >= MAX_ZOOM
+    ){
+
+        return;
+
+    }
+
+
+    zoomLevel +=
+        ZOOM_STEP;
+
+
+    zoomLevel =
+        Math.round(
+            zoomLevel * 10
+        ) / 10;
+
+
+    applyZoom();
+
+}
+
+
+/* =========================================================
+   ZOOM OUT
+   ========================================================= */
+
+function zoomOut(){
+
+    if(
+        zoomLevel <= MIN_ZOOM
+    ){
+
+        return;
+
+    }
+
+
+    zoomLevel -=
+        ZOOM_STEP;
+
+
+    zoomLevel =
+        Math.round(
+            zoomLevel * 10
+        ) / 10;
+
+
+    applyZoom();
+
+}
+
+
+/* =========================================================
+   APPLY ZOOM
+   ========================================================= */
+
+function applyZoom(){
+
+    if(!pages.length){
+
+        return;
+
+    }
+
+
+    const page =
+        pages[
+            currentPage
+        ];
+
+
+    const width =
+        Number(
+            page.width
+        ) ||
+        1280;
+
+
+    const height =
+        Number(
+            page.height
+        ) ||
+        720;
+
+
+    canvas.style.width =
+        `${width * zoomLevel}px`;
+
+
+    canvas.style.height =
+        `${height * zoomLevel}px`;
+
+
+    document.getElementById(
+        "zoomLevel"
+    ).textContent =
+        `${Math.round(
+            zoomLevel * 100
+        )}%`;
+
+}
+
+
+/* =========================================================
+   FIT PAGE
+   ========================================================= */
+
+function fitPage(){
+
+    if(!pages.length){
+
+        return;
+
+    }
+
+
+    const page =
+        pages[
+            currentPage
+        ];
+
+
+    const width =
+        Number(
+            page.width
+        ) ||
+        1280;
+
+
+    const height =
+        Number(
+            page.height
+        ) ||
+        720;
+
+
+    const wrapper =
+        document.querySelector(
+            ".page-container"
+        );
+
+
+    if(!wrapper){
+
+        return;
+
+    }
+
+
+    const availableWidth =
+        wrapper.clientWidth;
+
+
+    if(
+        width > 0 &&
+        availableWidth > 0
+    ){
+
+        zoomLevel =
+            availableWidth /
+            width;
+
+    }
+
+
+    /*
+    ---------------------------------------------------------
+    LIMIT ZOOM
+    ---------------------------------------------------------
+    */
+
+    zoomLevel =
+        Math.max(
+            MIN_ZOOM,
+            Math.min(
+                MAX_ZOOM,
+                zoomLevel
+            )
+        );
+
+
+    zoomLevel =
+        Math.round(
+            zoomLevel * 10
+        ) / 10;
+
+
+    applyZoom();
+
+}
+
+
+/* =========================================================
+   ZOOM BUTTON EVENTS
+   ========================================================= */
+
+document.getElementById(
+    "zoomInButton"
+)
+.addEventListener(
+    "click",
+    zoomIn
+);
+
+
+document.getElementById(
+    "zoomOutButton"
+)
+.addEventListener(
+    "click",
+    zoomOut
+);
+
+
+document.getElementById(
+    "fitButton"
+)
+.addEventListener(
+    "click",
+    fitPage
+);
 
 </script>
 
