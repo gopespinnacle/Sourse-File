@@ -1,0 +1,1088 @@
+/*
+===========================================================
+GOPES PINNACLE ACADEMY
+ANNOTATION CANVAS V1
+===========================================================
+
+RESPONSIBILITY:
+
+- Create annotation canvas
+- Smooth pointer drawing
+- High DPI rendering
+- Pen
+- Eraser
+- Color
+- Stroke width
+- Undo/Redo-ready history
+- Export canvas data
+- Import canvas data
+
+IMPORTANT:
+
+This module does NOT handle:
+
+- Socket communication
+- MongoDB
+- PDF generation
+- Meeting WebRTC
+- Screen sharing
+
+Those belong to separate modules.
+===========================================================
+*/
+
+window.AnnotationCanvasV1 = (() => {
+
+    /*
+    =======================================================
+    STATE
+    =======================================================
+    */
+
+    let canvas = null;
+
+    let context = null;
+
+    let drawing = false;
+
+    let currentTool = "pen";
+
+    let currentColor = "#000000";
+
+    let currentWidth = 4;
+
+    let currentPoints = [];
+
+    let history = [];
+
+    let historyIndex = -1;
+
+    let lastPoint = null;
+
+    let initialized = false;
+
+
+    /*
+    =======================================================
+    INITIALIZE
+    =======================================================
+    */
+
+    function init(canvasElement) {
+
+        if (!canvasElement) {
+
+            console.error(
+                "ANNOTATION CANVAS V1: CANVAS NOT FOUND"
+            );
+
+            return false;
+
+        }
+
+
+        canvas =
+            canvasElement;
+
+        context =
+            canvas.getContext(
+                "2d",
+                {
+                    alpha: true
+                }
+            );
+
+
+        if (!context) {
+
+            console.error(
+                "ANNOTATION CANVAS V1: CONTEXT NOT AVAILABLE"
+            );
+
+            return false;
+
+        }
+
+
+        setupCanvas();
+
+        bindPointerEvents();
+
+
+        initialized = true;
+
+
+        console.log(
+            "ANNOTATION CANVAS V1: INITIALIZED"
+        );
+
+
+        return true;
+
+    }
+
+
+    /*
+    =======================================================
+    CANVAS SIZE
+    =======================================================
+    */
+
+    function setupCanvas() {
+
+        if (!canvas) return;
+
+
+        const rect =
+            canvas.getBoundingClientRect();
+
+
+        const ratio =
+            window.devicePixelRatio ||
+            1;
+
+
+        canvas.width =
+            Math.round(
+                rect.width * ratio
+            );
+
+
+        canvas.height =
+            Math.round(
+                rect.height * ratio
+            );
+
+
+        context.setTransform(
+            ratio,
+            0,
+            0,
+            ratio,
+            0,
+            0
+        );
+
+
+        context.lineCap =
+            "round";
+
+        context.lineJoin =
+            "round";
+
+    }
+
+
+    /*
+    =======================================================
+    RESIZE
+    =======================================================
+    */
+
+    function resize() {
+
+        if (!canvas) return;
+
+
+        const oldImage =
+            canvas.toDataURL();
+
+
+        setupCanvas();
+
+
+        const image =
+            new Image();
+
+
+        image.onload =
+            () => {
+
+                const rect =
+                    canvas.getBoundingClientRect();
+
+
+                context.drawImage(
+                    image,
+                    0,
+                    0,
+                    rect.width,
+                    rect.height
+                );
+
+            };
+
+
+        image.src =
+            oldImage;
+
+    }
+
+
+    /*
+    =======================================================
+    POINTER EVENTS
+    =======================================================
+    */
+
+    function bindPointerEvents() {
+
+        canvas.addEventListener(
+            "pointerdown",
+            pointerDown
+        );
+
+
+        canvas.addEventListener(
+            "pointermove",
+            pointerMove
+        );
+
+
+        canvas.addEventListener(
+            "pointerup",
+            pointerUp
+        );
+
+
+        canvas.addEventListener(
+            "pointercancel",
+            pointerUp
+        );
+
+
+        canvas.addEventListener(
+            "pointerleave",
+            pointerUp
+        );
+
+    }
+
+
+    /*
+    =======================================================
+    POINTER DOWN
+    =======================================================
+    */
+
+    function pointerDown(event) {
+
+        if (!initialized) return;
+
+
+        /*
+        ---------------------------------------------------
+        ONLY LEFT / PRIMARY POINTER
+        ---------------------------------------------------
+        */
+
+        if (
+            event.pointerType === "mouse" &&
+            event.button !== 0
+        ) {
+
+            return;
+
+        }
+
+
+        event.preventDefault();
+
+
+        canvas.setPointerCapture(
+            event.pointerId
+        );
+
+
+        drawing = true;
+
+
+        const point =
+            getPoint(event);
+
+
+        currentPoints = [
+            point
+        ];
+
+
+        lastPoint =
+            point;
+
+
+        /*
+        ---------------------------------------------------
+        START STROKE
+        ---------------------------------------------------
+        */
+
+        if (
+            currentTool ===
+            "eraser"
+        ) {
+
+            context.globalCompositeOperation =
+                "destination-out";
+
+        }
+        else {
+
+            context.globalCompositeOperation =
+                "source-over";
+
+        }
+
+
+        context.beginPath();
+
+        context.moveTo(
+            point.x,
+            point.y
+        );
+
+    }
+
+
+    /*
+    =======================================================
+    POINTER MOVE
+    =======================================================
+    */
+
+    function pointerMove(event) {
+
+        if (!drawing) return;
+
+
+        event.preventDefault();
+
+
+        /*
+        ---------------------------------------------------
+        GET COALESCED EVENTS WHEN AVAILABLE
+        ---------------------------------------------------
+        */
+
+        const events =
+            event.getCoalescedEvents
+                ? event.getCoalescedEvents()
+                : [event];
+
+
+        events.forEach(
+            moveEvent => {
+
+                const point =
+                    getPoint(
+                        moveEvent
+                    );
+
+
+                currentPoints.push(
+                    point
+                );
+
+
+                drawSmoothPoint(
+                    point
+                );
+
+
+                lastPoint =
+                    point;
+
+            }
+        );
+
+    }
+
+
+    /*
+    =======================================================
+    POINTER UP
+    =======================================================
+    */
+
+    function pointerUp(event) {
+
+        if (!drawing) return;
+
+
+        event.preventDefault();
+
+
+        drawing = false;
+
+
+        try {
+
+            canvas.releasePointerCapture(
+                event.pointerId
+            );
+
+        }
+        catch(error) {
+
+            // Pointer capture may already be released.
+
+        }
+
+
+        context.closePath();
+
+
+        /*
+        ---------------------------------------------------
+        SAVE STROKE
+        ---------------------------------------------------
+        */
+
+        if (
+            currentPoints.length > 0
+        ) {
+
+            saveStroke(
+                currentPoints
+            );
+
+        }
+
+
+        currentPoints = [];
+
+        lastPoint = null;
+
+
+        context.globalCompositeOperation =
+            "source-over";
+
+    }
+
+
+    /*
+    =======================================================
+    SMOOTH DRAWING
+    =======================================================
+    */
+
+    function drawSmoothPoint(point) {
+
+        if (!lastPoint) {
+
+            lastPoint =
+                point;
+
+            return;
+
+        }
+
+
+        /*
+        ---------------------------------------------------
+        QUADRATIC INTERPOLATION
+        ---------------------------------------------------
+        */
+
+        const midX =
+            (
+                lastPoint.x +
+                point.x
+            ) / 2;
+
+
+        const midY =
+            (
+                lastPoint.y +
+                point.y
+            ) / 2;
+
+
+        context.strokeStyle =
+            currentColor;
+
+
+        context.lineWidth =
+            currentWidth;
+
+
+        if (
+            currentTool ===
+            "eraser"
+        ) {
+
+            context.globalCompositeOperation =
+                "destination-out";
+
+        }
+        else {
+
+            context.globalCompositeOperation =
+                "source-over";
+
+        }
+
+
+        context.quadraticCurveTo(
+            lastPoint.x,
+            lastPoint.y,
+            midX,
+            midY
+        );
+
+
+        context.stroke();
+
+
+        context.beginPath();
+
+
+        context.moveTo(
+            midX,
+            midY
+        );
+
+    }
+
+
+    /*
+    =======================================================
+    SAVE STROKE
+    =======================================================
+    */
+
+    function saveStroke(points) {
+
+        if (
+            !points ||
+            !points.length
+        ) {
+
+            return;
+
+        }
+
+
+        /*
+        ---------------------------------------------------
+        REMOVE REDO HISTORY
+        ---------------------------------------------------
+        */
+
+        history =
+            history.slice(
+                0,
+                historyIndex + 1
+            );
+
+
+        history.push({
+
+            type:
+                currentTool,
+
+            color:
+                currentColor,
+
+            width:
+                currentWidth,
+
+            points:
+                points.map(
+                    point => ({
+                        x: point.x,
+                        y: point.y,
+                        pressure:
+                            point.pressure || 0
+                    })
+                )
+
+        });
+
+
+        historyIndex =
+            history.length - 1;
+
+    }
+
+
+    /*
+    =======================================================
+    GET POINT
+    =======================================================
+    */
+
+    function getPoint(event) {
+
+        const rect =
+            canvas.getBoundingClientRect();
+
+
+        return {
+
+            x:
+                event.clientX -
+                rect.left,
+
+            y:
+                event.clientY -
+                rect.top,
+
+            pressure:
+                event.pressure || 0
+
+        };
+
+    }
+
+
+    /*
+    =======================================================
+    TOOL
+    =======================================================
+    */
+
+    function setTool(tool) {
+
+        if (
+            tool !== "pen" &&
+            tool !== "eraser"
+        ) {
+
+            return;
+
+        }
+
+
+        currentTool =
+            tool;
+
+    }
+
+
+    /*
+    =======================================================
+    COLOR
+    =======================================================
+    */
+
+    function setColor(color) {
+
+        if (!color) return;
+
+
+        currentColor =
+            color;
+
+    }
+
+
+    /*
+    =======================================================
+    WIDTH
+    =======================================================
+    */
+
+    function setWidth(width) {
+
+        const value =
+            Number(width);
+
+
+        if (
+            !Number.isFinite(value) ||
+            value <= 0
+        ) {
+
+            return;
+
+        }
+
+
+        currentWidth =
+            value;
+
+    }
+
+
+    /*
+    =======================================================
+    CLEAR
+    =======================================================
+    */
+
+    function clear() {
+
+        if (!canvas) return;
+
+
+        const rect =
+            canvas.getBoundingClientRect();
+
+
+        context.clearRect(
+            0,
+            0,
+            rect.width,
+            rect.height
+        );
+
+
+        history = [];
+
+        historyIndex = -1;
+
+    }
+
+
+    /*
+    =======================================================
+    REDRAW HISTORY
+    =======================================================
+    */
+
+    function redraw() {
+
+        if (!canvas) return;
+
+
+        const rect =
+            canvas.getBoundingClientRect();
+
+
+        context.clearRect(
+            0,
+            0,
+            rect.width,
+            rect.height
+        );
+
+
+        for (
+            let i = 0;
+            i <= historyIndex;
+            i++
+        ) {
+
+            drawStroke(
+                history[i]
+            );
+
+        }
+
+    }
+
+
+    /*
+    =======================================================
+    DRAW SAVED STROKE
+    =======================================================
+    */
+
+    function drawStroke(stroke) {
+
+        if (
+            !stroke ||
+            !stroke.points ||
+            !stroke.points.length
+        ) {
+
+            return;
+
+        }
+
+
+        const previousTool =
+            currentTool;
+
+        const previousColor =
+            currentColor;
+
+        const previousWidth =
+            currentWidth;
+
+
+        currentTool =
+            stroke.type || "pen";
+
+        currentColor =
+            stroke.color || "#000000";
+
+        currentWidth =
+            stroke.width || 4;
+
+
+        context.beginPath();
+
+
+        const first =
+            stroke.points[0];
+
+
+        context.moveTo(
+            first.x,
+            first.y
+        );
+
+
+        for (
+            let i = 1;
+            i < stroke.points.length;
+            i++
+        ) {
+
+            const point =
+                stroke.points[i];
+
+
+            context.lineTo(
+                point.x,
+                point.y
+            );
+
+        }
+
+
+        if (
+            currentTool ===
+            "eraser"
+        ) {
+
+            context.globalCompositeOperation =
+                "destination-out";
+
+        }
+        else {
+
+            context.globalCompositeOperation =
+                "source-over";
+
+        }
+
+
+        context.strokeStyle =
+            currentColor;
+
+
+        context.lineWidth =
+            currentWidth;
+
+
+        context.lineCap =
+            "round";
+
+        context.lineJoin =
+            "round";
+
+
+        context.stroke();
+
+        context.closePath();
+
+
+        context.globalCompositeOperation =
+            "source-over";
+
+
+        currentTool =
+            previousTool;
+
+        currentColor =
+            previousColor;
+
+        currentWidth =
+            previousWidth;
+
+    }
+
+
+    /*
+    =======================================================
+    EXPORT HISTORY
+    =======================================================
+    */
+
+    function getHistory() {
+
+        return JSON.parse(
+            JSON.stringify(
+                history
+            )
+        );
+
+    }
+
+
+    /*
+    =======================================================
+    LOAD HISTORY
+    =======================================================
+    */
+
+    function loadHistory(data) {
+
+        if (!Array.isArray(data)) {
+
+            return;
+
+        }
+
+
+        history =
+            JSON.parse(
+                JSON.stringify(
+                    data
+                )
+            );
+
+
+        historyIndex =
+            history.length - 1;
+
+
+        redraw();
+
+    }
+
+
+    /*
+    =======================================================
+    UNDO
+    =======================================================
+    */
+
+    function undo() {
+
+        if (
+            historyIndex < 0
+        ) {
+
+            return null;
+
+        }
+
+
+        const stroke =
+            history[
+                historyIndex
+            ];
+
+
+        historyIndex--;
+
+
+        redraw();
+
+
+        return stroke;
+
+    }
+
+
+    /*
+    =======================================================
+    REDO
+    =======================================================
+    */
+
+    function redo() {
+
+        if (
+            historyIndex >=
+            history.length - 1
+        ) {
+
+            return null;
+
+        }
+
+
+        historyIndex++;
+
+
+        redraw();
+
+
+        return history[
+            historyIndex
+        ];
+
+    }
+
+
+    /*
+    =======================================================
+    GET CANVAS
+    =======================================================
+    */
+
+    function getCanvas() {
+
+        return canvas;
+
+    }
+
+
+    /*
+    =======================================================
+    GET STATE
+    =======================================================
+    */
+
+    function getState() {
+
+        return {
+
+            tool:
+                currentTool,
+
+            color:
+                currentColor,
+
+            width:
+                currentWidth,
+
+            history:
+                getHistory()
+
+        };
+
+    }
+
+
+    /*
+    =======================================================
+    PUBLIC API
+    =======================================================
+    */
+
+    return {
+
+        init,
+
+        resize,
+
+        setTool,
+
+        setColor,
+
+        setWidth,
+
+        clear,
+
+        redraw,
+
+        undo,
+
+        redo,
+
+        getHistory,
+
+        loadHistory,
+
+        getCanvas,
+
+        getState
+
+    };
+
+})();

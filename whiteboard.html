@@ -27,6 +27,11 @@
 <script src="assets/js/meeting/meetingWebRTC.js"></script>
 <script src="assets/js/meeting/video/screenShareV3.js"></script>
 <script src="assets/js/meeting/video/presentationLayoutV2.js"></script>
+<script src="assets/js/meeting/annotation/annotationCanvasV1.js"></script>
+
+<script src="assets/js/meeting/annotation/annotationToolbarV1.js"></script>
+
+<script src="assets/js/meeting/annotation/annotationManagerV1.js"></script>
 
 <script src="assets/js/meeting/meetingParticipantsV2.js"></script>
 <script src="assets/js/meeting/meetingUIV2.js"></script>
@@ -3524,6 +3529,25 @@ if (screenShareButton) {
    ===================================================== */
 
 MeetingUI.init();
+
+/*
+=========================================================
+INITIALIZE ANNOTATION V1
+=========================================================
+*/
+
+if (
+    window.AnnotationManagerV1 &&
+    typeof AnnotationManagerV1.init === "function"
+) {
+
+    console.log(
+        "INITIALIZING ANNOTATION V1"
+    );
+
+    AnnotationManagerV1.init();
+
+}
 
     </script>
 
