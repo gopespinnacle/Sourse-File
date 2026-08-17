@@ -632,6 +632,11 @@ function createWorkspace() {
             "screenContainer"
         );
 
+        const participantGrid =
+    document.getElementById(
+        "participantGrid"
+    );
+
 
     if (presentationContainer) {
 
@@ -644,6 +649,15 @@ function createWorkspace() {
 
         presentationContainer.style.opacity =
             "1";
+
+
+            if (participantGrid) {
+
+    participantGrid.classList.add(
+        "annotation-active"
+    );
+
+}
 
 
         /*
@@ -839,6 +853,11 @@ function close() {
         document.getElementById(
             "screenContainer"
         );
+
+        const participantGrid =
+    document.getElementById(
+        "participantGrid"
+    );
 
 
     if (presentationContainer) {
