@@ -263,7 +263,7 @@ window.AnnotationToolbarV1 = (() => {
                 </button>
 
 
-                <!-- SAVE PDF -->
+                                <!-- SAVE PDF -->
 
                 <button
                     type="button"
@@ -273,6 +273,55 @@ window.AnnotationToolbarV1 = (() => {
                 >
 
                     📄
+
+                </button>
+
+
+                <!-- PAGE CONTROLS -->
+
+                <button
+                    type="button"
+                    id="annotationPreviousPageV1"
+                    class="annotation-tool-btn"
+                    title="Previous Page"
+                >
+
+                    ◀
+
+                </button>
+
+
+                <span
+                    id="annotationPageIndicatorV1"
+                    class="annotation-page-indicator"
+                    title="Current Page"
+                >
+
+                    Page 1 / 1
+
+                </span>
+
+
+                <button
+                    type="button"
+                    id="annotationNextPageV1"
+                    class="annotation-tool-btn"
+                    title="Next Page"
+                >
+
+                    ▶
+
+                </button>
+
+
+                <button
+                    type="button"
+                    id="annotationAddPageV1"
+                    class="annotation-tool-btn"
+                    title="Add New Page"
+                >
+
+                    ＋
 
                 </button>
 
