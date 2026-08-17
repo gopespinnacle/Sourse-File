@@ -870,15 +870,16 @@ function close() {
 
     open = false;
 
+
     localStorage.removeItem(
-    "gopesAnnotationOpen"
-);
+        "gopesAnnotationOpen"
+    );
 
 
     /*
-    ---------------------------------------------------
+    ===================================================
     HIDE ANNOTATION WORKSPACE
-    ---------------------------------------------------
+    ===================================================
     */
 
     if (workspace) {
@@ -889,10 +890,9 @@ function close() {
     }
 
 
-
     /*
     ===================================================
-    RESTORE PRESENTATION CONTAINER
+    RESTORE NORMAL MEETING LAYOUT
     ===================================================
     */
 
@@ -901,34 +901,58 @@ function close() {
             "screenContainer"
         );
 
-        const participantGrid =
-    document.getElementById(
-        "participantGrid"
-    );
 
+    const participantGrid =
+        document.getElementById(
+            "participantGrid"
+        );
+
+
+    /*
+    ---------------------------------------------------
+    HIDE PRESENTATION / ANNOTATION LAYER
+    ---------------------------------------------------
+    */
 
     if (presentationContainer) {
-
-        /*
-        ------------------------------------------------
-        REMOVE ANNOTATION PRESENTATION STATE
-        ------------------------------------------------
-        */
 
         presentationContainer.classList.remove(
             "screen-sharing-active"
         );
 
 
-        /*
-        ------------------------------------------------
-        DO NOT FORCE SCREEN CONTAINER VISIBLE
-        ------------------------------------------------
+        presentationContainer.style.display =
+            "none";
 
-        Normal meeting state will decide whether
-        screen presentation should be visible.
-        ------------------------------------------------
-        */
+
+        presentationContainer.style.visibility =
+            "hidden";
+
+
+        presentationContainer.style.opacity =
+            "0";
+
+    }
+
+
+    /*
+    ---------------------------------------------------
+    SHOW NORMAL PARTICIPANT GRID
+    ---------------------------------------------------
+    */
+
+    if (participantGrid) {
+
+        participantGrid.style.display =
+            "grid";
+
+
+        participantGrid.style.visibility =
+            "visible";
+
+
+        participantGrid.style.opacity =
+            "1";
 
     }
 
@@ -974,9 +998,9 @@ function close() {
 
 
     /*
-    ---------------------------------------------------
-    HIDE TOOLBAR
-    ---------------------------------------------------
+    ===================================================
+    HIDE ANNOTATION TOOLBAR
+    ===================================================
     */
 
     if (
@@ -989,9 +1013,9 @@ function close() {
 
 
     /*
-    ---------------------------------------------------
-    BUTTON STATE
-    ---------------------------------------------------
+    ===================================================
+    RESET ANNOTATE BUTTON
+    ===================================================
     */
 
     if (annotateButton) {
@@ -1003,8 +1027,14 @@ function close() {
     }
 
 
+    /*
+    ===================================================
+    FINAL NORMAL MEETING STATE
+    ===================================================
+    */
+
     console.log(
-        "ANNOTATION MANAGER V1: CLOSED"
+        "ANNOTATION MANAGER V1: NORMAL MEETING RESTORED"
     );
 
 }
