@@ -111,6 +111,12 @@ CREATE ANNOTATION PRESENTATION WORKSPACE
 ===========================================================
 */
 
+/*
+===========================================================
+RESIZE ANNOTATION CANVAS
+===========================================================
+*/
+
 function resizeWorkspace() {
 
     if (!workspace) {
@@ -127,9 +133,9 @@ function resizeWorkspace() {
 
 
     /*
-    ======================================================
-    GET REAL WORKSPACE SIZE
-    ======================================================
+    =======================================================
+    GET ACTUAL PRESENTATION SIZE
+    =======================================================
     */
 
     const rect =
@@ -155,9 +161,9 @@ function resizeWorkspace() {
 
 
     /*
-    ======================================================
-    HIGH DPI / RETINA
-    ======================================================
+    =======================================================
+    HIGH DPI
+    =======================================================
     */
 
     const dpr =
@@ -170,6 +176,7 @@ function resizeWorkspace() {
             width * dpr
         );
 
+
     canvas.height =
         Math.floor(
             height * dpr
@@ -177,22 +184,23 @@ function resizeWorkspace() {
 
 
     /*
-    ======================================================
-    KEEP CSS SIZE
-    ======================================================
+    =======================================================
+    CSS SIZE
+    =======================================================
     */
 
     canvas.style.width =
         width + "px";
+
 
     canvas.style.height =
         height + "px";
 
 
     /*
-    ======================================================
-    SCALE DRAWING CONTEXT
-    ======================================================
+    =======================================================
+    SCALE CONTEXT
+    =======================================================
     */
 
     const ctx =
@@ -225,28 +233,53 @@ function resizeWorkspace() {
 
 }
 
+/*
+===========================================================
+CREATE ANNOTATION PRESENTATION WORKSPACE
+===========================================================
+*/
+
 function createWorkspace() {
 
     /*
-    ======================================================
-    ANNOTATION WORKSPACE
-    ======================================================
+    =======================================================
+    FIND EXISTING PRESENTATION CONTAINER
+    =======================================================
     */
 
-    let existing =
+    const presentationContainer =
+        document.getElementById(
+            "screenContainer"
+        );
+
+
+    if (!presentationContainer) {
+
+        console.error(
+            "ANNOTATION V1: screenContainer NOT FOUND"
+        );
+
+        return;
+
+    }
+
+
+    /*
+    =======================================================
+    CHECK IF ANNOTATION WORKSPACE ALREADY EXISTS
+    =======================================================
+    */
+
+    const existing =
         document.getElementById(
             "annotationWorkspaceV1"
         );
 
-    /*
-    ------------------------------------------------------
-    IF ALREADY CREATED
-    ------------------------------------------------------
-    */
 
     if (existing) {
 
-        workspace = existing;
+        workspace =
+            existing;
 
         canvas =
             document.getElementById(
@@ -261,9 +294,9 @@ function createWorkspace() {
 
 
     /*
-    ======================================================
-    CREATE WORKSPACE
-    ======================================================
+    =======================================================
+    CREATE ANNOTATION WORKSPACE
+    =======================================================
     */
 
     workspace =
@@ -271,30 +304,41 @@ function createWorkspace() {
             "div"
         );
 
+
     workspace.id =
         "annotationWorkspaceV1";
 
 
     /*
-    ======================================================
-    WORKSPACE STYLE
-    ======================================================
+    =======================================================
+    IMPORTANT
+    THIS WORKSPACE LIVES INSIDE THE EXISTING
+    GOOGLE-MEET PRESENTATION CONTAINER.
+
+    WE DO NOT TOUCH WEBRTC.
+    =======================================================
     */
 
     workspace.style.position =
-        "fixed";
+        "absolute";
 
     workspace.style.left =
         "0";
 
     workspace.style.top =
-        "60px";
+        "0";
+
+    workspace.style.right =
+        "0";
+
+    workspace.style.bottom =
+        "0";
 
     workspace.style.width =
-        "100vw";
+        "100%";
 
     workspace.style.height =
-        "calc(100vh - 60px)";
+        "100%";
 
     workspace.style.background =
         "#ffffff";
@@ -309,22 +353,23 @@ function createWorkspace() {
         "1";
 
     workspace.style.zIndex =
-        "5000";
+        "10";
 
     workspace.style.overflow =
         "hidden";
 
 
     /*
-    ======================================================
-    ANNOTATION CANVAS
-    ======================================================
+    =======================================================
+    CREATE CANVAS
+    =======================================================
     */
 
     canvas =
         document.createElement(
             "canvas"
         );
+
 
     canvas.id =
         "annotationCanvasV1";
@@ -359,9 +404,9 @@ function createWorkspace() {
 
 
     /*
-    ======================================================
-    ADD CANVAS
-    ======================================================
+    =======================================================
+    ADD CANVAS TO WORKSPACE
+    =======================================================
     */
 
     workspace.appendChild(
@@ -370,29 +415,29 @@ function createWorkspace() {
 
 
     /*
-    ======================================================
-    ADD WORKSPACE TO PAGE
-    ======================================================
+    =======================================================
+    ADD WORKSPACE INSIDE EXISTING PRESENTATION CONTAINER
+    =======================================================
     */
 
-    document.body.appendChild(
+    presentationContainer.appendChild(
         workspace
     );
 
 
     /*
-    ======================================================
-    RESIZE CANVAS
-    ======================================================
+    =======================================================
+    RESIZE
+    =======================================================
     */
 
     resizeWorkspace();
 
 
     /*
-    ======================================================
+    =======================================================
     INITIALIZE CANVAS ENGINE
-    ======================================================
+    =======================================================
     */
 
     if (
@@ -409,9 +454,9 @@ function createWorkspace() {
 
 
     /*
-    ======================================================
+    =======================================================
     RESIZE LISTENER
-    ======================================================
+    =======================================================
     */
 
     window.addEventListener(
@@ -576,6 +621,79 @@ function createWorkspace() {
 
         if (workspace) {
 
+    /*
+    ===========================================================
+    ACTIVATE EXISTING PRESENTATION CONTAINER
+    ===========================================================
+    */
+
+    const presentationContainer =
+        document.getElementById(
+            "screenContainer"
+        );
+
+
+    if (presentationContainer) {
+
+        presentationContainer.classList.add(
+            "screen-sharing-active"
+        );
+
+        presentationContainer.style.display =
+            "block";
+
+        presentationContainer.style.opacity =
+            "1";
+
+
+        /*
+        -------------------------------------------------------
+        HIDE ACTUAL SCREEN SHARE VIDEO
+        -------------------------------------------------------
+        */
+
+        const screenVideo =
+            document.getElementById(
+                "screenVideo"
+            );
+
+
+        if (screenVideo) {
+
+            screenVideo.style.display =
+                "none";
+
+        }
+
+
+        /*
+        -------------------------------------------------------
+        HIDE SCREEN DRAW LAYER
+        -------------------------------------------------------
+        */
+
+        const screenDraw =
+            document.getElementById(
+                "screenDraw"
+            );
+
+
+        if (screenDraw) {
+
+            screenDraw.style.display =
+                "none";
+
+        }
+
+    }
+
+
+    /*
+    ===========================================================
+    SHOW ANNOTATION WORKSPACE
+    ===========================================================
+    */
+
     workspace.style.display =
         "block";
 
@@ -584,6 +702,24 @@ function createWorkspace() {
 
     workspace.style.opacity =
         "1";
+
+    workspace.style.zIndex =
+        "10";
+
+
+    /*
+    ===========================================================
+    RESIZE AFTER DISPLAY
+    ===========================================================
+    */
+
+    requestAnimationFrame(
+        () => {
+
+            resizeWorkspace();
+
+        }
+    );
 
 }
 /*
@@ -662,60 +798,149 @@ if (canvas) {
     =======================================================
     */
 
-    function close() {
+    /*
+=======================================================
+CLOSE ANNOTATION
+=======================================================
+*/
 
-        console.log(
-            "ANNOTATION MANAGER V1: CLOSE"
+function close() {
+
+    console.log(
+        "ANNOTATION MANAGER V1: CLOSE"
+    );
+
+
+    open = false;
+
+
+    /*
+    ---------------------------------------------------
+    HIDE ANNOTATION WORKSPACE
+    ---------------------------------------------------
+    */
+
+    if (workspace) {
+
+        workspace.style.display =
+            "none";
+
+    }
+
+
+    /*
+    ===================================================
+    RESTORE PRESENTATION CONTAINER
+    ===================================================
+    */
+
+    const presentationContainer =
+        document.getElementById(
+            "screenContainer"
         );
 
 
-        open = false;
+    if (presentationContainer) {
+
+        /*
+        ------------------------------------------------
+        REMOVE ANNOTATION PRESENTATION STATE
+        ------------------------------------------------
+        */
+
+        presentationContainer.classList.remove(
+            "screen-sharing-active"
+        );
 
 
         /*
-        ---------------------------------------------------
-        HIDE WORKSPACE
-        ---------------------------------------------------
+        ------------------------------------------------
+        DO NOT FORCE SCREEN CONTAINER VISIBLE
+        ------------------------------------------------
+
+        Normal meeting state will decide whether
+        screen presentation should be visible.
+        ------------------------------------------------
         */
-
-        if (workspace) {
-
-            workspace.style.display =
-                "none";
-
-        }
-
-
-        /*
-        ---------------------------------------------------
-        HIDE TOOLBAR
-        ---------------------------------------------------
-        */
-
-        if (
-            window.AnnotationToolbarV1
-        ) {
-
-            AnnotationToolbarV1.hide();
-
-        }
-
-
-        /*
-        ---------------------------------------------------
-        BUTTON STATE
-        ---------------------------------------------------
-        */
-
-        if (annotateButton) {
-
-            annotateButton.classList.remove(
-                "active"
-            );
-
-        }
 
     }
+
+
+    /*
+    ===================================================
+    RESTORE SCREEN SHARE VIDEO
+    ===================================================
+    */
+
+    const screenVideo =
+        document.getElementById(
+            "screenVideo"
+        );
+
+
+    if (screenVideo) {
+
+        screenVideo.style.display =
+            "";
+
+    }
+
+
+    /*
+    ===================================================
+    RESTORE SCREEN DRAW LAYER
+    ===================================================
+    */
+
+    const screenDraw =
+        document.getElementById(
+            "screenDraw"
+        );
+
+
+    if (screenDraw) {
+
+        screenDraw.style.display =
+            "";
+
+    }
+
+
+    /*
+    ---------------------------------------------------
+    HIDE TOOLBAR
+    ---------------------------------------------------
+    */
+
+    if (
+        window.AnnotationToolbarV1
+    ) {
+
+        AnnotationToolbarV1.hide();
+
+    }
+
+
+    /*
+    ---------------------------------------------------
+    BUTTON STATE
+    ---------------------------------------------------
+    */
+
+    if (annotateButton) {
+
+        annotateButton.classList.remove(
+            "active"
+        );
+
+    }
+
+
+    console.log(
+        "ANNOTATION MANAGER V1: CLOSED"
+    );
+
+}
 
 
     /*
