@@ -1009,7 +1009,7 @@ function createMaterialDetailsPopup() {
                 <input
                     type="text"
                     id="annotationMaterialChapterNoV1"
-                    placeholder="Chpter No"
+                    placeholder="Chapter No"
                     autocomplete="off"
                     style="
                         width:100%;
