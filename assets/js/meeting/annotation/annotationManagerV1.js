@@ -111,18 +111,138 @@ CREATE ANNOTATION PRESENTATION WORKSPACE
 ===========================================================
 */
 
+function resizeWorkspace() {
+
+    if (!workspace) {
+
+        return;
+
+    }
+
+    if (!canvas) {
+
+        return;
+
+    }
+
+
+    /*
+    ======================================================
+    GET REAL WORKSPACE SIZE
+    ======================================================
+    */
+
+    const rect =
+        workspace.getBoundingClientRect();
+
+
+    const width =
+        Math.max(
+            1,
+            Math.floor(
+                rect.width
+            )
+        );
+
+
+    const height =
+        Math.max(
+            1,
+            Math.floor(
+                rect.height
+            )
+        );
+
+
+    /*
+    ======================================================
+    HIGH DPI / RETINA
+    ======================================================
+    */
+
+    const dpr =
+        window.devicePixelRatio ||
+        1;
+
+
+    canvas.width =
+        Math.floor(
+            width * dpr
+        );
+
+    canvas.height =
+        Math.floor(
+            height * dpr
+        );
+
+
+    /*
+    ======================================================
+    KEEP CSS SIZE
+    ======================================================
+    */
+
+    canvas.style.width =
+        width + "px";
+
+    canvas.style.height =
+        height + "px";
+
+
+    /*
+    ======================================================
+    SCALE DRAWING CONTEXT
+    ======================================================
+    */
+
+    const ctx =
+        canvas.getContext(
+            "2d"
+        );
+
+
+    if (ctx) {
+
+        ctx.setTransform(
+            dpr,
+            0,
+            0,
+            dpr,
+            0,
+            0
+        );
+
+    }
+
+
+    console.log(
+        "ANNOTATION V1: CANVAS RESIZED",
+        width,
+        height,
+        "DPR:",
+        dpr
+    );
+
+}
+
 function createWorkspace() {
 
     /*
-    -------------------------------------------------------
-    ALREADY EXISTS
-    -------------------------------------------------------
+    ======================================================
+    ANNOTATION WORKSPACE
+    ======================================================
     */
 
-    const existing =
+    let existing =
         document.getElementById(
             "annotationWorkspaceV1"
         );
+
+    /*
+    ------------------------------------------------------
+    IF ALREADY CREATED
+    ------------------------------------------------------
+    */
 
     if (existing) {
 
@@ -133,15 +253,17 @@ function createWorkspace() {
                 "annotationCanvasV1"
             );
 
+        resizeWorkspace();
+
         return;
 
     }
 
 
     /*
-    -------------------------------------------------------
-    CREATE PRESENTATION LAYER
-    -------------------------------------------------------
+    ======================================================
+    CREATE WORKSPACE
+    ======================================================
     */
 
     workspace =
@@ -154,11 +276,9 @@ function createWorkspace() {
 
 
     /*
-    -------------------------------------------------------
-    IMPORTANT
-    THIS IS AN INDEPENDENT PRESENTATION LAYER.
-    IT DOES NOT REPLACE VIDEO ELEMENTS.
-    -------------------------------------------------------
+    ======================================================
+    WORKSPACE STYLE
+    ======================================================
     */
 
     workspace.style.position =
@@ -182,6 +302,12 @@ function createWorkspace() {
     workspace.style.display =
         "none";
 
+    workspace.style.visibility =
+        "visible";
+
+    workspace.style.opacity =
+        "1";
+
     workspace.style.zIndex =
         "5000";
 
@@ -190,46 +316,63 @@ function createWorkspace() {
 
 
     /*
-    -------------------------------------------------------
-    ANNOTATION STAGE
-    -------------------------------------------------------
+    ======================================================
+    ANNOTATION CANVAS
+    ======================================================
     */
 
-    workspace.innerHTML = `
+    canvas =
+        document.createElement(
+            "canvas"
+        );
 
-        <div
-            id="annotationStageV1"
-            style="
-                position:absolute;
-                inset:0;
-                background:#ffffff;
-                overflow:hidden;
-            "
-        >
+    canvas.id =
+        "annotationCanvasV1";
 
-            <canvas
-                id="annotationCanvasV1"
-                style="
-                    position:absolute;
-                    inset:0;
-                    width:100%;
-                    height:100%;
-                    display:block;
-                    background:#ffffff;
-                    touch-action:none;
-                    cursor:crosshair;
-                "
-            ></canvas>
 
-        </div>
+    canvas.style.position =
+        "absolute";
 
-    `;
+    canvas.style.left =
+        "0";
+
+    canvas.style.top =
+        "0";
+
+    canvas.style.width =
+        "100%";
+
+    canvas.style.height =
+        "100%";
+
+    canvas.style.display =
+        "block";
+
+    canvas.style.background =
+        "#ffffff";
+
+    canvas.style.touchAction =
+        "none";
+
+    canvas.style.cursor =
+        "crosshair";
 
 
     /*
-    -------------------------------------------------------
-    ADD TO BODY
-    -------------------------------------------------------
+    ======================================================
+    ADD CANVAS
+    ======================================================
+    */
+
+    workspace.appendChild(
+        canvas
+    );
+
+
+    /*
+    ======================================================
+    ADD WORKSPACE TO PAGE
+    ======================================================
     */
 
     document.body.appendChild(
@@ -238,26 +381,24 @@ function createWorkspace() {
 
 
     /*
-    -------------------------------------------------------
-    GET CANVAS
-    -------------------------------------------------------
+    ======================================================
+    RESIZE CANVAS
+    ======================================================
     */
 
-    canvas =
-        document.getElementById(
-            "annotationCanvasV1"
-        );
+    resizeWorkspace();
 
 
     /*
-    -------------------------------------------------------
+    ======================================================
     INITIALIZE CANVAS ENGINE
-    -------------------------------------------------------
+    ======================================================
     */
 
     if (
-        canvas &&
-        window.AnnotationCanvasV1
+        window.AnnotationCanvasV1 &&
+        typeof AnnotationCanvasV1.init ===
+            "function"
     ) {
 
         AnnotationCanvasV1.init(
@@ -265,6 +406,18 @@ function createWorkspace() {
         );
 
     }
+
+
+    /*
+    ======================================================
+    RESIZE LISTENER
+    ======================================================
+    */
+
+    window.addEventListener(
+        "resize",
+        resizeWorkspace
+    );
 
 
     console.log(
