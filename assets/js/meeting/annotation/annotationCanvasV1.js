@@ -34,6 +34,18 @@ Those belong to separate modules.
 window.AnnotationCanvasV1 = (() => {
 
     /*
+===========================================================
+ANNOTATION PERSISTENCE V1
+===========================================================
+*/
+
+let annotationSocket = null;
+
+let annotationRoom = null;
+
+let annotationPersistenceReady = false;
+
+    /*
     =======================================================
     STATE
     =======================================================
@@ -62,13 +74,248 @@ window.AnnotationCanvasV1 = (() => {
     let initialized = false;
 
 
+/*
+===========================================================
+ANNOTATION PERSISTENCE
+===========================================================
+*/
+
+function initPersistence() {
+
+    if (
+        typeof socket === "undefined" ||
+        !socket
+    ) {
+
+        console.warn(
+            "ANNOTATION V1: SOCKET NOT READY"
+        );
+
+        return;
+
+    }
+
+
+    annotationSocket =
+        socket;
+
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    annotationRoom =
+        params.get("room");
+
+
+    if (!annotationRoom) {
+
+        console.warn(
+            "ANNOTATION V1: ROOM NOT FOUND"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        annotationPersistenceReady
+    ) {
+
+        return;
+
+    }
+
+
+    annotationPersistenceReady =
+        true;
+
+
     /*
     =======================================================
-    INITIALIZE
+    LOAD SAVED ANNOTATION
     =======================================================
     */
 
-    function init(canvasElement) {
+    annotationSocket.on(
+        "annotationLoaded",
+        data => {
+
+            if (
+                !data ||
+                data.room !== annotationRoom
+            ) {
+
+                return;
+
+            }
+
+
+            console.log(
+                "ANNOTATION V1: SAVED DATA RECEIVED"
+            );
+
+
+            if (
+                Array.isArray(data.data)
+            ) {
+
+                loadHistory(
+                    data.data
+                );
+
+            }
+
+        }
+    );
+
+
+    /*
+    =======================================================
+    LIVE ANNOTATION UPDATE
+    =======================================================
+    */
+
+    annotationSocket.on(
+        "annotationUpdated",
+        data => {
+
+            if (
+                !data ||
+                data.room !== annotationRoom
+            ) {
+
+                return;
+
+            }
+
+
+            if (
+                Array.isArray(data.data)
+            ) {
+
+                loadHistory(
+                    data.data
+                );
+
+            }
+
+        }
+    );
+
+
+    /*
+    =======================================================
+    CLEAR FROM OTHER USER
+    =======================================================
+    */
+
+    annotationSocket.on(
+        "annotationCleared",
+        () => {
+
+            clearLocalAnnotation();
+
+        }
+    );
+
+
+    /*
+    =======================================================
+    REQUEST SAVED DATA
+    =======================================================
+    */
+
+    annotationSocket.emit(
+        "annotationLoad",
+        annotationRoom
+    );
+
+
+    console.log(
+        "ANNOTATION V1: PERSISTENCE READY",
+        annotationRoom
+    );
+
+}
+
+
+/*
+===========================================================
+SAVE ANNOTATION STATE
+===========================================================
+*/
+
+function saveAnnotationState() {
+
+    if (
+        !annotationSocket ||
+        !annotationRoom
+    ) {
+
+        return;
+
+    }
+
+
+    annotationSocket.emit(
+        "annotationSave",
+        {
+            room:
+                annotationRoom,
+
+            data:
+                getHistory()
+        }
+    );
+
+}
+
+
+/*
+===========================================================
+CLEAR LOCAL ANNOTATION
+===========================================================
+*/
+
+function clearLocalAnnotation() {
+
+    if (!canvas) {
+
+        return;
+
+    }
+
+
+    const rect =
+        canvas.getBoundingClientRect();
+
+
+    context.clearRect(
+        0,
+        0,
+        rect.width,
+        rect.height
+    );
+
+
+    history = [];
+
+    historyIndex = -1;
+
+}
+
+
+/*
+=======================================================
+INITIALIZE
+=======================================================
+*/
+
+function init(canvasElement) {
 
         if (!canvasElement) {
 
@@ -106,15 +353,24 @@ window.AnnotationCanvasV1 = (() => {
 
         setupCanvas();
 
-        bindPointerEvents();
+bindPointerEvents();
 
 
-        initialized = true;
+initialized = true;
 
 
-        console.log(
-            "ANNOTATION CANVAS V1: INITIALIZED"
-        );
+/*
+=======================================================
+START ANNOTATION PERSISTENCE
+=======================================================
+*/
+
+initPersistence();
+
+
+console.log(
+    "ANNOTATION CANVAS V1: INITIALIZED"
+);
 
 
         return true;
@@ -447,6 +703,8 @@ window.AnnotationCanvasV1 = (() => {
 
         }
 
+        saveAnnotationState();
+
 
         currentPoints = [];
 
@@ -731,6 +989,18 @@ window.AnnotationCanvasV1 = (() => {
 
         historyIndex = -1;
 
+        if (
+    annotationSocket &&
+    annotationRoom
+) {
+
+    annotationSocket.emit(
+        "annotationClear",
+        annotationRoom
+    );
+
+}
+
     }
 
 
@@ -969,11 +1239,19 @@ window.AnnotationCanvasV1 = (() => {
 
         historyIndex--;
 
+redraw();
 
-        redraw();
+
+/*
+=======================================================
+SAVE AFTER UNDO
+=======================================================
+*/
+
+saveAnnotationState();
 
 
-        return stroke;
+return stroke;
 
     }
 
@@ -998,13 +1276,21 @@ window.AnnotationCanvasV1 = (() => {
 
         historyIndex++;
 
+redraw();
 
-        redraw();
+
+/*
+=======================================================
+SAVE AFTER REDO
+=======================================================
+*/
+
+saveAnnotationState();
 
 
-        return history[
-            historyIndex
-        ];
+return history[
+    historyIndex
+];
 
     }
 
@@ -1057,32 +1343,36 @@ window.AnnotationCanvasV1 = (() => {
 
     return {
 
-        init,
+    init,
 
-        resize,
+    resize,
 
-        setTool,
+    setTool,
 
-        setColor,
+    setColor,
 
-        setWidth,
+    setWidth,
 
-        clear,
+    clear,
 
-        redraw,
+    redraw,
 
-        undo,
+    undo,
 
-        redo,
+    redo,
 
-        getHistory,
+    getHistory,
 
-        loadHistory,
+    loadHistory,
 
-        getCanvas,
+    getCanvas,
 
-        getState
+    getState,
 
-    };
+    initPersistence,
+
+    saveAnnotationState
+
+};
 
 })();
