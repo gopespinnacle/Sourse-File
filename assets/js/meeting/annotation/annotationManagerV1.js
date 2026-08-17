@@ -826,7 +826,7 @@ function close() {
             "none";
 
     }
-    
+
 
 
     /*
@@ -1024,5 +1024,4 @@ function close() {
     };
 
 })();
-
 
