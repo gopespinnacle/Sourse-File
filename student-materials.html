@@ -1278,15 +1278,14 @@ function viewMaterial(
     }
 
 
-    /*
-    ---------------------------------------------------------
-    NEXT BLOCK
-    ---------------------------------------------------------
-    */
-
-    alert(
-        "Document viewer will be opened in the next development block."
+    console.log(
+        "MATERIALS: OPENING MATERIAL",
+        materialId
     );
+
+
+    window.location.href =
+        `student-material-viewer.html?materialId=${encodeURIComponent(materialId)}`;
 
 }
 
