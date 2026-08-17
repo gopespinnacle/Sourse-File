@@ -680,6 +680,20 @@ localStorage.setItem(
         "participantGrid"
     );
 
+    /*
+===================================================
+REMOVE ANNOTATION STATE FROM PARTICIPANT GRID
+===================================================
+*/
+
+if (participantGrid) {
+
+    participantGrid.classList.remove(
+        "annotation-active"
+    );
+
+}
+
 
     if (presentationContainer) {
 
