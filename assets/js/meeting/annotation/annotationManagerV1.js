@@ -826,6 +826,7 @@ function close() {
             "none";
 
     }
+    
 
 
     /*
