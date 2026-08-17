@@ -275,11 +275,24 @@ window.AnnotationToolbarV1 = (() => {
 
         if (workspace) {
 
-            workspace.appendChild(
-                toolbar
-            );
+    workspace.style.position = "relative";
 
-        }
+    workspace.appendChild(
+        toolbar
+    );
+
+    toolbar.style.position = "absolute";
+    toolbar.style.left = "50%";
+    toolbar.style.bottom = "20px";
+    toolbar.style.transform = "translateX(-50%)";
+
+    toolbar.style.zIndex = "10000";
+    toolbar.style.display = "flex";
+    toolbar.style.visibility = "visible";
+    toolbar.style.opacity = "1";
+    toolbar.style.pointerEvents = "auto";
+
+}
         else {
 
             /*
@@ -722,17 +735,98 @@ window.AnnotationToolbarV1 = (() => {
 
     function show() {
 
-        if (!toolbar) {
+    if (!toolbar) {
 
-            init();
+        init();
+
+    }
+
+
+    /*
+    ===================================================
+    MAKE SURE TOOLBAR IS INSIDE ANNOTATION WORKSPACE
+    ===================================================
+    */
+
+    const workspace =
+        document.getElementById(
+            "annotationWorkspaceV1"
+        );
+
+
+    if (workspace && toolbar) {
+
+        workspace.style.position =
+            "relative";
+
+
+        /*
+        -----------------------------------------------
+        MOVE TOOLBAR INTO WORKSPACE
+        -----------------------------------------------
+        */
+
+        if (
+            toolbar.parentElement !== workspace
+        ) {
+
+            workspace.appendChild(
+                toolbar
+            );
 
         }
 
 
-        toolbar.style.display =
-            "flex";
+        /*
+        -----------------------------------------------
+        TOOLBAR POSITION
+        -----------------------------------------------
+        */
+
+        toolbar.style.position =
+            "absolute";
+
+
+        toolbar.style.left =
+            "50%";
+
+
+        toolbar.style.bottom =
+            "20px";
+
+
+        toolbar.style.transform =
+            "translateX(-50%)";
+
+
+        toolbar.style.zIndex =
+            "10000";
+
+
+        toolbar.style.visibility =
+            "visible";
+
+
+        toolbar.style.opacity =
+            "1";
+
+
+        toolbar.style.pointerEvents =
+            "auto";
 
     }
+
+
+    /*
+    ===================================================
+    SHOW TOOLBAR
+    ===================================================
+    */
+
+    toolbar.style.display =
+        "flex";
+
+}
 
 
     /*
