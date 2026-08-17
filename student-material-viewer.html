@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>
+Gopes Pinnacle Academy - Learning Material
+</title>
+
+
+<style>
+
+/* =========================================================
+   BASIC
+   ========================================================= */
+
+*{
+    box-sizing:border-box;
+}
+
+html,
+body{
+
+    margin:0;
+
+    padding:0;
+
+    width:100%;
+
+    min-height:100%;
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    background:#eef2f7;
+
+    color:#172033;
+
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.academy-header{
+
+    width:100%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #173b67,
+            #0f172a
+        );
+
+    color:white;
+
+    padding:18px 25px;
+
+    text-align:center;
+
+}
+
+
+.academy-name{
+
+    font-size:23px;
+
+    font-weight:800;
+
+    letter-spacing:.5px;
+
+}
+
+
+.viewer-label{
+
+    margin-top:4px;
+
+    color:#dbeafe;
+
+    font-size:13px;
+
+}
+
+
+/* =========================================================
+   DOCUMENT INFORMATION
+   ========================================================= */
+
+.document-info{
+
+    width:min(
+        1100px,
+        calc(100% - 30px)
+    );
+
+    margin:20px auto 15px;
+
+    background:white;
+
+    border-radius:14px;
+
+    padding:18px 22px;
+
+    box-shadow:
+        0 5px 18px
+        rgba(15,23,42,.08);
+
+}
+
+
+.subject-title{
+
+    font-size:22px;
+
+    font-weight:800;
+
+    color:#173b67;
+
+}
+
+
+.chapter-title{
+
+    margin-top:5px;
+
+    font-size:17px;
+
+    font-weight:700;
+
+}
+
+
+.topic-title{
+
+    margin-top:5px;
+
+    color:#475569;
+
+    font-size:14px;
+
+}
+
+
+.description{
+
+    margin-top:8px;
+
+    color:#64748b;
+
+    font-size:13px;
+
+    line-height:1.5;
+
+}
+
+
+/* =========================================================
+   VIEWER
+   ========================================================= */
+
+.viewer-wrapper{
+
+    width:min(
+        1100px,
+        calc(100% - 30px)
+    );
+
+    margin:0 auto 25px;
+
+    background:#cbd5e1;
+
+    border-radius:14px;
+
+    padding:15px;
+
+    box-shadow:
+        0 8px 25px
+        rgba(15,23,42,.12);
+
+}
+
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.page-container{
+
+    position:relative;
+
+    width:100%;
+
+    background:white;
+
+    overflow:hidden;
+
+    border-radius:8px;
+
+    min-height:500px;
+
+}
+
+
+#pageCanvas{
+
+    display:block;
+
+    width:100%;
+
+    height:auto;
+
+    background:white;
+
+}
+
+
+/* =========================================================
+   CONTROLS
+   ========================================================= */
+
+.viewer-controls{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:12px;
+
+    flex-wrap:wrap;
+
+    padding:15px 5px 5px;
+
+}
+
+
+.viewer-button{
+
+    border:none;
+
+    background:#173b67;
+
+    color:white;
+
+    padding:10px 18px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-size:14px;
+
+    font-weight:700;
+
+}
+
+
+.viewer-button:hover{
+
+    background:#0f2d50;
+
+}
+
+
+.viewer-button:disabled{
+
+    background:#94a3b8;
+
+    cursor:not-allowed;
+
+}
+
+
+.page-number{
+
+    min-width:95px;
+
+    text-align:center;
+
+    font-weight:800;
+
+    color:#173b67;
+
+}
+
+
+/* =========================================================
+   BACK BUTTON
+   ========================================================= */
+
+.back-button{
+
+    display:block;
+
+    margin:0 auto 18px;
+
+    border:1px solid #173b67;
+
+    background:white;
+
+    color:#173b67;
+
+    padding:9px 17px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-size:14px;
+
+    font-weight:700;
+
+}
+
+
+.back-button:hover{
+
+    background:#f1f5f9;
+
+}
+
+
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+.loading{
+
+    width:min(
+        700px,
+        calc(100% - 30px)
+    );
+
+    margin:50px auto;
+
+    text-align:center;
+
+    background:white;
+
+    padding:40px;
+
+    border-radius:14px;
+
+    color:#64748b;
+
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.error-box{
+
+    width:min(
+        700px,
+        calc(100% - 30px)
+    );
+
+    margin:50px auto;
+
+    text-align:center;
+
+    background:white;
+
+    padding:40px;
+
+    border-radius:14px;
+
+    color:#b91c1c;
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media(max-width:600px){
+
+    .academy-header{
+
+        padding:15px;
+
+    }
+
+
+    .academy-name{
+
+        font-size:18px;
+
+    }
+
+
+    .document-info{
+
+        width:
+            calc(100% - 20px);
+
+        padding:15px;
+
+        margin-top:10px;
+
+    }
+
+
+    .viewer-wrapper{
+
+        width:
+            calc(100% - 20px);
+
+        padding:8px;
+
+    }
+
+
+    .subject-title{
+
+        font-size:19px;
+
+    }
+
+
+    .chapter-title{
+
+        font-size:15px;
+
+    }
+
+
+    .viewer-button{
+
+        padding:9px 13px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =======================================================
+     ACADEMY HEADER
+     ======================================================= -->
+
+<header class="academy-header">
+
+    <div class="academy-name">
+
+        GOPES PINNACLE ACADEMY
+
+    </div>
+
+    <div class="viewer-label">
+
+        Learning Material • View Only
+
+    </div>
+
+</header>
+
+
+<!-- =======================================================
+     LOADING
+     ======================================================= -->
+
+<div
+    id="loading"
+    class="loading"
+>
+
+    Loading learning material...
+
+</div>
+
+
+<!-- =======================================================
+     MAIN DOCUMENT
+     ======================================================= -->
+
+<div
+    id="documentArea"
+    style="display:none;"
+>
+
+
+    <!-- ===================================================
+         DOCUMENT INFORMATION
+         =================================================== -->
+
+    <div class="document-info">
+
+        <div
+            id="subjectTitle"
+            class="subject-title"
+        >
+            Subject
+        </div>
+
+
+        <div
+            id="chapterTitle"
+            class="chapter-title"
+        >
+            Chapter
+        </div>
+
+
+        <div
+            id="topicTitle"
+            class="topic-title"
+        >
+            Topic
+        </div>
+
+
+        <div
+            id="description"
+            class="description"
+        ></div>
+
+    </div>
+
+
+    <!-- ===================================================
+         VIEWER
+         =================================================== -->
+
+    <div class="viewer-wrapper">
+
+
+        <div class="page-container">
+
+            <canvas
+                id="pageCanvas"
+            ></canvas>
+
+        </div>
+
+
+        <!-- ===============================================
+             PAGE CONTROLS
+             =============================================== -->
+
+        <div class="viewer-controls">
+
+            <button
+                id="previousButton"
+                class="viewer-button"
+                type="button"
+            >
+                ◀ Previous
+            </button>
+
+
+            <div
+                id="pageNumber"
+                class="page-number"
+            >
+                Page 1 / 1
+            </div>
+
+
+            <button
+                id="nextButton"
+                class="viewer-button"
+                type="button"
+            >
+                Next ▶
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ===================================================
+         BACK
+         =================================================== -->
+
+    <button
+        class="back-button"
+        type="button"
+        onclick="goBack()"
+    >
+        ← Back to Materials
+    </button>
+
+
+</div>
+
+
+<!-- =======================================================
+     ERROR
+     ======================================================= -->
+
+<div
+    id="errorBox"
+    class="error-box"
+    style="display:none;"
+>
+
+    Unable to open this learning material.
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   CONFIGURATION
+   ========================================================= */
+
+const API_BASE =
+    "https://academy-backend-eatl.onrender.com";
+
+
+/* =========================================================
+   LOGIN
+   ========================================================= */
+
+const token =
+    localStorage.getItem(
+        "token"
+    );
+
+
+const studentId =
+    localStorage.getItem(
+        "studentId"
+    );
+
+
+/* =========================================================
+   MATERIAL ID
+   ========================================================= */
+
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+
+const materialId =
+    params.get(
+        "materialId"
+    );
+
+
+/* =========================================================
+   GLOBAL DATA
+   ========================================================= */
+
+let material = null;
+
+let pages = [];
+
+let currentPage = 0;
+
+
+/* =========================================================
+   CANVAS
+   ========================================================= */
+
+const canvas =
+    document.getElementById(
+        "pageCanvas"
+    );
+
+
+const ctx =
+    canvas.getContext(
+        "2d"
+    );
+
+
+/* =========================================================
+   LOGIN CHECK
+   ========================================================= */
+
+if(
+    !token ||
+    !studentId
+){
+
+    window.location.href =
+        "student-login.html";
+
+}
+
+
+/* =========================================================
+   MATERIAL ID CHECK
+   ========================================================= */
+
+if(!materialId){
+
+    showError(
+        "Learning material ID is missing."
+    );
+
+}
+else{
+
+    loadMaterial();
+
+}
+
+
+/* =========================================================
+   LOAD MATERIAL
+   ========================================================= */
+
+async function loadMaterial(){
+
+    try{
+
+        console.log(
+            "MATERIAL VIEWER: STUDENT",
+            studentId
+        );
+
+
+        console.log(
+            "MATERIAL VIEWER: MATERIAL ID",
+            materialId
+        );
+
+
+        /*
+        -----------------------------------------------------
+        GET ALL STUDENT MATERIALS
+        -----------------------------------------------------
+        */
+
+        const response =
+            await fetch(
+
+                `${API_BASE}/api/annotation-materials/student/${encodeURIComponent(studentId)}`,
+
+                {
+                    method:"GET",
+
+                    headers:{
+
+                        "Authorization":
+                            "Bearer " + token
+
+                    }
+
+                }
+
+            );
+
+
+        console.log(
+            "MATERIAL VIEWER: RESPONSE",
+            response.status
+        );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "Unable to load materials."
+            );
+
+        }
+
+
+        const result =
+            await response.json();
+
+
+        const materials =
+            Array.isArray(result)
+                ? result
+                : (
+                    Array.isArray(result.materials)
+                        ? result.materials
+                        : (
+                            Array.isArray(result.data)
+                                ? result.data
+                                : []
+                        )
+                );
+
+
+        /*
+        -----------------------------------------------------
+        FIND REQUESTED MATERIAL
+        -----------------------------------------------------
+        */
+
+        material =
+            materials.find(
+                item =>
+
+                    String(
+                        item._id ||
+                        item.id
+                    )
+                    ===
+                    String(
+                        materialId
+                    )
+            );
+
+
+        if(!material){
+
+            throw new Error(
+                "Learning material was not found."
+            );
+
+        }
+
+
+        console.log(
+            "MATERIAL VIEWER: MATERIAL FOUND",
+            material
+        );
+
+
+        /*
+        -----------------------------------------------------
+        PAGE DATA
+        -----------------------------------------------------
+        */
+
+        pages =
+            Array.isArray(
+                material.pages
+            )
+                ? material.pages
+                : [];
+
+
+        if(
+            pages.length === 0
+        ){
+
+            throw new Error(
+                "This learning material has no pages."
+            );
+
+        }
+
+
+        /*
+        -----------------------------------------------------
+        DOCUMENT INFORMATION
+        -----------------------------------------------------
+        */
+
+        document.getElementById(
+            "subjectTitle"
+        ).textContent =
+            material.subject ||
+            "Learning Material";
+
+
+        document.getElementById(
+            "chapterTitle"
+        ).textContent =
+
+            material.chapterNo
+                ? `Chapter ${material.chapterNo} — ${material.chapterName || ""}`
+                : (
+                    material.chapterName ||
+                    "Learning Material"
+                );
+
+
+        document.getElementById(
+            "topicTitle"
+        ).textContent =
+
+            material.topic
+                ? `Topic: ${material.topic}`
+                : "";
+
+
+        document.getElementById(
+            "description"
+        ).textContent =
+
+            material.description ||
+            "";
+
+
+        /*
+        -----------------------------------------------------
+        SHOW DOCUMENT
+        -----------------------------------------------------
+        */
+
+        document.getElementById(
+            "loading"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "documentArea"
+        ).style.display =
+            "block";
+
+
+        /*
+        -----------------------------------------------------
+        DRAW FIRST PAGE
+        -----------------------------------------------------
+        */
+
+        renderPage(
+            0
+        );
+
+
+    }
+    catch(error){
+
+        console.error(
+            "MATERIAL VIEWER ERROR:",
+            error
+        );
+
+
+        showError(
+            error.message ||
+            "Unable to open learning material."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDER PAGE
+   ========================================================= */
+
+function renderPage(
+    pageIndex
+){
+
+    if(
+        !pages ||
+        !pages.length
+    ){
+
+        return;
+
+    }
+
+
+    if(
+        pageIndex < 0 ||
+        pageIndex >= pages.length
+    ){
+
+        return;
+
+    }
+
+
+    currentPage =
+        pageIndex;
+
+
+    const page =
+        pages[
+            currentPage
+        ];
+
+
+    /*
+    ---------------------------------------------------------
+    PAGE SIZE
+    ---------------------------------------------------------
+    */
+
+    const width =
+        Number(
+            page.width
+        ) ||
+        1280;
+
+
+    const height =
+        Number(
+            page.height
+        ) ||
+        720;
+
+
+    canvas.width =
+        width;
+
+
+    canvas.height =
+        height;
+
+
+    /*
+    ---------------------------------------------------------
+    WHITE BACKGROUND
+    ---------------------------------------------------------
+    */
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    ctx.fillStyle =
+        "#ffffff";
+
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    /*
+    ---------------------------------------------------------
+    DRAW SAVED HISTORY
+    ---------------------------------------------------------
+    */
+
+    const history =
+        Array.isArray(
+            page.history
+        )
+            ? page.history
+            : [];
+
+
+    history.forEach(
+        stroke => {
+
+            drawHistoryItem(
+                stroke
+            );
+
+        }
+    );
+
+
+    /*
+    ---------------------------------------------------------
+    PAGE NUMBER
+    ---------------------------------------------------------
+    */
+
+    document.getElementById(
+        "pageNumber"
+    ).textContent =
+
+        `Page ${
+            currentPage + 1
+        } / ${
+            pages.length
+        }`;
+
+
+    /*
+    ---------------------------------------------------------
+    BUTTON STATE
+    ---------------------------------------------------------
+    */
+
+    document.getElementById(
+        "previousButton"
+    ).disabled =
+        currentPage === 0;
+
+
+    document.getElementById(
+        "nextButton"
+    ).disabled =
+        currentPage ===
+        pages.length - 1;
+
+}
+
+
+/* =========================================================
+   DRAW HISTORY ITEM
+   ========================================================= */
+
+function drawHistoryItem(
+    item
+){
+
+    if(!item){
+
+        return;
+
+    }
+
+
+    /*
+    ---------------------------------------------------------
+    POINTS
+    ---------------------------------------------------------
+    */
+
+    const points =
+        item.points ||
+        item.path ||
+        item.coordinates;
+
+
+    if(
+        Array.isArray(points) &&
+        points.length > 0
+    ){
+
+        drawPoints(
+            points,
+            item
+        );
+
+        return;
+
+    }
+
+
+    /*
+    ---------------------------------------------------------
+    IMAGE DATA
+    ---------------------------------------------------------
+    */
+
+    if(
+        item.imageData
+    ){
+
+        try{
+
+            const image =
+                new Image();
+
+
+            image.onload =
+                function(){
+
+                    ctx.drawImage(
+                        image,
+                        0,
+                        0
+                    );
+
+                };
+
+
+            image.src =
+                item.imageData;
+
+        }
+        catch(error){
+
+            console.warn(
+                "Unable to draw image history.",
+                error
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   DRAW POINTS
+   ========================================================= */
+
+function drawPoints(
+    points,
+    item
+){
+
+    if(
+        !Array.isArray(points) ||
+        points.length === 0
+    ){
+
+        return;
+
+    }
+
+
+    ctx.save();
+
+
+    /*
+    ---------------------------------------------------------
+    STROKE STYLE
+    ---------------------------------------------------------
+    */
+
+    ctx.strokeStyle =
+        item.color ||
+        item.strokeStyle ||
+        "#000000";
+
+
+    ctx.lineWidth =
+        Number(
+            item.lineWidth ||
+            item.width ||
+            item.size ||
+            4
+        );
+
+
+    ctx.lineCap =
+        "round";
+
+
+    ctx.lineJoin =
+        "round";
+
+
+    /*
+    ---------------------------------------------------------
+    ERASER
+    ---------------------------------------------------------
+    */
+
+    if(
+        item.tool === "eraser" ||
+        item.type === "eraser" ||
+        item.mode === "erase"
+    ){
+
+        ctx.globalCompositeOperation =
+            "destination-out";
+
+    }
+    else{
+
+        ctx.globalCompositeOperation =
+            "source-over";
+
+    }
+
+
+    /*
+    ---------------------------------------------------------
+    DRAW
+    ---------------------------------------------------------
+    */
+
+    ctx.beginPath();
+
+
+    points.forEach(
+        (
+            point,
+            index
+        ) => {
+
+            const x =
+                Number(
+                    point.x ??
+                    point.clientX ??
+                    point[0] ??
+                    0
+                );
+
+
+            const y =
+                Number(
+                    point.y ??
+                    point.clientY ??
+                    point[1] ??
+                    0
+                );
+
+
+            if(index === 0){
+
+                ctx.moveTo(
+                    x,
+                    y
+                );
+
+            }
+            else{
+
+                ctx.lineTo(
+                    x,
+                    y
+                );
+
+            }
+
+        }
+    );
+
+
+    ctx.stroke();
+
+
+    ctx.restore();
+
+}
+
+
+/* =========================================================
+   PREVIOUS PAGE
+   ========================================================= */
+
+document.getElementById(
+    "previousButton"
+)
+.addEventListener(
+    "click",
+    function(){
+
+        if(
+            currentPage > 0
+        ){
+
+            renderPage(
+                currentPage - 1
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   NEXT PAGE
+   ========================================================= */
+
+document.getElementById(
+    "nextButton"
+)
+.addEventListener(
+    "click",
+    function(){
+
+        if(
+            currentPage <
+            pages.length - 1
+        ){
+
+            renderPage(
+                currentPage + 1
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   BACK
+   ========================================================= */
+
+function goBack(){
+
+    window.location.href =
+        "student-materials.html";
+
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+function showError(
+    message
+){
+
+    document.getElementById(
+        "loading"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "errorBox"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "errorBox"
+    ).textContent =
+        message;
+
+}
+
+</script>
+
+
+</body>
+
+</html>
