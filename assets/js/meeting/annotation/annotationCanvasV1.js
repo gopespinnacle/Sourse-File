@@ -444,44 +444,47 @@ console.log(
     =======================================================
     */
 
-    function resize() {
+    /*
+=======================================================
+RESIZE
+=======================================================
+*/
 
-        if (!canvas) return;
+function resize() {
 
-
-        const oldImage =
-            canvas.toDataURL();
-
-
-        setupCanvas();
-
-
-        const image =
-            new Image();
+    if (!canvas) return;
 
 
-        image.onload =
-            () => {
+    /*
+    ---------------------------------------------------
+    RESIZE CANVAS TO CURRENT PRESENTATION SIZE
+    ---------------------------------------------------
+    */
 
-                const rect =
-                    canvas.getBoundingClientRect();
-
-
-                context.drawImage(
-                    image,
-                    0,
-                    0,
-                    rect.width,
-                    rect.height
-                );
-
-            };
+    setupCanvas();
 
 
-        image.src =
-            oldImage;
+    /*
+    ---------------------------------------------------
+    IMPORTANT
+    DO NOT RESTORE USING toDataURL()
 
-    }
+    The permanent annotation data is stored
+    inside history.
+
+    Redraw the stored annotation history after
+    every canvas resize.
+    ---------------------------------------------------
+    */
+
+    redraw();
+
+
+    console.log(
+        "ANNOTATION V1: CANVAS RESIZED AND HISTORY REDRAWN"
+    );
+
+}
 
 
     /*
