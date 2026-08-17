@@ -263,18 +263,18 @@ window.AnnotationToolbarV1 = (() => {
                 </button>
 
 
-                                <!-- SAVE PDF -->
+                               <!-- SAVE LEARNING MATERIAL -->
 
-                <button
-                    type="button"
-                    id="annotationSavePdfV1"
-                    class="annotation-tool-btn"
-                    title="Save as PDF"
-                >
+<button
+    type="button"
+    id="annotationSavePdfV1"
+    class="annotation-tool-btn"
+    title="Save Learning Material"
+>
 
-                    📄
+    📄
 
-                </button>
+</button>
 
 
                 <!-- PAGE CONTROLS -->
@@ -938,52 +938,60 @@ if (deletePage) {
         }
 
 
+       
+
         /*
-        ---------------------------------------------------
-        SAVE PDF
-        ---------------------------------------------------
-        */
+---------------------------------------------------
+SAVE LEARNING MATERIAL
+---------------------------------------------------
+*/
 
-        const savePdf =
-            document.getElementById(
-                "annotationSavePdfV1"
+const saveMaterial =
+    document.getElementById(
+        "annotationSavePdfV1"
+    );
+
+
+if (saveMaterial) {
+
+    saveMaterial.addEventListener(
+        "click",
+        () => {
+
+            console.log(
+                "ANNOTATION TOOLBAR V1: SAVE LEARNING MATERIAL CLICKED"
             );
 
 
-        if (savePdf) {
+            /*
+            -------------------------------------------
+            CALL ANNOTATION MANAGER
+            -------------------------------------------
+            */
 
-            savePdf.addEventListener(
-                "click",
-                () => {
+            if (
+                window.AnnotationManagerV1 &&
+                typeof
+                AnnotationManagerV1.saveMaterial
+                ===
+                "function"
+            ) {
 
-                    console.log(
-                        "ANNOTATION TOOLBAR V1: SAVE PDF CLICKED"
-                    );
+                AnnotationManagerV1.saveMaterial();
 
+            }
+            else {
 
-                    if (
-                        window.AnnotationPdfV1 &&
-                        typeof
-                        AnnotationPdfV1.save
-                        ===
-                        "function"
-                    ) {
+                console.warn(
+                    "ANNOTATION MATERIAL V1: MANAGER NOT READY"
+                );
 
-                        AnnotationPdfV1.save();
-
-                    }
-                    else {
-
-                        console.warn(
-                            "ANNOTATION PDF V1: NOT READY"
-                        );
-
-                    }
-
-                }
-            );
+            }
 
         }
+    );
+
+}
 
 
         /*
