@@ -682,6 +682,20 @@ localStorage.setItem(
 
     /*
 ===================================================
+REMOVE ANNOTATION ACTIVE STATE
+===================================================
+*/
+
+if (participantGrid) {
+
+    participantGrid.classList.remove(
+        "annotation-active"
+    );
+
+}
+
+    /*
+===================================================
 REMOVE ANNOTATION STATE FROM PARTICIPANT GRID
 ===================================================
 */
