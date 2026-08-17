@@ -99,6 +99,10 @@ function initPersistence() {
     annotationSocket =
         socket;
 
+        console.log(
+    "ANNOTATION V1: SOCKET CONNECTED"
+);
+
 
     const params =
         new URLSearchParams(
@@ -108,6 +112,11 @@ function initPersistence() {
 
     annotationRoom =
         params.get("room");
+
+        console.log(
+    "ANNOTATION V1: ROOM",
+    annotationRoom
+);
 
 
     if (!annotationRoom) {
