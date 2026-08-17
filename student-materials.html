@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>
+Gopes Pinnacle Academy - Materials
+</title>
+
+
+<style>
+
+/* =========================================================
+   BASIC
+   ========================================================= */
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+
+    margin:0;
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    background:#f1f5f9;
+
+    color:#172033;
+
+}
+
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+.sidebar{
+
+    width:240px;
+
+    height:100vh;
+
+    position:fixed;
+
+    left:0;
+
+    top:0;
+
+    background:#0f172a;
+
+    color:white;
+
+    padding-top:20px;
+
+}
+
+
+.sidebar-logo{
+
+    text-align:center;
+
+    padding:15px 10px 25px;
+
+}
+
+
+.sidebar-logo img{
+
+    width:150px;
+
+    max-width:80%;
+
+}
+
+
+.sidebar ul{
+
+    list-style:none;
+
+    padding:0;
+
+    margin:0;
+
+}
+
+
+.sidebar li{
+
+    padding:15px 20px;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    transition:
+        background 0.2s,
+        padding-left 0.2s;
+
+}
+
+
+.sidebar li:hover{
+
+    background:#1e293b;
+
+    padding-left:25px;
+
+}
+
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+
+.main{
+
+    margin-left:240px;
+
+    padding:25px;
+
+    min-height:100vh;
+
+}
+
+
+/* =========================================================
+   TOP BAR
+   ========================================================= */
+
+.topbar{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    margin-bottom:25px;
+
+}
+
+
+.page-title{
+
+    margin:0;
+
+    color:#173b67;
+
+    font-size:28px;
+
+    font-weight:800;
+
+}
+
+
+.page-subtitle{
+
+    margin-top:6px;
+
+    color:#64748b;
+
+    font-size:14px;
+
+}
+
+
+/* =========================================================
+   BACK BUTTON
+   ========================================================= */
+
+.back-button{
+
+    display:none;
+
+    border:none;
+
+    background:#173b67;
+
+    color:white;
+
+    padding:9px 16px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-size:14px;
+
+}
+
+
+/* =========================================================
+   SUBJECT GRID
+   ========================================================= */
+
+.subject-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(220px, 1fr)
+        );
+
+    gap:20px;
+
+}
+
+
+/* =========================================================
+   SUBJECT CARD
+   ========================================================= */
+
+.subject-card{
+
+    background:white;
+
+    border-radius:16px;
+
+    padding:25px;
+
+    cursor:pointer;
+
+    border:1px solid #e2e8f0;
+
+    box-shadow:
+        0 5px 18px
+        rgba(15,23,42,0.08);
+
+    transition:
+        transform 0.2s,
+        box-shadow 0.2s;
+
+}
+
+
+.subject-card:hover{
+
+    transform:
+        translateY(-4px);
+
+    box-shadow:
+        0 10px 25px
+        rgba(15,23,42,0.14);
+
+}
+
+
+.subject-icon{
+
+    font-size:38px;
+
+    margin-bottom:12px;
+
+}
+
+
+.subject-name{
+
+    font-size:20px;
+
+    font-weight:800;
+
+    color:#173b67;
+
+}
+
+
+.subject-count{
+
+    margin-top:8px;
+
+    color:#64748b;
+
+    font-size:14px;
+
+}
+
+
+/* =========================================================
+   MATERIAL SECTION
+   ========================================================= */
+
+#materialSection{
+
+    display:none;
+
+}
+
+
+.material-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:15px;
+
+}
+
+
+/* =========================================================
+   MATERIAL CARD
+   ========================================================= */
+
+.material-card{
+
+    background:white;
+
+    border-radius:14px;
+
+    padding:20px;
+
+    border:1px solid #e2e8f0;
+
+    box-shadow:
+        0 4px 14px
+        rgba(15,23,42,0.07);
+
+}
+
+
+.material-date{
+
+    color:#64748b;
+
+    font-size:13px;
+
+    margin-bottom:8px;
+
+}
+
+
+.material-chapter{
+
+    font-size:18px;
+
+    font-weight:800;
+
+    color:#173b67;
+
+}
+
+
+.material-topic{
+
+    margin-top:6px;
+
+    color:#334155;
+
+    font-size:15px;
+
+}
+
+
+.material-description{
+
+    margin-top:8px;
+
+    color:#64748b;
+
+    font-size:14px;
+
+    line-height:1.5;
+
+}
+
+
+/* =========================================================
+   VIEW BUTTON
+   ========================================================= */
+
+.view-button{
+
+    margin-top:15px;
+
+    border:none;
+
+    background:#173b67;
+
+    color:white;
+
+    padding:10px 18px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-size:14px;
+
+    font-weight:700;
+
+}
+
+
+.view-button:hover{
+
+    background:#0f2d50;
+
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty-state{
+
+    background:white;
+
+    border-radius:14px;
+
+    padding:40px 20px;
+
+    text-align:center;
+
+    color:#64748b;
+
+    box-shadow:
+        0 4px 14px
+        rgba(15,23,42,0.06);
+
+}
+
+
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+.loading{
+
+    text-align:center;
+
+    padding:50px;
+
+    color:#64748b;
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media(max-width:768px){
+
+    .sidebar{
+
+        display:none;
+
+    }
+
+
+    .main{
+
+        margin-left:0;
+
+        padding:16px;
+
+    }
+
+
+    .page-title{
+
+        font-size:23px;
+
+    }
+
+
+    .back-button{
+
+        display:block;
+
+        margin-bottom:15px;
+
+    }
+
+
+    .subject-grid{
+
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0,1fr)
+            );
+
+        gap:12px;
+
+    }
+
+
+    .subject-card{
+
+        padding:18px 12px;
+
+        text-align:center;
+
+    }
+
+
+    .subject-icon{
+
+        font-size:30px;
+
+    }
+
+
+    .subject-name{
+
+        font-size:16px;
+
+    }
+
+
+    .material-card{
+
+        padding:16px;
+
+    }
+
+}
+
+
+@media(max-width:430px){
+
+    .subject-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.academy-header{
+
+    background:
+        linear-gradient(
+            135deg,
+            #173b67,
+            #0f172a
+        );
+
+    color:white;
+
+    border-radius:16px;
+
+    padding:22px;
+
+    margin-bottom:22px;
+
+}
+
+
+.academy-name{
+
+    font-size:20px;
+
+    font-weight:800;
+
+}
+
+
+.academy-text{
+
+    margin-top:5px;
+
+    color:#dbeafe;
+
+    font-size:14px;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =======================================================
+     SIDEBAR
+     ======================================================= -->
+
+<div class="sidebar">
+
+    <div class="sidebar-logo">
+
+        <img
+            src="images/logo.png"
+            alt="Gopes Pinnacle Academy"
+        >
+
+    </div>
+
+
+    <ul>
+
+        <li onclick="go('student-dashboard.html')">
+            🏠 Dashboard
+        </li>
+
+        <li onclick="go('student-class.html')">
+            📅 My Classes
+        </li>
+
+        <li onclick="go('student-homework.html')">
+            📘 Homework
+        </li>
+
+        <li onclick="go('student-materials.html')">
+            📚 Materials
+        </li>
+
+        <li onclick="go('student-calendar.html')">
+            📅 Calendar
+        </li>
+
+        <li onclick="go('student-results.html')">
+            📊 Results
+        </li>
+
+        <li onclick="logout()">
+            🚪 Logout
+        </li>
+
+    </ul>
+
+</div>
+
+
+<!-- =======================================================
+     MAIN
+     ======================================================= -->
+
+<div class="main">
+
+
+    <!-- ===================================================
+         HEADER
+         =================================================== -->
+
+    <div class="academy-header">
+
+        <div class="academy-name">
+            GOPES PINNACLE ACADEMY
+        </div>
+
+        <div class="academy-text">
+            Learning Materials • Study • Revise • Master
+        </div>
+
+    </div>
+
+
+    <!-- ===================================================
+         SUBJECT VIEW
+         =================================================== -->
+
+    <div id="subjectSection">
+
+
+        <div class="topbar">
+
+            <div>
+
+                <h1 class="page-title">
+                    📚 Learning Materials
+                </h1>
+
+                <div class="page-subtitle">
+                    Select a subject to view your learning materials.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="subjectLoading"
+            class="loading"
+        >
+            Loading subjects...
+        </div>
+
+
+        <div
+            id="subjectGrid"
+            class="subject-grid"
+        ></div>
+
+
+    </div>
+
+
+    <!-- ===================================================
+         MATERIAL VIEW
+         =================================================== -->
+
+    <div id="materialSection">
+
+
+        <button
+            class="back-button"
+            onclick="showSubjects()"
+        >
+            ← Back to Subjects
+        </button>
+
+
+        <div class="topbar">
+
+            <div>
+
+                <h1
+                    id="selectedSubjectTitle"
+                    class="page-title"
+                >
+                    Subject
+                </h1>
+
+                <div class="page-subtitle">
+                    All learning materials for this subject.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="materialList"
+            class="material-list"
+        ></div>
+
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   CONFIGURATION
+   ========================================================= */
+
+const API_BASE =
+    "https://academy-backend-eatl.onrender.com";
+
+
+/* =========================================================
+   LOGIN DATA
+   ========================================================= */
+
+const token =
+    localStorage.getItem("token");
+
+
+const studentId =
+    localStorage.getItem("studentId");
+
+
+/* =========================================================
+   BASIC LOGIN CHECK
+   ========================================================= */
+
+if(!token || !studentId){
+
+    window.location.href =
+        "student-login.html";
+
+}
+
+
+/* =========================================================
+   GLOBAL MATERIAL DATA
+   ========================================================= */
+
+let allMaterials = [];
+
+
+/* =========================================================
+   LOAD MATERIALS
+   ========================================================= */
+
+async function loadMaterials(){
+
+    const loading =
+        document.getElementById(
+            "subjectLoading"
+        );
+
+
+    try{
+
+        console.log(
+            "MATERIALS: STUDENT ID",
+            studentId
+        );
+
+
+        const response =
+            await fetch(
+
+                `${API_BASE}/api/annotation-materials/student/${encodeURIComponent(studentId)}`,
+
+                {
+                    method:"GET",
+
+                    headers:{
+
+                        "Authorization":
+                            "Bearer " + token
+
+                    }
+
+                }
+
+            );
+
+
+        console.log(
+            "MATERIALS: RESPONSE STATUS",
+            response.status
+        );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "Unable to load learning materials"
+            );
+
+        }
+
+
+        const result =
+            await response.json();
+
+
+        console.log(
+            "MATERIALS: API RESPONSE",
+            result
+        );
+
+
+        /*
+        -----------------------------------------------------
+        ACCEPT NORMAL API FORMAT
+        -----------------------------------------------------
+        */
+
+        allMaterials =
+            Array.isArray(result)
+                ? result
+                : (
+                    Array.isArray(result.data)
+                        ? result.data
+                        : (
+                            Array.isArray(result.materials)
+                                ? result.materials
+                                : []
+                        )
+                );
+
+
+        loading.style.display =
+            "none";
+
+
+        renderSubjects();
+
+
+    }
+    catch(error){
+
+        console.error(
+            "MATERIALS LOAD ERROR:",
+            error
+        );
+
+
+        loading.innerHTML = `
+
+            <div class="empty-state">
+
+                ❌ Unable to load learning materials.
+
+                <br><br>
+
+                Please refresh the page.
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDER SUBJECTS
+   ========================================================= */
+
+function renderSubjects(){
+
+    const grid =
+        document.getElementById(
+            "subjectGrid"
+        );
+
+
+    grid.innerHTML = "";
+
+
+    if(
+        !allMaterials ||
+        allMaterials.length === 0
+    ){
+
+        grid.innerHTML = `
+
+            <div
+                class="empty-state"
+                style="grid-column:1/-1;"
+            >
+
+                📚 No learning materials
+                are available yet.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    /*
+    ---------------------------------------------------------
+    GET UNIQUE SUBJECTS
+    ---------------------------------------------------------
+    */
+
+    const subjects = [];
+
+
+    allMaterials.forEach(
+        material => {
+
+            const subject =
+                (
+                    material.subject ||
+                    "General"
+                ).trim();
+
+
+            if(
+                !subjects.some(
+                    item =>
+                        item.toLowerCase() ===
+                        subject.toLowerCase()
+                )
+            ){
+
+                subjects.push(
+                    subject
+                );
+
+            }
+
+        }
+    );
+
+
+    /*
+    ---------------------------------------------------------
+    CREATE SUBJECT BUTTONS
+    ---------------------------------------------------------
+    */
+
+    subjects.forEach(
+        subject => {
+
+
+            const count =
+                allMaterials.filter(
+                    material =>
+
+                        (
+                            material.subject ||
+                            "General"
+                        )
+                        .trim()
+                        .toLowerCase()
+                        ===
+                        subject.toLowerCase()
+                ).length;
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "subject-card";
+
+
+            card.innerHTML = `
+
+                <div class="subject-icon">
+                    📘
+                </div>
+
+                <div class="subject-name">
+                    ${escapeHTML(subject)}
+                </div>
+
+                <div class="subject-count">
+                    ${count}
+                    Learning Material${count === 1 ? "" : "s"}
+                </div>
+
+            `;
+
+
+            card.onclick =
+                () => {
+
+                    showSubjectMaterials(
+                        subject
+                    );
+
+                };
+
+
+            grid.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   SHOW SUBJECT MATERIALS
+   ========================================================= */
+
+function showSubjectMaterials(
+    subject
+){
+
+    document.getElementById(
+        "subjectSection"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "materialSection"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "selectedSubjectTitle"
+    ).textContent =
+        "📘 " + subject;
+
+
+    const list =
+        document.getElementById(
+            "materialList"
+        );
+
+
+    list.innerHTML = "";
+
+
+    /*
+    ---------------------------------------------------------
+    FILTER SUBJECT
+    ---------------------------------------------------------
+    */
+
+    const materials =
+        allMaterials.filter(
+            material =>
+
+                (
+                    material.subject ||
+                    "General"
+                )
+                .trim()
+                .toLowerCase()
+                ===
+                subject
+                    .trim()
+                    .toLowerCase()
+        );
+
+
+    /*
+    ---------------------------------------------------------
+    SORT NEWEST FIRST
+    ---------------------------------------------------------
+    */
+
+    materials.sort(
+        (a,b) =>
+
+            new Date(
+                b.materialDate ||
+                b.createdAt ||
+                0
+            )
+            -
+            new Date(
+                a.materialDate ||
+                a.createdAt ||
+                0
+            )
+    );
+
+
+    materials.forEach(
+        material => {
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "material-card";
+
+
+            const date =
+                formatDate(
+                    material.materialDate ||
+                    material.createdAt
+                );
+
+
+            const chapterNo =
+                material.chapterNo ||
+                "";
+
+
+            const chapterName =
+                material.chapterName ||
+                "";
+
+
+            const topic =
+                material.topic ||
+                "";
+
+
+            const description =
+                material.description ||
+                "";
+
+
+            card.innerHTML = `
+
+                <div class="material-date">
+                    📅 ${escapeHTML(date)}
+                </div>
+
+                <div class="material-chapter">
+
+                    Chapter ${escapeHTML(
+                        String(chapterNo)
+                    )}
+
+                    — 
+
+                    ${escapeHTML(
+                        chapterName
+                    )}
+
+                </div>
+
+                <div class="material-topic">
+
+                    <strong>
+                        Topic:
+                    </strong>
+
+                    ${escapeHTML(topic)}
+
+                </div>
+
+                ${
+                    description
+                        ? `
+                        <div
+                            class="material-description"
+                        >
+                            ${escapeHTML(
+                                description
+                            )}
+                        </div>
+                        `
+                        : ""
+                }
+
+
+                <button
+                    class="view-button"
+                    onclick="viewMaterial('${
+                        material._id ||
+                        material.id ||
+                        ""
+                    }')"
+                >
+                    👁 View Document
+                </button>
+
+            `;
+
+
+            list.appendChild(
+                card
+            );
+
+        }
+    );
+
+
+}
+
+
+/* =========================================================
+   VIEW MATERIAL
+   ========================================================= */
+
+function viewMaterial(
+    materialId
+){
+
+    if(!materialId){
+
+        alert(
+            "Material ID is missing."
+        );
+
+        return;
+
+    }
+
+
+    /*
+    ---------------------------------------------------------
+    NEXT BLOCK
+    ---------------------------------------------------------
+    */
+
+    alert(
+        "Document viewer will be opened in the next development block."
+    );
+
+}
+
+
+/* =========================================================
+   BACK TO SUBJECTS
+   ========================================================= */
+
+function showSubjects(){
+
+    document.getElementById(
+        "materialSection"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "subjectSection"
+    ).style.display =
+        "block";
+
+}
+
+
+/* =========================================================
+   DATE FORMAT
+   ========================================================= */
+
+function formatDate(
+    value
+){
+
+    if(!value){
+
+        return "-";
+
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if(
+        Number.isNaN(
+            date.getTime()
+        )
+    ){
+
+        return String(value);
+
+    }
+
+
+    return date.toLocaleDateString(
+        "en-IN",
+        {
+            day:"2-digit",
+            month:"short",
+            year:"numeric"
+        }
+    );
+
+}
+
+
+/* =========================================================
+   HTML SAFETY
+   ========================================================= */
+
+function escapeHTML(
+    value
+){
+
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+function go(
+    page
+){
+
+    window.location.href =
+        page;
+
+}
+
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+function logout(){
+
+    localStorage.clear();
+
+    sessionStorage.clear();
+
+    window.location.href =
+        "student-login.html";
+
+}
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+loadMaterials();
+
+</script>
+
+
+</body>
+
+</html>
