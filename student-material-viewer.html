@@ -750,20 +750,8 @@ const API_BASE =
    LOGIN
    ========================================================= */
 
-const token =
-    localStorage.getItem(
-        "token"
-    );
-
-
-const studentId =
-    localStorage.getItem(
-        "studentId"
-    );
-
-
 /* =========================================================
-   MATERIAL ID
+   LOGIN / VIEWER ROLE
    ========================================================= */
 
 const params =
@@ -771,6 +759,77 @@ const params =
         window.location.search
     );
 
+
+const viewerMode =
+    params.get(
+        "viewer"
+    ) || "student";
+
+
+let token = null;
+
+let studentId = null;
+
+let teacherId = null;
+
+
+/*
+---------------------------------------------------------
+STUDENT
+---------------------------------------------------------
+*/
+
+if(
+    viewerMode === "student"
+){
+
+    token =
+        localStorage.getItem(
+            "token"
+        );
+
+
+    studentId =
+        localStorage.getItem(
+            "studentId"
+        );
+
+}
+
+
+/*
+---------------------------------------------------------
+TEACHER
+---------------------------------------------------------
+*/
+
+if(
+    viewerMode === "teacher"
+){
+
+    token =
+        sessionStorage.getItem(
+            "token"
+        );
+
+
+    teacherId =
+        sessionStorage.getItem(
+            "teacherId"
+        ) ||
+        sessionStorage.getItem(
+            "userId"
+        ) ||
+        sessionStorage.getItem(
+            "teacher_id"
+        );
+
+}
+
+
+/* =========================================================
+   MATERIAL ID
+   ========================================================= */
 
 const materialId =
     params.get(
@@ -822,13 +881,40 @@ const ctx =
    LOGIN CHECK
    ========================================================= */
 
+/* =========================================================
+   LOGIN CHECK
+   ========================================================= */
+
 if(
-    !token ||
-    !studentId
+    viewerMode === "student"
 ){
 
-    window.location.href =
-        "student-login.html";
+    if(
+        !token ||
+        !studentId
+    ){
+
+        window.location.href =
+            "student-login.html";
+
+    }
+
+}
+
+
+if(
+    viewerMode === "teacher"
+){
+
+    if(
+        !token ||
+        !teacherId
+    ){
+
+        window.location.href =
+            "teacher-login.html";
+
+    }
 
 }
 
@@ -877,24 +963,60 @@ async function loadMaterial(){
         -----------------------------------------------------
         */
 
-        const response =
-            await fetch(
+        let materialEndpoint;
 
-                `${API_BASE}/api/annotation-materials/student/${encodeURIComponent(studentId)}`,
 
-                {
-                    method:"GET",
+/*
+---------------------------------------------------------
+STUDENT MATERIAL ENDPOINT
+---------------------------------------------------------
+*/
 
-                    headers:{
+if(
+    viewerMode === "student"
+){
 
-                        "Authorization":
-                            "Bearer " + token
+    materialEndpoint =
+        `${API_BASE}/api/annotation-materials/student/${encodeURIComponent(studentId)}`;
 
-                    }
+}
 
-                }
 
-            );
+/*
+---------------------------------------------------------
+TEACHER MATERIAL ENDPOINT
+---------------------------------------------------------
+*/
+
+if(
+    viewerMode === "teacher"
+){
+
+    materialEndpoint =
+        `${API_BASE}/api/annotation-materials/teacher/${encodeURIComponent(teacherId)}`;
+
+}
+
+
+const response =
+    await fetch(
+
+        materialEndpoint,
+
+        {
+
+            method:"GET",
+
+            headers:{
+
+                "Authorization":
+                    "Bearer " + token
+
+            }
+
+        }
+
+    );
 
 
         console.log(
@@ -1532,6 +1654,18 @@ document.getElementById(
    ========================================================= */
 
 function goBack(){
+
+    if(
+        viewerMode === "teacher"
+    ){
+
+        window.location.href =
+            "teacher-materials.html";
+
+        return;
+
+    }
+
 
     window.location.href =
         "student-materials.html";
