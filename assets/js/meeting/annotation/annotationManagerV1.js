@@ -38,11 +38,254 @@ window.AnnotationManagerV1 = (() => {
 
     let restoreAnnotationAfterRefresh = false;
 
+    let annotationSocket = null;
+
+let annotationRoom = null;
+
+let annotationSyncReady = false;
+
     let workspace = null;
 
     let canvas = null;
 
     let annotateButton = null;
+
+
+    /*
+===========================================================
+ANNOTATION SESSION SYNC
+TEACHER → STUDENTS
+===========================================================
+*/
+
+function initAnnotationSync() {
+
+    /*
+    -------------------------------------------------------
+    GET EXISTING SOCKET
+    -------------------------------------------------------
+    */
+
+    if (
+        typeof socket === "undefined" ||
+        !socket
+    ) {
+
+        console.warn(
+            "ANNOTATION MANAGER V1: SOCKET NOT READY"
+        );
+
+        return;
+
+    }
+
+
+    annotationSocket =
+        socket;
+
+
+    /*
+    -------------------------------------------------------
+    GET ROOM
+    -------------------------------------------------------
+    */
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    annotationRoom =
+        params.get("room");
+
+
+    if (!annotationRoom) {
+
+        console.warn(
+            "ANNOTATION MANAGER V1: ROOM NOT FOUND"
+        );
+
+        return;
+
+    }
+
+
+    /*
+    -------------------------------------------------------
+    PREVENT DUPLICATE LISTENERS
+    -------------------------------------------------------
+    */
+
+    if (
+        annotationSyncReady
+    ) {
+
+        return;
+
+    }
+
+
+    annotationSyncReady =
+        true;
+
+
+    /*
+    =======================================================
+    STUDENT / OTHER USER:
+    TEACHER OPENED ANNOTATION
+    =======================================================
+    */
+
+    annotationSocket.on(
+    "annotationStarted",
+    data => {
+
+        console.log(
+            "ANNOTATION MANAGER V1: RECEIVED annotationStarted",
+            data
+        );
+
+
+        if (
+            !data ||
+            data.room !== annotationRoom
+        ) {
+
+            return;
+
+        }
+
+
+        console.log(
+            "ANNOTATION MANAGER V1: REMOTE START"
+        );
+
+
+            /*
+            ------------------------------------------------
+            OPEN LOCALLY
+
+            IMPORTANT:
+            true = remote open
+
+            This prevents sending annotationStart
+            back to the server again.
+            ------------------------------------------------
+            */
+
+            openAnnotation(
+                true
+            );
+
+        }
+    );
+
+
+    /*
+    =======================================================
+    STUDENT / OTHER USER:
+    TEACHER CLOSED ANNOTATION
+    =======================================================
+    */
+
+    annotationSocket.on(
+        "annotationStopped",
+        data => {
+
+            if (
+                !data ||
+                data.room !== annotationRoom
+            ) {
+
+                return;
+
+            }
+
+
+            console.log(
+                "ANNOTATION MANAGER V1: REMOTE STOP"
+            );
+
+
+            /*
+            ------------------------------------------------
+            CLOSE LOCALLY
+
+            true = remote close
+
+            This prevents sending annotationStop
+            back to the server.
+            ------------------------------------------------
+            */
+
+            close(
+                true
+            );
+
+        }
+    );
+
+
+    /*
+    =======================================================
+    NEW USER:
+    ASK CURRENT ANNOTATION STATE
+    =======================================================
+    */
+
+    annotationSocket.on(
+        "annotationStatus",
+        data => {
+
+            if (
+                !data ||
+                data.room !== annotationRoom
+            ) {
+
+                return;
+
+            }
+
+
+            console.log(
+                "ANNOTATION MANAGER V1: STATUS",
+                data.active
+            );
+
+
+            if (
+                data.active === true
+            ) {
+
+                openAnnotation(
+                    true
+                );
+
+            }
+
+        }
+    );
+
+
+    /*
+    =======================================================
+    REQUEST CURRENT STATE
+    =======================================================
+    */
+
+    annotationSocket.emit(
+        "annotationStatus",
+        annotationRoom
+    );
+
+
+    console.log(
+        "ANNOTATION MANAGER V1: SYNC READY",
+        annotationRoom
+    );
+
+}
 
 
 
@@ -90,6 +333,14 @@ window.AnnotationManagerV1 = (() => {
             AnnotationToolbarV1.init();
 
         }
+
+        /*
+===================================================
+START ANNOTATION SESSION SYNC
+===================================================
+*/
+
+initAnnotationSync();
 
 
         initialized = true;
@@ -628,7 +879,7 @@ function createWorkspace() {
     =======================================================
     */
 
-    function openAnnotation() {
+    function openAnnotation(isRemote = false) {
 
         /*
 ===================================================
@@ -654,6 +905,28 @@ localStorage.setItem(
 
 
         open = true;
+
+        /*
+===================================================
+SYNC ANNOTATION OPEN TO OTHER USERS
+===================================================
+*/
+
+if (
+    !isRemote &&
+    annotationSocket &&
+    annotationRoom
+) {
+
+    annotationSocket.emit(
+        "annotationStart",
+        {
+            room:
+                annotationRoom
+        }
+    );
+
+}
 
 
         /*
@@ -889,7 +1162,7 @@ CLOSE ANNOTATION
 =======================================================
 */
 
-function close() {
+function close(isRemote = false) {
 
     console.log(
         "ANNOTATION MANAGER V1: CLOSE"
@@ -897,6 +1170,28 @@ function close() {
 
 
     open = false;
+
+    /*
+===================================================
+SYNC ANNOTATION CLOSE TO OTHER USERS
+===================================================
+*/
+
+if (
+    !isRemote &&
+    annotationSocket &&
+    annotationRoom
+) {
+
+    annotationSocket.emit(
+        "annotationStop",
+        {
+            room:
+                annotationRoom
+        }
+    );
+
+}
 
 
     localStorage.removeItem(
