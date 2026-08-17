@@ -131,6 +131,40 @@ window.AnnotationToolbarV1 = (() => {
 
                 </button>
 
+                <!-- ERASER SIZE -->
+
+<select
+    id="annotationEraserWidthV1"
+    class="annotation-width-select"
+    title="Eraser Size"
+>
+
+    <option value="10">
+        Eraser 10 px
+    </option>
+
+    <option value="20">
+        Eraser 20 px
+    </option>
+
+    <option value="30" selected>
+        Eraser 30 px
+    </option>
+
+    <option value="40">
+        Eraser 40 px
+    </option>
+
+    <option value="60">
+        Eraser 60 px
+    </option>
+
+    <option value="80">
+        Eraser 80 px
+    </option>
+
+</select>
+
 
                 <!-- COLOR -->
 
@@ -490,6 +524,39 @@ window.AnnotationToolbarV1 = (() => {
             );
 
         }
+
+        /*
+---------------------------------------------------
+ERASER WIDTH
+---------------------------------------------------
+*/
+
+const eraserWidth =
+    document.getElementById(
+        "annotationEraserWidthV1"
+    );
+
+
+if (eraserWidth) {
+
+    eraserWidth.addEventListener(
+        "change",
+        event => {
+
+            if (
+                window.AnnotationCanvasV1
+            ) {
+
+                AnnotationCanvasV1.setEraserWidth(
+                    event.target.value
+                );
+
+            }
+
+        }
+    );
+
+}
 
 
         /*

@@ -63,6 +63,8 @@ let annotationPersistenceReady = false;
 
     let currentWidth = 4;
 
+    let eraserWidth = 30;
+
     let currentPoints = [];
 
     let history = [];
@@ -772,7 +774,9 @@ function resize() {
 
 
         context.lineWidth =
-            currentWidth;
+    currentTool === "eraser"
+        ? eraserWidth
+        : currentWidth;
 
 
         if (
@@ -972,6 +976,39 @@ function resize() {
             value;
 
     }
+
+    /*
+=======================================================
+ERASER WIDTH
+=======================================================
+*/
+
+function setEraserWidth(width) {
+
+    const value =
+        Number(width);
+
+
+    if (
+        !Number.isFinite(value) ||
+        value <= 0
+    ) {
+
+        return;
+
+    }
+
+
+    eraserWidth =
+        value;
+
+
+    console.log(
+        "ANNOTATION V1: ERASER WIDTH",
+        eraserWidth
+    );
+
+}
 
 
     /*
@@ -1364,6 +1401,8 @@ return history[
     setColor,
 
     setWidth,
+
+    setEraserWidth,
 
     clear,
 
