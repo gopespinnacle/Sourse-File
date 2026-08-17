@@ -202,14 +202,26 @@ body{
 
     width:100%;
 
-    background:white;
+    background:#ffffff;
 
-    overflow:hidden;
+    overflow:auto;
 
     border-radius:8px;
 
     min-height:500px;
 
+    max-height:
+        calc(100vh - 300px);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:flex-start;
+
+    padding:10px;
+
+      
 }
 
 
@@ -492,9 +504,23 @@ body{
 
     .viewer-button{
 
-        padding:9px 13px;
+    padding:9px 13px;
 
-    }
+}
+
+
+/* =====================================================
+   MOBILE DOCUMENT VIEWER
+   ===================================================== */
+
+.page-container{
+
+    max-height:
+        calc(100vh - 270px);
+
+    min-height:350px;
+
+}
 
 }
 
@@ -1698,19 +1724,38 @@ function fitPage(){
 
 
     const availableWidth =
-        wrapper.clientWidth;
+    wrapper.clientWidth;
 
 
-    if(
-        width > 0 &&
-        availableWidth > 0
-    ){
+const availableHeight =
+    wrapper.clientHeight;
 
-        zoomLevel =
-            availableWidth /
-            width;
 
-    }
+const widthZoom =
+    width > 0 &&
+    availableWidth > 0
+        ? availableWidth / width
+        : 1;
+
+
+const heightZoom =
+    height > 0 &&
+    availableHeight > 0
+        ? availableHeight / height
+        : 1;
+
+
+/*
+---------------------------------------------------------
+FIT USING BOTH WIDTH AND HEIGHT
+---------------------------------------------------------
+*/
+
+zoomLevel =
+    Math.min(
+        widthZoom,
+        heightZoom
+    );
 
 
     /*
