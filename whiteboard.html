@@ -400,6 +400,80 @@ PRESENTATION ACTIVE
 
 }
 
+/*
+===========================================================
+KEEP PARTICIPANT VIDEOS ABOVE PRESENTATION
+===========================================================
+*/
+
+#participantGrid{
+
+    position:absolute;
+
+    left:16px;
+
+    right:16px;
+
+    bottom:16px;
+
+    height:110px;
+
+    z-index:600;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:flex-end;
+
+    gap:8px;
+
+    pointer-events:none;
+
+}
+
+
+#participantGrid .meeting-participant{
+
+    position:relative;
+
+    width:160px;
+
+    height:100px;
+
+    flex:0 0 160px;
+
+    z-index:601;
+
+    pointer-events:auto;
+
+    overflow:hidden;
+
+    border-radius:10px;
+
+    background:#000;
+
+}
+
+
+#participantGrid
+.meeting-participant
+video{
+
+    width:100% !important;
+
+    height:100% !important;
+
+    object-fit:cover !important;
+
+    display:block !important;
+
+    visibility:visible !important;
+
+    opacity:1 !important;
+
+}
+
 
 /*
 ===========================================================
