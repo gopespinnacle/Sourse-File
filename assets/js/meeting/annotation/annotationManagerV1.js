@@ -423,10 +423,31 @@ function createWorkspace() {
 
         if (workspace) {
 
-            workspace.style.display =
-                "block";
+    workspace.style.display =
+        "block";
 
-        }
+    workspace.style.visibility =
+        "visible";
+
+    workspace.style.opacity =
+        "1";
+
+}
+/*
+-------------------------------------------------------
+MAKE ANNOTATION CANVAS THE ACTIVE PRESENTATION SURFACE
+-------------------------------------------------------
+*/
+
+if (canvas) {
+
+    canvas.style.display =
+        "block";
+
+    canvas.style.visibility =
+        "visible";
+
+}
 
 
         /*

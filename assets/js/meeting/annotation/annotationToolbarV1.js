@@ -261,9 +261,40 @@ window.AnnotationToolbarV1 = (() => {
         `;
 
 
-        document.body.appendChild(
-            toolbar
-        );
+        /*
+        ---------------------------------------------------
+        PLACE TOOLBAR INSIDE ANNOTATION WORKSPACE
+        ---------------------------------------------------
+        */
+
+        const workspace =
+            document.getElementById(
+                "annotationWorkspaceV1"
+            );
+
+
+        if (workspace) {
+
+            workspace.appendChild(
+                toolbar
+            );
+
+        }
+        else {
+
+            /*
+            ------------------------------------------------
+            FALLBACK
+            If workspace is not created yet, keep toolbar
+            attached to body.
+            ------------------------------------------------
+            */
+
+            document.body.appendChild(
+                toolbar
+            );
+
+        }
 
 
         bindEvents();
