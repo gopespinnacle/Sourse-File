@@ -858,7 +858,9 @@ function resize() {
                 currentColor,
 
             width:
-                currentWidth,
+    currentTool === "eraser"
+        ? eraserWidth
+        : currentWidth,
 
             points:
                 points.map(
