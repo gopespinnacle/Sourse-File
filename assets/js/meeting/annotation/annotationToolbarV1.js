@@ -292,15 +292,26 @@ window.AnnotationToolbarV1 = (() => {
 
 
                 <span
-                    id="annotationPageIndicatorV1"
-                    class="annotation-page-indicator"
-                    title="Current Page"
-                >
-
-                    Page 1 / 1
-
-                </span>
-
+    id="annotationPageIndicatorV1"
+    class="annotation-page-indicator"
+    title="Current Page"
+    style="
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-width:80px;
+        padding:5px 8px;
+        color:#000000;
+        background:#ffffff;
+        border:1px solid #999999;
+        border-radius:4px;
+        font-size:14px;
+        font-weight:600;
+        white-space:nowrap;
+    "
+>
+    Page 1 / 1
+</span>
 
                 <button
                     type="button"
