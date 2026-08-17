@@ -716,6 +716,118 @@ function previousPage() {
 
 }
 
+/*
+-----------------------------------------------------------
+DELETE CURRENT PAGE
+-----------------------------------------------------------
+*/
+
+function deletePage() {
+
+    /*
+    -------------------------------------------------------
+    DO NOT ALLOW DELETING THE LAST PAGE
+    -------------------------------------------------------
+    */
+
+    if (
+        annotationPages.length <= 1
+    ) {
+
+        console.log(
+            "ANNOTATION V1: CANNOT DELETE LAST PAGE"
+        );
+
+        return;
+
+    }
+
+
+    /*
+    -------------------------------------------------------
+    SAVE CURRENT PAGE BEFORE DELETE
+    -------------------------------------------------------
+    */
+
+    saveCurrentPage();
+
+
+    /*
+    -------------------------------------------------------
+    DELETE CURRENT PAGE
+    -------------------------------------------------------
+    */
+
+    annotationPages.splice(
+        currentPageIndex,
+        1
+    );
+
+
+    /*
+    -------------------------------------------------------
+    ADJUST CURRENT PAGE
+    -------------------------------------------------------
+    */
+
+    if (
+        currentPageIndex >=
+        annotationPages.length
+    ) {
+
+        currentPageIndex =
+            annotationPages.length - 1;
+
+    }
+
+
+    /*
+    -------------------------------------------------------
+    LOAD NEW CURRENT PAGE
+    -------------------------------------------------------
+    */
+
+    history =
+        JSON.parse(
+            JSON.stringify(
+                annotationPages[
+                    currentPageIndex
+                ] || []
+            )
+        );
+
+
+    historyIndex =
+        history.length - 1;
+
+
+    /*
+    -------------------------------------------------------
+    REDRAW
+    -------------------------------------------------------
+    */
+
+    redraw();
+
+
+    console.log(
+        "ANNOTATION V1: PAGE DELETED",
+        currentPageIndex + 1,
+        "/",
+        annotationPages.length
+    );
+
+
+    /*
+    -------------------------------------------------------
+    SAVE ALL PAGES
+    -------------------------------------------------------
+    */
+
+    saveAnnotationState();
+
+}
+
 
 /*
 -----------------------------------------------------------
@@ -1880,20 +1992,22 @@ return history[
 
 
     /*
-    =======================================================
-    MULTI PAGE API
-    =======================================================
-    */
+=======================================================
+MULTI PAGE API
+=======================================================
+*/
 
-    addPage,
+addPage,
 
-    nextPage,
+nextPage,
 
-    previousPage,
+previousPage,
 
-    loadPage,
+deletePage,
 
-    getPageInfo
+loadPage,
+
+getPageInfo
 
 };
 

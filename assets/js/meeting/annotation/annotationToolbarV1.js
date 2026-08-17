@@ -336,6 +336,19 @@ window.AnnotationToolbarV1 = (() => {
 
                 </button>
 
+                <!-- DELETE CURRENT PAGE -->
+
+<button
+    type="button"
+    id="annotationDeletePageV1"
+    class="annotation-tool-btn"
+    title="Delete Current Page"
+>
+
+    🗑️
+
+</button>
+
 
                 <!-- CLOSE -->
 
@@ -714,6 +727,101 @@ if (addPage) {
                 updatePageIndicator();
 
             }
+
+        }
+    );
+
+}
+
+
+/*
+---------------------------------------------------
+DELETE CURRENT PAGE
+---------------------------------------------------
+*/
+
+const deletePage =
+    document.getElementById(
+        "annotationDeletePageV1"
+    );
+
+
+if (deletePage) {
+
+    deletePage.addEventListener(
+        "click",
+        () => {
+
+            if (
+                !window.AnnotationCanvasV1
+            ) {
+
+                return;
+
+            }
+
+
+            const pageInfo =
+                AnnotationCanvasV1.getPageInfo();
+
+
+            /*
+            -------------------------------------------
+            DO NOT DELETE THE LAST PAGE
+            -------------------------------------------
+            */
+
+            if (
+                !pageInfo ||
+                pageInfo.totalPages <= 1
+            ) {
+
+                console.log(
+                    "ANNOTATION TOOLBAR V1: CANNOT DELETE LAST PAGE"
+                );
+
+                return;
+
+            }
+
+
+            /*
+            -------------------------------------------
+            CONFIRM DELETE
+            -------------------------------------------
+            */
+
+            const confirmed =
+                window.confirm(
+                    "Delete Page " +
+                    pageInfo.currentPage +
+                    "?"
+                );
+
+
+            if (!confirmed) {
+
+                return;
+
+            }
+
+
+            /*
+            -------------------------------------------
+            DELETE PAGE
+            -------------------------------------------
+            */
+
+            AnnotationCanvasV1.deletePage();
+
+
+            /*
+            -------------------------------------------
+            UPDATE PAGE NUMBER
+            -------------------------------------------
+            */
+
+            updatePageIndicator();
 
         }
     );
