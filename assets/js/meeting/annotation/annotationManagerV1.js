@@ -971,18 +971,38 @@ function close() {
 
     if (participantGrid) {
 
-        participantGrid.style.display =
-            "grid";
+    /*
+    ===================================================
+    RESTORE NORMAL MEETING GRID
+    ===================================================
+    */
 
+    participantGrid.classList.remove(
+        "annotation-active"
+    );
 
-        participantGrid.style.visibility =
-            "visible";
+    participantGrid.style.display =
+        "grid";
 
+    participantGrid.style.visibility =
+        "visible";
 
-        participantGrid.style.opacity =
-            "1";
+    participantGrid.style.opacity =
+        "1";
 
-    }
+    /*
+    ---------------------------------------------------
+    FORCE NORMAL TWO-COLUMN MEETING LAYOUT
+    ---------------------------------------------------
+    */
+
+    participantGrid.style.gridTemplateColumns =
+        "repeat(2, minmax(0, 1fr))";
+
+    participantGrid.style.gridTemplateRows =
+        "1fr";
+
+}
 
 
     /*
