@@ -2880,6 +2880,37 @@ if (canvas) {
         requestAnimationFrame(
             () => {
 
+                /*
+                ---------------------------------------------
+                MOBILE LANDSCAPE
+                ---------------------------------------------
+
+                DO NOT allow AnnotationCanvasV1.resize()
+                to replace the desktop logical canvas
+                with the mobile screen size.
+
+                The mobile fit is controlled by
+                AnnotationManagerV1.
+                ---------------------------------------------
+                */
+
+                if (
+                    isMobileLandscapeAnnotationDisplay()
+                ) {
+
+                    resizeWorkspace();
+
+                    return;
+
+                }
+
+
+                /*
+                ---------------------------------------------
+                DESKTOP / MOBILE PORTRAIT
+                ---------------------------------------------
+                */
+
                 if (
                     window.AnnotationCanvasV1
                 ) {
