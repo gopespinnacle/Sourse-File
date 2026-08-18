@@ -3242,68 +3242,7 @@ if (
     );
 
 
-    /*
-    =======================================================
-    MOBILE ORIENTATION CHANGE
-    =======================================================
-    */
-
-    window.addEventListener(
-        "orientationchange",
-        () => {
-
-            if (!open) {
-
-                return;
-
-            }
-
-
-            setTimeout(
-                () => {
-
-                    /*
-                    =========================================
-                    MOBILE LANDSCAPE
-                    =========================================
-                    */
-
-                    if (
-                        isMobileLandscapeAnnotationDisplay()
-                    ) {
-
-                        resizeWorkspace();
-
-                        return;
-
-                    }
-
-
-                    /*
-                    =========================================
-                    DESKTOP / MOBILE PORTRAIT
-                    =========================================
-                    */
-
-                    resizeWorkspace();
-
-
-                    if (
-                        window.AnnotationCanvasV1
-                    ) {
-
-                        AnnotationCanvasV1.resize();
-
-                    }
-
-                },
-                150
-            );
-
-        }
-    );
-
-}
+    
 
 
     /*
