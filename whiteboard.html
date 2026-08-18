@@ -407,27 +407,69 @@ ANNOTATION MODE — PARTICIPANT VIDEO LAYOUT
 ===========================================================
 */
 
+/*
+===========================================================
+ANNOTATION MODE — GOOGLE MEET STYLE PIP CONTAINER
+===========================================================
+*/
+
+/*
+===========================================================
+ANNOTATION MODE — MOVABLE + RESIZABLE PIP
+===========================================================
+*/
+
 #participantGrid.annotation-active {
 
-    position:absolute;
+    position:fixed;
 
-    right:20px;
+    right:24px;
 
-    bottom:90px;
+    top:90px;
 
-    width:auto;
+    width:320px;
 
-    height:auto;
+    height:220px;
+
+    min-width:220px;
+
+    min-height:160px;
+
+    max-width:80vw;
+
+    max-height:80vh;
 
     z-index:700;
 
     display:flex;
 
-    flex-direction:column;
+    flex-wrap:wrap;
 
-    align-items:flex-end;
+    align-items:stretch;
 
-    gap:12px;
+    justify-content:center;
+
+    gap:6px;
+
+    padding:6px;
+
+    overflow:hidden;
+
+    background:#111;
+
+    border:1px solid rgba(255,255,255,.25);
+
+    border-radius:14px;
+
+    box-shadow:
+        0 8px 30px
+        rgba(0,0,0,.55);
+
+    resize:both;
+
+    cursor:move;
+
+    touch-action:none;
 
 }
 
@@ -438,18 +480,30 @@ ANNOTATION MODE — PARTICIPANT VIDEO CARD
 ===========================================================
 */
 
+/*
+===========================================================
+ANNOTATION MODE — PIP VIDEO TILES
+===========================================================
+*/
+
 #participantGrid.annotation-active
 .meeting-participant {
 
-    width:240px;
+    position:relative;
 
-    height:135px;
+    flex:1 1 48%;
 
-    flex:0 0 135px;
+    width:auto;
+
+    height:auto;
+
+    min-width:0;
+
+    min-height:0;
 
     overflow:hidden;
 
-    border-radius:12px;
+    border-radius:10px;
 
     background:#000;
 
@@ -464,6 +518,84 @@ ANNOTATION MODE — PARTICIPANT VIDEO
 
 #participantGrid.annotation-active
 .meeting-participant video {
+
+    width:100% !important;
+
+    height:100% !important;
+
+    object-fit:cover !important;
+
+    display:block !important;
+
+    visibility:visible !important;
+
+    opacity:1 !important;
+
+}
+
+/*
+===========================================================
+ANNOTATION PIP — SPEAKER FOCUS
+===========================================================
+*/
+
+#participantGrid.annotation-active
+.meeting-participant{
+
+    position:relative;
+
+    flex:
+        0 0 30%;
+
+    width:auto;
+
+    height:auto;
+
+    min-width:0;
+
+    min-height:0;
+
+    overflow:hidden;
+
+    border-radius:10px;
+
+    background:#000;
+
+    transition:
+        flex .25s ease,
+        width .25s ease,
+        height .25s ease,
+        transform .25s ease;
+
+}
+
+
+#participantGrid.annotation-active
+.meeting-participant.active-speaker{
+
+    flex:
+        1 1 100%;
+
+    min-height:0;
+
+    order:-1;
+
+}
+
+
+#participantGrid.annotation-active
+.meeting-participant.secondary-speaker{
+
+    flex:
+        0 0 30%;
+
+    height:auto;
+
+}
+
+
+#participantGrid.annotation-active
+.meeting-participant video{
 
     width:100% !important;
 
@@ -3629,6 +3761,750 @@ if (
     AnnotationManagerV1.init();
 
 }
+/* =========================================================
+   ANNOTATION PIP — DRAG CONTROLLER
+   ========================================================= */
+
+(function(){
+
+    let pipDragging = false;
+
+    let pipStartX = 0;
+
+    let pipStartY = 0;
+
+    let pipStartLeft = 0;
+
+    let pipStartTop = 0;
+
+
+    function getPiP(){
+
+        return document.getElementById(
+            "participantGrid"
+        );
+
+    }
+
+
+    function startPiPDrag(event){
+
+        const pip =
+            getPiP();
+
+
+        if(
+            !pip ||
+            !pip.classList.contains(
+                "annotation-active"
+            )
+        ){
+
+            return;
+
+        }
+
+
+        /*
+        -----------------------------------------------------
+        DO NOT START DRAGGING FROM VIDEO
+        -----------------------------------------------------
+        */
+
+        if(
+            event.target.closest(
+                "video"
+            )
+        ){
+
+            return;
+
+        }
+
+
+        /*
+        -----------------------------------------------------
+        DO NOT START DRAGGING FROM BUTTONS / CONTROLS
+        -----------------------------------------------------
+        */
+
+        if(
+            event.target.closest(
+                "button"
+            )
+        ){
+
+            return;
+
+        }
+
+
+        /*
+        -----------------------------------------------------
+        GET POINTER POSITION
+        -----------------------------------------------------
+        */
+
+        const point =
+            event.touches
+                ? event.touches[0]
+                : event;
+
+
+        const rect =
+            pip.getBoundingClientRect();
+
+
+        pipDragging =
+            true;
+
+
+        pipStartX =
+            point.clientX;
+
+
+        pipStartY =
+            point.clientY;
+
+
+        pipStartLeft =
+            rect.left;
+
+
+        pipStartTop =
+            rect.top;
+
+
+        /*
+        -----------------------------------------------------
+        CHANGE FROM RIGHT/TOP POSITIONING
+        TO LEFT/TOP DURING DRAG
+        -----------------------------------------------------
+        */
+
+        pip.style.left =
+            rect.left + "px";
+
+
+        pip.style.top =
+            rect.top + "px";
+
+
+        pip.style.right =
+            "auto";
+
+
+        pip.style.bottom =
+            "auto";
+
+
+        /*
+        -----------------------------------------------------
+        PREVENT TEXT SELECTION
+        -----------------------------------------------------
+        */
+
+        document.body.style.userSelect =
+            "none";
+
+
+        /*
+        -----------------------------------------------------
+        POINTER EVENTS
+        -----------------------------------------------------
+        */
+
+        if(
+            event.pointerId !== undefined &&
+            pip.setPointerCapture
+        ){
+
+            try{
+
+                pip.setPointerCapture(
+                    event.pointerId
+                );
+
+            }
+            catch(error){
+
+                console.warn(
+                    "PiP pointer capture failed:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        event.preventDefault();
+
+    }
+
+
+    function movePiPDrag(event){
+
+        if(!pipDragging){
+
+            return;
+
+        }
+
+
+        const pip =
+            getPiP();
+
+
+        if(
+            !pip ||
+            !pip.classList.contains(
+                "annotation-active"
+            )
+        ){
+
+            return;
+
+        }
+
+
+        const point =
+            event.touches
+                ? event.touches[0]
+                : event;
+
+
+        const deltaX =
+            point.clientX -
+            pipStartX;
+
+
+        const deltaY =
+            point.clientY -
+            pipStartY;
+
+
+        let newLeft =
+            pipStartLeft +
+            deltaX;
+
+
+        let newTop =
+            pipStartTop +
+            deltaY;
+
+
+        /*
+        -----------------------------------------------------
+        KEEP PIP INSIDE SCREEN
+        -----------------------------------------------------
+        */
+
+        const maxLeft =
+            window.innerWidth -
+            pip.offsetWidth;
+
+
+        const maxTop =
+            window.innerHeight -
+            pip.offsetHeight;
+
+
+        newLeft =
+            Math.max(
+                0,
+                Math.min(
+                    maxLeft,
+                    newLeft
+                )
+            );
+
+
+        newTop =
+            Math.max(
+                0,
+                Math.min(
+                    maxTop,
+                    newTop
+                )
+            );
+
+
+        pip.style.left =
+            newLeft + "px";
+
+
+        pip.style.top =
+            newTop + "px";
+
+    }
+
+
+    function stopPiPDrag(event){
+
+        if(!pipDragging){
+
+            return;
+
+        }
+
+
+        pipDragging =
+            false;
+
+
+        document.body.style.userSelect =
+            "";
+
+
+        const pip =
+            getPiP();
+
+
+        if(
+            pip &&
+            event.pointerId !== undefined &&
+            pip.releasePointerCapture
+        ){
+
+            try{
+
+                pip.releasePointerCapture(
+                    event.pointerId
+                );
+
+            }
+            catch(error){
+
+                console.warn(
+                    "PiP pointer release failed:",
+                    error
+                );
+
+            }
+
+        }
+
+    }
+
+
+    /*
+    =========================================================
+    POINTER EVENTS
+    =========================================================
+    */
+
+    document.addEventListener(
+        "pointerdown",
+        startPiPDrag
+    );
+
+
+    document.addEventListener(
+        "pointermove",
+        movePiPDrag
+    );
+
+
+    document.addEventListener(
+        "pointerup",
+        stopPiPDrag
+    );
+
+
+    document.addEventListener(
+        "pointercancel",
+        stopPiPDrag
+    );
+
+})();
+
+/* =========================================================
+   ANNOTATION PIP — ACTIVE SPEAKER DETECTION
+   ========================================================= */
+
+(function(){
+
+    let speakerTimer = null;
+
+
+    function getParticipantCards(){
+
+        return Array.from(
+            document.querySelectorAll(
+                "#participantGrid.annotation-active .meeting-participant"
+            )
+        );
+
+    }
+
+
+    function getParticipantVideo(card){
+
+        return card.querySelector(
+            "video"
+        );
+
+    }
+
+
+    function getAudioLevel(video){
+
+        if(
+            !video ||
+            !video.srcObject
+        ){
+
+            return 0;
+
+        }
+
+
+        const stream =
+            video.srcObject;
+
+
+        const audioTracks =
+            stream.getAudioTracks();
+
+
+        if(
+            !audioTracks.length
+        ){
+
+            return 0;
+
+        }
+
+
+        try{
+
+            if(
+                !video._pipAudioContext
+            ){
+
+                const AudioContext =
+                    window.AudioContext ||
+                    window.webkitAudioContext;
+
+
+                if(!AudioContext){
+
+                    return 0;
+
+                }
+
+
+                const audioContext =
+                    new AudioContext();
+
+
+                const source =
+                    audioContext.createMediaStreamSource(
+                        stream
+                    );
+
+
+                const analyser =
+                    audioContext.createAnalyser();
+
+
+                analyser.fftSize =
+                    256;
+
+
+                source.connect(
+                    analyser
+                );
+
+
+                video._pipAudioContext =
+                    audioContext;
+
+
+                video._pipAudioAnalyser =
+                    analyser;
+
+            }
+
+
+            const analyser =
+                video._pipAudioAnalyser;
+
+
+            const data =
+                new Uint8Array(
+                    analyser.frequencyBinCount
+                );
+
+
+            analyser.getByteFrequencyData(
+                data
+            );
+
+
+            let total = 0;
+
+
+            for(
+                let i = 0;
+                i < data.length;
+                i++
+            ){
+
+                total +=
+                    data[i];
+
+            }
+
+
+            return data.length
+                ? total / data.length
+                : 0;
+
+        }
+        catch(error){
+
+            console.warn(
+                "PiP speaker detection error:",
+                error
+            );
+
+
+            return 0;
+
+        }
+
+    }
+
+
+    function updateActiveSpeaker(){
+
+        const grid =
+            document.getElementById(
+                "participantGrid"
+            );
+
+
+        if(
+            !grid ||
+            !grid.classList.contains(
+                "annotation-active"
+            )
+        ){
+
+            return;
+
+        }
+
+
+        const cards =
+            getParticipantCards();
+
+
+        if(
+            cards.length <= 1
+        ){
+
+            if(cards[0]){
+
+                cards[0].classList.add(
+                    "active-speaker"
+                );
+
+            }
+
+            return;
+
+        }
+
+
+        let loudestCard =
+            null;
+
+
+        let loudestLevel =
+            0;
+
+
+        cards.forEach(
+            card => {
+
+                const video =
+                    getParticipantVideo(
+                        card
+                    );
+
+
+                const level =
+                    getAudioLevel(
+                        video
+                    );
+
+
+                if(
+                    level >
+                    loudestLevel
+                ){
+
+                    loudestLevel =
+                        level;
+
+
+                    loudestCard =
+                        card;
+
+                }
+
+            }
+        );
+
+
+        if(
+            !loudestCard ||
+            loudestLevel < 8
+        ){
+
+            return;
+
+        }
+
+
+        cards.forEach(
+            card => {
+
+                card.classList.remove(
+                    "active-speaker"
+                );
+
+
+                card.classList.remove(
+                    "secondary-speaker"
+                );
+
+
+                if(
+                    card === loudestCard
+                ){
+
+                    card.classList.add(
+                        "active-speaker"
+                    );
+
+                }
+                else{
+
+                    card.classList.add(
+                        "secondary-speaker"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    function startSpeakerDetection(){
+
+        if(
+            speakerTimer
+        ){
+
+            return;
+
+        }
+
+
+        speakerTimer =
+            setInterval(
+                updateActiveSpeaker,
+                250
+            );
+
+    }
+
+
+    function stopSpeakerDetection(){
+
+        if(
+            speakerTimer
+        ){
+
+            clearInterval(
+                speakerTimer
+            );
+
+
+            speakerTimer =
+                null;
+
+        }
+
+    }
+
+
+    const observer =
+        new MutationObserver(
+            () => {
+
+                const grid =
+                    document.getElementById(
+                        "participantGrid"
+                    );
+
+
+                if(!grid){
+
+                    return;
+
+                }
+
+
+                if(
+                    grid.classList.contains(
+                        "annotation-active"
+                    )
+                ){
+
+                    startSpeakerDetection();
+
+                }
+                else{
+
+                    stopSpeakerDetection();
+
+                }
+
+            }
+        );
+
+
+    const grid =
+        document.getElementById(
+            "participantGrid"
+        );
+
+
+    if(grid){
+
+        observer.observe(
+            grid,
+            {
+
+                attributes:true,
+
+                attributeFilter:[
+                    "class"
+                ]
+
+            }
+        );
+
+    }
+
+})();
 
     </script>
 
