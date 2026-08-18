@@ -450,7 +450,15 @@ window.ScreenShare = (() => {
         try{
 
             localScreenStream =
-                await MeetingWebRTC.startScreenShare();
+    await navigator.mediaDevices.getDisplayMedia({
+
+        video: {
+            cursor: "always"
+        },
+
+        audio: true
+
+    });
 
 
             if(!localScreenStream){
@@ -575,10 +583,33 @@ window.ScreenShare = (() => {
         ---------------------------------------------------
         */
 
-        await MeetingWebRTC.stopScreenShare();
+        if(localScreenStream){
 
+    localScreenStream
+        .getTracks()
+        .forEach(
+            track => {
 
-        localScreenStream = null;
+                try{
+
+                    track.stop();
+
+                }
+                catch(error){
+
+                    console.warn(
+                        "SCREEN V3 TRACK STOP ERROR:",
+                        error
+                    );
+
+                }
+
+            }
+        );
+
+}
+
+localScreenStream = null;
 
 
         /*
