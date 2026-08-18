@@ -4359,40 +4359,6 @@ if (
 
         }
 
-
-        /*
-        -----------------------------------------------------
-        DO NOT START DRAGGING FROM VIDEO
-        -----------------------------------------------------
-        */
-
-        if(
-            event.target.closest(
-                "video"
-            )
-        ){
-
-            return;
-
-        }
-
-
-            /*
-    -----------------------------------------------------
-    ONLY DRAG WHEN POINTER STARTS INSIDE PIP
-    -----------------------------------------------------
-    */
-
-    if(
-        !pip.contains(
-            event.target
-        )
-    ){
-
-        return;
-
-    }
-
             /*
     -----------------------------------------------------
     ALLOW NATIVE PIP RESIZE
@@ -4434,20 +4400,37 @@ if (
 
 
         /*
-        -----------------------------------------------------
-        DO NOT START DRAGGING FROM BUTTONS / CONTROLS
-        -----------------------------------------------------
-        */
+-----------------------------------------------------
+DO NOT START DRAGGING FROM BUTTONS / CONTROLS
+-----------------------------------------------------
+*/
 
-        if(
-            event.target.closest(
-                "button"
-            )
-        ){
+if(
+    event.target.closest(
+        "button"
+    )
+){
 
-            return;
+    return;
 
-        }
+}
+
+
+/*
+-----------------------------------------------------
+DO NOT START DRAGGING FROM VIDEO
+-----------------------------------------------------
+*/
+
+if(
+    event.target.closest(
+        "video"
+    )
+){
+
+    return;
+
+}
 
 
         /*
