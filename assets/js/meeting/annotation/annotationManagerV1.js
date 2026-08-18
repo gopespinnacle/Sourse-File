@@ -742,7 +742,7 @@ if (
     ---------------------------------------------------
     */
 
-    const landscapeWidth = 1000;
+    const landscapeWidth = 800;
     const landscapeHeight = 400;
 
 
