@@ -450,15 +450,7 @@ window.ScreenShare = (() => {
         try{
 
             localScreenStream =
-    await navigator.mediaDevices.getDisplayMedia({
-
-        video: {
-            cursor: "always"
-        },
-
-        audio: true
-
-    });
+                await MeetingWebRTC.startScreenShare();
 
 
             if(!localScreenStream){
@@ -583,33 +575,10 @@ window.ScreenShare = (() => {
         ---------------------------------------------------
         */
 
-        if(localScreenStream){
+        await MeetingWebRTC.stopScreenShare();
 
-    localScreenStream
-        .getTracks()
-        .forEach(
-            track => {
 
-                try{
-
-                    track.stop();
-
-                }
-                catch(error){
-
-                    console.warn(
-                        "SCREEN V3 TRACK STOP ERROR:",
-                        error
-                    );
-
-                }
-
-            }
-        );
-
-}
-
-localScreenStream = null;
+        localScreenStream = null;
 
 
         /*
@@ -1346,22 +1315,6 @@ localScreenStream = null;
 
     screenContainer.style.display =
         "block";
-
-        /*
-==========================================================
-FORCE LOCAL SCREEN PRESENTATION VISIBLE
-==========================================================
-*/
-
-screenContainer.style.opacity = "1";
-screenContainer.style.visibility = "visible";
-screenContainer.style.zIndex = "999999";
-
-screenVideo.style.display = "block";
-screenVideo.style.visibility = "visible";
-screenVideo.style.opacity = "1";
-screenVideo.style.width = "100%";
-screenVideo.style.height = "100%";
 
 
     /*
