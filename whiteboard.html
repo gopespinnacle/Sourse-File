@@ -467,7 +467,7 @@ ANNOTATION MODE — MOVABLE + RESIZABLE PIP
 
     resize:both;
 
-    cursor:move;
+cursor:move;
 
     touch-action:none;
 
@@ -3820,6 +3820,45 @@ if (
             return;
 
         }
+
+            /*
+    -----------------------------------------------------
+    ALLOW NATIVE PIP RESIZE
+    -----------------------------------------------------
+
+    The bottom-right corner belongs to the
+    browser's native resize operation.
+
+    DO NOT start our drag controller there.
+    -----------------------------------------------------
+    */
+
+    const pipRect =
+        pip.getBoundingClientRect();
+
+
+    const resizeZone =
+        28;
+
+
+    const insideResizeZone =
+        event.clientX >=
+            pipRect.right - resizeZone &&
+        event.clientY >=
+            pipRect.bottom - resizeZone;
+
+
+    if(
+        insideResizeZone
+    ){
+
+        console.log(
+            "PIP RESIZE ZONE — NATIVE RESIZE ACTIVE"
+        );
+
+        return;
+
+    }
 
 
         /*
