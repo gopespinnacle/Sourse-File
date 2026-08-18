@@ -3883,6 +3883,11 @@ if (
 
 (function(){
 
+    const currentRole =
+        new URLSearchParams(
+            window.location.search
+        ).get("role");
+
     /*
     =========================================================
     STATE
@@ -3995,9 +4000,9 @@ if (
             -------------------------------------------------
             */
 
-            if(
-                role === "teacher"
-            ){
+           if(
+    currentRole === "teacher"
+){
 
                 return;
 
@@ -4040,8 +4045,8 @@ if (
     */
 
     if(
-        role === "student"
-    ){
+    currentRole === "student"
+){
 
         /*
         ---------------------------------------------
@@ -4066,8 +4071,8 @@ if (
         (data) => {
 
             if(
-                role !== "student"
-            ){
+    currentRole !== "student"
+){
 
                 return;
 
@@ -4096,8 +4101,8 @@ if (
         (data) => {
 
             if(
-                role !== "student"
-            ){
+    currentRole !== "student"
+){
 
                 return;
 
