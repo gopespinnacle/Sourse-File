@@ -715,23 +715,23 @@ function applyMobileCanvasFit(){
     }
 
     /*
--------------------------------------------------------
-MOBILE LANDSCAPE AVAILABLE AREA
--------------------------------------------------------
-*/
+    -------------------------------------------------------
+    MOBILE AVAILABLE AREA
+    -------------------------------------------------------
+    */
 
-const availableWidth =
-    Math.max(
-        1,
-        window.innerWidth
-    );
+    const availableWidth =
+        Math.max(
+            1,
+            workspace.clientWidth
+        );
 
 
-const availableHeight =
-    Math.max(
-        1,
-        window.innerHeight
-    );
+    const availableHeight =
+        Math.max(
+            1,
+            workspace.clientHeight
+        );
 
 
     /*
@@ -841,7 +841,7 @@ const scale =
 
 
     canvas.style.transform =
-    `translate(${left}px, ${top}px) scale(${scale}, ${scale})`;
+        `translate(${left}px, ${top}px) scale(${scale}, ${scale})`;
 
 
     console.log(
@@ -3181,13 +3181,7 @@ if (
 
     function bindResize() {
 
-    /*
-    =======================================================
-    NORMAL WINDOW RESIZE
-    =======================================================
-    */
-
-    window.addEventListener(
+            window.addEventListener(
         "resize",
         () => {
 
@@ -3197,38 +3191,6 @@ if (
 
             }
 
-
-            /*
-            =================================================
-            MOBILE LANDSCAPE
-            =================================================
-
-            IMPORTANT:
-
-            DO NOT call AnnotationCanvasV1.resize() here.
-
-            AnnotationManagerV1 owns the logical desktop
-            canvas and scales the complete canvas into
-            the mobile screen.
-            =================================================
-            */
-
-            if (
-                isMobileLandscapeAnnotationDisplay()
-            ) {
-
-                resizeWorkspace();
-
-                return;
-
-            }
-
-
-            /*
-            =================================================
-            DESKTOP / MOBILE PORTRAIT
-            =================================================
-            */
 
             if (
                 window.AnnotationCanvasV1
@@ -3240,9 +3202,6 @@ if (
 
         }
     );
-
-
-    
 
 
     /*
