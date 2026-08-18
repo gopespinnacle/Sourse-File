@@ -747,31 +747,54 @@ const scaleY =
 
 /*
 -------------------------------------------------------
-IMPORTANT
+USE ONE UNIFORM SCALE
 
-The desktop canvas must fill the COMPLETE
-mobile annotation area.
+The complete desktop annotation canvas must keep
+its original aspect ratio.
 
-Therefore X and Y are intentionally scaled
-independently.
+We use the smaller scale so the ENTIRE desktop
+canvas remains visible on mobile.
 
-This maps:
-
-Desktop Top-Left     → Mobile Top-Left
-Desktop Top-Right    → Mobile Top-Right
-Desktop Bottom-Left  → Mobile Bottom-Left
-Desktop Bottom-Right → Mobile Bottom-Right
-
-DO NOT use Math.min() here.
+NO STRETCHING.
+NO CROPPING.
 -------------------------------------------------------
 */
 
+const scale =
+    Math.min(
+        scaleX,
+        scaleY
+    );
+
+
 const displayWidth =
-    availableWidth;
+    mobileCanvasReferenceWidth *
+    scale;
 
 
 const displayHeight =
-    availableHeight;
+    mobileCanvasReferenceHeight *
+    scale;
+
+
+/*
+-------------------------------------------------------
+CENTER THE COMPLETE DESKTOP CANVAS
+-------------------------------------------------------
+*/
+
+const left =
+    Math.max(
+        0,
+        (availableWidth - displayWidth) / 2
+    );
+
+
+const top =
+    Math.max(
+        0,
+        (availableHeight - displayHeight) / 2
+    );
 
 
     
@@ -837,7 +860,7 @@ const top = 0;
 
 
     canvas.style.transform =
-    `translate(${left}px, ${top}px) scale(${scaleX}, ${scaleY})`;
+    `translate(${left}px, ${top}px) scale(${scale}, ${scale})`;
 
 
     console.log(
@@ -860,6 +883,9 @@ const top = 0;
 
 scaleY:
     scaleY,
+
+scale:
+    scale,
 
             displayWidth:
                 displayWidth,
