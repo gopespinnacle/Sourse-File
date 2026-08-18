@@ -845,8 +845,11 @@ const top = 0;
             availableHeight:
                 availableHeight,
 
-            scale:
-                scale,
+            scaleX:
+    scaleX,
+
+scaleY:
+    scaleY,
 
             displayWidth:
                 displayWidth,
