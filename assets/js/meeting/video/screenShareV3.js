@@ -805,40 +805,88 @@ localScreenStream = null;
 
     function requestScreen(){
 
-        if(role !== "student"){
+    if(role !== "student"){
 
-            return;
-
-        }
-
-
-        if(!teacherSocketId){
-
-            console.warn(
-                "SCREEN V3: TEACHER SOCKET UNKNOWN"
-            );
-
-            return;
-
-        }
-
-
-        socket.emit(
-            "screen-request",
-            {
-
-                teacherSocketId:
-                    teacherSocketId
-
-            }
-        );
-
-
-        console.log(
-            "SCREEN V3: SCREEN REQUEST SENT"
-        );
+        return;
 
     }
+
+
+    if(!teacherSocketId){
+
+        console.warn(
+            "SCREEN V3: TEACHER SOCKET UNKNOWN"
+        );
+
+        return;
+
+    }
+
+
+    /*
+    =======================================================
+    SEND SCREEN REQUEST
+    =======================================================
+    */
+
+    socket.emit(
+        "screen-request",
+        {
+
+            teacherSocketId:
+                teacherSocketId
+
+        }
+    );
+
+
+    console.log(
+        "SCREEN V3: SCREEN REQUEST SENT"
+    );
+
+
+    /*
+    =======================================================
+    SAFETY RETRY
+
+    If the first signaling message is missed,
+    request the screen again shortly.
+    =======================================================
+    */
+
+    setTimeout(
+        () => {
+
+            if(
+                role === "student" &&
+                teacherSocketId &&
+                !screenPeers[
+                    teacherSocketId
+                ]
+            ){
+
+                console.log(
+                    "SCREEN V3: RETRYING SCREEN REQUEST"
+                );
+
+
+                socket.emit(
+                    "screen-request",
+                    {
+
+                        teacherSocketId:
+                            teacherSocketId
+
+                    }
+                );
+
+            }
+
+        },
+        1500
+    );
+
+}
 
 
     /*
