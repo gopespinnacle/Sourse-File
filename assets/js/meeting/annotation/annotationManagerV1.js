@@ -715,23 +715,23 @@ function applyMobileCanvasFit(){
     }
 
     /*
-    -------------------------------------------------------
-    MOBILE AVAILABLE AREA
-    -------------------------------------------------------
-    */
+-------------------------------------------------------
+MOBILE LANDSCAPE AVAILABLE AREA
+-------------------------------------------------------
+*/
 
-    const availableWidth =
-        Math.max(
-            1,
-            workspace.clientWidth
-        );
+const availableWidth =
+    Math.max(
+        1,
+        window.innerWidth
+    );
 
 
-    const availableHeight =
-        Math.max(
-            1,
-            workspace.clientHeight
-        );
+const availableHeight =
+    Math.max(
+        1,
+        window.innerHeight
+    );
 
 
     /*
@@ -841,7 +841,7 @@ const scale =
 
 
     canvas.style.transform =
-        `translate(${left}px, ${top}px) scale(${scale}, ${scale})`;
+    `translate(${left}px, ${top}px) scale(${scale}, ${scale})`;
 
 
     console.log(
