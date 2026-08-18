@@ -966,20 +966,6 @@ MOBILE
 
 }
 
-/* =====================================================
-   MOBILE LANDSCAPE — HIDE ANNOTATION PIP
-   ===================================================== */
-
-@media (orientation: landscape) and (max-height: 700px){
-
-    #participantGrid.annotation-active{
-
-        display:none !important;
-
-    }
-
-}
-
 }
 
 </style>
@@ -4561,6 +4547,190 @@ if (
 
 
     if(grid){
+
+        observer.observe(
+            grid,
+            {
+
+                attributes:true,
+
+                attributeFilter:[
+                    "class"
+                ]
+
+            }
+        );
+
+    }
+
+})();
+
+/* =========================================================
+   MOBILE LANDSCAPE — HIDE ANNOTATION PIP
+   ========================================================= */
+
+(function(){
+
+    function updateMobileLandscapePiP(){
+
+        const grid =
+            document.getElementById(
+                "participantGrid"
+            );
+
+        if(!grid){
+
+            return;
+
+        }
+
+
+        /*
+        =====================================================
+        CHECK WHETHER ANNOTATION IS ACTIVE
+        =====================================================
+        */
+
+        const annotationActive =
+            grid.classList.contains(
+                "annotation-active"
+            );
+
+
+        /*
+        =====================================================
+        CHECK MOBILE / TOUCH DEVICE
+        =====================================================
+        */
+
+        const isTouchDevice =
+            window.matchMedia(
+                "(pointer: coarse)"
+            ).matches;
+
+
+        /*
+        =====================================================
+        CHECK MOBILE-SIZED DEVICE
+        =====================================================
+        */
+
+        const smallestDimension =
+            Math.min(
+                window.innerWidth,
+                window.innerHeight
+            );
+
+
+        const isMobileSize =
+            smallestDimension <= 700;
+
+
+        /*
+        =====================================================
+        CHECK LANDSCAPE
+        =====================================================
+        */
+
+        const isLandscape =
+            window.innerWidth >
+            window.innerHeight;
+
+
+        /*
+        =====================================================
+        HIDE PIP ONLY WHEN ALL CONDITIONS ARE TRUE
+        =====================================================
+        */
+
+        if(
+            annotationActive &&
+            isTouchDevice &&
+            isMobileSize &&
+            isLandscape
+        ){
+
+            grid.style.setProperty(
+                "display",
+                "none",
+                "important"
+            );
+
+            console.log(
+                "MOBILE LANDSCAPE: ANNOTATION PIP HIDDEN"
+            );
+
+        }
+        else{
+
+            /*
+            -----------------------------------------------
+            REMOVE OUR INLINE OVERRIDE
+            -----------------------------------------------
+            */
+
+            grid.style.removeProperty(
+                "display"
+            );
+
+        }
+
+    }
+
+
+    /*
+    =========================================================
+    INITIAL CHECK
+    =========================================================
+    */
+
+    updateMobileLandscapePiP();
+
+
+    /*
+    =========================================================
+    ROTATION / RESIZE
+    =========================================================
+    */
+
+    window.addEventListener(
+        "resize",
+        updateMobileLandscapePiP
+    );
+
+
+    window.addEventListener(
+        "orientationchange",
+        () => {
+
+            setTimeout(
+                updateMobileLandscapePiP,
+                100
+            );
+
+        }
+    );
+
+
+    /*
+    =========================================================
+    WATCH ANNOTATION ACTIVE / INACTIVE
+    =========================================================
+    */
+
+    const grid =
+        document.getElementById(
+            "participantGrid"
+        );
+
+
+    if(grid){
+
+        const observer =
+            new MutationObserver(
+                updateMobileLandscapePiP
+            );
+
 
         observer.observe(
             grid,
