@@ -919,61 +919,48 @@ function resizeWorkspace() {
             )
         );
 
-            /*
-    =======================================================
-    CAPTURE DESKTOP ANNOTATION REFERENCE
-    =======================================================
+            if (
+        !isMobileAnnotationDisplay() &&
+        !mobileCanvasReferenceWidth &&
+        !mobileCanvasReferenceHeight &&
+        width > 10 &&
+        height > 10
+    ) {
 
-    IMPORTANT:
+        mobileCanvasReferenceWidth =
+            width;
 
-    Capture this BEFORE mobile visual fitting.
-
-    This becomes the logical desktop canvas size.
-
-    It must NOT be replaced by the mobile
-    portrait/landscape dimensions.
-
-    =======================================================
-    */
-
-    if (
-    !isMobileAnnotationDisplay() &&
-    !mobileCanvasReferenceWidth &&
-    !mobileCanvasReferenceHeight
-) {
-
-    mobileCanvasReferenceWidth =
-        width;
-
-    mobileCanvasReferenceHeight =
-        height;
+        mobileCanvasReferenceHeight =
+            height;
 
 
-    /*
-    =======================================================
-    SAVE DESKTOP REFERENCE
-    =======================================================
-    */
+        /*
+        =======================================================
+        SAVE DESKTOP REFERENCE
+        =======================================================
+        */
 
-    localStorage.setItem(
-        "gopesAnnotationDesktopReference",
-        JSON.stringify({
-            width:
-                mobileCanvasReferenceWidth,
+        localStorage.setItem(
+            "gopesAnnotationDesktopReference",
+            JSON.stringify({
 
-            height:
-                mobileCanvasReferenceHeight
-        })
-    );
+                width:
+                    mobileCanvasReferenceWidth,
+
+                height:
+                    mobileCanvasReferenceHeight
+
+            })
+        );
 
 
-    console.log(
-        "ANNOTATION MOBILE FIT: DESKTOP REFERENCE LOCKED",
-        mobileCanvasReferenceWidth,
-        mobileCanvasReferenceHeight
-    );
+        console.log(
+            "ANNOTATION MOBILE FIT: DESKTOP REFERENCE LOCKED",
+            mobileCanvasReferenceWidth,
+            mobileCanvasReferenceHeight
+        );
 
-}
+    }
 
 
     /*
