@@ -3181,7 +3181,13 @@ if (
 
     function bindResize() {
 
-            window.addEventListener(
+    /*
+    =======================================================
+    NORMAL WINDOW RESIZE
+    =======================================================
+    */
+
+    window.addEventListener(
         "resize",
         () => {
 
@@ -3191,6 +3197,38 @@ if (
 
             }
 
+
+            /*
+            =================================================
+            MOBILE LANDSCAPE
+            =================================================
+
+            IMPORTANT:
+
+            DO NOT call AnnotationCanvasV1.resize() here.
+
+            AnnotationManagerV1 owns the logical desktop
+            canvas and scales the complete canvas into
+            the mobile screen.
+            =================================================
+            */
+
+            if (
+                isMobileLandscapeAnnotationDisplay()
+            ) {
+
+                resizeWorkspace();
+
+                return;
+
+            }
+
+
+            /*
+            =================================================
+            DESKTOP / MOBILE PORTRAIT
+            =================================================
+            */
 
             if (
                 window.AnnotationCanvasV1
@@ -3202,6 +3240,70 @@ if (
 
         }
     );
+
+
+    /*
+    =======================================================
+    MOBILE ORIENTATION CHANGE
+    =======================================================
+    */
+
+    window.addEventListener(
+        "orientationchange",
+        () => {
+
+            if (!open) {
+
+                return;
+
+            }
+
+
+            setTimeout(
+                () => {
+
+                    /*
+                    =========================================
+                    MOBILE LANDSCAPE
+                    =========================================
+                    */
+
+                    if (
+                        isMobileLandscapeAnnotationDisplay()
+                    ) {
+
+                        resizeWorkspace();
+
+                        return;
+
+                    }
+
+
+                    /*
+                    =========================================
+                    DESKTOP / MOBILE PORTRAIT
+                    =========================================
+                    */
+
+                    resizeWorkspace();
+
+
+                    if (
+                        window.AnnotationCanvasV1
+                    ) {
+
+                        AnnotationCanvasV1.resize();
+
+                    }
+
+                },
+                150
+            );
+
+        }
+    );
+
+}
 
 
     /*
