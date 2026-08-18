@@ -426,465 +426,11 @@ CREATE ANNOTATION PRESENTATION WORKSPACE
 ===========================================================
 */
 
-
-
-
 /*
 ===========================================================
 RESIZE ANNOTATION CANVAS
 ===========================================================
 */
-
-/*
-===========================================================
-MOBILE DESKTOP-CANVAS FIT CONTROLLER V1
-===========================================================
-
-PURPOSE:
-
-Desktop:
-    Keep existing annotation behaviour exactly as-is.
-
-Mobile:
-    Keep one logical annotation canvas.
-    Scale the complete desktop canvas proportionally
-    so the ENTIRE canvas fits inside the mobile screen.
-
-IMPORTANT:
-
-- Does NOT change annotation history.
-- Does NOT change drawing operation.
-- Does NOT change socket operation.
-- Does NOT change page operation.
-- Does NOT change toolbar operation.
-- Does NOT change desktop layout.
-
-===========================================================
-*/
-
-let mobileCanvasReferenceWidth = null;
-
-let mobileCanvasReferenceHeight = null;
-
-
-/*
-===========================================================
-CHECK MOBILE DISPLAY
-===========================================================
-*/
-
-function isMobileAnnotationDisplay(){
-
-    return window.matchMedia(
-        "(max-width: 900px)"
-    ).matches;
-
-}
-
-/*
-===========================================================
-CHECK MOBILE LANDSCAPE ANNOTATION DISPLAY
-===========================================================
-
-ONLY MOBILE LANDSCAPE
-
-Desktop       → unchanged
-Mobile Portrait → unchanged
-Mobile Landscape → 16:9
-===========================================================
-*/
-
-function isMobileLandscapeAnnotationDisplay(){
-
-    return window.matchMedia(
-        "(max-width: 900px) and (orientation: landscape)"
-    ).matches;
-
-}
-
-
-/*
-===========================================================
-RESET MOBILE FIT
-===========================================================
-*/
-
-function resetMobileCanvasFit(){
-
-    if(!canvas){
-
-        return;
-
-    }
-
-
-    canvas.style.transform =
-        "none";
-
-    canvas.style.transformOrigin =
-        "top left";
-
-    canvas.style.position =
-        "absolute";
-
-    canvas.style.left =
-        "0px";
-
-    canvas.style.top =
-        "0px";
-
-
-
-
-}
-
-
-/*
-===========================================================
-CAPTURE DESKTOP CANVAS SIZE
-===========================================================
-*/
-
-function captureMobileCanvasReference(){
-
-    if(!workspace || !canvas){
-
-        return;
-
-    }
-
-
-    /*
-    -------------------------------------------------------
-    ONLY CAPTURE ON DESKTOP
-    -------------------------------------------------------
-    */
-
-    if(
-        isMobileAnnotationDisplay()
-    ){
-
-        return;
-
-    }
-
-
-    const rect =
-        workspace.getBoundingClientRect();
-
-
-    const width =
-        Math.max(
-            1,
-            Math.floor(
-                rect.width
-            )
-        );
-
-
-    const height =
-        Math.max(
-            1,
-            Math.floor(
-                rect.height
-            )
-        );
-
-
-    mobileCanvasReferenceWidth =
-        width;
-
-
-    mobileCanvasReferenceHeight =
-        height;
-
-
-    console.log(
-        "ANNOTATION MOBILE FIT: DESKTOP REFERENCE CAPTURED",
-        width,
-        height
-    );
-
-}
-
-
-/*
-===========================================================
-FIT COMPLETE DESKTOP CANVAS INTO MOBILE SCREEN
-===========================================================
-*/
-
-function applyMobileCanvasFit(){
-
-    if(
-        !workspace ||
-        !canvas
-    ){
-
-        return;
-
-    }
-
-
-    /*
-    -------------------------------------------------------
-    DESKTOP
-    -------------------------------------------------------
-
-    Never change desktop appearance.
-    -------------------------------------------------------
-    */
-
-    if(
-        !isMobileAnnotationDisplay()
-    ){
-
-        resetMobileCanvasFit();
-
-        return;
-
-    }
-
-
-    /*
-    -------------------------------------------------------
-    GET DESKTOP REFERENCE
-    -------------------------------------------------------
-    */
-
-    if(
-        !mobileCanvasReferenceWidth ||
-        !mobileCanvasReferenceHeight
-    ){
-
-        const savedReference =
-            localStorage.getItem(
-                "gopesAnnotationDesktopReference"
-            );
-
-
-        if(savedReference){
-
-            try{
-
-                const reference =
-                    JSON.parse(
-                        savedReference
-                    );
-
-
-                mobileCanvasReferenceWidth =
-                    Number(
-                        reference.width
-                    );
-
-
-                mobileCanvasReferenceHeight =
-                    Number(
-                        reference.height
-                    );
-
-            }
-            catch(error){
-
-                console.error(
-                    "ANNOTATION MOBILE FIT: INVALID DESKTOP REFERENCE",
-                    error
-                );
-
-                return;
-
-            }
-
-        }
-
-
-        if(
-            !mobileCanvasReferenceWidth ||
-            !mobileCanvasReferenceHeight
-        ){
-
-            console.warn(
-                "ANNOTATION MOBILE FIT: DESKTOP REFERENCE NOT READY"
-            );
-
-            return;
-
-        }
-
-    }
-
-    /*
-    -------------------------------------------------------
-    MOBILE AVAILABLE AREA
-    -------------------------------------------------------
-    */
-
-    const availableWidth =
-        Math.max(
-            1,
-            workspace.clientWidth
-        );
-
-
-    const availableHeight =
-        Math.max(
-            1,
-            workspace.clientHeight
-        );
-
-
-    /*
-    -------------------------------------------------------
-    CALCULATE UNIFORM SCALE
-    -------------------------------------------------------
-
-    IMPORTANT:
-
-    X and Y use the SAME scale.
-
-    This prevents stretching.
-    -------------------------------------------------------
-    */
-
-    const scaleX =
-    availableWidth /
-    mobileCanvasReferenceWidth;
-
-
-const scaleY =
-    availableHeight /
-    mobileCanvasReferenceHeight;
-
-
-/*
--------------------------------------------------------
-IMPORTANT
-FIT THE COMPLETE DESKTOP CANVAS
-INSIDE MOBILE LANDSCAPE
--------------------------------------------------------
-*/
-
-const scale =
-    Math.min(
-        scaleX,
-        scaleY
-    );
-
-
-    /*
-    -------------------------------------------------------
-    CALCULATE DISPLAY SIZE
-    -------------------------------------------------------
-    */
-
-    const displayWidth =
-        mobileCanvasReferenceWidth *
-        scale;
-
-
-    const displayHeight =
-        mobileCanvasReferenceHeight *
-        scale;
-
-
-    /*
-    -------------------------------------------------------
-    CENTER CANVAS
-    -------------------------------------------------------
-    */
-
-    const left =
-        Math.max(
-            0,
-            (availableWidth - displayWidth) / 2
-        );
-
-
-    const top =
-        Math.max(
-            0,
-            (availableHeight - displayHeight) / 2
-        );
-
-
-    /*
-    -------------------------------------------------------
-    APPLY MOBILE VISUAL FIT
-    -------------------------------------------------------
-    */
-
-    canvas.style.position =
-        "absolute";
-
-
-    canvas.style.left =
-        "0px";
-
-
-    canvas.style.top =
-        "0px";
-
-
-    canvas.style.width =
-        mobileCanvasReferenceWidth +
-        "px";
-
-
-    canvas.style.height =
-        mobileCanvasReferenceHeight +
-        "px";
-
-
-    canvas.style.transformOrigin =
-        "top left";
-
-
-    canvas.style.transform =
-        `translate(${left}px, ${top}px) scale(${scale}, ${scale})`;
-
-
-    console.log(
-        "ANNOTATION MOBILE FIT:",
-        {
-
-            referenceWidth:
-                mobileCanvasReferenceWidth,
-
-            referenceHeight:
-                mobileCanvasReferenceHeight,
-
-            availableWidth:
-                availableWidth,
-
-            availableHeight:
-                availableHeight,
-
-            scaleX:
-                scaleX,
-
-            scaleY:
-                scaleY,
-
-            scale:
-                scale,
-
-            displayWidth:
-                displayWidth,
-
-            displayHeight:
-                displayHeight,
-
-            left:
-                left,
-
-            top:
-                top
-
-        }
-    );
-
-}
 
 function resizeWorkspace() {
 
@@ -928,49 +474,6 @@ function resizeWorkspace() {
             )
         );
 
-            if (
-        !isMobileAnnotationDisplay() &&
-        !mobileCanvasReferenceWidth &&
-        !mobileCanvasReferenceHeight &&
-        width > 10 &&
-        height > 10
-    ) {
-
-        mobileCanvasReferenceWidth =
-            width;
-
-        mobileCanvasReferenceHeight =
-            height;
-
-
-        /*
-        =======================================================
-        SAVE DESKTOP REFERENCE
-        =======================================================
-        */
-
-        localStorage.setItem(
-            "gopesAnnotationDesktopReference",
-            JSON.stringify({
-
-                width:
-                    mobileCanvasReferenceWidth,
-
-                height:
-                    mobileCanvasReferenceHeight
-
-            })
-        );
-
-
-        console.log(
-            "ANNOTATION MOBILE FIT: DESKTOP REFERENCE LOCKED",
-            mobileCanvasReferenceWidth,
-            mobileCanvasReferenceHeight
-        );
-
-    }
-
 
     /*
     =======================================================
@@ -983,50 +486,15 @@ function resizeWorkspace() {
         1;
 
 
-    /*
-    =======================================================
-    MOBILE LANDSCAPE
-    KEEP THE ORIGINAL DESKTOP CANVAS
-    =======================================================
-    */
-
-    let logicalWidth =
-        width;
-
-    let logicalHeight =
-        height;
-
-
-    if (
-        isMobileLandscapeAnnotationDisplay() &&
-        mobileCanvasReferenceWidth &&
-        mobileCanvasReferenceHeight
-    ) {
-
-        logicalWidth =
-            mobileCanvasReferenceWidth;
-
-        logicalHeight =
-            mobileCanvasReferenceHeight;
-
-    }
-
-
-    /*
-    =======================================================
-    CANVAS INTERNAL SIZE
-    =======================================================
-    */
-
     canvas.width =
         Math.floor(
-            logicalWidth * dpr
+            width * dpr
         );
 
 
     canvas.height =
         Math.floor(
-            logicalHeight * dpr
+            height * dpr
         );
 
 
@@ -1037,11 +505,11 @@ function resizeWorkspace() {
     */
 
     canvas.style.width =
-        logicalWidth + "px";
+        width + "px";
 
 
     canvas.style.height =
-        logicalHeight + "px";
+        height + "px";
 
 
     /*
@@ -1077,14 +545,6 @@ function resizeWorkspace() {
         "DPR:",
         dpr
     );
-
-        /*
-    =======================================================
-    MOBILE DESKTOP-CANVAS FIT
-    =======================================================
-    */
-
-    applyMobileCanvasFit();
 
 }
 
@@ -2880,37 +2340,6 @@ if (canvas) {
         requestAnimationFrame(
             () => {
 
-                /*
-                ---------------------------------------------
-                MOBILE LANDSCAPE
-                ---------------------------------------------
-
-                DO NOT allow AnnotationCanvasV1.resize()
-                to replace the desktop logical canvas
-                with the mobile screen size.
-
-                The mobile fit is controlled by
-                AnnotationManagerV1.
-                ---------------------------------------------
-                */
-
-                if (
-                    isMobileLandscapeAnnotationDisplay()
-                ) {
-
-                    resizeWorkspace();
-
-                    return;
-
-                }
-
-
-                /*
-                ---------------------------------------------
-                DESKTOP / MOBILE PORTRAIT
-                ---------------------------------------------
-                */
-
                 if (
                     window.AnnotationCanvasV1
                 ) {
@@ -3181,68 +2610,29 @@ if (
 
     function bindResize() {
 
-            window.addEventListener(
-        "resize",
-        () => {
+        window.addEventListener(
+            "resize",
+            () => {
 
-            if (!open) {
+                if (!open) {
 
-                return;
+                    return;
 
-            }
-
-
-            if (
-                window.AnnotationCanvasV1
-            ) {
-
-                AnnotationCanvasV1.resize();
-
-            }
-
-        }
-    );
+                }
 
 
-    /*
-    =======================================================
-    MOBILE ORIENTATION CHANGE
-    =======================================================
-    */
+                if (
+                    window.AnnotationCanvasV1
+                ) {
 
-    window.addEventListener(
-        "orientationchange",
-        () => {
+                    AnnotationCanvasV1.resize();
 
-            if (!open) {
-
-                return;
+                }
 
             }
+        );
 
-
-            setTimeout(
-                () => {
-
-                    resizeWorkspace();
-
-
-                    if (
-                        window.AnnotationCanvasV1
-                    ) {
-
-                        AnnotationCanvasV1.resize();
-
-                    }
-
-                },
-                150
-            );
-
-        }
-    );
-
-}
+    }
 
 
     /*
