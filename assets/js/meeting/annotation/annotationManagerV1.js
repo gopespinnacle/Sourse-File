@@ -748,20 +748,28 @@ function applyMobileCanvasFit(){
     */
 
     const scaleX =
-        availableWidth /
-        mobileCanvasReferenceWidth;
+    availableWidth /
+    mobileCanvasReferenceWidth;
 
 
-    const scaleY =
-        availableHeight /
-        mobileCanvasReferenceHeight;
+const scaleY =
+    availableHeight /
+    mobileCanvasReferenceHeight;
 
 
-    const scale =
-        Math.min(
-            scaleX,
-            scaleY
-        );
+/*
+-------------------------------------------------------
+IMPORTANT
+FIT THE COMPLETE DESKTOP CANVAS
+INSIDE MOBILE LANDSCAPE
+-------------------------------------------------------
+*/
+
+const scale =
+    Math.min(
+        scaleX,
+        scaleY
+    );
 
 
     /*
@@ -975,15 +983,50 @@ function resizeWorkspace() {
         1;
 
 
+    /*
+    =======================================================
+    MOBILE LANDSCAPE
+    KEEP THE ORIGINAL DESKTOP CANVAS
+    =======================================================
+    */
+
+    let logicalWidth =
+        width;
+
+    let logicalHeight =
+        height;
+
+
+    if (
+        isMobileLandscapeAnnotationDisplay() &&
+        mobileCanvasReferenceWidth &&
+        mobileCanvasReferenceHeight
+    ) {
+
+        logicalWidth =
+            mobileCanvasReferenceWidth;
+
+        logicalHeight =
+            mobileCanvasReferenceHeight;
+
+    }
+
+
+    /*
+    =======================================================
+    CANVAS INTERNAL SIZE
+    =======================================================
+    */
+
     canvas.width =
         Math.floor(
-            width * dpr
+            logicalWidth * dpr
         );
 
 
     canvas.height =
         Math.floor(
-            height * dpr
+            logicalHeight * dpr
         );
 
 
@@ -994,11 +1037,11 @@ function resizeWorkspace() {
     */
 
     canvas.style.width =
-        width + "px";
+        logicalWidth + "px";
 
 
     canvas.style.height =
-        height + "px";
+        logicalHeight + "px";
 
 
     /*
