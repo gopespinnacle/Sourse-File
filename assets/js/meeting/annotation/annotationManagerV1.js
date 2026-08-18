@@ -631,51 +631,60 @@ function applyMobileCanvasFit(){
     -------------------------------------------------------
     */
 
-        if (
-    !mobileCanvasReferenceWidth ||
-    !mobileCanvasReferenceHeight
-) {
+    if(
+        !mobileCanvasReferenceWidth ||
+        !mobileCanvasReferenceHeight
+    ){
 
-    const savedReference =
-        localStorage.getItem(
-            "gopesAnnotationDesktopReference"
-        );
-
-
-    if (savedReference) {
-
-        try {
-
-            const reference =
-                JSON.parse(
-                    savedReference
-                );
-
-
-            mobileCanvasReferenceWidth =
-                Number(
-                    reference.width
-                );
-
-
-            mobileCanvasReferenceHeight =
-                Number(
-                    reference.height
-                );
-
-
-            console.log(
-                "ANNOTATION MOBILE FIT: DESKTOP REFERENCE RESTORED",
-                mobileCanvasReferenceWidth,
-                mobileCanvasReferenceHeight
+        const savedReference =
+            localStorage.getItem(
+                "gopesAnnotationDesktopReference"
             );
 
-        }
-        catch(error) {
 
-            console.error(
-                "ANNOTATION MOBILE FIT: INVALID DESKTOP REFERENCE",
-                error
+        if(savedReference){
+
+            try{
+
+                const reference =
+                    JSON.parse(
+                        savedReference
+                    );
+
+
+                mobileCanvasReferenceWidth =
+                    Number(
+                        reference.width
+                    );
+
+
+                mobileCanvasReferenceHeight =
+                    Number(
+                        reference.height
+                    );
+
+            }
+            catch(error){
+
+                console.error(
+                    "ANNOTATION MOBILE FIT: INVALID DESKTOP REFERENCE",
+                    error
+                );
+
+                return;
+
+            }
+
+        }
+
+
+        if(
+            !mobileCanvasReferenceWidth ||
+            !mobileCanvasReferenceHeight
+        ){
+
+            console.warn(
+                "ANNOTATION MOBILE FIT: DESKTOP REFERENCE NOT READY"
             );
 
             return;
@@ -683,22 +692,6 @@ function applyMobileCanvasFit(){
         }
 
     }
-
-
-    if (
-        !mobileCanvasReferenceWidth ||
-        !mobileCanvasReferenceHeight
-    ) {
-
-        console.warn(
-            "ANNOTATION MOBILE FIT: DESKTOP REFERENCE NOT READY"
-        );
-
-        return;
-
-    }
-
-}
 
 
     /*
@@ -723,113 +716,73 @@ function applyMobileCanvasFit(){
 
     /*
     -------------------------------------------------------
-    CALCULATE PROPORTIONAL SCALE
+    CALCULATE UNIFORM SCALE
     -------------------------------------------------------
 
     IMPORTANT:
 
-    We use the smaller scale so the COMPLETE
-    desktop canvas remains visible.
+    X and Y use the SAME scale.
 
-    Nothing is cropped.
+    This prevents stretching.
     -------------------------------------------------------
     */
 
     const scaleX =
-    availableWidth /
-    mobileCanvasReferenceWidth;
+        availableWidth /
+        mobileCanvasReferenceWidth;
 
 
-const scaleY =
-    availableHeight /
-    mobileCanvasReferenceHeight;
+    const scaleY =
+        availableHeight /
+        mobileCanvasReferenceHeight;
 
 
-/*
--------------------------------------------------------
-USE ONE UNIFORM SCALE
+    const scale =
+        Math.min(
+            scaleX,
+            scaleY
+        );
 
-The complete desktop annotation canvas must keep
-its original aspect ratio.
-
-We use the smaller scale so the ENTIRE desktop
-canvas remains visible on mobile.
-
-NO STRETCHING.
-NO CROPPING.
--------------------------------------------------------
-*/
-
-const scale =
-    Math.min(
-        scaleX,
-        scaleY
-    );
-
-
-const displayWidth =
-    mobileCanvasReferenceWidth *
-    scale;
-
-
-const displayHeight =
-    mobileCanvasReferenceHeight *
-    scale;
-
-
-/*
--------------------------------------------------------
-CENTER THE COMPLETE DESKTOP CANVAS
--------------------------------------------------------
-*/
-
-const left =
-    Math.max(
-        0,
-        (availableWidth - displayWidth) / 2
-    );
-
-
-const top =
-    Math.max(
-        0,
-        (availableHeight - displayHeight) / 2
-    );
-
-
-    
 
     /*
     -------------------------------------------------------
-    CENTER THE COMPLETE CANVAS
+    CALCULATE DISPLAY SIZE
     -------------------------------------------------------
     */
 
+    const displayWidth =
+        mobileCanvasReferenceWidth *
+        scale;
+
+
+    const displayHeight =
+        mobileCanvasReferenceHeight *
+        scale;
+
+
     /*
--------------------------------------------------------
-NO CENTERING REQUIRED
+    -------------------------------------------------------
+    CENTER CANVAS
+    -------------------------------------------------------
+    */
 
-The desktop canvas fills the entire mobile
-annotation area.
--------------------------------------------------------
-*/
+    const left =
+        Math.max(
+            0,
+            (availableWidth - displayWidth) / 2
+        );
 
-const left = 0;
 
-const top = 0;
+    const top =
+        Math.max(
+            0,
+            (availableHeight - displayHeight) / 2
+        );
 
 
     /*
     -------------------------------------------------------
     APPLY MOBILE VISUAL FIT
-    -------------------------------------------------------
-
-    IMPORTANT:
-
-    The actual annotation coordinate system is NOT
-    changed here.
-
-    Only the visual display is scaled.
     -------------------------------------------------------
     */
 
@@ -860,12 +813,13 @@ const top = 0;
 
 
     canvas.style.transform =
-    `translate(${left}px, ${top}px) scale(${scale}, ${scale})`;
+        `translate(${left}px, ${top}px) scale(${scale}, ${scale})`;
 
 
     console.log(
         "ANNOTATION MOBILE FIT:",
         {
+
             referenceWidth:
                 mobileCanvasReferenceWidth,
 
@@ -879,13 +833,13 @@ const top = 0;
                 availableHeight,
 
             scaleX:
-    scaleX,
+                scaleX,
 
-scaleY:
-    scaleY,
+            scaleY:
+                scaleY,
 
-scale:
-    scale,
+            scale:
+                scale,
 
             displayWidth:
                 displayWidth,
@@ -898,6 +852,7 @@ scale:
 
             top:
                 top
+
         }
     );
 
