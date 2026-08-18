@@ -3864,6 +3864,255 @@ if (
 
 }
 
+
+/* =========================================================
+   BLOCK 9 — STUDENT ANNOTATION PERMISSION CONTROLLER
+   STEP 2
+   ========================================================= */
+
+(function(){
+
+    /*
+    =========================================================
+    STATE
+    =========================================================
+    */
+
+    let studentAnnotationAllowed = false;
+
+
+    /*
+    =========================================================
+    GET CURRENT ANNOTATION CANVAS
+    =========================================================
+    */
+
+    function getAnnotationCanvas(){
+
+        return document.getElementById(
+            "annotationCanvasV1"
+        );
+
+    }
+
+
+    /*
+    =========================================================
+    LOCK STUDENT
+    =========================================================
+    */
+
+    function lockStudentAnnotation(){
+
+        studentAnnotationAllowed = false;
+
+
+        const canvas =
+            getAnnotationCanvas();
+
+
+        if(canvas){
+
+            canvas.style.pointerEvents =
+                "none";
+
+            canvas.style.cursor =
+                "not-allowed";
+
+        }
+
+
+        console.log(
+            "ANNOTATION PERMISSION: STUDENT LOCKED"
+        );
+
+    }
+
+
+    /*
+    =========================================================
+    ALLOW STUDENT
+    =========================================================
+    */
+
+    function allowStudentAnnotation(){
+
+        studentAnnotationAllowed = true;
+
+
+        const canvas =
+            getAnnotationCanvas();
+
+
+        if(canvas){
+
+            canvas.style.pointerEvents =
+                "auto";
+
+            canvas.style.cursor =
+                "crosshair";
+
+        }
+
+
+        console.log(
+            "ANNOTATION PERMISSION: STUDENT ALLOWED"
+        );
+
+    }
+
+
+    /*
+    =========================================================
+    PERMISSION EVENT FROM SERVER
+    =========================================================
+    */
+
+    socket.on(
+        "annotationPermissionChanged",
+        (data) => {
+
+            console.log(
+                "ANNOTATION PERMISSION EVENT:",
+                data
+            );
+
+
+            /*
+            -------------------------------------------------
+            TEACHER
+            -------------------------------------------------
+            */
+
+            if(
+                role === "teacher"
+            ){
+
+                return;
+
+            }
+
+
+            /*
+            -------------------------------------------------
+            STUDENT
+            -------------------------------------------------
+            */
+
+            const mySocketId =
+                socket.id;
+
+
+            if(
+                data &&
+                data.studentSocketId ===
+                    mySocketId
+            ){
+
+                allowStudentAnnotation();
+
+            }
+            else{
+
+                lockStudentAnnotation();
+
+            }
+
+        }
+    );
+
+
+    /*
+    =========================================================
+    INITIAL STUDENT STATE
+    =========================================================
+    */
+
+    if(
+        role === "student"
+    ){
+
+        /*
+        ---------------------------------------------
+        IMPORTANT:
+        STUDENT STARTS LOCKED
+        ---------------------------------------------
+        */
+
+        lockStudentAnnotation();
+
+    }
+
+
+    /*
+    =========================================================
+    ANNOTATION SESSION CLOSED
+    =========================================================
+    */
+
+    socket.on(
+        "annotationStopped",
+        (data) => {
+
+            if(
+                role !== "student"
+            ){
+
+                return;
+
+            }
+
+
+            lockStudentAnnotation();
+
+
+            console.log(
+                "ANNOTATION PERMISSION: LOCKED AFTER SESSION STOP"
+            );
+
+        }
+    );
+
+
+    /*
+    =========================================================
+    ANNOTATION SESSION STARTED
+    =========================================================
+    */
+
+    socket.on(
+        "annotationStarted",
+        (data) => {
+
+            if(
+                role !== "student"
+            ){
+
+                return;
+
+            }
+
+
+            /*
+            ---------------------------------------------
+            IMPORTANT:
+            NEW SESSION STARTS LOCKED
+            ---------------------------------------------
+            */
+
+            lockStudentAnnotation();
+
+
+            console.log(
+                "ANNOTATION PERMISSION: NEW SESSION LOCKED"
+            );
+
+        }
+    );
+
+
+})();
+
 /* =========================================================
    ANNOTATION PIP — MOVE EXISTING MEETING CONTROLS
    ========================================================= */
