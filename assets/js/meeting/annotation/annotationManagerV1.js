@@ -426,11 +426,419 @@ CREATE ANNOTATION PRESENTATION WORKSPACE
 ===========================================================
 */
 
+
+
+
 /*
 ===========================================================
 RESIZE ANNOTATION CANVAS
 ===========================================================
 */
+
+/*
+===========================================================
+MOBILE DESKTOP-CANVAS FIT CONTROLLER V1
+===========================================================
+
+PURPOSE:
+
+Desktop:
+    Keep existing annotation behaviour exactly as-is.
+
+Mobile:
+    Keep one logical annotation canvas.
+    Scale the complete desktop canvas proportionally
+    so the ENTIRE canvas fits inside the mobile screen.
+
+IMPORTANT:
+
+- Does NOT change annotation history.
+- Does NOT change drawing operation.
+- Does NOT change socket operation.
+- Does NOT change page operation.
+- Does NOT change toolbar operation.
+- Does NOT change desktop layout.
+
+===========================================================
+*/
+
+let mobileCanvasReferenceWidth = null;
+
+let mobileCanvasReferenceHeight = null;
+
+
+/*
+===========================================================
+CHECK MOBILE DISPLAY
+===========================================================
+*/
+
+function isMobileAnnotationDisplay(){
+
+    return window.matchMedia(
+        "(max-width: 700px)"
+    ).matches;
+
+}
+
+
+/*
+===========================================================
+RESET MOBILE FIT
+===========================================================
+*/
+
+function resetMobileCanvasFit(){
+
+    if(!canvas){
+
+        return;
+
+    }
+
+
+    canvas.style.transform =
+        "none";
+
+    canvas.style.transformOrigin =
+        "top left";
+
+    canvas.style.position =
+        "absolute";
+
+    canvas.style.left =
+        "0px";
+
+    canvas.style.top =
+        "0px";
+
+
+    mobileCanvasReferenceWidth =
+        null;
+
+    mobileCanvasReferenceHeight =
+        null;
+
+}
+
+
+/*
+===========================================================
+CAPTURE DESKTOP CANVAS SIZE
+===========================================================
+*/
+
+function captureMobileCanvasReference(){
+
+    if(!workspace || !canvas){
+
+        return;
+
+    }
+
+
+    /*
+    -------------------------------------------------------
+    ONLY CAPTURE ON DESKTOP
+    -------------------------------------------------------
+    */
+
+    if(
+        isMobileAnnotationDisplay()
+    ){
+
+        return;
+
+    }
+
+
+    const rect =
+        workspace.getBoundingClientRect();
+
+
+    const width =
+        Math.max(
+            1,
+            Math.floor(
+                rect.width
+            )
+        );
+
+
+    const height =
+        Math.max(
+            1,
+            Math.floor(
+                rect.height
+            )
+        );
+
+
+    mobileCanvasReferenceWidth =
+        width;
+
+
+    mobileCanvasReferenceHeight =
+        height;
+
+
+    console.log(
+        "ANNOTATION MOBILE FIT: DESKTOP REFERENCE CAPTURED",
+        width,
+        height
+    );
+
+}
+
+
+/*
+===========================================================
+FIT COMPLETE DESKTOP CANVAS INTO MOBILE SCREEN
+===========================================================
+*/
+
+function applyMobileCanvasFit(){
+
+    if(
+        !workspace ||
+        !canvas
+    ){
+
+        return;
+
+    }
+
+
+    /*
+    -------------------------------------------------------
+    DESKTOP
+    -------------------------------------------------------
+
+    Never change desktop appearance.
+    -------------------------------------------------------
+    */
+
+    if(
+        !isMobileAnnotationDisplay()
+    ){
+
+        resetMobileCanvasFit();
+
+        return;
+
+    }
+
+
+    /*
+    -------------------------------------------------------
+    GET DESKTOP REFERENCE
+    -------------------------------------------------------
+    */
+
+    if(
+        !mobileCanvasReferenceWidth ||
+        !mobileCanvasReferenceHeight
+    ){
+
+        /*
+        -----------------------------------------------
+        FALLBACK
+
+        If the page was opened directly on mobile,
+        use the current available workspace size as
+        the logical canvas reference.
+
+        -----------------------------------------------
+        */
+
+        const currentRect =
+            workspace.getBoundingClientRect();
+
+
+        mobileCanvasReferenceWidth =
+            Math.max(
+                1,
+                Math.floor(
+                    currentRect.width
+                )
+            );
+
+
+        mobileCanvasReferenceHeight =
+            Math.max(
+                1,
+                Math.floor(
+                    currentRect.height
+                )
+            );
+
+    }
+
+
+    /*
+    -------------------------------------------------------
+    MOBILE AVAILABLE AREA
+    -------------------------------------------------------
+    */
+
+    const availableWidth =
+        Math.max(
+            1,
+            workspace.clientWidth
+        );
+
+
+    const availableHeight =
+        Math.max(
+            1,
+            workspace.clientHeight
+        );
+
+
+    /*
+    -------------------------------------------------------
+    CALCULATE PROPORTIONAL SCALE
+    -------------------------------------------------------
+
+    IMPORTANT:
+
+    We use the smaller scale so the COMPLETE
+    desktop canvas remains visible.
+
+    Nothing is cropped.
+    -------------------------------------------------------
+    */
+
+    const scaleX =
+        availableWidth /
+        mobileCanvasReferenceWidth;
+
+
+    const scaleY =
+        availableHeight /
+        mobileCanvasReferenceHeight;
+
+
+    const scale =
+        Math.min(
+            scaleX,
+            scaleY
+        );
+
+
+    /*
+    -------------------------------------------------------
+    CALCULATE FINAL DISPLAY SIZE
+    -------------------------------------------------------
+    */
+
+    const displayWidth =
+        mobileCanvasReferenceWidth *
+        scale;
+
+
+    const displayHeight =
+        mobileCanvasReferenceHeight *
+        scale;
+
+
+    /*
+    -------------------------------------------------------
+    CENTER THE COMPLETE CANVAS
+    -------------------------------------------------------
+    */
+
+    const left =
+        (
+            availableWidth -
+            displayWidth
+        ) / 2;
+
+
+    const top =
+        (
+            availableHeight -
+            displayHeight
+        ) / 2;
+
+
+    /*
+    -------------------------------------------------------
+    APPLY MOBILE VISUAL FIT
+    -------------------------------------------------------
+
+    IMPORTANT:
+
+    The actual annotation coordinate system is NOT
+    changed here.
+
+    Only the visual display is scaled.
+    -------------------------------------------------------
+    */
+
+    canvas.style.position =
+        "absolute";
+
+
+    canvas.style.left =
+        "0px";
+
+
+    canvas.style.top =
+        "0px";
+
+
+    canvas.style.width =
+        mobileCanvasReferenceWidth +
+        "px";
+
+
+    canvas.style.height =
+        mobileCanvasReferenceHeight +
+        "px";
+
+
+    canvas.style.transformOrigin =
+        "top left";
+
+
+    canvas.style.transform =
+        `translate(${left}px, ${top}px) scale(${scale})`;
+
+
+    console.log(
+        "ANNOTATION MOBILE FIT:",
+        {
+            referenceWidth:
+                mobileCanvasReferenceWidth,
+
+            referenceHeight:
+                mobileCanvasReferenceHeight,
+
+            availableWidth:
+                availableWidth,
+
+            availableHeight:
+                availableHeight,
+
+            scale:
+                scale,
+
+            displayWidth:
+                displayWidth,
+
+            displayHeight:
+                displayHeight,
+
+            left:
+                left,
+
+            top:
+                top
+        }
+    );
+
+}
 
 function resizeWorkspace() {
 
@@ -545,6 +953,22 @@ function resizeWorkspace() {
         "DPR:",
         dpr
     );
+
+        /*
+    =======================================================
+    MOBILE DESKTOP-CANVAS FIT
+    =======================================================
+    */
+
+    if(
+        !isMobileAnnotationDisplay()
+    ){
+
+        captureMobileCanvasReference();
+
+    }
+
+    applyMobileCanvasFit();
 
 }
 
@@ -2610,29 +3034,68 @@ if (
 
     function bindResize() {
 
-        window.addEventListener(
-            "resize",
-            () => {
+            window.addEventListener(
+        "resize",
+        () => {
 
-                if (!open) {
+            if (!open) {
 
-                    return;
-
-                }
-
-
-                if (
-                    window.AnnotationCanvasV1
-                ) {
-
-                    AnnotationCanvasV1.resize();
-
-                }
+                return;
 
             }
-        );
 
-    }
+
+            if (
+                window.AnnotationCanvasV1
+            ) {
+
+                AnnotationCanvasV1.resize();
+
+            }
+
+        }
+    );
+
+
+    /*
+    =======================================================
+    MOBILE ORIENTATION CHANGE
+    =======================================================
+    */
+
+    window.addEventListener(
+        "orientationchange",
+        () => {
+
+            if (!open) {
+
+                return;
+
+            }
+
+
+            setTimeout(
+                () => {
+
+                    resizeWorkspace();
+
+
+                    if (
+                        window.AnnotationCanvasV1
+                    ) {
+
+                        AnnotationCanvasV1.resize();
+
+                    }
+
+                },
+                150
+            );
+
+        }
+    );
+
+}
 
 
     /*

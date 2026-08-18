@@ -1484,26 +1484,117 @@ function resize() {
 
     function getPoint(event) {
 
-        const rect =
-            canvas.getBoundingClientRect();
+    const rect =
+        canvas.getBoundingClientRect();
 
 
-        return {
+    /*
+    =======================================================
+    TRANSFORM-AWARE POINTER COORDINATES
+    =======================================================
 
-            x:
-                event.clientX -
-                rect.left,
+    On mobile the complete annotation canvas may be
+    visually scaled.
 
-            y:
-                event.clientY -
-                rect.top,
+    rect = the visible/mobile canvas size.
 
-            pressure:
-                event.pressure || 0
+    canvas.style.width / height =
+    the logical annotation canvas size.
 
-        };
+    Convert the mobile pointer position back into
+    the logical canvas coordinate.
+    =======================================================
+    */
 
-    }
+
+    const logicalWidth =
+        parseFloat(
+            canvas.style.width
+        ) ||
+        canvas.clientWidth ||
+        rect.width;
+
+
+    const logicalHeight =
+        parseFloat(
+            canvas.style.height
+        ) ||
+        canvas.clientHeight ||
+        rect.height;
+
+
+    const visualWidth =
+        rect.width ||
+        1;
+
+
+    const visualHeight =
+        rect.height ||
+        1;
+
+
+    /*
+    -------------------------------------------------------
+    VISUAL → LOGICAL SCALE
+    -------------------------------------------------------
+    */
+
+    const scaleX =
+        logicalWidth /
+        visualWidth;
+
+
+    const scaleY =
+        logicalHeight /
+        visualHeight;
+
+
+    /*
+    -------------------------------------------------------
+    POINTER POSITION INSIDE VISIBLE CANVAS
+    -------------------------------------------------------
+    */
+
+    const visualX =
+        event.clientX -
+        rect.left;
+
+
+    const visualY =
+        event.clientY -
+        rect.top;
+
+
+    /*
+    -------------------------------------------------------
+    CONVERT TO LOGICAL CANVAS POSITION
+    -------------------------------------------------------
+    */
+
+    const x =
+        visualX *
+        scaleX;
+
+
+    const y =
+        visualY *
+        scaleY;
+
+
+    return {
+
+        x:
+            x,
+
+        y:
+            y,
+
+        pressure:
+            event.pressure || 0
+
+    };
+
+}
 
 
     /*
