@@ -475,9 +475,25 @@ CHECK MOBILE DISPLAY
 
 function isMobileAnnotationDisplay(){
 
-    return window.matchMedia(
-        "(max-width: 700px)"
-    ).matches;
+    const isTouchDevice =
+        (
+            "ontouchstart" in window
+        ) ||
+        (
+            navigator.maxTouchPoints > 0
+        );
+
+
+    const isSmallScreen =
+        window.matchMedia(
+            "(max-width: 700px)"
+        ).matches;
+
+
+    return (
+        isTouchDevice ||
+        isSmallScreen
+    );
 
 }
 
