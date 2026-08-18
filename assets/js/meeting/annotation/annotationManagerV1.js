@@ -726,37 +726,45 @@ function applyMobileCanvasFit(){
     */
 
     const scaleX =
-        availableWidth /
-        mobileCanvasReferenceWidth;
+    availableWidth /
+    mobileCanvasReferenceWidth;
 
 
-    const scaleY =
-        availableHeight /
-        mobileCanvasReferenceHeight;
+const scaleY =
+    availableHeight /
+    mobileCanvasReferenceHeight;
 
 
-    const scale =
-        Math.min(
-            scaleX,
-            scaleY
-        );
+/*
+-------------------------------------------------------
+IMPORTANT
+
+The desktop canvas must fill the COMPLETE
+mobile annotation area.
+
+Therefore X and Y are intentionally scaled
+independently.
+
+This maps:
+
+Desktop Top-Left     → Mobile Top-Left
+Desktop Top-Right    → Mobile Top-Right
+Desktop Bottom-Left  → Mobile Bottom-Left
+Desktop Bottom-Right → Mobile Bottom-Right
+
+DO NOT use Math.min() here.
+-------------------------------------------------------
+*/
+
+const displayWidth =
+    availableWidth;
 
 
-    /*
-    -------------------------------------------------------
-    CALCULATE FINAL DISPLAY SIZE
-    -------------------------------------------------------
-    */
-
-    const displayWidth =
-        mobileCanvasReferenceWidth *
-        scale;
+const displayHeight =
+    availableHeight;
 
 
-    const displayHeight =
-        mobileCanvasReferenceHeight *
-        scale;
-
+    
 
     /*
     -------------------------------------------------------
@@ -764,18 +772,18 @@ function applyMobileCanvasFit(){
     -------------------------------------------------------
     */
 
-    const left =
-        (
-            availableWidth -
-            displayWidth
-        ) / 2;
+    /*
+-------------------------------------------------------
+NO CENTERING REQUIRED
 
+The desktop canvas fills the entire mobile
+annotation area.
+-------------------------------------------------------
+*/
 
-    const top =
-        (
-            availableHeight -
-            displayHeight
-        ) / 2;
+const left = 0;
+
+const top = 0;
 
 
     /*
@@ -819,7 +827,7 @@ function applyMobileCanvasFit(){
 
 
     canvas.style.transform =
-        `translate(${left}px, ${top}px) scale(${scale})`;
+    `translate(${left}px, ${top}px) scale(${scaleX}, ${scaleY})`;
 
 
     console.log(
