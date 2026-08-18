@@ -618,6 +618,72 @@ ANNOTATION PIP — SPEAKER FOCUS
 }
 
 
+/* =========================================================
+   ANNOTATION PIP — MEETING CONTROLS
+   ========================================================= */
+
+#participantGrid.annotation-active #meetingControls{
+
+    position:absolute;
+
+    left:8px;
+
+    right:8px;
+
+    bottom:8px;
+
+    width:auto;
+
+    min-height:42px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:6px;
+
+    padding:6px;
+
+    border-radius:10px;
+
+    background:rgba(20,20,20,.92);
+
+    z-index:999999;
+
+    pointer-events:auto;
+
+}
+
+
+#participantGrid.annotation-active
+#meetingControls .meeting-control{
+
+    width:36px;
+
+    height:36px;
+
+    min-width:36px;
+
+    min-height:36px;
+
+    padding:0;
+
+    margin:0;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:50%;
+
+    font-size:16px;
+
+}
+
 
 
 /*
@@ -3781,6 +3847,210 @@ if (
     AnnotationManagerV1.init();
 
 }
+
+/* =========================================================
+   ANNOTATION PIP — MOVE EXISTING MEETING CONTROLS
+   ========================================================= */
+
+(function(){
+
+    const meetingControls =
+        document.getElementById(
+            "meetingControls"
+        );
+
+    const participantGrid =
+        document.getElementById(
+            "participantGrid"
+        );
+
+
+    if(
+        !meetingControls ||
+        !participantGrid
+    ){
+
+        console.warn(
+            "PIP CONTROLS: required elements not found"
+        );
+
+        return;
+
+    }
+
+
+    /*
+    =========================================================
+    REMEMBER ORIGINAL LOCATION
+    =========================================================
+    */
+
+    const originalParent =
+        meetingControls.parentElement;
+
+    const originalNextSibling =
+        meetingControls.nextSibling;
+
+
+    let controlsInsidePiP =
+        false;
+
+
+    /*
+    =========================================================
+    MOVE CONTROLS INTO PIP
+    =========================================================
+    */
+
+    function moveControlsIntoPiP(){
+
+        if(
+            controlsInsidePiP
+        ){
+
+            return;
+
+        }
+
+
+        if(
+            !participantGrid.classList.contains(
+                "annotation-active"
+            )
+        ){
+
+            return;
+
+        }
+
+
+        participantGrid.appendChild(
+            meetingControls
+        );
+
+
+        controlsInsidePiP =
+            true;
+
+
+        console.log(
+            "PIP CONTROLS: MOVED INTO PIP"
+        );
+
+    }
+
+
+    /*
+    =========================================================
+    RETURN CONTROLS TO ORIGINAL LOCATION
+    =========================================================
+    */
+
+    function restoreControls(){
+
+        if(
+            !controlsInsidePiP
+        ){
+
+            return;
+
+        }
+
+
+        if(
+            originalNextSibling &&
+            originalNextSibling.parentNode ===
+                originalParent
+        ){
+
+            originalParent.insertBefore(
+                meetingControls,
+                originalNextSibling
+            );
+
+        }
+        else{
+
+            originalParent.appendChild(
+                meetingControls
+            );
+
+        }
+
+
+        controlsInsidePiP =
+            false;
+
+
+        console.log(
+            "PIP CONTROLS: RESTORED"
+        );
+
+    }
+
+
+    /*
+    =========================================================
+    WATCH ANNOTATION STATE
+    =========================================================
+    */
+
+    const observer =
+        new MutationObserver(
+            () => {
+
+                if(
+                    participantGrid.classList.contains(
+                        "annotation-active"
+                    )
+                ){
+
+                    moveControlsIntoPiP();
+
+                }
+                else{
+
+                    restoreControls();
+
+                }
+
+            }
+        );
+
+
+    observer.observe(
+        participantGrid,
+        {
+
+            attributes:true,
+
+            attributeFilter:[
+                "class"
+            ]
+
+        }
+    );
+
+
+    /*
+    =========================================================
+    INITIAL CHECK
+    =========================================================
+    */
+
+    if(
+        participantGrid.classList.contains(
+            "annotation-active"
+        )
+    ){
+
+        moveControlsIntoPiP();
+
+    }
+
+})();
+
+
 /* =========================================================
    ANNOTATION PIP — DRAG CONTROLLER
    ========================================================= */
