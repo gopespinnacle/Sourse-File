@@ -475,25 +475,9 @@ CHECK MOBILE DISPLAY
 
 function isMobileAnnotationDisplay(){
 
-    const isTouchDevice =
-        (
-            "ontouchstart" in window
-        ) ||
-        (
-            navigator.maxTouchPoints > 0
-        );
-
-
-    const isSmallScreen =
-        window.matchMedia(
-            "(max-width: 700px)"
-        ).matches;
-
-
-    return (
-        isTouchDevice ||
-        isSmallScreen
-    );
+    return window.matchMedia(
+        "(max-width: 900px)"
+    ).matches;
 
 }
 
@@ -648,6 +632,60 @@ function applyMobileCanvasFit(){
     */
 
         if (
+    !mobileCanvasReferenceWidth ||
+    !mobileCanvasReferenceHeight
+) {
+
+    const savedReference =
+        localStorage.getItem(
+            "gopesAnnotationDesktopReference"
+        );
+
+
+    if (savedReference) {
+
+        try {
+
+            const reference =
+                JSON.parse(
+                    savedReference
+                );
+
+
+            mobileCanvasReferenceWidth =
+                Number(
+                    reference.width
+                );
+
+
+            mobileCanvasReferenceHeight =
+                Number(
+                    reference.height
+                );
+
+
+            console.log(
+                "ANNOTATION MOBILE FIT: DESKTOP REFERENCE RESTORED",
+                mobileCanvasReferenceWidth,
+                mobileCanvasReferenceHeight
+            );
+
+        }
+        catch(error) {
+
+            console.error(
+                "ANNOTATION MOBILE FIT: INVALID DESKTOP REFERENCE",
+                error
+            );
+
+            return;
+
+        }
+
+    }
+
+
+    if (
         !mobileCanvasReferenceWidth ||
         !mobileCanvasReferenceHeight
     ) {
@@ -659,6 +697,8 @@ function applyMobileCanvasFit(){
         return;
 
     }
+
+}
 
 
     /*
@@ -897,25 +937,43 @@ function resizeWorkspace() {
     */
 
     if (
-        !isMobileAnnotationDisplay() &&
-        !mobileCanvasReferenceWidth &&
-        !mobileCanvasReferenceHeight
-    ) {
+    !isMobileAnnotationDisplay() &&
+    !mobileCanvasReferenceWidth &&
+    !mobileCanvasReferenceHeight
+) {
 
-        mobileCanvasReferenceWidth =
-            width;
+    mobileCanvasReferenceWidth =
+        width;
 
-        mobileCanvasReferenceHeight =
-            height;
+    mobileCanvasReferenceHeight =
+        height;
 
 
-        console.log(
-            "ANNOTATION MOBILE FIT: DESKTOP REFERENCE LOCKED",
-            mobileCanvasReferenceWidth,
-            mobileCanvasReferenceHeight
-        );
+    /*
+    =======================================================
+    SAVE DESKTOP REFERENCE
+    =======================================================
+    */
 
-    }
+    localStorage.setItem(
+        "gopesAnnotationDesktopReference",
+        JSON.stringify({
+            width:
+                mobileCanvasReferenceWidth,
+
+            height:
+                mobileCanvasReferenceHeight
+        })
+    );
+
+
+    console.log(
+        "ANNOTATION MOBILE FIT: DESKTOP REFERENCE LOCKED",
+        mobileCanvasReferenceWidth,
+        mobileCanvasReferenceHeight
+    );
+
+}
 
 
     /*
