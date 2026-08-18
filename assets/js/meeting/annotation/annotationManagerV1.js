@@ -529,11 +529,7 @@ function resetMobileCanvasFit(){
         "0px";
 
 
-    mobileCanvasReferenceWidth =
-        null;
 
-    mobileCanvasReferenceHeight =
-        null;
 
 }
 
@@ -651,42 +647,16 @@ function applyMobileCanvasFit(){
     -------------------------------------------------------
     */
 
-    if(
+        if (
         !mobileCanvasReferenceWidth ||
         !mobileCanvasReferenceHeight
-    ){
+    ) {
 
-        /*
-        -----------------------------------------------
-        FALLBACK
+        console.warn(
+            "ANNOTATION MOBILE FIT: DESKTOP REFERENCE NOT READY"
+        );
 
-        If the page was opened directly on mobile,
-        use the current available workspace size as
-        the logical canvas reference.
-
-        -----------------------------------------------
-        */
-
-        const currentRect =
-            workspace.getBoundingClientRect();
-
-
-        mobileCanvasReferenceWidth =
-            Math.max(
-                1,
-                Math.floor(
-                    currentRect.width
-                )
-            );
-
-
-        mobileCanvasReferenceHeight =
-            Math.max(
-                1,
-                Math.floor(
-                    currentRect.height
-                )
-            );
+        return;
 
     }
 
@@ -909,6 +879,44 @@ function resizeWorkspace() {
             )
         );
 
+            /*
+    =======================================================
+    CAPTURE DESKTOP ANNOTATION REFERENCE
+    =======================================================
+
+    IMPORTANT:
+
+    Capture this BEFORE mobile visual fitting.
+
+    This becomes the logical desktop canvas size.
+
+    It must NOT be replaced by the mobile
+    portrait/landscape dimensions.
+
+    =======================================================
+    */
+
+    if (
+        !isMobileAnnotationDisplay() &&
+        !mobileCanvasReferenceWidth &&
+        !mobileCanvasReferenceHeight
+    ) {
+
+        mobileCanvasReferenceWidth =
+            width;
+
+        mobileCanvasReferenceHeight =
+            height;
+
+
+        console.log(
+            "ANNOTATION MOBILE FIT: DESKTOP REFERENCE LOCKED",
+            mobileCanvasReferenceWidth,
+            mobileCanvasReferenceHeight
+        );
+
+    }
+
 
     /*
     =======================================================
@@ -986,14 +994,6 @@ function resizeWorkspace() {
     MOBILE DESKTOP-CANVAS FIT
     =======================================================
     */
-
-    if(
-        !isMobileAnnotationDisplay()
-    ){
-
-        captureMobileCanvasReference();
-
-    }
 
     applyMobileCanvasFit();
 

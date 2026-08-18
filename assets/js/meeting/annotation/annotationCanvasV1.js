@@ -1488,24 +1488,7 @@ function resize() {
         canvas.getBoundingClientRect();
 
 
-    /*
-    =======================================================
-    TRANSFORM-AWARE POINTER COORDINATES
-    =======================================================
-
-    On mobile the complete annotation canvas may be
-    visually scaled.
-
-    rect = the visible/mobile canvas size.
-
-    canvas.style.width / height =
-    the logical annotation canvas size.
-
-    Convert the mobile pointer position back into
-    the logical canvas coordinate.
-    =======================================================
-    */
-
+    
 
     const logicalWidth =
         parseFloat(
