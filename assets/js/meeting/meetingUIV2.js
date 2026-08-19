@@ -245,8 +245,14 @@ const raiseHandButton =
 
 if (raiseHandButton) {
 
-    raiseHandButton.addEventListener(
-        "click",
+    /*
+    ==================================================
+    USE ONCLICK
+    This prevents duplicate click handlers
+    ==================================================
+    */
+
+    raiseHandButton.onclick =
         () => {
 
             /*
@@ -270,12 +276,6 @@ if (raiseHandButton) {
             }
 
 
-            /*
-            ==========================================
-            GET USER INFORMATION
-            ==========================================
-            */
-
             const room =
                 config.room;
 
@@ -286,21 +286,19 @@ if (raiseHandButton) {
                 config.userName;
 
 
-            if (!room) {
+            /*
+            ==========================================
+            CHECK SOCKET
+            ==========================================
+            */
+
+            if (
+                !window.MeetingSocket ||
+                !MeetingSocket.isConnected()
+            ) {
 
                 console.warn(
-                    "RAISE HAND: room missing."
-                );
-
-                return;
-
-            }
-
-
-            if (!studentId) {
-
-                console.warn(
-                    "RAISE HAND: userId missing."
+                    "RAISE HAND: Socket not connected."
                 );
 
                 return;
@@ -330,169 +328,6 @@ if (raiseHandButton) {
                 MeetingSocket.emit(
                     "lowerHand",
                     {
-
-                        room:
-                            room,
-
-                        studentId:
-                            studentId,
-
-                        name:
-                            name
-
-                    }
-                );
-
-
-                raiseHandButton.dataset.raised =
-                    "false";
-
-
-                console.log(
-                    "RAISE HAND: LOWERED"
-                );
-
-
-                return;
-
-            }
-
-
-            /*
-            ==========================================
-            RAISE HAND
-            ==========================================
-            */
-
-            MeetingSocket.emit(
-                "raiseHand",
-                {
-
-                    room:
-                        room,
-
-                    studentId:
-                        studentId,
-
-                    name:
-                        name
-
-                }
-            );
-
-
-            raiseHandButton.dataset.raised =
-                "true";
-
-
-            console.log(
-                "RAISE HAND: RAISED"
-            );
-
-        }
-    );
-
-}
-
-
-if (raiseHandButton) {
-
-    raiseHandButton.addEventListener(
-        "click",
-        () => {
-
-            /*
-            ==========================================
-            MEETING INFORMATION
-            ==========================================
-            */
-
-            const config =
-                window.MeetingConfig;
-
-
-            if (!config) {
-
-                console.warn(
-                    "MeetingConfig not available."
-                );
-
-                return;
-
-            }
-
-
-            const room =
-                config.room;
-
-            const studentId =
-                config.userId;
-
-            const name =
-                config.userName;
-
-
-            /*
-            ==========================================
-            CHECK REQUIRED DATA
-            ==========================================
-            */
-
-            if (!room) {
-
-                console.warn(
-                    "Raise Hand: room missing."
-                );
-
-                return;
-
-            }
-
-
-            if (!studentId) {
-
-                console.warn(
-                    "Raise Hand: user ID missing."
-                );
-
-                return;
-
-            }
-
-
-            if (!name) {
-
-                console.warn(
-                    "Raise Hand: user name missing."
-                );
-
-                return;
-
-            }
-
-
-            /*
-            ==========================================
-            CURRENT HAND STATE
-            ==========================================
-            */
-
-            const isRaised =
-                raiseHandButton.dataset.raised ===
-                "true";
-
-
-            /*
-            ==========================================
-            LOWER HAND
-            ==========================================
-            */
-
-            if (isRaised) {
-
-                MeetingSocket.emit(
-                    "lowerHand",
-                    {
                         room:
                             room,
 
@@ -507,10 +342,6 @@ if (raiseHandButton) {
 
                 raiseHandButton.dataset.raised =
                     "false";
-
-
-                raiseHandButton.innerHTML =
-                    "✋";
 
 
                 console.log(
@@ -548,18 +379,14 @@ if (raiseHandButton) {
                 "true";
 
 
-            raiseHandButton.innerHTML =
-                "✋";
-
-
             console.log(
-                "HAND RAISED"
+                "RAISE HAND: RAISED"
             );
 
-        }
-    );
+        };
 
 }
+
 
         const peopleButton =
             document.getElementById(
