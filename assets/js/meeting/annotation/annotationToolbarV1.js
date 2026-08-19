@@ -72,30 +72,30 @@ window.AnnotationToolbarV1 = (() => {
 
     function createToolbar() {
 
-        if (
-            document.getElementById(
-                "annotationToolbarV1"
-            )
-        ) {
-
-            toolbar =
-                document.getElementById(
-                    "annotationToolbarV1"
-                );
-
-            return;
-
-        }
+        const existingToolbar =
+    document.getElementById(
+        "annotationToolbarV1"
+    );
 
 
-        toolbar =
-            document.createElement(
-                "div"
-            );
+if (existingToolbar) {
+
+    toolbar =
+        existingToolbar;
+
+}
+else {
+
+    toolbar =
+        document.createElement(
+            "div"
+        );
 
 
-        toolbar.id =
-            "annotationToolbarV1";
+    toolbar.id =
+        "annotationToolbarV1";
+
+}
 
 
         toolbar.innerHTML = `
