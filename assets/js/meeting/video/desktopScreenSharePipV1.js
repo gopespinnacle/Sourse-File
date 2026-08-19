@@ -369,17 +369,26 @@ window.DesktopScreenSharePip = {
             this.refreshParticipants();
 
 
-            /*
-            ------------------------------------------------
-            START ACTIVE SPEAKER DETECTION
-            ------------------------------------------------
-            */
+         /*
+------------------------------------------------
+START ACTIVE SPEAKER DETECTION
+------------------------------------------------
+*/
 
-            this.startSpeakerDetection();
+this.startSpeakerDetection();
 
 
-            this.prepared =
-                true;
+/*
+------------------------------------------------
+CREATE GOOGLE MEET STYLE PIP MENU
+------------------------------------------------
+*/
+
+this.createPipMenu();
+
+
+this.prepared =
+    true;
 
 
             console.log(
@@ -1306,14 +1315,460 @@ window.DesktopScreenSharePip = {
 
     },
 
+    
+
 
     /*
-    =======================================================
-    CLOSE
-    =======================================================
+=======================================================
+GOOGLE MEET STYLE PIP MENU
+=======================================================
+*/
+
+createPipMenu() {
+
+    if (
+        !this.pipWindow ||
+        this.pipWindow.closed ||
+        !this.root
+    ) {
+
+        return;
+
+    }
+
+
+    const doc =
+        this.pipWindow.document;
+
+
+    /*
+    ---------------------------------------------------
+    MENU BAR
+    ---------------------------------------------------
     */
 
-    close() {
+    const menu =
+        doc.createElement("div");
+
+
+    menu.id =
+        "desktopPipMenu";
+
+
+    menu.style.position =
+        "absolute";
+
+    menu.style.left =
+        "0";
+
+    menu.style.right =
+        "0";
+
+    menu.style.bottom =
+        "0";
+
+    menu.style.height =
+        "58px";
+
+    menu.style.display =
+        "flex";
+
+    menu.style.alignItems =
+        "center";
+
+    menu.style.justifyContent =
+        "center";
+
+    menu.style.gap =
+        "8px";
+
+    menu.style.background =
+        "rgba(32,33,36,.96)";
+
+    menu.style.zIndex =
+        "999999";
+
+
+    /*
+    ---------------------------------------------------
+    BUTTON CREATOR
+    ---------------------------------------------------
+    */
+
+    const createButton =
+        (
+            originalId,
+            icon,
+            title
+        ) => {
+
+            const button =
+                doc.createElement("button");
+
+
+            button.type =
+                "button";
+
+
+            button.innerHTML =
+                icon;
+
+
+            button.title =
+                title;
+
+
+            button.style.width =
+                "38px";
+
+            button.style.height =
+                "38px";
+
+            button.style.minWidth =
+                "38px";
+
+            button.style.border =
+                "0";
+
+            button.style.borderRadius =
+                "50%";
+
+            button.style.background =
+                "#3c4043";
+
+            button.style.color =
+                "#ffffff";
+
+            button.style.cursor =
+                "pointer";
+
+            button.style.display =
+                "flex";
+
+            button.style.alignItems =
+                "center";
+
+            button.style.justifyContent =
+                "center";
+
+            button.style.fontSize =
+                "17px";
+
+            button.style.padding =
+                "0";
+
+
+            /*
+            -------------------------------------------
+            CONNECT TO EXISTING MAIN CONTROL
+            -------------------------------------------
+            */
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const originalButton =
+                        document.getElementById(
+                            originalId
+                        );
+
+
+                    if (
+                        originalButton
+                    ) {
+
+                        console.log(
+                            "DESKTOP PIP:",
+                            title
+                        );
+
+
+                        originalButton.click();
+
+                    }
+                    else {
+
+                        console.warn(
+                            "DESKTOP PIP: BUTTON NOT FOUND:",
+                            originalId
+                        );
+
+                    }
+
+                }
+            );
+
+
+            /*
+            -------------------------------------------
+            HOVER
+            -------------------------------------------
+            */
+
+            button.addEventListener(
+                "mouseenter",
+                () => {
+
+                    button.style.background =
+                        "#5f6368";
+
+                }
+            );
+
+
+            button.addEventListener(
+                "mouseleave",
+                () => {
+
+                    button.style.background =
+                        "#3c4043";
+
+                }
+            );
+
+
+            menu.appendChild(
+                button
+            );
+
+        };
+
+
+    /*
+    ===================================================
+    MICROPHONE
+    ===================================================
+    */
+
+    createButton(
+        "micButton",
+        "🎤",
+        "Microphone"
+    );
+
+
+    /*
+    ===================================================
+    CAMERA
+    ===================================================
+    */
+
+    createButton(
+        "cameraButton",
+        "📹",
+        "Camera"
+    );
+
+
+    /*
+    ===================================================
+    RAISE HAND
+    ===================================================
+    */
+
+    createButton(
+        "raiseHandButton",
+        "✋",
+        "Raise hand"
+    );
+
+
+    /*
+    ===================================================
+    SCREEN SHARE
+    ===================================================
+    */
+
+    createButton(
+        "screenShareButton",
+        "🖥️",
+        "Screen share"
+    );
+
+
+    /*
+    ===================================================
+    PARTICIPANTS
+    ===================================================
+    */
+
+    createButton(
+        "peopleButton",
+        "👥",
+        "Participants"
+    );
+
+
+    /*
+    ===================================================
+    CHAT
+    ===================================================
+    */
+
+    createButton(
+        "chatButton",
+        "💬",
+        "Chat"
+    );
+
+
+    /*
+    ===================================================
+    MORE
+    ===================================================
+    */
+
+    const moreButton =
+        doc.createElement("button");
+
+
+    moreButton.type =
+        "button";
+
+
+    moreButton.innerHTML =
+        "⋮";
+
+
+    moreButton.title =
+        "More options";
+
+
+    moreButton.style.width =
+        "38px";
+
+    moreButton.style.height =
+        "38px";
+
+    moreButton.style.border =
+        "0";
+
+    moreButton.style.borderRadius =
+        "50%";
+
+    moreButton.style.background =
+        "#3c4043";
+
+    moreButton.style.color =
+        "#ffffff";
+
+    moreButton.style.cursor =
+        "pointer";
+
+    moreButton.style.fontSize =
+        "22px";
+
+
+    moreButton.addEventListener(
+        "click",
+        () => {
+
+            console.log(
+                "DESKTOP PIP: MORE OPTIONS"
+            );
+
+        }
+    );
+
+
+    menu.appendChild(
+        moreButton
+    );
+
+
+    /*
+    ===================================================
+    LEAVE
+    ===================================================
+    */
+
+    const leaveButton =
+        doc.createElement("button");
+
+
+    leaveButton.type =
+        "button";
+
+
+    leaveButton.innerHTML =
+        "☎";
+
+
+    leaveButton.title =
+        "Leave meeting";
+
+
+    leaveButton.style.width =
+        "42px";
+
+    leaveButton.style.height =
+        "38px";
+
+    leaveButton.style.border =
+        "0";
+
+    leaveButton.style.borderRadius =
+        "20px";
+
+    leaveButton.style.background =
+        "#ea4335";
+
+    leaveButton.style.color =
+        "#ffffff";
+
+    leaveButton.style.cursor =
+        "pointer";
+
+    leaveButton.style.fontSize =
+        "17px";
+
+
+    leaveButton.addEventListener(
+        "click",
+        () => {
+
+            console.log(
+                "DESKTOP PIP: LEAVE CLICKED"
+            );
+
+
+            this.close();
+
+        }
+    );
+
+
+    menu.appendChild(
+        leaveButton
+    );
+
+
+    /*
+    ===================================================
+    ADD MENU TO PIP
+    ===================================================
+    */
+
+    this.root.appendChild(
+        menu
+    );
+
+
+    console.log(
+        "DESKTOP PIP: GOOGLE MEET MENU CREATED"
+    );
+
+},
+
+
+/*
+=======================================================
+CLOSE
+=======================================================
+*/
+
+close() {
 
         this.stopSpeakerDetection();
 
