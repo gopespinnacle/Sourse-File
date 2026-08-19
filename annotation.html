@@ -304,6 +304,218 @@ ANNOTATION TOOLBAR V1
 
         }
 
+        /*
+===========================================================
+CLOSE CONFIRMATION MODAL
+===========================================================
+*/
+
+.annotationCloseOverlayV1 {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 99999;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+        rgba(0, 0, 0, .65);
+
+    backdrop-filter:
+        blur(4px);
+
+}
+
+
+.annotationCloseDialogV1 {
+
+    width: 420px;
+
+    max-width: calc(100vw - 32px);
+
+    padding: 28px;
+
+    background: #171a1f;
+
+    border:
+        1px solid #343b45;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 20px 60px
+        rgba(0, 0, 0, .45);
+
+    text-align: center;
+
+}
+
+
+.annotationCloseIconV1 {
+
+    width: 48px;
+
+    height: 48px;
+
+    margin:
+        0 auto 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #3a2f16;
+
+    color: #fbbf24;
+
+    font-size: 23px;
+
+}
+
+
+.annotationCloseTitleV1 {
+
+    font-size: 19px;
+
+    font-weight: 700;
+
+    color: #ffffff;
+
+    margin-bottom: 10px;
+
+}
+
+
+.annotationCloseMessageV1 {
+
+    font-size: 14px;
+
+    line-height: 1.6;
+
+    color: #cbd5e1;
+
+}
+
+
+.annotationCloseActionsV1 {
+
+    margin-top: 24px;
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+
+}
+
+
+.annotationCloseButtonV1 {
+
+    min-width: 105px;
+
+    padding:
+        10px 16px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        transform .15s ease,
+        opacity .15s ease;
+
+}
+
+
+.annotationCloseButtonV1:hover {
+
+    transform:
+        translateY(-1px);
+
+    opacity: .9;
+
+}
+
+
+.annotationCloseSaveButtonV1 {
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+}
+
+
+.annotationCloseDontSaveButtonV1 {
+
+    background: #374151;
+
+    color: #ffffff;
+
+}
+
+
+.annotationCloseCancelButtonV1 {
+
+    background: #111827;
+
+    color: #d1d5db;
+
+    border:
+        1px solid #4b5563;
+
+}
+
+
+/*
+===========================================================
+MOBILE
+===========================================================
+*/
+
+@media (max-width: 700px) {
+
+    .annotationCloseDialogV1 {
+
+        padding: 22px;
+
+    }
+
+
+    .annotationCloseActionsV1 {
+
+        flex-direction: column;
+
+    }
+
+
+    .annotationCloseButtonV1 {
+
+        width: 100%;
+
+    }
+
+}
+
     </style>
 
 </head>

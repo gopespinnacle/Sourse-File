@@ -1923,41 +1923,409 @@ else {
 
 
         /*
-        ===================================================
-        CLOSE
-        ===================================================
-        */
+===================================================
+CLOSE ANNOTATION
+===================================================
+*/
 
-        const close =
-            document.getElementById(
-                "annotationCloseV1"
+const closeAnnotation =
+    document.getElementById(
+        "annotationCloseV1"
+    );
+
+
+if (closeAnnotation) {
+
+    closeAnnotation.addEventListener(
+        "click",
+        () => {
+
+            console.log(
+                "ANNOTATION TOOLBAR V1: CLOSE CLICKED"
             );
 
 
-        if (close) {
+            /*
+            ===================================================
+            CHECK UNSAVED CHANGES
+            ===================================================
+            */
 
-            close.addEventListener(
-                "click",
-                () => {
+            let unsaved =
+                false;
 
-                    if (
-                        window.AnnotationManagerV1 &&
-                        typeof
-                        AnnotationManagerV1.close
-                        ===
-                        "function"
-                    ) {
 
-                        AnnotationManagerV1.close();
+            if (
+                window.AnnotationPageV1 &&
+                typeof
+                AnnotationPageV1.hasChanges ===
+                    "function"
+            ) {
 
-                    }
+                unsaved =
+                    AnnotationPageV1.hasChanges();
 
-                }
-            );
+            }
+
+
+            /*
+            ===================================================
+            NO UNSAVED CHANGES
+            ===================================================
+            */
+
+            if (!unsaved) {
+
+                closeAnnotationPage();
+
+                return;
+
+            }
+
+
+            /*
+            ===================================================
+            SHOW SAVE CONFIRMATION
+            ===================================================
+            */
+
+            showCloseConfirmation();
 
         }
+    );
+
+}
 
     }
+
+
+/*
+===========================================================
+CLOSE ANNOTATION PAGE
+===========================================================
+*/
+
+function closeAnnotationPage() {
+
+    console.log(
+        "ANNOTATION TOOLBAR V1: CLOSING ANNOTATION"
+    );
+
+
+    /*
+    -------------------------------------------------------
+    CLOSE THIS TAB
+    -------------------------------------------------------
+    */
+
+    if (
+        window.opener &&
+        !window.opener.closed
+    ) {
+
+        window.close();
+
+    }
+    else {
+
+        /*
+        ---------------------------------------------------
+        FALLBACK
+        ---------------------------------------------------
+
+        Browser may prevent window.close()
+        if this page was not opened by script.
+        ---------------------------------------------------
+        */
+
+        window.history.back();
+
+    }
+
+}
+
+
+/*
+===========================================================
+CLOSE CONFIRMATION
+===========================================================
+*/
+
+function showCloseConfirmation() {
+
+    /*
+    -------------------------------------------------------
+    REMOVE EXISTING POPUP
+    -------------------------------------------------------
+    */
+
+    const existing =
+        document.getElementById(
+            "annotationCloseModalV1"
+        );
+
+
+    if (existing) {
+
+        existing.remove();
+
+    }
+
+
+    /*
+    -------------------------------------------------------
+    CREATE MODAL
+    -------------------------------------------------------
+    */
+
+    const modal =
+        document.createElement(
+            "div"
+        );
+
+
+    modal.id =
+        "annotationCloseModalV1";
+
+
+    modal.innerHTML = `
+
+        <div
+            class="annotationCloseOverlayV1"
+        >
+
+            <div
+                class="annotationCloseDialogV1"
+            >
+
+                <div
+                    class="annotationCloseIconV1"
+                >
+                    ⚠
+                </div>
+
+
+                <div
+                    class="annotationCloseTitleV1"
+                >
+                    Unsaved Changes
+                </div>
+
+
+                <div
+                    class="annotationCloseMessageV1"
+                >
+                    You have unsaved changes in this
+                    learning material.
+                    <br>
+                    Do you want to save them before closing?
+                </div>
+
+
+                <div
+                    class="annotationCloseActionsV1"
+                >
+
+                    <button
+                        type="button"
+                        id="annotationCloseSaveV1"
+                        class="annotationCloseButtonV1 annotationCloseSaveButtonV1"
+                    >
+                        Save
+                    </button>
+
+
+                    <button
+                        type="button"
+                        id="annotationCloseDontSaveV1"
+                        class="annotationCloseButtonV1 annotationCloseDontSaveButtonV1"
+                    >
+                        Don't Save
+                    </button>
+
+
+                    <button
+                        type="button"
+                        id="annotationCloseCancelV1"
+                        class="annotationCloseButtonV1 annotationCloseCancelButtonV1"
+                    >
+                        Cancel
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    document.body.appendChild(
+        modal
+    );
+
+
+    /*
+    =======================================================
+    SAVE
+    =======================================================
+    */
+
+    const saveButton =
+        document.getElementById(
+            "annotationCloseSaveV1"
+        );
+
+
+    saveButton.addEventListener(
+        "click",
+        async () => {
+
+            console.log(
+                "ANNOTATION CLOSE: SAVE"
+            );
+
+
+            saveButton.disabled =
+                true;
+
+
+            saveButton.innerText =
+                "Saving...";
+
+
+            /*
+            ------------------------------------------------
+            CALL EXISTING SAVE SYSTEM
+            ------------------------------------------------
+            */
+
+            if (
+                window.AnnotationPageV1 &&
+                typeof
+                AnnotationPageV1.saveMaterial ===
+                    "function"
+            ) {
+
+                await
+                AnnotationPageV1.saveMaterial();
+
+            }
+
+
+            /*
+            ------------------------------------------------
+            CHECK WHETHER SAVE WAS SUCCESSFUL
+            ------------------------------------------------
+            */
+
+            let stillUnsaved =
+                true;
+
+
+            if (
+                window.AnnotationPageV1 &&
+                typeof
+                AnnotationPageV1.hasChanges ===
+                    "function"
+            ) {
+
+                stillUnsaved =
+                    AnnotationPageV1.hasChanges();
+
+            }
+
+
+            /*
+            ------------------------------------------------
+            CLOSE ONLY AFTER SUCCESSFUL SAVE
+            ------------------------------------------------
+            */
+
+            if (!stillUnsaved) {
+
+                modal.remove();
+
+                closeAnnotationPage();
+
+            }
+            else {
+
+                saveButton.disabled =
+                    false;
+
+                saveButton.innerText =
+                    "Save";
+
+
+                console.warn(
+                    "ANNOTATION CLOSE: SAVE DID NOT COMPLETE"
+                );
+
+            }
+
+        }
+    );
+
+
+    /*
+    =======================================================
+    DON'T SAVE
+    =======================================================
+    */
+
+    const dontSaveButton =
+        document.getElementById(
+            "annotationCloseDontSaveV1"
+        );
+
+
+    dontSaveButton.addEventListener(
+        "click",
+        () => {
+
+            console.log(
+                "ANNOTATION CLOSE: DON'T SAVE"
+            );
+
+
+            modal.remove();
+
+
+            closeAnnotationPage();
+
+        }
+    );
+
+
+    /*
+    =======================================================
+    CANCEL
+    =======================================================
+    */
+
+    const cancelButton =
+        document.getElementById(
+            "annotationCloseCancelV1"
+        );
+
+
+    cancelButton.addEventListener(
+        "click",
+        () => {
+
+            console.log(
+                "ANNOTATION CLOSE: CANCEL"
+            );
+
+
+            modal.remove();
+
+        }
+    );
+
+}
 
 
     /*
