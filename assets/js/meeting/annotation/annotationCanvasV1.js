@@ -43,6 +43,23 @@ let annotationSocket = null;
 
 let annotationRoom = null;
 
+/*
+===========================================================
+ANNOTATION SESSION KEY
+===========================================================
+
+Each time teacher presses Continue in the material popup,
+a new unique key is created.
+
+This key identifies ONE annotation session.
+
+The classroom room remains separate and is still used
+for teacher <-> student socket communication.
+===========================================================
+*/
+
+let annotationSessionKey = null;
+
 let annotationPersistenceReady = false;
 
     /*
@@ -128,10 +145,28 @@ function initPersistence() {
     annotationRoom =
         params.get("room");
 
-        console.log(
+
+          console.log(
     "ANNOTATION V1: ROOM",
     annotationRoom
 );
+
+        /*
+===========================================================
+GET UNIQUE ANNOTATION SESSION KEY
+===========================================================
+*/
+
+annotationSessionKey =
+    params.get("key");
+
+
+console.log(
+    "ANNOTATION V1: SESSION KEY",
+    annotationSessionKey
+);
+
+      
 
 
     if (!annotationRoom) {
@@ -423,11 +458,16 @@ if (
     =======================================================
     */
 
-    annotationSocket.emit(
-        "annotationLoad",
-        annotationRoom
-    );
+  annotationSocket.emit(
+    "annotationLoad",
+    {
+        room:
+            annotationRoom,
 
+        annotationKey:
+            annotationSessionKey
+    }
+);
 
     console.log(
         "ANNOTATION V1: PERSISTENCE READY",
@@ -471,27 +511,55 @@ function saveAnnotationState() {
     */
 
     annotationSocket.emit(
-        "annotationSave",
-        {
-            room:
-                annotationRoom,
+    "annotationSave",
+    {
 
-            data: {
+        /*
+        ---------------------------------------------------
+        CLASSROOM ROOM
+        ---------------------------------------------------
+        Used only for live teacher/student synchronization.
+        ---------------------------------------------------
+        */
 
-                pages:
-                    JSON.parse(
-                        JSON.stringify(
-                            annotationPages
-                        )
-                    ),
+        room:
+            annotationRoom,
 
-                currentPage:
-                    currentPageIndex
 
-            }
+        /*
+        ---------------------------------------------------
+        UNIQUE ANNOTATION SESSION
+        ---------------------------------------------------
+        Used for MongoDB persistence.
+        ---------------------------------------------------
+        */
+
+        annotationKey:
+            annotationSessionKey,
+
+
+        /*
+        ---------------------------------------------------
+        ANNOTATION DATA
+        ---------------------------------------------------
+        */
+
+        data: {
+
+            pages:
+                JSON.parse(
+                    JSON.stringify(
+                        annotationPages
+                    )
+                ),
+
+            currentPage:
+                currentPageIndex
 
         }
-    );
+
+    }
+);
 
 }
 
