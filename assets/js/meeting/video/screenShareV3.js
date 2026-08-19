@@ -620,7 +620,23 @@ localScreenStream = null;
 
         hideRemoteScreen();
 
-        hideLocalScreen();
+hideLocalScreen();
+
+
+/*
+---------------------------------------------------
+DESKTOP SCREEN SHARE PIP V1
+CLOSE PIP
+---------------------------------------------------
+*/
+
+if (
+    window.DesktopScreenSharePip
+) {
+
+    DesktopScreenSharePip.close();
+
+}
 
 
         console.log(
@@ -1369,6 +1385,23 @@ localScreenStream = null;
 
     screenVideo.srcObject =
         stream;
+
+        /*
+===========================================================
+DESKTOP SCREEN SHARE PIP V1
+SHOW THE SAME SCREEN STREAM
+===========================================================
+*/
+
+if (
+    window.DesktopScreenSharePip
+) {
+
+    DesktopScreenSharePip.showScreen(
+        stream
+    );
+
+}
 
 
     screenVideo.autoplay =

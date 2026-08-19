@@ -26,7 +26,9 @@
 <script src="assets/js/meeting/meetingSocket.js"></script>
 <script src="assets/js/meeting/meetingWebRTC.js"></script>
 <script src="assets/js/meeting/video/screenShareV3.js"></script>
+<script src="assets/js/meeting/video/desktopScreenSharePipV1.js"></script>
 <script src="assets/js/meeting/video/presentationLayoutV2.js"></script>
+
 <script src="assets/js/meeting/annotation/annotationCanvasV1.js"></script>
 
 <script src="assets/js/meeting/annotation/annotationToolbarV1.js"></script>
@@ -3982,14 +3984,35 @@ if (screenShareButton) {
 
                 else {
 
-                    console.log(
-                        "STARTING SCREEN SHARE"
-                    );
+    console.log(
+        "STARTING SCREEN SHARE"
+    );
 
 
-                    await ScreenShare.start();
+    /*
+    =======================================================
+    DESKTOP SCREEN SHARE PIP V1
+    =======================================================
+    */
 
-                }
+    if (
+        window.DesktopScreenSharePip
+    ) {
+
+        await DesktopScreenSharePip.prepare();
+
+    }
+
+
+    /*
+    =======================================================
+    EXISTING SCREEN SHARE
+    =======================================================
+    */
+
+    await ScreenShare.start();
+
+}
 
             }
 
