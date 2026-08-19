@@ -2,212 +2,22 @@
 ===========================================================
 GOPES PINNACLE ACADEMY
 ANNOTATION PAGE V1
-
-NEW STANDALONE ANNOTATION PAGE
-
-IMPORTANT:
-
-This controller is ONLY for annotation.html.
-
-It does NOT use:
-
-- AnnotationManagerV1
-- whiteboard.html
-- screenContainer
-- participantGrid
-- WebRTC
-- PIP
-- meeting layout
-
-It reuses the existing:
-
-- AnnotationCanvasV1
-- AnnotationToolbarV1
-
-without changing their internal code.
 ===========================================================
 */
 
 window.AnnotationPageV1 = (() => {
 
     let initialized = false;
-
     let canvas = null;
 
-    let materialDetails = null;
-
 
     /*
     =======================================================
-    READ MATERIAL INFORMATION
+    INITIALIZE CANVAS
     =======================================================
     */
 
-    function loadMaterialDetails() {
-
-        const params =
-            new URLSearchParams(
-                window.location.search
-            );
-
-
-        const key =
-            params.get(
-                "key"
-            );
-
-
-        if (!key) {
-
-            console.error(
-                "ANNOTATION PAGE V1: KEY NOT FOUND"
-            );
-
-            return false;
-
-        }
-
-
-        const saved =
-            localStorage.getItem(
-                key
-            );
-
-
-        if (!saved) {
-
-            console.error(
-                "ANNOTATION PAGE V1: MATERIAL DATA NOT FOUND",
-                key
-            );
-
-            return false;
-
-        }
-
-
-        try {
-
-            materialDetails =
-                JSON.parse(
-                    saved
-                );
-
-        }
-        catch (error) {
-
-            console.error(
-                "ANNOTATION PAGE V1: INVALID MATERIAL DATA",
-                error
-            );
-
-            return false;
-
-        }
-
-
-        console.log(
-            "ANNOTATION PAGE V1: MATERIAL LOADED",
-            materialDetails
-        );
-
-
-        return true;
-
-    }
-
-
-    /*
-    =======================================================
-    DISPLAY MATERIAL INFORMATION
-    =======================================================
-    */
-
-    function displayMaterialDetails() {
-
-        if (!materialDetails) {
-
-            return;
-
-        }
-
-
-        const subject =
-            document.getElementById(
-                "materialSubject"
-            );
-
-
-        const topic =
-            document.getElementById(
-                "materialTopic"
-            );
-
-
-        const chapter =
-            document.getElementById(
-                "materialChapter"
-            );
-
-
-        const description =
-            document.getElementById(
-                "materialDescription"
-            );
-
-
-        if (subject) {
-
-            subject.textContent =
-                materialDetails.subject ||
-                "";
-
-        }
-
-
-        if (topic) {
-
-            topic.textContent =
-                materialDetails.topic ||
-                "";
-
-        }
-
-
-        if (chapter) {
-
-            chapter.textContent =
-                (
-                    materialDetails.chapterNo ||
-                    ""
-                ) +
-                " " +
-                (
-                    materialDetails.chapterName ||
-                    ""
-                );
-
-        }
-
-
-        if (description) {
-
-            description.textContent =
-                materialDetails.description ||
-                "";
-
-        }
-
-    }
-
-
-    /*
-    =======================================================
-    CREATE CANVAS
-    =======================================================
-    */
-
-    function createCanvas() {
+    function initializeCanvas() {
 
         const workspace =
             document.getElementById(
@@ -218,19 +28,13 @@ window.AnnotationPageV1 = (() => {
         if (!workspace) {
 
             console.error(
-                "ANNOTATION PAGE V1: WORKSPACE NOT FOUND"
+                "ANNOTATION PAGE V1: annotationWorkspaceV1 NOT FOUND"
             );
 
             return false;
 
         }
 
-
-        /*
-        ---------------------------------------------------
-        CHECK EXISTING CANVAS
-        ---------------------------------------------------
-        */
 
         canvas =
             document.getElementById(
@@ -282,10 +86,6 @@ window.AnnotationPageV1 = (() => {
                 "none";
 
 
-            canvas.style.cursor =
-                "crosshair";
-
-
             workspace.appendChild(
                 canvas
             );
@@ -294,9 +94,9 @@ window.AnnotationPageV1 = (() => {
 
 
         /*
-        ---------------------------------------------------
-        INITIALIZE EXISTING CANVAS ENGINE
-        ---------------------------------------------------
+        ===================================================
+        CONNECT TO EXISTING CANVAS ENGINE
+        ===================================================
         */
 
         if (
@@ -313,7 +113,7 @@ window.AnnotationPageV1 = (() => {
         else {
 
             console.error(
-                "ANNOTATION PAGE V1: AnnotationCanvasV1 NOT AVAILABLE"
+                "ANNOTATION PAGE V1: AnnotationCanvasV1 NOT FOUND"
             );
 
             return false;
@@ -333,7 +133,7 @@ window.AnnotationPageV1 = (() => {
 
     /*
     =======================================================
-    INITIALIZE EXISTING TOOLBAR
+    INITIALIZE TOOLBAR
     =======================================================
     */
 
@@ -344,7 +144,7 @@ window.AnnotationPageV1 = (() => {
         ) {
 
             console.error(
-                "ANNOTATION PAGE V1: AnnotationToolbarV1 NOT AVAILABLE"
+                "ANNOTATION PAGE V1: AnnotationToolbarV1 NOT FOUND"
             );
 
             return false;
@@ -369,22 +169,6 @@ window.AnnotationPageV1 = (() => {
         AnnotationToolbarV1.init();
 
 
-        /*
-        ---------------------------------------------------
-        SHOW TOOLBAR
-        ---------------------------------------------------
-        */
-
-        if (
-            typeof AnnotationToolbarV1.show ===
-                "function"
-        ) {
-
-            AnnotationToolbarV1.show();
-
-        }
-
-
         console.log(
             "ANNOTATION PAGE V1: TOOLBAR READY"
         );
@@ -401,7 +185,7 @@ window.AnnotationPageV1 = (() => {
     =======================================================
     */
 
-    function resize() {
+    function resizeCanvas() {
 
         if (
             window.AnnotationCanvasV1 &&
@@ -418,66 +202,7 @@ window.AnnotationPageV1 = (() => {
 
     /*
     =======================================================
-    WINDOW RESIZE
-    =======================================================
-    */
-
-    function bindResize() {
-
-        window.addEventListener(
-            "resize",
-            () => {
-
-                requestAnimationFrame(
-                    () => {
-
-                        resize();
-
-                    }
-                );
-
-            }
-        );
-
-    }
-
-
-    /*
-    =======================================================
-    CLOSE PAGE
-    =======================================================
-    */
-
-    function bindClose() {
-
-        const closeButton =
-            document.getElementById(
-                "closeButton"
-            );
-
-
-        if (!closeButton) {
-
-            return;
-
-        }
-
-
-        closeButton.addEventListener(
-            "click",
-            () => {
-
-                window.close();
-
-            }
-        );
-
-    }
-
-
-    /*
-    =======================================================
-    INITIALIZE
+    INITIALIZE PAGE
     =======================================================
     */
 
@@ -485,38 +210,24 @@ window.AnnotationPageV1 = (() => {
 
         if (initialized) {
 
-            console.log(
-                "ANNOTATION PAGE V1: ALREADY INITIALIZED"
-            );
-
             return;
 
         }
 
 
         console.log(
-            "=========================================="
-        );
-
-
-        console.log(
-            "ANNOTATION PAGE V1: INITIALIZING"
-        );
-
-
-        console.log(
-            "=========================================="
+            "ANNOTATION PAGE V1: START"
         );
 
 
         /*
-        ---------------------------------------------------
-        LOAD MATERIAL
-        ---------------------------------------------------
+        ===================================================
+        CANVAS
+        ===================================================
         */
 
         if (
-            !loadMaterialDetails()
+            !initializeCanvas()
         ) {
 
             return;
@@ -525,33 +236,9 @@ window.AnnotationPageV1 = (() => {
 
 
         /*
-        ---------------------------------------------------
-        DISPLAY MATERIAL
-        ---------------------------------------------------
-        */
-
-        displayMaterialDetails();
-
-
-        /*
-        ---------------------------------------------------
-        CREATE / INITIALIZE CANVAS
-        ---------------------------------------------------
-        */
-
-        if (
-            !createCanvas()
-        ) {
-
-            return;
-
-        }
-
-
-        /*
-        ---------------------------------------------------
-        INITIALIZE EXISTING TOOLBAR
-        ---------------------------------------------------
+        ===================================================
+        TOOLBAR
+        ===================================================
         */
 
         if (
@@ -564,33 +251,37 @@ window.AnnotationPageV1 = (() => {
 
 
         /*
-        ---------------------------------------------------
-        RESIZE
-        ---------------------------------------------------
+        ===================================================
+        WINDOW RESIZE
+        ===================================================
         */
 
-        bindResize();
+        window.addEventListener(
+            "resize",
+            () => {
+
+                requestAnimationFrame(
+                    () => {
+
+                        resizeCanvas();
+
+                    }
+                );
+
+            }
+        );
 
 
         /*
-        ---------------------------------------------------
-        CLOSE
-        ---------------------------------------------------
-        */
-
-        bindClose();
-
-
-        /*
-        ---------------------------------------------------
-        FINAL RESIZE
-        ---------------------------------------------------
+        ===================================================
+        FIRST RESIZE
+        ===================================================
         */
 
         requestAnimationFrame(
             () => {
 
-                resize();
+                resizeCanvas();
 
             }
         );
@@ -606,17 +297,12 @@ window.AnnotationPageV1 = (() => {
     }
 
 
-    /*
-    =======================================================
-    PUBLIC API
-    =======================================================
-    */
-
     return {
 
         init,
 
-        resize
+        resize:
+            resizeCanvas
 
     };
 
@@ -625,7 +311,7 @@ window.AnnotationPageV1 = (() => {
 
 /*
 ===========================================================
-START AFTER PAGE LOAD
+START
 ===========================================================
 */
 
