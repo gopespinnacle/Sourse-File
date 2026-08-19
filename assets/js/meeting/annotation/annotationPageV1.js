@@ -602,7 +602,420 @@ window.AnnotationPageV1 = (() => {
 
     }
 
+/*
+===========================================================
+SAVE LEARNING MATERIAL
+===========================================================
+*/
 
+async function saveMaterial() {
+
+    try {
+
+        console.log(
+            "ANNOTATION PAGE V1: SAVE LEARNING MATERIAL STARTED"
+        );
+
+
+        /*
+===================================================
+CHECK MATERIAL INFORMATION
+===================================================
+*/
+
+const materialDetails =
+    loadMaterialDetails();
+
+
+if (!materialDetails) {
+
+    alert(
+        "Learning material information is missing."
+    );
+
+    return;
+
+}
+
+
+        /*
+        ===================================================
+        REQUIRED MATERIAL DETAILS
+        ===================================================
+        */
+
+        if (
+            !materialDetails.chapterNo ||
+            !materialDetails.chapterName ||
+            !materialDetails.topic
+        ) {
+
+            alert(
+                "Chapter Number, Chapter Name and Topic are required."
+            );
+
+            return;
+
+        }
+
+
+        /*
+        ===================================================
+        GET TEACHER INFORMATION
+        ===================================================
+        */
+
+        const teacherId =
+            sessionStorage.getItem(
+                "teacherId"
+            ) ||
+            localStorage.getItem(
+                "teacherId"
+            ) ||
+            "";
+
+
+        const teacherName =
+            sessionStorage.getItem(
+                "teacherName"
+            ) ||
+            localStorage.getItem(
+                "teacherName"
+            ) ||
+            "";
+
+
+        if (!teacherId) {
+
+            alert(
+                "Teacher information not found. Please login again."
+            );
+
+            return;
+
+        }
+
+
+        /*
+        ===================================================
+        GET ALL ANNOTATION PAGES
+        ===================================================
+        */
+
+        if (
+            !window.AnnotationCanvasV1 ||
+            typeof
+            AnnotationCanvasV1.getAllPages !==
+                "function"
+        ) {
+
+            alert(
+                "Annotation pages are not ready."
+            );
+
+            return;
+
+        }
+
+
+        const pages =
+            AnnotationCanvasV1.getAllPages();
+
+
+        if (
+            !Array.isArray(pages) ||
+            pages.length === 0
+        ) {
+
+            alert(
+                "No annotation pages found."
+            );
+
+            return;
+
+        }
+
+
+        /*
+        ===================================================
+        GET URL PARAMETERS
+        ===================================================
+        */
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+
+        /*
+        ===================================================
+        CLASS
+        ===================================================
+        */
+
+        const className =
+            materialDetails.className ||
+            params.get("className") ||
+            "";
+
+
+        /*
+        ===================================================
+        SUBJECT
+        ===================================================
+        */
+
+        const subject =
+            materialDetails.subject ||
+            params.get("subject") ||
+            "General";
+
+
+        /*
+        ===================================================
+        ROOM
+        ===================================================
+        */
+
+        const room =
+            materialDetails.room ||
+            params.get("room") ||
+            "";
+
+
+        /*
+        ===================================================
+        ROOM IS REQUIRED BY BACKEND
+        ===================================================
+        */
+
+        if (!room) {
+
+            alert(
+                "Annotation room information is missing."
+            );
+
+            console.error(
+                "ANNOTATION PAGE V1: ROOM NOT FOUND"
+            );
+
+            return;
+
+        }
+
+
+        /*
+        ===================================================
+        BUILD MATERIAL PAYLOAD
+        ===================================================
+        */
+
+        const payload = {
+
+            teacher:
+                teacherId,
+
+            teacherName:
+                teacherName,
+
+            className:
+                className,
+
+            subject:
+                subject,
+
+            chapterNo:
+                materialDetails.chapterNo,
+
+            chapterName:
+                materialDetails.chapterName,
+
+            topic:
+                materialDetails.topic,
+
+            description:
+                materialDetails.description ||
+                "",
+
+            materialDate:
+                materialDetails.materialDate ||
+                new Date().toISOString(),
+
+            room:
+                room,
+
+            pages:
+                pages
+
+        };
+
+
+        /*
+        ===================================================
+        DEBUG
+        ===================================================
+        */
+
+        console.log(
+            "ANNOTATION PAGE V1: SAVING MATERIAL",
+            payload
+        );
+
+
+        /*
+        ===================================================
+        GET TOKEN
+        ===================================================
+        */
+
+        const token =
+            sessionStorage.getItem(
+                "token"
+            ) ||
+            localStorage.getItem(
+                "token"
+            );
+
+
+        /*
+        ===================================================
+        SEND TO BACKEND
+        ===================================================
+        */
+
+        const response =
+            await fetch(
+                "https://academy-backend-eatl.onrender.com/api/annotation-materials",
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        ...(token
+                            ? {
+                                "Authorization":
+                                    "Bearer " +
+                                    token
+                            }
+                            : {})
+
+                    },
+
+                    body:
+                        JSON.stringify(
+                            payload
+                        )
+
+                }
+            );
+
+
+        /*
+        ===================================================
+        READ RESPONSE
+        ===================================================
+        */
+
+        const result =
+            await response.json();
+
+
+        /*
+        ===================================================
+        BACKEND ERROR
+        ===================================================
+        */
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+            console.error(
+                "ANNOTATION PAGE V1: SAVE ERROR",
+                result
+            );
+
+
+            alert(
+                result.message ||
+                "Failed to save learning material."
+            );
+
+
+            return;
+
+        }
+
+
+        /*
+        ===================================================
+        SUCCESS
+        ===================================================
+        */
+
+        console.log(
+            "ANNOTATION PAGE V1: MATERIAL SAVED",
+            result.material
+        );
+
+
+        /*
+        ===================================================
+        STORE MATERIAL ID
+        ===================================================
+        */
+
+        if (
+            result.material &&
+            result.material._id
+        ) {
+
+            sessionStorage.setItem(
+                "gopesAnnotationMaterialId",
+                result.material._id
+            );
+
+        }
+
+
+        /*
+        ===================================================
+        SUCCESS MESSAGE
+        ===================================================
+        */
+
+        alert(
+            "Learning Material saved successfully."
+        );
+
+
+        console.log(
+            "ANNOTATION PAGE V1: SAVE COMPLETE"
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "ANNOTATION PAGE V1: SAVE ERROR",
+            error
+        );
+
+
+        alert(
+            "Unable to save learning material. Please try again."
+        );
+
+    }
+
+}
     /*
     =======================================================
     PUBLIC API
@@ -611,15 +1024,17 @@ window.AnnotationPageV1 = (() => {
 
     return {
 
-        init,
+    init,
 
-        resize:
-            resizeCanvas,
+    resize:
+        resizeCanvas,
 
-        getMaterialDetails:
-            loadMaterialDetails
+    getMaterialDetails:
+        loadMaterialDetails,
 
-    };
+    saveMaterial
+
+};
 
 })();
 

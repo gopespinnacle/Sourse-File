@@ -1683,23 +1683,32 @@ window.AnnotationToolbarV1 = (() => {
 
 
                     if (
-                        window.AnnotationManagerV1 &&
-                        typeof
-                        AnnotationManagerV1.saveMaterial
-                        ===
-                        "function"
-                    ) {
+    window.AnnotationPageV1 &&
+    typeof
+    AnnotationPageV1.saveMaterial ===
+        "function"
+) {
 
-                        AnnotationManagerV1.saveMaterial();
+    AnnotationPageV1.saveMaterial();
 
-                    }
-                    else {
+}
+else if (
+    window.AnnotationManagerV1 &&
+    typeof
+    AnnotationManagerV1.saveMaterial ===
+        "function"
+) {
 
-                        console.warn(
-                            "ANNOTATION MATERIAL V1: MANAGER NOT READY"
-                        );
+    AnnotationManagerV1.saveMaterial();
 
-                    }
+}
+else {
+
+    console.warn(
+        "ANNOTATION MATERIAL V1: SAVE MODULE NOT READY"
+    );
+
+}
 
                 }
             );
