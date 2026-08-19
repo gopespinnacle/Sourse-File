@@ -1600,17 +1600,7 @@ createPipMenu() {
     );
 
 
-    /*
-    ===================================================
-    CHAT
-    ===================================================
-    */
 
-    createButton(
-        "chatButton",
-        "💬",
-        "Chat"
-    );
 
 
     /*
@@ -1669,26 +1659,7 @@ createPipMenu() {
         );
 
 
-        const originalMoreButton =
-    document.getElementById(
-        "moreButton"
-    );
-
-
-        if (
-            originalMoreButton
-        ) {
-
-            originalMoreButton.click();
-
-        }
-        else {
-
-            console.warn(
-                "DESKTOP PIP: moreButton NOT FOUND"
-            );
-
-        }
+        this.showPipMoreMenu();
 
     }
 );
@@ -1780,6 +1751,188 @@ createPipMenu() {
     console.log(
         "DESKTOP PIP: GOOGLE MEET MENU CREATED"
     );
+
+},
+
+/*
+=======================================================
+CHANGE CAMERA
+=======================================================
+*/
+
+async changeCamera(
+    deviceId
+) {
+
+    console.log(
+        "DESKTOP PIP: CHANGING CAMERA:",
+        deviceId
+    );
+
+
+    try {
+
+        /*
+        ------------------------------------------------
+        GET NEW CAMERA
+        ------------------------------------------------
+        */
+
+        const newStream =
+            await navigator.mediaDevices.getUserMedia(
+                {
+                    video: {
+                        deviceId: {
+                            exact:
+                                deviceId
+                        }
+                    },
+                    audio: false
+                }
+            );
+
+
+        const newVideoTrack =
+            newStream.getVideoTracks()[0];
+
+
+        if (
+            !newVideoTrack
+        ) {
+
+            console.warn(
+                "DESKTOP PIP: NO VIDEO TRACK"
+            );
+
+            return;
+
+        }
+
+
+        /*
+        ------------------------------------------------
+        REPLACE VIDEO TRACK IN EXISTING PEER CONNECTIONS
+        ------------------------------------------------
+        */
+
+        if (
+            typeof peerConnections !==
+            "undefined"
+        ) {
+
+            Object.values(
+                peerConnections
+            ).forEach(
+                peer => {
+
+                    if (
+                        !peer
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const sender =
+                        peer.getSenders()
+                            .find(
+                                sender =>
+                                    sender.track &&
+                                    sender.track.kind ===
+                                    "video"
+                            );
+
+
+                    if (
+                        sender
+                    ) {
+
+                        sender.replaceTrack(
+                            newVideoTrack
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /*
+        ------------------------------------------------
+        REPLACE LOCAL STREAM VIDEO TRACK
+        ------------------------------------------------
+        */
+
+        if (
+            typeof localStream !==
+            "undefined" &&
+            localStream
+        ) {
+
+            const oldVideoTracks =
+                localStream.getVideoTracks();
+
+
+            oldVideoTracks.forEach(
+                track => {
+
+                    track.stop();
+
+                    localStream.removeTrack(
+                        track
+                    );
+
+                }
+            );
+
+
+            localStream.addTrack(
+                newVideoTrack
+            );
+
+
+            /*
+            --------------------------------------------
+            UPDATE LOCAL VIDEO
+            --------------------------------------------
+            */
+
+            const localVideo =
+                document.getElementById(
+                    "localVideo"
+                );
+
+
+            if (
+                localVideo
+            ) {
+
+                localVideo.srcObject =
+                    localStream;
+
+            }
+
+        }
+
+
+        console.log(
+            "DESKTOP PIP: CAMERA CHANGED SUCCESSFULLY"
+        );
+
+    }
+    catch (
+        error
+    ) {
+
+        console.error(
+            "DESKTOP PIP: CAMERA CHANGE ERROR:",
+            error
+        );
+
+    }
 
 },
 
