@@ -151,6 +151,86 @@ if (micButton) {
 
 }
 
+/*
+======================================================
+CAMERA CONTROL
+======================================================
+*/
+
+const cameraButton =
+    document.getElementById(
+        "cameraButton"
+    );
+
+
+if (cameraButton) {
+
+    cameraButton.addEventListener(
+        "click",
+        () => {
+
+            if (
+                !window.MediaManagerV2
+            ) {
+
+                console.warn(
+                    "MediaManagerV2 is not available."
+                );
+
+                return;
+
+            }
+
+
+            /*
+            ------------------------------------------
+            TOGGLE REAL CAMERA
+            ------------------------------------------
+            */
+
+            MediaManagerV2.toggleCamera();
+
+
+            /*
+            ------------------------------------------
+            READ CURRENT STATE
+            ------------------------------------------
+            */
+
+            const enabled =
+                MediaManagerV2.cameraEnabled;
+
+
+            /*
+            ------------------------------------------
+            UPDATE MAIN CAMERA ICON
+            ------------------------------------------
+            */
+
+            cameraButton.innerHTML =
+                enabled
+                    ? "📹"
+                    : "📷";
+
+
+            /*
+            ------------------------------------------
+            DEBUG
+            ------------------------------------------
+            */
+
+            console.log(
+                "MAIN CAMERA:",
+                enabled
+                    ? "ON"
+                    : "OFF"
+            );
+
+        }
+    );
+
+}
+
         const peopleButton =
             document.getElementById(
                 "peopleButton"
