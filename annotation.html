@@ -405,9 +405,140 @@ ANNOTATION TOOLBAR V1
 </div>
 
 
+<!-- =====================================================
+     SOCKET.IO
+     REQUIRED FOR ANNOTATION PERSISTENCE
+     ===================================================== -->
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+
+<script>
+
+/*
+===========================================================
+GOPES PINNACLE ACADEMY
+STANDALONE ANNOTATION SOCKET
+===========================================================
+
+IMPORTANT:
+
+The classroom already has a socket.
+
+The standalone annotation page is a NEW browser tab,
+so it needs its own Socket.IO connection.
+
+AnnotationCanvasV1 expects:
+
+    window.socket
+
+===========================================================
+*/
+
+window.socket =
+    io(
+        "https://academy-backend-eatl.onrender.com",
+        {
+
+            transports: [
+                "websocket",
+                "polling"
+            ],
+
+            reconnection: true,
+
+            reconnectionAttempts:
+                Infinity,
+
+            reconnectionDelay:
+                1000,
+
+            reconnectionDelayMax:
+                5000,
+
+            timeout:
+                20000
+
+        }
+    );
+
+
+/*
+===========================================================
+SOCKET CONNECTED
+===========================================================
+*/
+
+window.socket.on(
+    "connect",
+    () => {
+
+        console.log(
+            "ANNOTATION TAB: SOCKET CONNECTED",
+            window.socket.id
+        );
+
+    }
+);
+
+
+/*
+===========================================================
+SOCKET DISCONNECTED
+===========================================================
+*/
+
+window.socket.on(
+    "disconnect",
+    reason => {
+
+        console.warn(
+            "ANNOTATION TAB: SOCKET DISCONNECTED",
+            reason
+        );
+
+    }
+);
+
+
+/*
+===========================================================
+SOCKET ERROR
+===========================================================
+*/
+
+window.socket.on(
+    "connect_error",
+    error => {
+
+        console.error(
+            "ANNOTATION TAB: SOCKET ERROR",
+            error
+        );
+
+    }
+);
+
+</script>
+
+
+<!-- =====================================================
+     ANNOTATION CANVAS
+     ===================================================== -->
+
 <script src="assets/js/meeting/annotation/annotationCanvasV1.js"></script>
 
+
+<!-- =====================================================
+     ANNOTATION TOOLBAR
+     ===================================================== -->
+
 <script src="assets/js/meeting/annotation/annotationToolbarV1.js"></script>
+
+
+<!-- =====================================================
+     ANNOTATION PAGE
+     ===================================================== -->
 
 <script src="assets/js/meeting/annotation/annotationPageV1.js"></script>
 
