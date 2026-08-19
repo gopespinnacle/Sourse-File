@@ -14,7 +14,8 @@ RESPONSIBILITY:
 - Undo
 - Redo
 - Clear
-- Save PDF button placeholder
+- Save Learning Material
+- Page controls
 - Close annotation
 
 IMPORTANT:
@@ -33,7 +34,6 @@ It does NOT handle:
 window.AnnotationToolbarV1 = (() => {
 
     let toolbar = null;
-
     let initialized = false;
 
 
@@ -46,6 +46,8 @@ window.AnnotationToolbarV1 = (() => {
     function init() {
 
         if (initialized) {
+
+            show();
 
             return;
 
@@ -61,6 +63,9 @@ window.AnnotationToolbarV1 = (() => {
             "ANNOTATION TOOLBAR V1: INITIALIZED"
         );
 
+
+        show();
+
     }
 
 
@@ -72,31 +77,49 @@ window.AnnotationToolbarV1 = (() => {
 
     function createToolbar() {
 
-        const existingToolbar =
-    document.getElementById(
-        "annotationToolbarV1"
-    );
+        /*
+        ---------------------------------------------------
+        FIND EXISTING HTML CONTAINER
+        ---------------------------------------------------
+        */
+
+        toolbar =
+            document.getElementById(
+                "annotationToolbarV1"
+            );
 
 
-if (existingToolbar) {
+        /*
+        ---------------------------------------------------
+        IF HTML CONTAINER DOES NOT EXIST
+        CREATE IT
+        ---------------------------------------------------
+        */
 
-    toolbar =
-        existingToolbar;
+        if (!toolbar) {
 
-}
-else {
-
-    toolbar =
-        document.createElement(
-            "div"
-        );
+            toolbar =
+                document.createElement(
+                    "div"
+                );
 
 
-    toolbar.id =
-        "annotationToolbarV1";
+            toolbar.id =
+                "annotationToolbarV1";
 
-}
 
+            document.body.appendChild(
+                toolbar
+            );
+
+        }
+
+
+        /*
+        ---------------------------------------------------
+        CREATE TOOLBAR CONTENT
+        ---------------------------------------------------
+        */
 
         toolbar.innerHTML = `
 
@@ -112,9 +135,7 @@ else {
                     class="annotation-tool-btn active"
                     title="Pen"
                 >
-
                     ✏️
-
                 </button>
 
 
@@ -126,44 +147,43 @@ else {
                     class="annotation-tool-btn"
                     title="Eraser"
                 >
-
                     🧽
-
                 </button>
 
-                <!-- ERASER SIZE -->
 
-<select
-    id="annotationEraserWidthV1"
-    class="annotation-width-select"
-    title="Eraser Size"
->
+                <!-- ERASER WIDTH -->
 
-    <option value="10">
-        Eraser 10 px
-    </option>
+                <select
+                    id="annotationEraserWidthV1"
+                    class="annotation-width-select"
+                    title="Eraser Size"
+                >
 
-    <option value="20">
-        Eraser 20 px
-    </option>
+                    <option value="10">
+                        Eraser 10 px
+                    </option>
 
-    <option value="30" selected>
-        Eraser 30 px
-    </option>
+                    <option value="20">
+                        Eraser 20 px
+                    </option>
 
-    <option value="40">
-        Eraser 40 px
-    </option>
+                    <option value="30" selected>
+                        Eraser 30 px
+                    </option>
 
-    <option value="60">
-        Eraser 60 px
-    </option>
+                    <option value="40">
+                        Eraser 40 px
+                    </option>
 
-    <option value="80">
-        Eraser 80 px
-    </option>
+                    <option value="60">
+                        Eraser 60 px
+                    </option>
 
-</select>
+                    <option value="80">
+                        Eraser 80 px
+                    </option>
+
+                </select>
 
 
                 <!-- COLOR -->
@@ -186,7 +206,7 @@ else {
                 </label>
 
 
-                <!-- WIDTH -->
+                <!-- STROKE WIDTH -->
 
                 <select
                     id="annotationWidthV1"
@@ -229,9 +249,7 @@ else {
                     class="annotation-tool-btn"
                     title="Undo"
                 >
-
                     ↶
-
                 </button>
 
 
@@ -243,9 +261,7 @@ else {
                     class="annotation-tool-btn"
                     title="Redo"
                 >
-
                     ↷
-
                 </button>
 
 
@@ -257,27 +273,23 @@ else {
                     class="annotation-tool-btn"
                     title="Clear"
                 >
-
                     🗑️
-
                 </button>
 
 
-                               <!-- SAVE LEARNING MATERIAL -->
+                <!-- SAVE LEARNING MATERIAL -->
 
-<button
-    type="button"
-    id="annotationSavePdfV1"
-    class="annotation-tool-btn"
-    title="Save Learning Material"
->
-
-    📄
-
-</button>
+                <button
+                    type="button"
+                    id="annotationSavePdfV1"
+                    class="annotation-tool-btn"
+                    title="Save Learning Material"
+                >
+                    📄
+                </button>
 
 
-                <!-- PAGE CONTROLS -->
+                <!-- PREVIOUS PAGE -->
 
                 <button
                     type="button"
@@ -285,33 +297,21 @@ else {
                     class="annotation-tool-btn"
                     title="Previous Page"
                 >
-
                     ◀
-
                 </button>
 
 
+                <!-- PAGE INDICATOR -->
+
                 <span
-    id="annotationPageIndicatorV1"
-    class="annotation-page-indicator"
-    title="Current Page"
-    style="
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
-        min-width:80px;
-        padding:5px 8px;
-        color:#000000;
-        background:#ffffff;
-        border:1px solid #999999;
-        border-radius:4px;
-        font-size:14px;
-        font-weight:600;
-        white-space:nowrap;
-    "
->
-    Page 1 / 1
-</span>
+                    id="annotationPageIndicatorV1"
+                    class="annotation-page-indicator"
+                >
+                    Page 1 / 1
+                </span>
+
+
+                <!-- NEXT PAGE -->
 
                 <button
                     type="button"
@@ -319,11 +319,11 @@ else {
                     class="annotation-tool-btn"
                     title="Next Page"
                 >
-
                     ▶
-
                 </button>
 
+
+                <!-- ADD PAGE -->
 
                 <button
                     type="button"
@@ -331,23 +331,20 @@ else {
                     class="annotation-tool-btn"
                     title="Add New Page"
                 >
-
                     ＋
-
                 </button>
 
-                <!-- DELETE CURRENT PAGE -->
 
-<button
-    type="button"
-    id="annotationDeletePageV1"
-    class="annotation-tool-btn"
-    title="Delete Current Page"
->
+                <!-- DELETE PAGE -->
 
-    🗑️
-
-</button>
+                <button
+                    type="button"
+                    id="annotationDeletePageV1"
+                    class="annotation-tool-btn"
+                    title="Delete Current Page"
+                >
+                    🗑️
+                </button>
 
 
                 <!-- CLOSE -->
@@ -358,9 +355,7 @@ else {
                     class="annotation-close-btn"
                     title="Close Annotation"
                 >
-
                     ✕
-
                 </button>
 
             </div>
@@ -369,9 +364,407 @@ else {
 
 
         /*
-        ---------------------------------------------------
-        PLACE TOOLBAR INSIDE ANNOTATION WORKSPACE
-        ---------------------------------------------------
+        ===================================================
+        TOOLBAR CSS
+        ===================================================
+        */
+
+        toolbar.style.position =
+            "absolute";
+
+
+        toolbar.style.left =
+            "50%";
+
+
+        toolbar.style.bottom =
+            "12px";
+
+
+        toolbar.style.transform =
+            "translateX(-50%)";
+
+
+        toolbar.style.zIndex =
+            "99999";
+
+
+        toolbar.style.display =
+            "block";
+
+
+        toolbar.style.visibility =
+            "visible";
+
+
+        toolbar.style.opacity =
+            "1";
+
+
+        toolbar.style.pointerEvents =
+            "auto";
+
+
+        toolbar.style.width =
+            "auto";
+
+
+        toolbar.style.height =
+            "auto";
+
+
+        /*
+        ===================================================
+        TOOLBAR INNER STYLE
+        ===================================================
+        */
+
+        const inner =
+            toolbar.querySelector(
+                ".annotation-toolbar-inner"
+            );
+
+
+        if (inner) {
+
+            inner.style.display =
+                "flex";
+
+
+            inner.style.alignItems =
+                "center";
+
+
+            inner.style.justifyContent =
+                "center";
+
+
+            inner.style.gap =
+                "5px";
+
+
+            inner.style.padding =
+                "8px";
+
+
+            inner.style.background =
+                "#ffffff";
+
+
+            inner.style.border =
+                "1px solid #999999";
+
+
+            inner.style.borderRadius =
+                "8px";
+
+
+            inner.style.boxShadow =
+                "0 3px 12px rgba(0,0,0,.25)";
+
+
+            inner.style.whiteSpace =
+                "nowrap";
+
+        }
+
+
+        /*
+        ===================================================
+        BUTTON STYLE
+        ===================================================
+        */
+
+        const buttons =
+            toolbar.querySelectorAll(
+                ".annotation-tool-btn"
+            );
+
+
+        buttons.forEach(
+            button => {
+
+                button.style.width =
+                    "34px";
+
+
+                button.style.height =
+                    "32px";
+
+
+                button.style.padding =
+                    "0";
+
+
+                button.style.border =
+                    "1px solid #999999";
+
+
+                button.style.borderRadius =
+                    "4px";
+
+
+                button.style.background =
+                    "#f5f5f5";
+
+
+                button.style.color =
+                    "#111111";
+
+
+                button.style.cursor =
+                    "pointer";
+
+
+                button.style.fontSize =
+                    "16px";
+
+
+                button.style.display =
+                    "inline-flex";
+
+
+                button.style.alignItems =
+                    "center";
+
+
+                button.style.justifyContent =
+                    "center";
+
+            }
+        );
+
+
+        /*
+        ===================================================
+        SELECT STYLE
+        ===================================================
+        */
+
+        const selects =
+            toolbar.querySelectorAll(
+                ".annotation-width-select"
+            );
+
+
+        selects.forEach(
+            select => {
+
+                select.style.height =
+                    "32px";
+
+
+                select.style.border =
+                    "1px solid #999999";
+
+
+                select.style.borderRadius =
+                    "4px";
+
+
+                select.style.background =
+                    "#ffffff";
+
+
+                select.style.color =
+                    "#111111";
+
+
+                select.style.fontSize =
+                    "12px";
+
+
+                select.style.cursor =
+                    "pointer";
+
+            }
+        );
+
+
+        /*
+        ===================================================
+        COLOR WRAPPER
+        ===================================================
+        */
+
+        const colorWrapper =
+            toolbar.querySelector(
+                ".annotation-color-wrapper"
+            );
+
+
+        if (colorWrapper) {
+
+            colorWrapper.style.height =
+                "32px";
+
+
+            colorWrapper.style.display =
+                "inline-flex";
+
+
+            colorWrapper.style.alignItems =
+                "center";
+
+
+            colorWrapper.style.gap =
+                "3px";
+
+
+            colorWrapper.style.padding =
+                "2px 5px";
+
+
+            colorWrapper.style.border =
+                "1px solid #999999";
+
+
+            colorWrapper.style.borderRadius =
+                "4px";
+
+
+            colorWrapper.style.background =
+                "#ffffff";
+
+
+            colorWrapper.style.color =
+                "#111111";
+
+
+            colorWrapper.style.cursor =
+                "pointer";
+
+        }
+
+
+        /*
+        ===================================================
+        COLOR INPUT
+        ===================================================
+        */
+
+        const colorInput =
+            document.getElementById(
+                "annotationColorV1"
+            );
+
+
+        if (colorInput) {
+
+            colorInput.style.width =
+                "28px";
+
+
+            colorInput.style.height =
+                "25px";
+
+
+            colorInput.style.padding =
+                "0";
+
+
+            colorInput.style.border =
+                "none";
+
+
+            colorInput.style.cursor =
+                "pointer";
+
+        }
+
+
+        /*
+        ===================================================
+        PAGE INDICATOR
+        ===================================================
+        */
+
+        const indicator =
+            document.getElementById(
+                "annotationPageIndicatorV1"
+            );
+
+
+        if (indicator) {
+
+            indicator.style.display =
+                "inline-flex";
+
+
+            indicator.style.alignItems =
+                "center";
+
+
+            indicator.style.justifyContent =
+                "center";
+
+
+            indicator.style.minWidth =
+                "80px";
+
+
+            indicator.style.height =
+                "32px";
+
+
+            indicator.style.padding =
+                "0 8px";
+
+
+            indicator.style.color =
+                "#111111";
+
+
+            indicator.style.background =
+                "#ffffff";
+
+
+            indicator.style.border =
+                "1px solid #999999";
+
+
+            indicator.style.borderRadius =
+                "4px";
+
+
+            indicator.style.fontSize =
+                "12px";
+
+
+            indicator.style.fontWeight =
+                "600";
+
+
+            indicator.style.whiteSpace =
+                "nowrap";
+
+        }
+
+
+        /*
+        ===================================================
+        CLOSE BUTTON
+        ===================================================
+        */
+
+        const closeButton =
+            document.getElementById(
+                "annotationCloseV1"
+            );
+
+
+        if (closeButton) {
+
+            closeButton.style.background =
+                "#eeeeee";
+
+        }
+
+
+        /*
+        ===================================================
+        PLACE INSIDE WORKSPACE
+        ===================================================
         */
 
         const workspace =
@@ -382,40 +775,39 @@ else {
 
         if (workspace) {
 
-    workspace.style.position = "relative";
+            workspace.style.position =
+                "absolute";
 
-    workspace.appendChild(
-        toolbar
-    );
 
-    toolbar.style.position = "absolute";
-    toolbar.style.left = "50%";
-    toolbar.style.bottom = "20px";
-    toolbar.style.transform = "translateX(-50%)";
+            workspace.style.overflow =
+                "hidden";
 
-    toolbar.style.zIndex = "10000";
-    toolbar.style.display = "flex";
-    toolbar.style.visibility = "visible";
-    toolbar.style.opacity = "1";
-    toolbar.style.pointerEvents = "auto";
-
-}
-        else {
 
             /*
-            ------------------------------------------------
-            FALLBACK
-            If workspace is not created yet, keep toolbar
-            attached to body.
-            ------------------------------------------------
+            -----------------------------------------------
+            MOVE TOOLBAR INTO WORKSPACE
+            -----------------------------------------------
             */
 
-            document.body.appendChild(
-                toolbar
-            );
+            if (
+                toolbar.parentElement !==
+                workspace
+            ) {
+
+                workspace.appendChild(
+                    toolbar
+                );
+
+            }
 
         }
 
+
+        /*
+        ===================================================
+        BIND EVENTS
+        ===================================================
+        */
 
         bindEvents();
 
@@ -432,9 +824,9 @@ else {
 
 
         /*
-        ---------------------------------------------------
+        ===================================================
         PEN
-        ---------------------------------------------------
+        ===================================================
         */
 
         const pen =
@@ -455,7 +847,11 @@ else {
 
 
                     if (
-                        window.AnnotationCanvasV1
+                        window.AnnotationCanvasV1 &&
+                        typeof
+                        AnnotationCanvasV1.setTool
+                        ===
+                        "function"
                     ) {
 
                         AnnotationCanvasV1.setTool(
@@ -471,9 +867,9 @@ else {
 
 
         /*
-        ---------------------------------------------------
+        ===================================================
         ERASER
-        ---------------------------------------------------
+        ===================================================
         */
 
         const eraser =
@@ -494,7 +890,11 @@ else {
 
 
                     if (
-                        window.AnnotationCanvasV1
+                        window.AnnotationCanvasV1 &&
+                        typeof
+                        AnnotationCanvasV1.setTool
+                        ===
+                        "function"
                     ) {
 
                         AnnotationCanvasV1.setTool(
@@ -510,9 +910,9 @@ else {
 
 
         /*
-        ---------------------------------------------------
+        ===================================================
         COLOR
-        ---------------------------------------------------
+        ===================================================
         */
 
         const color =
@@ -528,7 +928,11 @@ else {
                 event => {
 
                     if (
-                        window.AnnotationCanvasV1
+                        window.AnnotationCanvasV1 &&
+                        typeof
+                        AnnotationCanvasV1.setColor
+                        ===
+                        "function"
                     ) {
 
                         AnnotationCanvasV1.setColor(
@@ -538,19 +942,17 @@ else {
                     }
 
 
-                    /*
-                    ---------------------------------------
-                    Automatically return to PEN
-                    ---------------------------------------
-                    */
-
                     setActiveTool(
                         "pen"
                     );
 
 
                     if (
-                        window.AnnotationCanvasV1
+                        window.AnnotationCanvasV1 &&
+                        typeof
+                        AnnotationCanvasV1.setTool
+                        ===
+                        "function"
                     ) {
 
                         AnnotationCanvasV1.setTool(
@@ -566,9 +968,9 @@ else {
 
 
         /*
-        ---------------------------------------------------
-        WIDTH
-        ---------------------------------------------------
+        ===================================================
+        STROKE WIDTH
+        ===================================================
         */
 
         const width =
@@ -584,7 +986,11 @@ else {
                 event => {
 
                     if (
-                        window.AnnotationCanvasV1
+                        window.AnnotationCanvasV1 &&
+                        typeof
+                        AnnotationCanvasV1.setWidth
+                        ===
+                        "function"
                     ) {
 
                         AnnotationCanvasV1.setWidth(
@@ -598,241 +1004,49 @@ else {
 
         }
 
+
         /*
----------------------------------------------------
-ERASER WIDTH
----------------------------------------------------
-*/
+        ===================================================
+        ERASER WIDTH
+        ===================================================
+        */
 
-const eraserWidth =
-    document.getElementById(
-        "annotationEraserWidthV1"
-    );
-
-
-if (eraserWidth) {
-
-    eraserWidth.addEventListener(
-        "change",
-        event => {
-
-            if (
-                window.AnnotationCanvasV1
-            ) {
-
-                AnnotationCanvasV1.setEraserWidth(
-                    event.target.value
-                );
-
-            }
-
-        }
-    );
-
-}
+        const eraserWidth =
+            document.getElementById(
+                "annotationEraserWidthV1"
+            );
 
 
-/*
----------------------------------------------------
-PREVIOUS PAGE
----------------------------------------------------
-*/
+        if (eraserWidth) {
 
-const previousPage =
-    document.getElementById(
-        "annotationPreviousPageV1"
-    );
+            eraserWidth.addEventListener(
+                "change",
+                event => {
 
+                    if (
+                        window.AnnotationCanvasV1 &&
+                        typeof
+                        AnnotationCanvasV1.setEraserWidth
+                        ===
+                        "function"
+                    ) {
 
-if (previousPage) {
+                        AnnotationCanvasV1.setEraserWidth(
+                            event.target.value
+                        );
 
-    previousPage.addEventListener(
-        "click",
-        () => {
+                    }
 
-            if (
-                window.AnnotationCanvasV1
-            ) {
-
-                AnnotationCanvasV1.previousPage();
-
-                updatePageIndicator();
-
-            }
+                }
+            );
 
         }
-    );
-
-}
-
-
-/*
----------------------------------------------------
-NEXT PAGE
----------------------------------------------------
-*/
-
-const nextPage =
-    document.getElementById(
-        "annotationNextPageV1"
-    );
-
-
-if (nextPage) {
-
-    nextPage.addEventListener(
-        "click",
-        () => {
-
-            if (
-                window.AnnotationCanvasV1
-            ) {
-
-                AnnotationCanvasV1.nextPage();
-
-                updatePageIndicator();
-
-            }
-
-        }
-    );
-
-}
-
-
-/*
----------------------------------------------------
-ADD NEW PAGE
----------------------------------------------------
-*/
-
-const addPage =
-    document.getElementById(
-        "annotationAddPageV1"
-    );
-
-
-if (addPage) {
-
-    addPage.addEventListener(
-        "click",
-        () => {
-
-            if (
-                window.AnnotationCanvasV1
-            ) {
-
-                AnnotationCanvasV1.addPage();
-
-                updatePageIndicator();
-
-            }
-
-        }
-    );
-
-}
-
-
-/*
----------------------------------------------------
-DELETE CURRENT PAGE
----------------------------------------------------
-*/
-
-const deletePage =
-    document.getElementById(
-        "annotationDeletePageV1"
-    );
-
-
-if (deletePage) {
-
-    deletePage.addEventListener(
-        "click",
-        () => {
-
-            if (
-                !window.AnnotationCanvasV1
-            ) {
-
-                return;
-
-            }
-
-
-            const pageInfo =
-                AnnotationCanvasV1.getPageInfo();
-
-
-            /*
-            -------------------------------------------
-            DO NOT DELETE THE LAST PAGE
-            -------------------------------------------
-            */
-
-            if (
-                !pageInfo ||
-                pageInfo.totalPages <= 1
-            ) {
-
-                console.log(
-                    "ANNOTATION TOOLBAR V1: CANNOT DELETE LAST PAGE"
-                );
-
-                return;
-
-            }
-
-
-            /*
-            -------------------------------------------
-            CONFIRM DELETE
-            -------------------------------------------
-            */
-
-            const confirmed =
-                window.confirm(
-                    "Delete Page " +
-                    pageInfo.currentPage +
-                    "?"
-                );
-
-
-            if (!confirmed) {
-
-                return;
-
-            }
-
-
-            /*
-            -------------------------------------------
-            DELETE PAGE
-            -------------------------------------------
-            */
-
-            AnnotationCanvasV1.deletePage();
-
-
-            /*
-            -------------------------------------------
-            UPDATE PAGE NUMBER
-            -------------------------------------------
-            */
-
-            updatePageIndicator();
-
-        }
-    );
-
-}
 
 
         /*
-        ---------------------------------------------------
+        ===================================================
         UNDO
-        ---------------------------------------------------
+        ===================================================
         */
 
         const undo =
@@ -848,7 +1062,11 @@ if (deletePage) {
                 () => {
 
                     if (
-                        window.AnnotationCanvasV1
+                        window.AnnotationCanvasV1 &&
+                        typeof
+                        AnnotationCanvasV1.undo
+                        ===
+                        "function"
                     ) {
 
                         AnnotationCanvasV1.undo();
@@ -862,9 +1080,9 @@ if (deletePage) {
 
 
         /*
-        ---------------------------------------------------
+        ===================================================
         REDO
-        ---------------------------------------------------
+        ===================================================
         */
 
         const redo =
@@ -880,7 +1098,11 @@ if (deletePage) {
                 () => {
 
                     if (
-                        window.AnnotationCanvasV1
+                        window.AnnotationCanvasV1 &&
+                        typeof
+                        AnnotationCanvasV1.redo
+                        ===
+                        "function"
                     ) {
 
                         AnnotationCanvasV1.redo();
@@ -894,9 +1116,9 @@ if (deletePage) {
 
 
         /*
-        ---------------------------------------------------
+        ===================================================
         CLEAR
-        ---------------------------------------------------
+        ===================================================
         */
 
         const clear =
@@ -925,7 +1147,11 @@ if (deletePage) {
 
 
                     if (
-                        window.AnnotationCanvasV1
+                        window.AnnotationCanvasV1 &&
+                        typeof
+                        AnnotationCanvasV1.clear
+                        ===
+                        "function"
                     ) {
 
                         AnnotationCanvasV1.clear();
@@ -938,66 +1164,264 @@ if (deletePage) {
         }
 
 
-       
-
         /*
----------------------------------------------------
-SAVE LEARNING MATERIAL
----------------------------------------------------
-*/
+        ===================================================
+        SAVE LEARNING MATERIAL
+        ===================================================
+        */
 
-const saveMaterial =
-    document.getElementById(
-        "annotationSavePdfV1"
-    );
-
-
-if (saveMaterial) {
-
-    saveMaterial.addEventListener(
-        "click",
-        () => {
-
-            console.log(
-                "ANNOTATION TOOLBAR V1: SAVE LEARNING MATERIAL CLICKED"
+        const saveMaterial =
+            document.getElementById(
+                "annotationSavePdfV1"
             );
 
 
-            /*
-            -------------------------------------------
-            CALL ANNOTATION MANAGER
-            -------------------------------------------
-            */
+        if (saveMaterial) {
 
-            if (
-                window.AnnotationManagerV1 &&
-                typeof
-                AnnotationManagerV1.saveMaterial
-                ===
-                "function"
-            ) {
+            saveMaterial.addEventListener(
+                "click",
+                () => {
 
-                AnnotationManagerV1.saveMaterial();
+                    console.log(
+                        "ANNOTATION TOOLBAR V1: SAVE LEARNING MATERIAL CLICKED"
+                    );
 
-            }
-            else {
 
-                console.warn(
-                    "ANNOTATION MATERIAL V1: MANAGER NOT READY"
-                );
+                    if (
+                        window.AnnotationManagerV1 &&
+                        typeof
+                        AnnotationManagerV1.saveMaterial
+                        ===
+                        "function"
+                    ) {
 
-            }
+                        AnnotationManagerV1.saveMaterial();
+
+                    }
+                    else {
+
+                        console.warn(
+                            "ANNOTATION MATERIAL V1: MANAGER NOT READY"
+                        );
+
+                    }
+
+                }
+            );
 
         }
-    );
-
-}
 
 
         /*
-        ---------------------------------------------------
+        ===================================================
+        PREVIOUS PAGE
+        ===================================================
+        */
+
+        const previousPage =
+            document.getElementById(
+                "annotationPreviousPageV1"
+            );
+
+
+        if (previousPage) {
+
+            previousPage.addEventListener(
+                "click",
+                () => {
+
+                    if (
+                        window.AnnotationCanvasV1 &&
+                        typeof
+                        AnnotationCanvasV1.previousPage
+                        ===
+                        "function"
+                    ) {
+
+                        AnnotationCanvasV1.previousPage();
+
+                        updatePageIndicator();
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /*
+        ===================================================
+        NEXT PAGE
+        ===================================================
+        */
+
+        const nextPage =
+            document.getElementById(
+                "annotationNextPageV1"
+            );
+
+
+        if (nextPage) {
+
+            nextPage.addEventListener(
+                "click",
+                () => {
+
+                    if (
+                        window.AnnotationCanvasV1 &&
+                        typeof
+                        AnnotationCanvasV1.nextPage
+                        ===
+                        "function"
+                    ) {
+
+                        AnnotationCanvasV1.nextPage();
+
+                        updatePageIndicator();
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /*
+        ===================================================
+        ADD PAGE
+        ===================================================
+        */
+
+        const addPage =
+            document.getElementById(
+                "annotationAddPageV1"
+            );
+
+
+        if (addPage) {
+
+            addPage.addEventListener(
+                "click",
+                () => {
+
+                    if (
+                        window.AnnotationCanvasV1 &&
+                        typeof
+                        AnnotationCanvasV1.addPage
+                        ===
+                        "function"
+                    ) {
+
+                        AnnotationCanvasV1.addPage();
+
+                        updatePageIndicator();
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /*
+        ===================================================
+        DELETE CURRENT PAGE
+        ===================================================
+        */
+
+        const deletePage =
+            document.getElementById(
+                "annotationDeletePageV1"
+            );
+
+
+        if (deletePage) {
+
+            deletePage.addEventListener(
+                "click",
+                () => {
+
+                    if (
+                        !window.AnnotationCanvasV1
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    if (
+                        typeof
+                        AnnotationCanvasV1.getPageInfo
+                        !==
+                        "function"
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const pageInfo =
+                        AnnotationCanvasV1.getPageInfo();
+
+
+                    if (
+                        !pageInfo ||
+                        pageInfo.totalPages <= 1
+                    ) {
+
+                        console.log(
+                            "ANNOTATION TOOLBAR V1: CANNOT DELETE LAST PAGE"
+                        );
+
+                        return;
+
+                    }
+
+
+                    const confirmed =
+                        window.confirm(
+                            "Delete Page " +
+                            pageInfo.currentPage +
+                            "?"
+                        );
+
+
+                    if (!confirmed) {
+
+                        return;
+
+                    }
+
+
+                    if (
+                        typeof
+                        AnnotationCanvasV1.deletePage
+                        ===
+                        "function"
+                    ) {
+
+                        AnnotationCanvasV1.deletePage();
+
+                    }
+
+
+                    updatePageIndicator();
+
+                }
+            );
+
+        }
+
+
+        /*
+        ===================================================
         CLOSE
-        ---------------------------------------------------
+        ===================================================
         */
 
         const close =
@@ -1013,7 +1437,11 @@ if (saveMaterial) {
                 () => {
 
                     if (
-                        window.AnnotationManagerV1
+                        window.AnnotationManagerV1 &&
+                        typeof
+                        AnnotationManagerV1.close
+                        ===
+                        "function"
                     ) {
 
                         AnnotationManagerV1.close();
@@ -1027,62 +1455,62 @@ if (saveMaterial) {
 
     }
 
+
     /*
-=======================================================
-PAGE INDICATOR
-=======================================================
-*/
+    =======================================================
+    UPDATE PAGE INDICATOR
+    =======================================================
+    */
 
-function updatePageIndicator() {
+    function updatePageIndicator() {
 
-    const indicator =
-        document.getElementById(
-            "annotationPageIndicatorV1"
-        );
+        const indicator =
+            document.getElementById(
+                "annotationPageIndicatorV1"
+            );
 
 
-    if (!indicator) {
+        if (!indicator) {
 
-        return;
+            return;
+
+        }
+
+
+        if (
+            !window.AnnotationCanvasV1 ||
+            typeof
+            AnnotationCanvasV1.getPageInfo
+            !==
+            "function"
+        ) {
+
+            indicator.textContent =
+                "Page 1 / 1";
+
+            return;
+
+        }
+
+
+        const pageInfo =
+            AnnotationCanvasV1.getPageInfo();
+
+
+        if (!pageInfo) {
+
+            return;
+
+        }
+
+
+        indicator.textContent =
+            "Page " +
+            pageInfo.currentPage +
+            " / " +
+            pageInfo.totalPages;
 
     }
-
-
-    if (
-        !window.AnnotationCanvasV1
-    ) {
-
-        return;
-
-    }
-
-
-    const pageInfo =
-        AnnotationCanvasV1.getPageInfo();
-
-
-    if (!pageInfo) {
-
-        return;
-
-    }
-
-
-    indicator.textContent =
-        "Page " +
-        pageInfo.currentPage +
-        " / " +
-        pageInfo.totalPages;
-
-
-    console.log(
-        "ANNOTATION TOOLBAR V1: PAGE",
-        pageInfo.currentPage,
-        "/",
-        pageInfo.totalPages
-    );
-
-}
 
 
     /*
@@ -1109,20 +1537,20 @@ function updatePageIndicator() {
 
         if (pen) {
 
-            pen.classList.toggle(
-                "active",
+            pen.style.background =
                 tool === "pen"
-            );
+                    ? "#dbeafe"
+                    : "#f5f5f5";
 
         }
 
 
         if (eraser) {
 
-            eraser.classList.toggle(
-                "active",
+            eraser.style.background =
                 tool === "eraser"
-            );
+                    ? "#dbeafe"
+                    : "#f5f5f5";
 
         }
 
@@ -1137,72 +1565,76 @@ function updatePageIndicator() {
 
     function show() {
 
-    if (!toolbar) {
+        if (!toolbar) {
 
-        init();
-
-    }
-
-
-    /*
-    ===================================================
-    MAKE SURE TOOLBAR IS INSIDE ANNOTATION WORKSPACE
-    ===================================================
-    */
-
-    const workspace =
-        document.getElementById(
-            "annotationWorkspaceV1"
-        );
-
-
-    if (workspace && toolbar) {
-
-        workspace.style.position =
-            "relative";
-
-
-        /*
-        -----------------------------------------------
-        MOVE TOOLBAR INTO WORKSPACE
-        -----------------------------------------------
-        */
-
-        if (
-            toolbar.parentElement !== workspace
-        ) {
-
-            workspace.appendChild(
-                toolbar
-            );
+            createToolbar();
 
         }
 
 
-        /*
-        -----------------------------------------------
-        TOOLBAR POSITION
-        -----------------------------------------------
-        */
-
-        toolbar.style.position =
-            "absolute";
+        const workspace =
+            document.getElementById(
+                "annotationWorkspaceV1"
+            );
 
 
-        toolbar.style.left =
-            "50%";
+        if (
+            workspace &&
+            toolbar
+        ) {
+
+            workspace.style.position =
+                "absolute";
 
 
-        toolbar.style.bottom =
-            "20px";
+            /*
+            -----------------------------------------------
+            MAKE SURE TOOLBAR IS INSIDE WORKSPACE
+            -----------------------------------------------
+            */
+
+            if (
+                toolbar.parentElement !==
+                workspace
+            ) {
+
+                workspace.appendChild(
+                    toolbar
+                );
+
+            }
 
 
-        toolbar.style.transform =
-            "translateX(-50%)";
+            /*
+            -----------------------------------------------
+            POSITION
+            -----------------------------------------------
+            */
+
+            toolbar.style.position =
+                "absolute";
 
 
-        toolbar.style.zIndex =
-            "10000";
+            toolbar.style.left =
+                "50%";
+
+
+            toolbar.style.bottom =
+                "12px";
+
+
+            toolbar.style.transform =
+                "translateX(-50%)";
+
+
+            toolbar.style.zIndex =
+                "99999";
+
+        }
+
+
+        toolbar.style.display =
+            "block";
 
 
         toolbar.style.visibility =
@@ -1216,27 +1648,10 @@ function updatePageIndicator() {
         toolbar.style.pointerEvents =
             "auto";
 
+
+        updatePageIndicator();
+
     }
-
-
-    /*
-    ===================================================
-    SHOW TOOLBAR
-    ===================================================
-    */
-
-    toolbar.style.display =
-        "flex";
-
-        /*
-===================================================
-UPDATE PAGE INDICATOR
-===================================================
-*/
-
-updatePageIndicator();
-
-}
 
 
     /*
@@ -1247,7 +1662,11 @@ updatePageIndicator();
 
     function hide() {
 
-        if (!toolbar) return;
+        if (!toolbar) {
+
+            return;
+
+        }
 
 
         toolbar.style.display =
