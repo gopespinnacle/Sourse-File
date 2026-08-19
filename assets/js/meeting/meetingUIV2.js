@@ -237,6 +237,12 @@ RAISE HAND CONTROL
 ======================================================
 */
 
+/*
+======================================================
+RAISE HAND CONTROL
+======================================================
+*/
+
 const raiseHandButton =
     document.getElementById(
         "raiseHandButton"
@@ -249,23 +255,70 @@ if (raiseHandButton) {
         "click",
         () => {
 
-            console.log(
-                "MAIN RAISE HAND CLICKED"
-            );
+            /*
+            ==========================================
+            MEETING INFORMATION
+            ==========================================
+            */
+
+            const config =
+                window.MeetingConfig;
+
+
+            if (!config) {
+
+                console.warn(
+                    "MeetingConfig not available."
+                );
+
+                return;
+
+            }
+
+
+            const room =
+                config.room;
+
+            const studentId =
+                config.userId;
+
+            const name =
+                config.userName;
 
 
             /*
-            ------------------------------------------
-            FIND EXISTING RAISE HAND FUNCTION
-            ------------------------------------------
+            ==========================================
+            CHECK REQUIRED DATA
+            ==========================================
             */
 
-            if (
-                typeof toggleRaiseHand ===
-                "function"
-            ) {
+            if (!room) {
 
-                toggleRaiseHand();
+                console.warn(
+                    "Raise Hand: room missing."
+                );
+
+                return;
+
+            }
+
+
+            if (!studentId) {
+
+                console.warn(
+                    "Raise Hand: user ID missing."
+                );
+
+                return;
+
+            }
+
+
+            if (!name) {
+
+                console.warn(
+                    "Raise Hand: user name missing."
+                );
 
                 return;
 
@@ -273,13 +326,88 @@ if (raiseHandButton) {
 
 
             /*
-            ------------------------------------------
-            FALLBACK
-            ------------------------------------------
+            ==========================================
+            CURRENT HAND STATE
+            ==========================================
             */
 
-            console.warn(
-                "toggleRaiseHand() was not found."
+            const isRaised =
+                raiseHandButton.dataset.raised ===
+                "true";
+
+
+            /*
+            ==========================================
+            LOWER HAND
+            ==========================================
+            */
+
+            if (isRaised) {
+
+                MeetingSocket.emit(
+                    "lowerHand",
+                    {
+                        room:
+                            room,
+
+                        studentId:
+                            studentId,
+
+                        name:
+                            name
+                    }
+                );
+
+
+                raiseHandButton.dataset.raised =
+                    "false";
+
+
+                raiseHandButton.innerHTML =
+                    "✋";
+
+
+                console.log(
+                    "HAND LOWERED"
+                );
+
+
+                return;
+
+            }
+
+
+            /*
+            ==========================================
+            RAISE HAND
+            ==========================================
+            */
+
+            MeetingSocket.emit(
+                "raiseHand",
+                {
+                    room:
+                        room,
+
+                    studentId:
+                        studentId,
+
+                    name:
+                        name
+                }
+            );
+
+
+            raiseHandButton.dataset.raised =
+                "true";
+
+
+            raiseHandButton.innerHTML =
+                "✋";
+
+
+            console.log(
+                "HAND RAISED"
             );
 
         }

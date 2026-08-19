@@ -122,6 +122,52 @@ socket.on("screenShareStopped", () => {
 
 });
 
+/*
+===========================================================
+RAISE HAND LIST
+Receive current raised-hand users from server
+===========================================================
+*/
+
+socket.on(
+    "handList",
+    raisedHands => {
+
+        console.log(
+            "RAISE HAND LIST RECEIVED:",
+            raisedHands
+        );
+
+
+        /*
+        ---------------------------------------------------
+        STORE CURRENT RAISED HANDS GLOBALLY
+        ---------------------------------------------------
+        */
+
+        window.raisedHands =
+            raisedHands || [];
+
+
+        /*
+        ---------------------------------------------------
+        NOTIFY MEETING UI
+        ---------------------------------------------------
+        */
+
+        window.dispatchEvent(
+            new CustomEvent(
+                "meeting:handList",
+                {
+                    detail:
+                        window.raisedHands
+                }
+            )
+        );
+
+    }
+);
+
         return socket;
 
     }
