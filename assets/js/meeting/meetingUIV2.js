@@ -231,6 +231,62 @@ if (cameraButton) {
 
 }
 
+/*
+======================================================
+RAISE HAND CONTROL
+======================================================
+*/
+
+const raiseHandButton =
+    document.getElementById(
+        "raiseHandButton"
+    );
+
+
+if (raiseHandButton) {
+
+    raiseHandButton.addEventListener(
+        "click",
+        () => {
+
+            console.log(
+                "MAIN RAISE HAND CLICKED"
+            );
+
+
+            /*
+            ------------------------------------------
+            FIND EXISTING RAISE HAND FUNCTION
+            ------------------------------------------
+            */
+
+            if (
+                typeof toggleRaiseHand ===
+                "function"
+            ) {
+
+                toggleRaiseHand();
+
+                return;
+
+            }
+
+
+            /*
+            ------------------------------------------
+            FALLBACK
+            ------------------------------------------
+            */
+
+            console.warn(
+                "toggleRaiseHand() was not found."
+            );
+
+        }
+    );
+
+}
+
         const peopleButton =
             document.getElementById(
                 "peopleButton"
