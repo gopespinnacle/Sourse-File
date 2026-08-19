@@ -1421,12 +1421,81 @@ if (continueButton) {
 
 
             /*
-            -----------------------------------------------
-            OPEN EXISTING ANNOTATION
-            -----------------------------------------------
-            */
+-------------------------------------------------------
+OPEN NEW ANNOTATION PAGE
+-------------------------------------------------------
+*/
 
-            openAnnotation();
+const annotationKey =
+    "gopesAnnotation_" +
+    Date.now();
+
+
+/*
+-------------------------------------------------------
+STORE MATERIAL DETAILS FOR NEW ANNOTATION PAGE
+-------------------------------------------------------
+*/
+
+localStorage.setItem(
+    annotationKey,
+    JSON.stringify(
+        materialDetails
+    )
+);
+
+
+/*
+-------------------------------------------------------
+BUILD NEW ANNOTATION PAGE URL
+-------------------------------------------------------
+*/
+
+const annotationUrl =
+    "annotation.html?key=" +
+    encodeURIComponent(
+        annotationKey
+    );
+
+
+/*
+-------------------------------------------------------
+OPEN ANNOTATION IN NEW TAB
+-------------------------------------------------------
+*/
+
+const annotationWindow =
+    window.open(
+        annotationUrl,
+        "_blank"
+    );
+
+
+/*
+-------------------------------------------------------
+CHECK POPUP BLOCKER
+-------------------------------------------------------
+*/
+
+if (!annotationWindow) {
+
+    alert(
+        "Please allow pop-ups for Gopes Pinnacle Academy to open Annotation."
+    );
+
+    localStorage.removeItem(
+        annotationKey
+    );
+
+    return;
+
+}
+
+
+console.log(
+    "ANNOTATION: NEW TAB OPENED",
+    annotationUrl
+);
 
         }
 
