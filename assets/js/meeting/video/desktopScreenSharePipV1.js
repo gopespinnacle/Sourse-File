@@ -1532,6 +1532,70 @@ createPipMenu() {
 
         }
 
+        /*
+==========================================
+PIP CAMERA
+==========================================
+*/
+
+if (
+    originalId === "cameraButton" &&
+    window.MediaManagerV2
+) {
+
+    MediaManagerV2.toggleCamera();
+
+
+    const enabled =
+        MediaManagerV2.cameraEnabled;
+
+
+    /*
+    --------------------------------------
+    UPDATE PIP CAMERA ICON
+    --------------------------------------
+    */
+
+    button.innerHTML =
+        enabled
+            ? "📹"
+            : "📷";
+
+
+    /*
+    --------------------------------------
+    UPDATE MAIN CAMERA ICON
+    --------------------------------------
+    */
+
+    const mainCamera =
+        document.getElementById(
+            "cameraButton"
+        );
+
+
+    if (mainCamera) {
+
+        mainCamera.innerHTML =
+            enabled
+                ? "📹"
+                : "📷";
+
+    }
+
+
+    console.log(
+        "PIP CAMERA:",
+        enabled
+            ? "ON"
+            : "OFF"
+    );
+
+
+    return;
+
+}
+
 
         /*
         ==========================================
