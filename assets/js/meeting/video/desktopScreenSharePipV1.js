@@ -1,14 +1,21 @@
 /*
 ===========================================================
 GOPES PINNACLE ACADEMY
-DESKTOP SCREEN SHARE PIP V1
+DESKTOP SCREEN SHARE PIP V2
 
-STEP 1
-Desktop-only Document Picture-in-Picture foundation.
+STEP 2
+
+Responsible ONLY for:
+
+1. Desktop PIP window
+2. Teacher video
+3. Student videos
+4. Participant updates
+5. Active speaker preparation
 
 DO NOT TOUCH:
+- WebRTC signaling
 - Screen Share WebRTC
-- Server signaling
 - Mobile layout
 - Annotation PIP
 ===========================================================
@@ -18,7 +25,11 @@ window.DesktopScreenSharePip = {
 
     pipWindow: null,
 
-    pipVideo: null,
+    root: null,
+
+    participants: {},
+
+    speakerTimer: null,
 
     prepared: false,
 
@@ -41,7 +52,7 @@ window.DesktopScreenSharePip = {
 
     /*
     =======================================================
-    SUPPORTED CHECK
+    DOCUMENT PIP SUPPORT
     =======================================================
     */
 
@@ -59,56 +70,32 @@ window.DesktopScreenSharePip = {
     /*
     =======================================================
     PREPARE PIP WINDOW
-
-    Called directly from the Share Screen button.
-
-    This is intentionally called BEFORE
-    ScreenShare.start() so the browser still has
-    the user's click activation.
     =======================================================
     */
 
     async prepare() {
 
-        /*
-        ---------------------------------------------------
-        DESKTOP ONLY
-        ---------------------------------------------------
-        */
-
         if (!this.isDesktop()) {
 
             console.log(
-                "DESKTOP PIP V1: MOBILE/TABLET — SKIPPED"
+                "DESKTOP PIP V2: MOBILE/TABLET SKIPPED"
             );
 
             return false;
 
         }
 
-
-        /*
-        ---------------------------------------------------
-        BROWSER SUPPORT
-        ---------------------------------------------------
-        */
 
         if (!this.isSupported()) {
 
             console.warn(
-                "DESKTOP PIP V1: DOCUMENT PIP NOT SUPPORTED"
+                "DESKTOP PIP V2: DOCUMENT PIP NOT SUPPORTED"
             );
 
             return false;
 
         }
 
-
-        /*
-        ---------------------------------------------------
-        ALREADY OPEN
-        ---------------------------------------------------
-        */
 
         if (
             this.pipWindow &&
@@ -123,112 +110,170 @@ window.DesktopScreenSharePip = {
         try {
 
             console.log(
-                "DESKTOP PIP V1: OPENING PIP WINDOW"
+                "DESKTOP PIP V2: OPENING PIP"
+            );
+
+
+            this.pipWindow =
+                await documentPictureInPicture.requestWindow({
+
+                    width: 420,
+
+                    height: 300
+
+                });
+
+
+            const doc =
+                this.pipWindow.document;
+
+
+            /*
+            ------------------------------------------------
+            BASIC DOCUMENT STYLE
+            ------------------------------------------------
+            */
+
+            doc.documentElement.style.margin =
+                "0";
+
+            doc.documentElement.style.padding =
+                "0";
+
+            doc.documentElement.style.width =
+                "100%";
+
+            doc.documentElement.style.height =
+                "100%";
+
+
+            doc.body.style.margin =
+                "0";
+
+            doc.body.style.padding =
+                "0";
+
+            doc.body.style.width =
+                "100%";
+
+            doc.body.style.height =
+                "100%";
+
+            doc.body.style.background =
+                "#202124";
+
+            doc.body.style.overflow =
+                "hidden";
+
+
+            /*
+            ------------------------------------------------
+            PIP ROOT
+            ------------------------------------------------
+            */
+
+            this.root =
+                doc.createElement("div");
+
+
+            this.root.id =
+                "desktopScreenSharePip";
+
+
+            this.root.style.position =
+                "relative";
+
+            this.root.style.width =
+                "100%";
+
+            this.root.style.height =
+                "100%";
+
+            this.root.style.background =
+                "#202124";
+
+            this.root.style.overflow =
+                "hidden";
+
+            this.root.style.borderRadius =
+                "12px";
+
+            this.root.style.fontFamily =
+                "Arial, sans-serif";
+
+
+            doc.body.appendChild(
+                this.root
             );
 
 
             /*
             ------------------------------------------------
-            CREATE DOCUMENT PIP WINDOW
+            PARTICIPANT GRID
             ------------------------------------------------
             */
 
-            this.pipWindow =
-                await documentPictureInPicture.requestWindow({
-
-                    width: 360,
-
-                    height: 240
-
-                });
+            const grid =
+                doc.createElement("div");
 
 
-            /*
-            ------------------------------------------------
-            PIP WINDOW BASIC STYLE
-            ------------------------------------------------
-            */
-
-            const pipDocument =
-                this.pipWindow.document;
+            grid.id =
+                "desktopPipParticipantGrid";
 
 
-            pipDocument.documentElement.style.margin =
-                "0";
+            grid.style.position =
+                "absolute";
 
-            pipDocument.documentElement.style.padding =
-                "0";
+            grid.style.left =
+                "8px";
 
-            pipDocument.documentElement.style.width =
-                "100%";
+            grid.style.right =
+                "8px";
 
-            pipDocument.documentElement.style.height =
-                "100%";
+            grid.style.top =
+                "8px";
 
-            pipDocument.body.style.margin =
-                "0";
+            grid.style.bottom =
+                "55px";
 
-            pipDocument.body.style.padding =
-                "0";
+            grid.style.display =
+                "grid";
 
-            pipDocument.body.style.width =
-                "100%";
+            grid.style.gridTemplateColumns =
+                "repeat(2, minmax(0, 1fr))";
 
-            pipDocument.body.style.height =
-                "100%";
+            grid.style.gridAutoRows =
+                "minmax(0, 1fr)";
 
-            pipDocument.body.style.background =
-                "#202124";
+            grid.style.gap =
+                "6px";
 
-            pipDocument.body.style.overflow =
+            grid.style.overflow =
                 "hidden";
 
 
-            /*
-            ------------------------------------------------
-            GOOGLE-MEET STYLE PIP ROOT
-            ------------------------------------------------
-            */
-
-            const pipRoot =
-                pipDocument.createElement("div");
-
-            pipRoot.id =
-                "desktopScreenSharePip";
-
-            pipRoot.style.position =
-                "relative";
-
-            pipRoot.style.width =
-                "100%";
-
-            pipRoot.style.height =
-                "100%";
-
-            pipRoot.style.background =
-                "#202124";
-
-            pipRoot.style.borderRadius =
-                "12px";
-
-            pipRoot.style.overflow =
-                "hidden";
+            this.root.appendChild(
+                grid
+            );
 
 
             /*
             ------------------------------------------------
-            TEMPORARY STATUS
+            EMPTY STATUS
             ------------------------------------------------
             */
 
             const status =
-                pipDocument.createElement("div");
+                doc.createElement("div");
+
 
             status.id =
                 "desktopPipStatus";
 
+
             status.textContent =
-                "Starting screen share…";
+                "Waiting for participants…";
+
 
             status.style.position =
                 "absolute";
@@ -245,37 +290,21 @@ window.DesktopScreenSharePip = {
             status.style.color =
                 "#ffffff";
 
-            status.style.fontFamily =
-                "Arial, sans-serif";
-
             status.style.fontSize =
-                "14px";
+                "13px";
 
             status.style.opacity =
-                "0.85";
-
-            status.style.zIndex =
-                "10";
+                "0.75";
 
 
-            /*
-            ------------------------------------------------
-            ADD TO PIP
-            ------------------------------------------------
-            */
-
-            pipRoot.appendChild(
+            grid.appendChild(
                 status
             );
 
-            pipDocument.body.appendChild(
-                pipRoot
-            );
-
 
             /*
             ------------------------------------------------
-            PIP CLOSED
+            CLOSE EVENT
             ------------------------------------------------
             */
 
@@ -284,14 +313,21 @@ window.DesktopScreenSharePip = {
                 () => {
 
                     console.log(
-                        "DESKTOP PIP V1: PIP WINDOW CLOSED"
+                        "DESKTOP PIP V2: WINDOW CLOSED"
                     );
+
+
+                    this.stopSpeakerDetection();
+
 
                     this.pipWindow =
                         null;
 
-                    this.pipVideo =
+                    this.root =
                         null;
+
+                    this.participants =
+                        {};
 
                     this.prepared =
                         false;
@@ -300,12 +336,54 @@ window.DesktopScreenSharePip = {
             );
 
 
+            /*
+            ------------------------------------------------
+            LISTEN FOR NEW REMOTE PARTICIPANT
+            ------------------------------------------------
+            */
+
+            document.addEventListener(
+                "meeting:remoteStream",
+                this._remoteStreamHandler
+            );
+
+
+            /*
+            ------------------------------------------------
+            LISTEN FOR PARTICIPANT LEAVE
+            ------------------------------------------------
+            */
+
+            document.addEventListener(
+                "meeting:participantLeft",
+                this._participantLeftHandler
+            );
+
+
+            /*
+            ------------------------------------------------
+            INITIAL PARTICIPANTS
+            ------------------------------------------------
+            */
+
+            this.refreshParticipants();
+
+
+            /*
+            ------------------------------------------------
+            START ACTIVE SPEAKER DETECTION
+            ------------------------------------------------
+            */
+
+            this.startSpeakerDetection();
+
+
             this.prepared =
                 true;
 
 
             console.log(
-                "DESKTOP PIP V1: PIP WINDOW READY"
+                "DESKTOP PIP V2: READY"
             );
 
 
@@ -313,15 +391,18 @@ window.DesktopScreenSharePip = {
 
         }
 
-        catch (error) {
+        catch(error) {
 
             console.error(
-                "DESKTOP PIP V1: PIP OPEN ERROR:",
+                "DESKTOP PIP V2: OPEN ERROR:",
                 error
             );
 
 
             this.pipWindow =
+                null;
+
+            this.root =
                 null;
 
             this.prepared =
@@ -337,37 +418,180 @@ window.DesktopScreenSharePip = {
 
     /*
     =======================================================
-    SHOW SCREEN VIDEO
+    REMOTE STREAM EVENT
     =======================================================
     */
 
-    showScreen(stream) {
+    _remoteStreamHandler(event) {
 
         if (
-            !this.pipWindow ||
-            this.pipWindow.closed
+            !window.DesktopScreenSharePip
         ) {
-
-            console.warn(
-                "DESKTOP PIP V1: PIP WINDOW NOT AVAILABLE"
-            );
 
             return;
 
         }
 
 
-        const pipDocument =
-            this.pipWindow.document;
+        const detail =
+            event.detail;
 
 
-        const root =
-            pipDocument.getElementById(
-                "desktopScreenSharePip"
+        if (!detail) {
+
+            return;
+
+        }
+
+
+        window.DesktopScreenSharePip.addParticipant(
+            detail.socketId,
+            detail.stream
+        );
+
+    },
+
+
+    /*
+    =======================================================
+    PARTICIPANT LEFT EVENT
+    =======================================================
+    */
+
+    _participantLeftHandler(event) {
+
+        if (
+            !window.DesktopScreenSharePip
+        ) {
+
+            return;
+
+        }
+
+
+        const detail =
+            event.detail;
+
+
+        if (!detail) {
+
+            return;
+
+        }
+
+
+        window.DesktopScreenSharePip.removeParticipant(
+            detail.socketId
+        );
+
+    },
+
+
+    /*
+    =======================================================
+    GET PARTICIPANT NAME
+    =======================================================
+    */
+
+    getParticipantName(socketId) {
+
+        if (!socketId) {
+
+            return "Participant";
+
+        }
+
+
+        const card =
+            document.querySelector(
+                `.meeting-participant[data-socket-id="${socketId}"]`
             );
 
 
-        if (!root) {
+        if (!card) {
+
+            return "Participant";
+
+        }
+
+
+        /*
+        ------------------------------------------------
+        TRY USER NAME DATA
+        ------------------------------------------------
+        */
+
+        const name =
+            card.dataset.userName ||
+            card.dataset.name;
+
+
+        if (name) {
+
+            return name;
+
+        }
+
+
+        /*
+        ------------------------------------------------
+        FALLBACK TEXT
+        ------------------------------------------------
+        */
+
+        const text =
+            card.innerText
+                ?.trim()
+                ?.split("\n")[0];
+
+
+        return (
+            text ||
+            "Participant"
+        );
+
+    },
+
+
+    /*
+    =======================================================
+    ADD PARTICIPANT
+    =======================================================
+    */
+
+    addParticipant(
+        socketId,
+        stream
+    ) {
+
+        if (
+            !this.pipWindow ||
+            this.pipWindow.closed
+        ) {
+
+            return;
+
+        }
+
+
+        if (!socketId || !stream) {
+
+            return;
+
+        }
+
+
+        const doc =
+            this.pipWindow.document;
+
+
+        const grid =
+            doc.getElementById(
+                "desktopPipParticipantGrid"
+            );
+
+
+        if (!grid) {
 
             return;
 
@@ -375,15 +599,16 @@ window.DesktopScreenSharePip = {
 
 
         /*
-        ---------------------------------------------------
-        REMOVE STATUS
-        ---------------------------------------------------
+        ------------------------------------------------
+        REMOVE WAITING MESSAGE
+        ------------------------------------------------
         */
 
         const status =
-            pipDocument.getElementById(
+            doc.getElementById(
                 "desktopPipStatus"
             );
+
 
         if (status) {
 
@@ -393,83 +618,691 @@ window.DesktopScreenSharePip = {
 
 
         /*
-        ---------------------------------------------------
-        CREATE VIDEO
-        ---------------------------------------------------
+        ------------------------------------------------
+        EXISTING PARTICIPANT
+        ------------------------------------------------
         */
 
-        if (!this.pipVideo) {
+        if (
+            this.participants[socketId]
+        ) {
 
-            this.pipVideo =
-                pipDocument.createElement(
-                    "video"
-                );
-
-
-            this.pipVideo.autoplay =
-                true;
-
-            this.pipVideo.playsInline =
-                true;
-
-            this.pipVideo.muted =
-                true;
-
-            this.pipVideo.style.position =
-                "absolute";
-
-            this.pipVideo.style.left =
-                "0";
-
-            this.pipVideo.style.top =
-                "0";
-
-            this.pipVideo.style.width =
-                "100%";
-
-            this.pipVideo.style.height =
-                "100%";
-
-            this.pipVideo.style.objectFit =
-                "contain";
-
-            this.pipVideo.style.background =
-                "#000";
+            const participant =
+                this.participants[socketId];
 
 
-            root.appendChild(
-                this.pipVideo
+            participant.stream =
+                stream;
+
+
+            participant.video.srcObject =
+                stream;
+
+
+            return;
+
+        }
+
+
+        /*
+        ------------------------------------------------
+        CREATE PARTICIPANT TILE
+        ------------------------------------------------
+        */
+
+        const tile =
+            doc.createElement("div");
+
+
+        tile.className =
+            "desktop-pip-participant";
+
+
+        tile.dataset.socketId =
+            socketId;
+
+
+        tile.style.position =
+            "relative";
+
+        tile.style.width =
+            "100%";
+
+        tile.style.height =
+            "100%";
+
+        tile.style.minWidth =
+            "0";
+
+        tile.style.minHeight =
+            "0";
+
+        tile.style.background =
+            "#000";
+
+        tile.style.borderRadius =
+            "9px";
+
+        tile.style.overflow =
+            "hidden";
+
+        tile.style.border =
+            "1px solid rgba(255,255,255,.12)";
+
+
+        /*
+        ------------------------------------------------
+        VIDEO
+        ------------------------------------------------
+        */
+
+        const video =
+            doc.createElement("video");
+
+
+        video.autoplay =
+            true;
+
+        video.playsInline =
+            true;
+
+        video.muted =
+            true;
+
+
+        video.srcObject =
+            stream;
+
+
+        video.style.width =
+            "100%";
+
+        video.style.height =
+            "100%";
+
+        video.style.objectFit =
+            "cover";
+
+        video.style.display =
+            "block";
+
+
+        tile.appendChild(
+            video
+        );
+
+
+        /*
+        ------------------------------------------------
+        NAME LABEL
+        ------------------------------------------------
+        */
+
+        const label =
+            doc.createElement("div");
+
+
+        label.className =
+            "desktop-pip-name";
+
+
+        label.textContent =
+            this.getParticipantName(
+                socketId
+            );
+
+
+        label.style.position =
+            "absolute";
+
+        label.style.left =
+            "7px";
+
+        label.style.bottom =
+            "6px";
+
+        label.style.padding =
+            "3px 6px";
+
+        label.style.borderRadius =
+            "5px";
+
+        label.style.background =
+            "rgba(0,0,0,.65)";
+
+        label.style.color =
+            "#ffffff";
+
+        label.style.fontSize =
+            "10px";
+
+        label.style.zIndex =
+            "5";
+
+
+        tile.appendChild(
+            label
+        );
+
+
+        /*
+        ------------------------------------------------
+        SAVE PARTICIPANT
+        ------------------------------------------------
+        */
+
+        this.participants[
+            socketId
+        ] = {
+
+            socketId,
+
+            stream,
+
+            tile,
+
+            video,
+
+            label
+
+        };
+
+
+        grid.appendChild(
+            tile
+        );
+
+
+        video.play()
+            .catch(
+                () => {}
+            );
+
+
+        console.log(
+            "DESKTOP PIP V2: PARTICIPANT ADDED:",
+            socketId
+        );
+
+    },
+
+
+    /*
+    =======================================================
+    REMOVE PARTICIPANT
+    =======================================================
+    */
+
+    removeParticipant(socketId) {
+
+        const participant =
+            this.participants[
+                socketId
+            ];
+
+
+        if (!participant) {
+
+            return;
+
+        }
+
+
+        if (
+            participant.tile &&
+            participant.tile.parentNode
+        ) {
+
+            participant.tile.remove();
+
+        }
+
+
+        delete this.participants[
+            socketId
+        ];
+
+
+        console.log(
+            "DESKTOP PIP V2: PARTICIPANT REMOVED:",
+            socketId
+        );
+
+    },
+
+
+    /*
+    =======================================================
+    REFRESH PARTICIPANTS
+    =======================================================
+    */
+
+    refreshParticipants() {
+
+        if (
+            !window.MeetingWebRTC
+        ) {
+
+            return;
+
+        }
+
+
+        /*
+        ------------------------------------------------
+        LOCAL TEACHER
+        ------------------------------------------------
+        */
+
+        const localStream =
+            MeetingWebRTC.getLocalStream();
+
+
+        const config =
+            window.MeetingConfig;
+
+
+        if (
+            localStream &&
+            config &&
+            config.socketId
+        ) {
+
+            this.addParticipant(
+                config.socketId,
+                localStream
             );
 
         }
 
 
         /*
-        ---------------------------------------------------
-        ATTACH SCREEN STREAM
-        ---------------------------------------------------
+        ------------------------------------------------
+        REMOTE STUDENTS
+        ------------------------------------------------
         */
 
-        this.pipVideo.srcObject =
-            stream;
+        const remoteStreams =
+            MeetingWebRTC.getRemoteStreams();
 
 
-        this.pipVideo.play()
-            .catch(
-                error => {
+        if (!remoteStreams) {
 
-                    console.warn(
-                        "DESKTOP PIP V1: VIDEO PLAY ERROR:",
-                        error
-                    );
+            return;
+
+        }
+
+
+        Object.entries(
+            remoteStreams
+        ).forEach(
+            ([socketId, stream]) => {
+
+                this.addParticipant(
+                    socketId,
+                    stream
+                );
+
+            }
+        );
+
+    },
+
+
+    /*
+    =======================================================
+    ACTIVE SPEAKER
+    =======================================================
+    */
+
+    getAudioLevel(
+        stream
+    ) {
+
+        if (!stream) {
+
+            return 0;
+
+        }
+
+
+        const audioTracks =
+            stream.getAudioTracks();
+
+
+        if (
+            !audioTracks.length
+        ) {
+
+            return 0;
+
+        }
+
+
+        try {
+
+            /*
+            ------------------------------------------------
+            CREATE AUDIO ANALYSER
+            ------------------------------------------------
+            */
+
+            if (
+                !stream._desktopPipAudioContext
+            ) {
+
+                const AudioContext =
+                    window.AudioContext ||
+                    window.webkitAudioContext;
+
+
+                if (!AudioContext) {
+
+                    return 0;
 
                 }
+
+
+                const audioContext =
+                    new AudioContext();
+
+
+                const source =
+                    audioContext.createMediaStreamSource(
+                        stream
+                    );
+
+
+                const analyser =
+                    audioContext.createAnalyser();
+
+
+                analyser.fftSize =
+                    256;
+
+
+                source.connect(
+                    analyser
+                );
+
+
+                stream._desktopPipAudioContext =
+                    audioContext;
+
+
+                stream._desktopPipAnalyser =
+                    analyser;
+
+            }
+
+
+            const analyser =
+                stream._desktopPipAnalyser;
+
+
+            const data =
+                new Uint8Array(
+                    analyser.frequencyBinCount
+                );
+
+
+            analyser.getByteFrequencyData(
+                data
+            );
+
+
+            let total =
+                0;
+
+
+            for (
+                let i = 0;
+                i < data.length;
+                i++
+            ) {
+
+                total +=
+                    data[i];
+
+            }
+
+
+            return data.length
+                ? total / data.length
+                : 0;
+
+        }
+
+        catch(error) {
+
+            console.warn(
+                "DESKTOP PIP SPEAKER ERROR:",
+                error
+            );
+
+
+            return 0;
+
+        }
+
+    },
+
+
+    /*
+    =======================================================
+    UPDATE ACTIVE SPEAKER
+    =======================================================
+    */
+
+    updateActiveSpeaker() {
+
+        const participants =
+            Object.values(
+                this.participants
+            );
+
+
+        if (
+            !participants.length
+        ) {
+
+            return;
+
+        }
+
+
+        let loudest =
+            null;
+
+
+        let loudestLevel =
+            0;
+
+
+        participants.forEach(
+            participant => {
+
+                const level =
+                    this.getAudioLevel(
+                        participant.stream
+                    );
+
+
+                if (
+                    level >
+                    loudestLevel
+                ) {
+
+                    loudestLevel =
+                        level;
+
+                    loudest =
+                        participant;
+
+                }
+
+            }
+        );
+
+
+        /*
+        ------------------------------------------------
+        NO CLEAR SPEAKER
+        ------------------------------------------------
+        */
+
+        if (
+            !loudest ||
+            loudestLevel < 8
+        ) {
+
+            return;
+
+        }
+
+
+        /*
+        ------------------------------------------------
+        APPLY SPEAKER STATE
+        ------------------------------------------------
+        */
+
+        participants.forEach(
+            participant => {
+
+                participant.tile.style.transition =
+                    "all .2s ease";
+
+
+                if (
+                    participant === loudest
+                ) {
+
+                    participant.tile.style.gridColumn =
+                        "span 2";
+
+                    participant.tile.style.gridRow =
+                        "span 2";
+
+                    participant.tile.style.zIndex =
+                        "10";
+
+
+                    participant.tile.style.border =
+                        "2px solid rgba(255,255,255,.9)";
+
+                }
+
+                else {
+
+                    participant.tile.style.gridColumn =
+                        "span 1";
+
+                    participant.tile.style.gridRow =
+                        "span 1";
+
+                    participant.tile.style.zIndex =
+                        "1";
+
+
+                    participant.tile.style.border =
+                        "1px solid rgba(255,255,255,.12)";
+
+                }
+
+            }
+        );
+
+    },
+
+
+    /*
+    =======================================================
+    START SPEAKER DETECTION
+    =======================================================
+    */
+
+    startSpeakerDetection() {
+
+        if (
+            this.speakerTimer
+        ) {
+
+            return;
+
+        }
+
+
+        this.speakerTimer =
+            setInterval(
+                () => {
+
+                    this.updateActiveSpeaker();
+
+                },
+                250
             );
 
 
         console.log(
-            "DESKTOP PIP V1: SCREEN VIDEO ATTACHED"
+            "DESKTOP PIP V2: SPEAKER DETECTION STARTED"
         );
+
+    },
+
+
+    /*
+    =======================================================
+    STOP SPEAKER DETECTION
+    =======================================================
+    */
+
+    stopSpeakerDetection() {
+
+        if (
+            this.speakerTimer
+        ) {
+
+            clearInterval(
+                this.speakerTimer
+            );
+
+            this.speakerTimer =
+                null;
+
+        }
+
+    },
+
+
+    /*
+    =======================================================
+    SHOW SCREEN
+    =======================================================
+
+    Kept for compatibility with screenShareV3.js.
+
+    STEP 2 no longer places the shared screen
+    inside the PIP.
+
+    The PIP is now for participant videos.
+    =======================================================
+    */
+
+    showScreen(stream) {
+
+        console.log(
+            "DESKTOP PIP V2: SCREEN STREAM RECEIVED"
+        );
+
+
+        /*
+        ------------------------------------------------
+        REFRESH PARTICIPANTS
+        ------------------------------------------------
+        */
+
+        this.refreshParticipants();
 
     },
 
@@ -481,6 +1314,21 @@ window.DesktopScreenSharePip = {
     */
 
     close() {
+
+        this.stopSpeakerDetection();
+
+
+        document.removeEventListener(
+            "meeting:remoteStream",
+            this._remoteStreamHandler
+        );
+
+
+        document.removeEventListener(
+            "meeting:participantLeft",
+            this._participantLeftHandler
+        );
+
 
         if (
             this.pipWindow &&
@@ -495,15 +1343,18 @@ window.DesktopScreenSharePip = {
         this.pipWindow =
             null;
 
-        this.pipVideo =
+        this.root =
             null;
+
+        this.participants =
+            {};
 
         this.prepared =
             false;
 
 
         console.log(
-            "DESKTOP PIP V1: CLOSED"
+            "DESKTOP PIP V2: CLOSED"
         );
 
     }
