@@ -1465,39 +1465,110 @@ createPipMenu() {
             */
 
             button.addEventListener(
-                "click",
-                () => {
+    "click",
+    () => {
 
-                    const originalButton =
-    document.getElementById(
-        originalId
-    );
+        /*
+        ==========================================
+        PIP MICROPHONE
+        ==========================================
+        */
 
+        if (
+            originalId === "micButton" &&
+            window.MediaManagerV2
+        ) {
 
-                    if (
-                        originalButton
-                    ) {
-
-                        console.log(
-                            "DESKTOP PIP:",
-                            title
-                        );
+            MediaManagerV2.toggleMicrophone();
 
 
-                        originalButton.click();
+            const enabled =
+                MediaManagerV2.microphoneEnabled;
 
-                    }
-                    else {
 
-                        console.warn(
-                            "DESKTOP PIP: BUTTON NOT FOUND:",
-                            originalId
-                        );
+            /*
+            --------------------------------------
+            UPDATE PIP MIC ICON
+            --------------------------------------
+            */
 
-                    }
+            button.innerHTML =
+                enabled
+                    ? "🎤"
+                    : "🔇";
 
-                }
+
+            /*
+            --------------------------------------
+            UPDATE MAIN MIC ICON
+            --------------------------------------
+            */
+
+            const mainMic =
+                document.getElementById(
+                    "micButton"
+                );
+
+
+            if (mainMic) {
+
+                mainMic.innerHTML =
+                    enabled
+                        ? "🎤"
+                        : "🔇";
+
+            }
+
+
+            console.log(
+                "PIP MIC:",
+                enabled
+                    ? "ON"
+                    : "OFF"
             );
+
+
+            return;
+
+        }
+
+
+        /*
+        ==========================================
+        OTHER PIP BUTTONS
+        ==========================================
+        */
+
+        const originalButton =
+            document.getElementById(
+                originalId
+            );
+
+
+        if (
+            originalButton
+        ) {
+
+            console.log(
+                "DESKTOP PIP:",
+                title
+            );
+
+
+            originalButton.click();
+
+        }
+        else {
+
+            console.warn(
+                "DESKTOP PIP: BUTTON NOT FOUND:",
+                originalId
+            );
+
+        }
+
+    }
+);
 
 
             /*
