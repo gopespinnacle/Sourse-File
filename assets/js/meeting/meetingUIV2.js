@@ -237,16 +237,162 @@ RAISE HAND CONTROL
 ======================================================
 */
 
-/*
-======================================================
-RAISE HAND CONTROL
-======================================================
-*/
-
 const raiseHandButton =
     document.getElementById(
         "raiseHandButton"
     );
+
+
+if (raiseHandButton) {
+
+    raiseHandButton.addEventListener(
+        "click",
+        () => {
+
+            /*
+            ==========================================
+            GET MEETING CONFIG
+            ==========================================
+            */
+
+            const config =
+                window.MeetingConfig;
+
+
+            if (!config) {
+
+                console.warn(
+                    "RAISE HAND: MeetingConfig not available."
+                );
+
+                return;
+
+            }
+
+
+            /*
+            ==========================================
+            GET USER INFORMATION
+            ==========================================
+            */
+
+            const room =
+                config.room;
+
+            const studentId =
+                config.userId;
+
+            const name =
+                config.userName;
+
+
+            if (!room) {
+
+                console.warn(
+                    "RAISE HAND: room missing."
+                );
+
+                return;
+
+            }
+
+
+            if (!studentId) {
+
+                console.warn(
+                    "RAISE HAND: userId missing."
+                );
+
+                return;
+
+            }
+
+
+            /*
+            ==========================================
+            CURRENT STATE
+            ==========================================
+            */
+
+            const isRaised =
+                raiseHandButton.dataset.raised ===
+                "true";
+
+
+            /*
+            ==========================================
+            LOWER HAND
+            ==========================================
+            */
+
+            if (isRaised) {
+
+                MeetingSocket.emit(
+                    "lowerHand",
+                    {
+
+                        room:
+                            room,
+
+                        studentId:
+                            studentId,
+
+                        name:
+                            name
+
+                    }
+                );
+
+
+                raiseHandButton.dataset.raised =
+                    "false";
+
+
+                console.log(
+                    "RAISE HAND: LOWERED"
+                );
+
+
+                return;
+
+            }
+
+
+            /*
+            ==========================================
+            RAISE HAND
+            ==========================================
+            */
+
+            MeetingSocket.emit(
+                "raiseHand",
+                {
+
+                    room:
+                        room,
+
+                    studentId:
+                        studentId,
+
+                    name:
+                        name
+
+                }
+            );
+
+
+            raiseHandButton.dataset.raised =
+                "true";
+
+
+            console.log(
+                "RAISE HAND: RAISED"
+            );
+
+        }
+    );
+
+}
 
 
 if (raiseHandButton) {
