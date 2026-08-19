@@ -61,6 +61,8 @@ const MeetingUI = {
 
     },
 
+    
+
 
     /*
     ======================================================
@@ -69,6 +71,85 @@ const MeetingUI = {
     */
 
     bindControls() {
+        /*
+======================================================
+MICROPHONE CONTROL
+======================================================
+*/
+
+const micButton =
+    document.getElementById(
+        "micButton"
+    );
+
+
+if (micButton) {
+
+    micButton.addEventListener(
+        "click",
+        () => {
+
+            if (
+                !window.MediaManagerV2
+            ) {
+
+                console.warn(
+                    "MediaManagerV2 is not available."
+                );
+
+                return;
+
+            }
+
+
+            /*
+            ------------------------------------------
+            TOGGLE REAL MICROPHONE
+            ------------------------------------------
+            */
+
+            MediaManagerV2.toggleMicrophone();
+
+
+            /*
+            ------------------------------------------
+            READ CURRENT STATE
+            ------------------------------------------
+            */
+
+            const enabled =
+                MediaManagerV2.microphoneEnabled;
+
+
+            /*
+            ------------------------------------------
+            UPDATE BUTTON ICON
+            ------------------------------------------
+            */
+
+            micButton.textContent =
+                enabled
+                    ? "🎤"
+                    : "🔇";
+
+
+            /*
+            ------------------------------------------
+            DEBUG
+            ------------------------------------------
+            */
+
+            console.log(
+                "MAIN MIC:",
+                enabled
+                    ? "ON"
+                    : "OFF"
+            );
+
+        }
+    );
+
+}
 
         const peopleButton =
             document.getElementById(
