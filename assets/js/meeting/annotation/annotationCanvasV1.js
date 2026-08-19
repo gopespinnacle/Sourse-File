@@ -667,6 +667,24 @@ function addPage() {
 
     saveAnnotationState();
 
+
+/*
+=======================================================
+MARK ANNOTATION AS UNSAVED
+=======================================================
+*/
+
+if (
+    window.AnnotationPageV1 &&
+    typeof
+    AnnotationPageV1.markUnsaved ===
+        "function"
+) {
+
+    AnnotationPageV1.markUnsaved();
+
+}
+
 }
 
 
@@ -825,6 +843,24 @@ function deletePage() {
     */
 
     saveAnnotationState();
+
+
+/*
+=======================================================
+MARK ANNOTATION AS UNSAVED
+=======================================================
+*/
+
+if (
+    window.AnnotationPageV1 &&
+    typeof
+    AnnotationPageV1.markUnsaved ===
+        "function"
+) {
+
+    AnnotationPageV1.markUnsaved();
+
+}
 
 }
 
@@ -1315,9 +1351,27 @@ function resize() {
         saveAnnotationState();
 
 
-        currentPoints = [];
+/*
+=======================================================
+MARK ANNOTATION AS UNSAVED
+=======================================================
+*/
 
-        lastPoint = null;
+if (
+    window.AnnotationPageV1 &&
+    typeof
+    AnnotationPageV1.markUnsaved ===
+        "function"
+) {
+
+    AnnotationPageV1.markUnsaved();
+
+}
+
+
+currentPoints = [];
+
+lastPoint = null;
 
 
         context.globalCompositeOperation =
@@ -1709,6 +1763,23 @@ function setEraserWidth(width) {
 
         historyIndex = -1;
 
+        /*
+=======================================================
+MARK ANNOTATION AS UNSAVED
+=======================================================
+*/
+
+if (
+    window.AnnotationPageV1 &&
+    typeof
+    AnnotationPageV1.markUnsaved ===
+        "function"
+) {
+
+    AnnotationPageV1.markUnsaved();
+
+}
+
         if (
     annotationSocket &&
     annotationRoom
@@ -1962,6 +2033,8 @@ function setEraserWidth(width) {
 redraw();
 
 
+
+
 /*
 =======================================================
 SAVE AFTER UNDO
@@ -1969,6 +2042,23 @@ SAVE AFTER UNDO
 */
 
 saveAnnotationState();
+
+/*
+=======================================================
+MARK ANNOTATION AS UNSAVED
+=======================================================
+*/
+
+if (
+    window.AnnotationPageV1 &&
+    typeof
+    AnnotationPageV1.markUnsaved ===
+        "function"
+) {
+
+    AnnotationPageV1.markUnsaved();
+
+}
 
 
 return stroke;
@@ -1999,6 +2089,8 @@ return stroke;
 redraw();
 
 
+
+
 /*
 =======================================================
 SAVE AFTER REDO
@@ -2006,6 +2098,23 @@ SAVE AFTER REDO
 */
 
 saveAnnotationState();
+
+/*
+=======================================================
+MARK ANNOTATION AS UNSAVED
+=======================================================
+*/
+
+if (
+    window.AnnotationPageV1 &&
+    typeof
+    AnnotationPageV1.markUnsaved ===
+        "function"
+) {
+
+    AnnotationPageV1.markUnsaved();
+
+}
 
 
 return history[

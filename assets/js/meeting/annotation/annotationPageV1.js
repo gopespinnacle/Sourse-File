@@ -20,6 +20,14 @@ window.AnnotationPageV1 = (() => {
 
     let canvas = null;
 
+    /*
+    =======================================================
+    UNSAVED CHANGE STATE
+    =======================================================
+    */
+
+    let hasUnsavedChanges = false;
+
 
     /*
     =======================================================
@@ -602,6 +610,40 @@ window.AnnotationPageV1 = (() => {
 
     }
 
+    /*
+===========================================================
+UNSAVED CHANGE TRACKING
+===========================================================
+*/
+
+function markUnsaved() {
+
+    hasUnsavedChanges = true;
+
+    console.log(
+        "ANNOTATION PAGE V1: UNSAVED CHANGES"
+    );
+
+}
+
+
+function markSaved() {
+
+    hasUnsavedChanges = false;
+
+    console.log(
+        "ANNOTATION PAGE V1: CHANGES SAVED"
+    );
+
+}
+
+
+function hasChanges() {
+
+    return hasUnsavedChanges;
+
+}
+
 /*
 ===========================================================
 SAVE LEARNING MATERIAL
@@ -995,6 +1037,8 @@ if (!materialDetails) {
             "Learning Material saved successfully."
         );
 
+        markSaved();
+
 
         console.log(
             "ANNOTATION PAGE V1: SAVE COMPLETE"
@@ -1032,7 +1076,13 @@ if (!materialDetails) {
     getMaterialDetails:
         loadMaterialDetails,
 
-    saveMaterial
+    saveMaterial,
+
+    markUnsaved,
+
+    markSaved,
+
+    hasChanges
 
 };
 
