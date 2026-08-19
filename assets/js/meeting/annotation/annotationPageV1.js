@@ -66,31 +66,66 @@ window.AnnotationPageV1 = (() => {
                 "0";
 
 
-            canvas.style.width =
-                "100%";
+            /*
+===========================================================
+SET REAL PIXEL SIZE
+
+IMPORTANT:
+
+Do NOT use:
+
+    100%
+
+The existing AnnotationCanvasV1 coordinate system
+needs the actual logical canvas size.
+===========================================================
+*/
+
+const workspaceRect =
+    workspace.getBoundingClientRect();
 
 
-            canvas.style.height =
-                "100%";
+canvas.style.width =
+    Math.floor(
+        workspaceRect.width
+    ) + "px";
 
 
-            canvas.style.display =
-                "block";
+canvas.style.height =
+    Math.floor(
+        workspaceRect.height
+    ) + "px";
 
 
-            canvas.style.background =
-                "#ffffff";
+canvas.style.display =
+    "block";
 
 
-            canvas.style.touchAction =
-                "none";
+canvas.style.background =
+    "#ffffff";
 
 
-            workspace.appendChild(
-                canvas
-            );
+canvas.style.touchAction =
+    "none";
 
-        }
+
+canvas.style.position =
+    "absolute";
+
+
+canvas.style.left =
+    "0px";
+
+
+canvas.style.top =
+    "0px";
+
+
+workspace.appendChild(
+    canvas
+);
+
+}
 
 
         /*
