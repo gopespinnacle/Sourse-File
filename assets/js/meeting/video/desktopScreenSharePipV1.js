@@ -1469,9 +1469,12 @@ createPipMenu() {
                 () => {
 
                     const originalButton =
-                        document.getElementById(
-                            originalId
-                        );
+    window.opener &&
+    !window.opener.closed
+        ? window.opener.document.getElementById(
+            originalId
+        )
+        : null;
 
 
                     if (
@@ -1661,15 +1664,40 @@ createPipMenu() {
 
 
     moreButton.addEventListener(
-        "click",
-        () => {
+    "click",
+    () => {
 
-            console.log(
-                "DESKTOP PIP: MORE OPTIONS"
+        console.log(
+            "DESKTOP PIP: MORE OPTIONS"
+        );
+
+
+        const originalMoreButton =
+            window.opener &&
+            !window.opener.closed
+                ? window.opener.document.getElementById(
+                    "moreButton"
+                )
+                : null;
+
+
+        if (
+            originalMoreButton
+        ) {
+
+            originalMoreButton.click();
+
+        }
+        else {
+
+            console.warn(
+                "DESKTOP PIP: moreButton NOT FOUND"
             );
 
         }
-    );
+
+    }
+);
 
 
     menu.appendChild(
