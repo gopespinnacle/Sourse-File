@@ -1922,7 +1922,7 @@ else {
         }
 
 
-        /*
+       /*
 ===================================================
 CLOSE ANNOTATION
 ===================================================
@@ -1938,7 +1938,7 @@ if (closeAnnotation) {
 
     closeAnnotation.addEventListener(
         "click",
-        () => {
+        async () => {
 
             console.log(
                 "ANNOTATION TOOLBAR V1: CLOSE CLICKED"
@@ -1951,9 +1951,14 @@ if (closeAnnotation) {
             ===================================================
             */
 
-            let unsaved =
-                false;
+            let unsaved = false;
 
+
+            /*
+            ---------------------------------------------------
+            FIRST CHECK
+            ---------------------------------------------------
+            */
 
             if (
                 window.AnnotationPageV1 &&
@@ -1962,8 +1967,43 @@ if (closeAnnotation) {
                     "function"
             ) {
 
-                unsaved =
-                    AnnotationPageV1.hasChanges();
+                try {
+
+                    unsaved =
+                        Boolean(
+                            AnnotationPageV1.hasChanges()
+                        );
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "ANNOTATION CLOSE: hasChanges ERROR",
+                        error
+                    );
+
+                }
+
+            }
+
+
+            console.log(
+                "ANNOTATION CLOSE: UNSAVED =",
+                unsaved
+            );
+
+
+            /*
+            ===================================================
+            IF UNSAVED
+            ===================================================
+            */
+
+            if (unsaved) {
+
+                showCloseConfirmation();
+
+                return;
 
             }
 
@@ -1974,29 +2014,17 @@ if (closeAnnotation) {
             ===================================================
             */
 
-            if (!unsaved) {
-
-                closeAnnotationPage();
-
-                return;
-
-            }
+            console.log(
+                "ANNOTATION CLOSE: NO UNSAVED CHANGES"
+            );
 
 
-            /*
-            ===================================================
-            SHOW SAVE CONFIRMATION
-            ===================================================
-            */
-
-            showCloseConfirmation();
+            closeAnnotationPage();
 
         }
     );
 
 }
-
-    }
 
 
 /*
@@ -2043,7 +2071,7 @@ function closeAnnotationPage() {
     }
 
 }
-
+    
 
 /*
 ===========================================================
@@ -2326,7 +2354,7 @@ function showCloseConfirmation() {
     );
 
 }
-
+    }
 
     /*
     =======================================================
