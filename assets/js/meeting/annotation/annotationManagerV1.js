@@ -1455,6 +1455,10 @@ const annotationUrl =
     "annotation.html?key=" +
     encodeURIComponent(
         annotationKey
+    ) +
+    "&room=" +
+    encodeURIComponent(
+        room
     );
 
 
