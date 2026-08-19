@@ -1469,12 +1469,9 @@ createPipMenu() {
                 () => {
 
                     const originalButton =
-    window.opener &&
-    !window.opener.closed
-        ? window.opener.document.getElementById(
-            originalId
-        )
-        : null;
+    document.getElementById(
+        originalId
+    );
 
 
                     if (
@@ -1673,12 +1670,9 @@ createPipMenu() {
 
 
         const originalMoreButton =
-            window.opener &&
-            !window.opener.closed
-                ? window.opener.document.getElementById(
-                    "moreButton"
-                )
-                : null;
+    document.getElementById(
+        "moreButton"
+    );
 
 
         if (
