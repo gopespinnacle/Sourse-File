@@ -21,6 +21,9 @@ const SocketManager = {
     ReconnectManager.stop();
 
 });
+
+
+
         this.socket.on("disconnect", () => {
 
     console.log("Socket Disconnected");
@@ -28,11 +31,45 @@ const SocketManager = {
     ReconnectManager.start();
 
 });
+
         this.socket.on("roomJoined", (data) => {
 
     console.log("ROOM JOINED");
 
     console.log(data);
+
+
+    /*
+    =========================================================
+    STORE JOINED ROOM DETAILS
+    REQUIRED FOR RECONNECT
+    =========================================================
+    */
+
+    this.roomData = {
+
+        room:
+            data.room,
+
+        role:
+            data.role,
+
+        name:
+            data.name,
+
+        studentId:
+            data.studentId || null,
+
+        periodId:
+            data.periodId || null
+
+    };
+
+
+    console.log(
+        "ROOM DETAILS STORED FOR RECONNECT:",
+        this.roomData
+    );
 
 });
 
