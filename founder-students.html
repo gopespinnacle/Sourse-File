@@ -169,22 +169,6 @@ tbody.innerHTML="";
 
 data.students.forEach((student,index)=>{
 
-const message = encodeURIComponent(
-`Hello Parent,
-
-Welcome to GOPES PINNACLE ONLINE ACADEMY.
-
-Student Name: ${student.name}
-Grade: ${student.grade}
-
-Login ID: ${student.loginEmail}
-Password: ${student.loginPassword}
-
-Please login and start learning.
-
-Thank you,
-Gopes Pinnacle Academy`
-);
 
 tbody.innerHTML += `
 <tr>
@@ -206,11 +190,14 @@ ${student.name}
 <td>${student.mobile || "-"}</td>
 
 <td>
-<a href="https://wa.me/91${student.mobile}?text=${message}" target="_blank">
-<button style="background:#25D366;color:white;border:none;padding:6px 10px;border-radius:4px;">
-Send WhatsApp
-</button>
-</a>
+
+    <button
+        class="send-whatsapp-btn"
+        onclick="sendStudentWhatsApp('${student._id}')"
+    >
+        Send WhatsApp
+    </button>
+
 </td>
 
 <td>${student.loginEmail || "-"}</td>
@@ -606,6 +593,62 @@ async function saveScheduleEdit(){
 
 function openStudentPage(id){
     window.location.href = "student-profile.html?id=" + id;
+}
+
+async function sendStudentWhatsApp(studentId) {
+
+    try {
+
+        const confirmSend = confirm(
+            "Do you want to send the student's login details to the parent via WhatsApp?"
+        );
+
+        if (!confirmSend) return;
+
+        const token = localStorage.getItem("token");
+
+        const response = await fetch(
+            `https://academy-backend-eatl.onrender.com/api/founder/send-student-whatsapp/${studentId}`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (data.success) {
+
+            alert(
+                "WhatsApp message sent successfully to the parent."
+            );
+
+        } else {
+
+            alert(
+                data.message ||
+                "Failed to send WhatsApp message."
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "SEND WHATSAPP ERROR:",
+            error
+        );
+
+        alert(
+            "Something went wrong while sending the WhatsApp message."
+        );
+
+    }
+
 }
 </script>
 
