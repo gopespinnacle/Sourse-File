@@ -39,6 +39,7 @@
 <script src="assets/js/meeting/meetingUIV2.js"></script>
 
 <script src="assets/js/meeting/video/mediaManagerV2.js"></script>
+<script src="assets/js/meeting/focusMonitoringV2.js"></script>
 
 
 
@@ -4241,6 +4242,31 @@ if (screenShareButton) {
    ===================================================== */
 
 MeetingUI.init();
+
+
+/*
+===========================================================
+FOCUS MONITORING V2
+===========================================================
+*/
+
+if (
+    window.FocusMonitoringV2
+) {
+
+    FocusMonitoringV2.init({
+
+    role:
+        window.MeetingConfig
+            ? MeetingConfig.role
+            : null,
+
+    room:
+        room
+
+});
+
+}
 
 /*
 =========================================================
