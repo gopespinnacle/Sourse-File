@@ -2679,8 +2679,22 @@ MeetingSocket.on(
         --------------------------------------------------
         */
 
-        participant.battery =
-            data.battery || null;
+        if (
+    !data.battery ||
+    data.battery.level === undefined
+) {
+
+    console.warn(
+        "BATTERY: Ignoring empty battery update"
+    );
+
+    return;
+
+}
+
+
+participant.battery =
+    data.battery;
 
 
         console.log(
