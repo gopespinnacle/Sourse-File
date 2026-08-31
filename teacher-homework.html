@@ -1465,20 +1465,27 @@ cursor:pointer;
         =====================================================
         */
 
-        const existing =
-            result.data.find(plan =>
+        const periodId =
+    sessionStorage.getItem("homeworkPeriodId");
 
-                plan.date === date &&
+const existing =
+    result.data.find(plan =>
 
-                String(plan.className).trim()
-                ===
-                String(className).trim() &&
+        plan.date === date &&
 
-                String(plan.subject).trim()
-                ===
-                String(subject).trim()
+        String(plan.className).trim()
+        ===
+        String(className).trim() &&
 
-            );
+        String(plan.subject).trim()
+        ===
+        String(subject).trim() &&
+
+        String(plan.periodId)
+        ===
+        String(periodId)
+
+    );
 
 
         /*
@@ -1638,20 +1645,27 @@ function updateCreateHomeworkButton(isCreated){
         }
 
 
-        const existing =
-            result.data.find(plan =>
+       const periodId =
+    sessionStorage.getItem("homeworkPeriodId");
 
-                plan.date === date &&
+const existing =
+    result.data.find(plan =>
 
-                String(plan.className).trim()
-                ===
-                String(className).trim() &&
+        plan.date === date &&
 
-                String(plan.subject).trim()
-                ===
-                String(subject).trim()
+        String(plan.className).trim()
+        ===
+        String(className).trim() &&
 
-            );
+        String(plan.subject).trim()
+        ===
+        String(subject).trim() &&
+
+        String(plan.periodId)
+        ===
+        String(periodId)
+
+    );
 
 
         if(existing){
@@ -2120,6 +2134,12 @@ function updateCreateHomeworkButton(isCreated){
 
     startTime:
     sessionStorage.getItem("homeworkStartTime") || "",
+
+    endTime:
+sessionStorage.getItem("homeworkEndTime") || "",
+
+periodId:
+sessionStorage.getItem("homeworkPeriodId") || "",
 
     date:
     document.getElementById("hwDate").value,
