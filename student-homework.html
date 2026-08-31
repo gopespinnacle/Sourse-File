@@ -195,6 +195,450 @@ margin-bottom:5px;
 
 }
 
+/* =========================================================
+   STUDENT HOMEWORK — PROFESSIONAL MOBILE UI
+   DESKTOP UI REMAINS UNCHANGED
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    body {
+        background: #f4f7fb;
+        overflow-x: hidden;
+    }
+
+
+    /* =====================================================
+       MOBILE HEADER
+       ===================================================== */
+
+    .header {
+        padding: 15px 16px;
+        min-height: 64px;
+        box-sizing: border-box;
+
+        position: sticky;
+        top: 0;
+
+        z-index: 100;
+
+        box-shadow:
+            0 3px 12px rgba(0,0,0,.15);
+    }
+
+
+    .header h2 {
+        font-size: 20px;
+        margin: 0;
+    }
+
+
+    .backBtn {
+        padding: 9px 13px;
+        font-size: 13px;
+        border-radius: 8px;
+        white-space: nowrap;
+    }
+
+
+    /* =====================================================
+       MAIN CONTAINER
+       ===================================================== */
+
+    .container {
+        padding: 15px;
+    }
+
+
+    /* =====================================================
+       FILTER CARD
+       ===================================================== */
+
+    .container > div:first-child {
+
+        display: flex !important;
+
+        flex-direction: column !important;
+
+        align-items: stretch !important;
+
+        gap: 14px !important;
+
+        padding: 18px !important;
+
+        margin-bottom: 18px !important;
+
+        border-radius: 16px !important;
+
+        box-shadow:
+            0 5px 18px rgba(15,23,42,.08) !important;
+
+        border: 1px solid #e5eaf0;
+
+    }
+
+
+    .container > div:first-child > div {
+
+        width: 100%;
+
+    }
+
+
+    .container > div:first-child label {
+
+        display: block;
+
+        font-size: 14px;
+
+        color: #334155;
+
+        margin-bottom: 5px;
+
+    }
+
+
+    #filterDate,
+    #filterSubject,
+    #filterStatus {
+
+        width: 100% !important;
+
+        min-width: 0 !important;
+
+        height: 46px;
+
+        padding: 0 12px !important;
+
+        border: 1px solid #d7dee8;
+
+        border-radius: 10px;
+
+        background: #fff;
+
+        font-size: 15px;
+
+        box-sizing: border-box;
+
+    }
+
+
+    /* =====================================================
+       REMOVE NORMAL TABLE HEADER
+       ===================================================== */
+
+    table {
+        width: 100%;
+
+        background: transparent;
+
+        box-shadow: none;
+
+        border-collapse: separate;
+
+        border-spacing: 0;
+    }
+
+
+    table thead {
+        display: none;
+    }
+
+
+    /* =====================================================
+       HOMEWORK CARD
+       ===================================================== */
+
+    table tbody {
+        display: block;
+
+        width: 100%;
+    }
+
+
+    table tr {
+
+        display: block;
+
+        width: 100%;
+
+        background: white;
+
+        margin-bottom: 16px;
+
+        padding: 16px;
+
+        border-radius: 16px;
+
+        box-shadow:
+            0 5px 18px rgba(15,23,42,.08);
+
+        border: 1px solid #e5eaf0;
+
+        box-sizing: border-box;
+    }
+
+
+    table td {
+
+        display: block;
+
+        width: 100%;
+
+        padding: 9px 0;
+
+        border: none;
+
+        border-bottom: 1px solid #eef2f6;
+
+        font-size: 14px;
+
+        line-height: 1.6;
+
+        vertical-align: middle;
+
+        box-sizing: border-box;
+
+        word-break: break-word;
+    }
+
+
+    table td:last-child {
+
+        border-bottom: none;
+
+    }
+
+
+    /* =====================================================
+       FIELD LABELS
+       ===================================================== */
+
+    table td::before {
+
+        display: block;
+
+        font-size: 12px;
+
+        font-weight: 700;
+
+        color: #64748b;
+
+        text-transform: uppercase;
+
+        letter-spacing: .4px;
+
+        margin-bottom: 3px;
+
+    }
+
+
+    table td:nth-child(1)::before {
+        content: "Date";
+    }
+
+
+    table td:nth-child(2)::before {
+        content: "Subject";
+    }
+
+
+    table td:nth-child(3)::before {
+        content: "Topic";
+    }
+
+
+    table td:nth-child(4)::before {
+        content: "Topic Summary";
+    }
+
+
+    table td:nth-child(5)::before {
+        content: "Homework";
+    }
+
+
+    table td:nth-child(6)::before {
+        content: "Homework Document";
+    }
+
+
+    table td:nth-child(7)::before {
+        content: "Class Materials";
+    }
+
+
+    table td:nth-child(8)::before {
+        content: "Videos";
+    }
+
+
+    table td:nth-child(9)::before {
+        content: "Status";
+    }
+
+
+    table td:nth-child(10)::before {
+        content: "Upload Homework";
+    }
+
+
+    table td:nth-child(11)::before {
+        content: "Reviewed Files";
+    }
+
+
+    /* =====================================================
+       SUBJECT — MAKE PROMINENT
+       ===================================================== */
+
+    table td:nth-child(2) {
+
+        font-size: 17px;
+
+        font-weight: 700;
+
+        color: #1e3a5f;
+
+    }
+
+
+    /* =====================================================
+       DATE
+       ===================================================== */
+
+    table td:nth-child(1) {
+
+        color: #64748b;
+
+        font-size: 13px;
+
+    }
+
+
+    /* =====================================================
+       DOWNLOAD / VIDEO BUTTONS
+       ===================================================== */
+
+    .downloadBtn,
+    .videoBtn {
+
+        display: inline-flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        min-height: 40px;
+
+        padding: 8px 13px;
+
+        margin: 4px 4px 4px 0;
+
+        border-radius: 8px;
+
+        font-size: 13px;
+
+        font-weight: 600;
+
+        box-sizing: border-box;
+
+    }
+
+
+    /* =====================================================
+       STATUS
+       ===================================================== */
+
+    .status {
+
+        margin-top: 3px;
+
+        padding: 6px 13px;
+
+        font-size: 12px;
+
+        border-radius: 20px;
+
+    }
+
+
+    /* =====================================================
+       UPLOAD SECTION
+       ===================================================== */
+
+    .homeworkFile {
+
+        width: 100% !important;
+
+        max-width: 100%;
+
+        margin-bottom: 8px !important;
+
+        font-size: 13px;
+
+        box-sizing: border-box;
+
+    }
+
+
+    .actionBtn {
+
+        width: 100%;
+
+        min-height: 44px;
+
+        padding: 10px 14px;
+
+        border-radius: 9px;
+
+        font-size: 14px;
+
+        font-weight: 700;
+
+    }
+
+
+    /* =====================================================
+       VIDEO
+       ===================================================== */
+
+    table video {
+
+        width: 100% !important;
+
+        max-width: 100%;
+
+        height: auto;
+
+        border-radius: 10px;
+
+    }
+
+
+    /* =====================================================
+       EMPTY / LOADING MESSAGE
+       ===================================================== */
+
+    table td[colspan] {
+
+        text-align: center;
+
+        border: none;
+
+        padding: 30px 10px;
+
+    }
+
+
+    table td[colspan]::before {
+
+        display: none;
+
+    }
+
+}
+
 </style>
 
 </head>
@@ -326,7 +770,7 @@ min-width:170px;
 
 <tr>
 
-<td colspan="9"
+<td colspan="11"
 style="text-align:center;padding:40px;">
 
 Loading Homework...
@@ -372,7 +816,7 @@ tbody.innerHTML = `
 
 <tr>
 
-<td colspan="9"
+<td colspan="11"
 style="text-align:center;color:red;">
 
 Unable to load homework.
@@ -630,7 +1074,7 @@ tbody.innerHTML = `
 
 <tr>
 
-<td colspan="9"
+<td colspan="11"
 style="text-align:center;color:red;">
 
 Server Error
