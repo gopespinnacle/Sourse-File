@@ -646,7 +646,19 @@ function setupWindowFocusMonitoring() {
                     getOrientation(),
 
                 online:
-                    navigator.onLine
+    navigator.onLine,
+
+battery: battery
+    ? {
+        level:
+            Math.round(
+                battery.level * 100
+            ),
+
+        charging:
+            battery.charging
+    }
+    : null
 
             }
         );
@@ -779,43 +791,91 @@ function setupWindowFocusMonitoring() {
 
     function updateBattery() {
 
-        if (!battery) return;
+    if (!battery) return;
 
 
-        const level =
-            Math.round(
-                battery.level *
-                100
-            );
+    const level =
+        Math.round(
+            battery.level * 100
+        );
 
 
-        window.dispatchEvent(
-            new CustomEvent(
-                "focusMonitoring:battery",
-                {
+    const charging =
+        battery.charging;
 
-                    detail: {
 
-                        level,
+    /*
+    -------------------------------------------------------
+    LOCAL BATTERY STATUS
+    -------------------------------------------------------
+    */
 
-                        charging:
-                            battery.charging,
+    window.dispatchEvent(
+        new CustomEvent(
+            "focusMonitoring:battery",
+            {
 
-                        warning:
-                            level <=
-                            CONFIG.batteryWarningLevel,
+                detail: {
 
-                        critical:
-                            level <=
-                            CONFIG.batteryCriticalLevel
+                    level,
 
-                    }
+                    charging,
+
+                    warning:
+                        level <=
+                        CONFIG.batteryWarningLevel,
+
+                    critical:
+                        level <=
+                        CONFIG.batteryCriticalLevel
 
                 }
-            )
+
+            }
+        )
+    );
+
+
+    /*
+    -------------------------------------------------------
+    SEND BATTERY STATUS TO SERVER
+    -------------------------------------------------------
+    */
+
+    sendFocusEvent(
+        "battery_status"
+    );
+
+
+    /*
+    -------------------------------------------------------
+    LOW BATTERY ALERT
+    -------------------------------------------------------
+    */
+
+    if (
+        level <=
+        CONFIG.batteryCriticalLevel
+    ) {
+
+        showLocalAlert(
+            "battery_critical"
         );
 
     }
+
+    else if (
+        level <=
+        CONFIG.batteryWarningLevel
+    ) {
+
+        showLocalAlert(
+            "battery_low"
+        );
+
+    }
+
+}
 
 
     /*
@@ -1139,6 +1199,76 @@ case "window_focus":
     message =
         data.studentName +
         " has returned to the classroom window.";
+
+    break;
+
+    case "battery_low":
+
+    message =
+        data.studentName +
+        " has low battery (" +
+        (
+            data.battery &&
+            data.battery.level !== undefined
+                ? data.battery.level
+                : "Unknown"
+        ) +
+        "%).";
+
+    break;
+
+
+case "battery_critical":
+
+    message =
+        data.studentName +
+        " has critically low battery (" +
+        (
+            data.battery &&
+            data.battery.level !== undefined
+                ? data.battery.level
+                : "Unknown"
+        ) +
+        "%).";
+
+    break;
+
+
+case "battery_status":
+
+    if (
+        data.battery &&
+        data.battery.level <=
+        10
+    ) {
+
+        message =
+            data.studentName +
+            " has critically low battery (" +
+            data.battery.level +
+            "%).";
+
+    }
+
+    else if (
+        data.battery &&
+        data.battery.level <=
+        20
+    ) {
+
+        message =
+            data.studentName +
+            " has low battery (" +
+            data.battery.level +
+            "%).";
+
+    }
+
+    else {
+
+        return;
+
+    }
 
     break;
 
