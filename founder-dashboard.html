@@ -55,6 +55,16 @@ window.location.href = page;
     
 <div class="dashboard-cards">
 
+    <div class="card" style="cursor:pointer;" onclick="openAISettings()">
+
+    <h3>🤖 AI Classroom</h3>
+
+    <p>
+        Configure Question Generation
+    </p>
+
+</div>
+
         <div class="card">
             <h3>Total Students</h3>
             <p id="studentCount">0</p>
@@ -645,6 +655,13 @@ function openIncomeExpense(){
 
     window.location.href =
         "founder-income-expense.html";
+
+}
+
+function openAISettings(){
+
+    window.location.href =
+        "founder-ai-settings.html";
 
 }
 </script>
