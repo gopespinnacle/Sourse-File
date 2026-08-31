@@ -1284,3 +1284,31 @@ body {
     }
 
 }
+
+.focus-monitoring-alert-ok {
+
+    margin-top: 18px;
+
+    padding: 10px 28px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #2563eb;
+
+    color: white;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+}
+
+.focus-monitoring-alert-ok:hover {
+
+    background: #1d4ed8;
+
+}

@@ -895,19 +895,26 @@ function showCenterAlert(
 
     alert.innerHTML = `
 
-        <div class="focus-monitoring-alert-icon">
-            ⚠️
-        </div>
+    <div class="focus-monitoring-alert-icon">
+        ⚠️
+    </div>
 
-        <div class="focus-monitoring-alert-title">
-            CLASSROOM ALERT
-        </div>
+    <div class="focus-monitoring-alert-title">
+        CLASSROOM ALERT
+    </div>
 
-        <div class="focus-monitoring-alert-message">
-            ${message}
-        </div>
+    <div class="focus-monitoring-alert-message">
+        ${message}
+    </div>
 
-    `;
+    <button
+        class="focus-monitoring-alert-ok"
+        type="button"
+    >
+        OK
+    </button>
+
+`;
 
 
     /*
@@ -920,25 +927,26 @@ function showCenterAlert(
         alert
     );
 
+    const okButton =
+    alert.querySelector(
+        ".focus-monitoring-alert-ok"
+    );
 
-    /*
-    -------------------------------------------------------
-    AUTO REMOVE
-    -------------------------------------------------------
-    */
+if (okButton) {
 
-    setTimeout(
+    okButton.addEventListener(
+        "click",
         () => {
 
-            if (alert) {
+            alert.remove();
 
-                alert.remove();
-
-            }
-
-        },
-        5000
+        }
     );
+
+}
+
+
+    
 
 }
 
