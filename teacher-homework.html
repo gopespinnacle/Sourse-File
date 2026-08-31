@@ -355,9 +355,15 @@ Action
     const teacherId =
     sessionStorage.getItem("teacherId");
 
-    const res = await fetch(
-    "https://academy-backend-eatl.onrender.com/api/lesson-plans?teacherId=" + teacherId
-    );
+const periodId =
+    sessionStorage.getItem("homeworkPeriodId");
+
+const res = await fetch(
+    "https://academy-backend-eatl.onrender.com/api/lesson-plans?teacherId=" +
+    encodeURIComponent(teacherId) +
+    "&periodId=" +
+    encodeURIComponent(periodId)
+);
 
     const result = await res.json();
 
