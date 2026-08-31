@@ -162,47 +162,73 @@ const AIClassroomManager = {
                 );
 
 
-            /*
-            ------------------------------------------------
-            START
-            ------------------------------------------------
-            */
-
-            this.running =
-                true;
-
-
-            console.log(
-                "AI CLASSROOM STARTED"
-            );
-
-
-            console.log(
-                "AI INTERVAL:",
-                this.intervalMinutes,
-                "minutes"
-            );
-
-
-            console.log(
-                "AI QUESTION COUNT:",
-                this.questionCount
-            );
 
 
             /*
-            ------------------------------------------------
-            FIRST CYCLE
-            ------------------------------------------------
-            
-            We do NOT immediately generate a question.
+------------------------------------------------
+START
+------------------------------------------------
+*/
 
-            The teacher gets the configured interval
-            of classroom teaching first.
-            */
+this.running =
+    true;
 
-            this.scheduleNextCycle();
+console.log(
+    "AI CLASSROOM STARTED"
+);
 
+console.log(
+    "AI INTERVAL:",
+    this.intervalMinutes,
+    "minutes"
+);
+
+console.log(
+    "AI QUESTION COUNT:",
+    this.questionCount
+);
+
+
+/*
+------------------------------------------------
+START TEACHER SPEECH CAPTURE
+------------------------------------------------
+*/
+
+if (
+    window.AISpeechCapture &&
+    typeof AISpeechCapture.start === "function"
+) {
+
+    const captureStarted =
+        AISpeechCapture.start();
+
+    console.log(
+        "AI CLASSROOM: Teacher speech capture started:",
+        captureStarted
+    );
+
+} else {
+
+    console.error(
+        "AI CLASSROOM: AISpeechCapture unavailable."
+    );
+
+}
+
+
+/*
+------------------------------------------------
+FIRST CYCLE
+------------------------------------------------
+
+We do NOT immediately generate a question.
+
+The teacher gets the configured interval
+of classroom teaching first.
+*/
+
+this.scheduleNextCycle();
 
         }
 
