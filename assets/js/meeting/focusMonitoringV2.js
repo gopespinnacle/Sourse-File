@@ -172,11 +172,13 @@ meetingRoom =
         ---------------------------------------------------
         */
 
-        setupVisibilityMonitoring();
+       setupVisibilityMonitoring();
 
-        setupViewportMonitoring();
+setupWindowFocusMonitoring();
 
-        setupConnectionMonitoring();
+setupViewportMonitoring();
+
+setupConnectionMonitoring();
 
 
         /*
@@ -265,6 +267,82 @@ meetingRoom =
         );
 
     }
+
+    /*
+===========================================================
+WINDOW FOCUS MONITORING
+Detect when meeting window goes to background
+===========================================================
+*/
+
+function setupWindowFocusMonitoring() {
+
+    /*
+    -------------------------------------------------------
+    WINDOW BLUR
+    -------------------------------------------------------
+    */
+
+    window.addEventListener(
+        "blur",
+        () => {
+
+            console.log(
+                "FOCUS MONITORING: MEETING WINDOW LOST FOCUS"
+            );
+
+
+            updateFocusState(
+                "away"
+            );
+
+
+            sendFocusEvent(
+                "window_blur"
+            );
+
+
+            showLocalAlert(
+                "window_blur"
+            );
+
+        }
+    );
+
+
+    /*
+    -------------------------------------------------------
+    WINDOW FOCUS RETURNED
+    -------------------------------------------------------
+    */
+
+    window.addEventListener(
+        "focus",
+        () => {
+
+            console.log(
+                "FOCUS MONITORING: MEETING WINDOW FOCUSED"
+            );
+
+
+            updateFocusState(
+                "active"
+            );
+
+
+            sendFocusEvent(
+                "window_focus"
+            );
+
+
+            showLocalAlert(
+                "window_focus"
+            );
+
+        }
+    );
+
+}
 
 
     /*
@@ -1045,6 +1123,24 @@ function setupFocusSocketListener() {
                         " returned to normal screen.";
 
                     break;
+
+
+                    case "window_blur":
+
+    message =
+        data.studentName +
+        " has left the classroom window.";
+
+    break;
+
+
+case "window_focus":
+
+    message =
+        data.studentName +
+        " has returned to the classroom window.";
+
+    break;
 
 
                 default:
