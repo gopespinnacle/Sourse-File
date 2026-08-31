@@ -330,6 +330,16 @@
 
         }
 
+        /* =========================================================
+   STUDENT — HIDE ANNOTATE BUTTON
+   ========================================================= */
+
+body.student-role #annotationOpenButtonV1 {
+
+    display: none !important;
+
+}
+
     </style>
 
     <link
@@ -1782,6 +1792,18 @@ MOBILE
                 localStorage.getItem("meetingRole") ||
                 ""
             ).toLowerCase();
+
+            /* =====================================================
+   STUDENT — HIDE ANNOTATE BUTTON
+   ===================================================== */
+
+if (meetingRole === "student") {
+
+    document.body.classList.add(
+        "student-role"
+    );
+
+}
 
 
         /* =====================================================
