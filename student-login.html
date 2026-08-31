@@ -1,128 +1,535 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
 <title>Student Login</title>
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+body{
+
+    margin:0;
+
+    font-family:
+        Arial,
+        sans-serif;
+
+}
+
+
+/* =====================================================
+   LOGIN PAGE
+   ===================================================== */
+
+.login-page{
+
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:
+
+    linear-gradient(
+        rgba(255,255,255,.65),
+        rgba(255,255,255,.65)
+    ),
+
+    url("images/image1.png");
+
+    background-size:cover;
+
+    background-position:center;
+
+}
+
+
+/* =====================================================
+   LOGIN BOX
+   ===================================================== */
+
+.login-box{
+
+    width:90%;
+
+    max-width:420px;
+
+    background:white;
+
+    padding:40px;
+
+    border-radius:25px;
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.15);
+
+}
+
+
+/* =====================================================
+   LOGO
+   ===================================================== */
+
+.login-box img{
+
+    width:180px;
+
+    display:block;
+
+    margin:auto;
+
+}
+
+
+/* =====================================================
+   TITLE
+   ===================================================== */
+
+.login-box h2{
+
+    text-align:center;
+
+}
+
+
+/* =====================================================
+   INPUT
+   ===================================================== */
+
+.input-box{
+
+    margin-bottom:20px;
+
+}
+
+
+.input-box input{
+
+    width:100%;
+
+    height:50px;
+
+}
+
+
+/* =====================================================
+   LOGIN BUTTON
+   ===================================================== */
+
+.login-btn{
+
+    width:100%;
+
+    height:55px;
+
+    border:none;
+
+    border-radius:30px;
+
+    color:white;
+
+    background:
+
+    linear-gradient(
+        90deg,
+        #1e045c,
+        #337dec
+    );
+
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media(max-width:768px){
+
+    .login-page{
+
+        min-height:100vh;
+
+        display:flex;
+
+        justify-content:center;
+
+        align-items:center;
+
+        padding:20px;
+
+        background:
+
+        linear-gradient(
+            rgba(255,255,255,.65),
+            rgba(255,255,255,.65)
+        ),
+
+        url("images/image1.png");
+
+        background-size:cover;
+
+        background-position:center;
+
+    }
+
+
+    .login-box{
+
+        width:92%;
+
+        max-width:none;
+
+        background:white;
+
+        border-radius:30px;
+
+        padding:40px 30px;
+
+        box-shadow:
+            0 15px 40px rgba(0,0,0,.18);
+
+    }
+
+
+    .login-box img{
+
+        width:220px;
+
+        display:block;
+
+        margin:0 auto 20px;
+
+    }
+
+
+    .login-box h2{
+
+        text-align:center;
+
+        font-size:36px;
+
+        margin-bottom:35px;
+
+        color:#222;
+
+    }
+
+
+    .input-box{
+
+        margin-bottom:18px;
+
+    }
+
+
+    .input-box input{
+
+        width:100%;
+
+        height:65px;
+
+        font-size:18px;
+
+        border:none;
+
+        border-bottom:
+            2px solid #ddd;
+
+        border-radius:0;
+
+        background:none;
+
+    }
+
+
+    .login-btn{
+
+        width:100%;
+
+        height:65px;
+
+        border:none;
+
+        border-radius:30px;
+
+        font-size:20px;
+
+        font-weight:bold;
+
+        letter-spacing:1px;
+
+        color:white;
+
+        background:
+
+        linear-gradient(
+            90deg,
+            #1e045c,
+            #337dec
+        );
+
+    }
+
+
+    .remember{
+
+        margin:15px 0 20px;
+
+    }
+
+}
+
+</style>
+
 </head>
+
 
 <body class="login-page">
 
+
 <div class="login-box">
 
+
     <img src="images/logo.png">
-    <h2>Student Login</h2>
+
+
+    <h2>
+        Student Login
+    </h2>
+
 
     <div class="input-box">
+
         <i class="fa fa-user"></i>
-        <input type="text" id="email" placeholder="Student Email">
+
+        <input
+            type="text"
+            id="email"
+            placeholder="Student Email"
+        >
+
     </div>
+
 
     <div class="input-box">
+
         <i class="fa fa-lock"></i>
-        <input type="password" id="password" placeholder="Password">
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Password"
+        >
+
     </div>
-<div class="remember">
-    <input type="checkbox"> Remember Me
-</div>
-    <button class="login-btn" onclick="loginStudent()">Login</button>
+
+
+    <div class="remember">
+
+        <input
+            type="checkbox"
+        >
+
+        Remember Me
+
+    </div>
+
+
+    <button
+        type="button"
+        class="login-btn"
+        onclick="loginStudent()">
+
+        Login
+
+    </button>
+
 
 </div>
+
+
 <script>
+
 async function loginStudent() {
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    const email =
+        document.getElementById(
+            "email"
+        ).value;
+
+    const password =
+        document.getElementById(
+            "password"
+        ).value;
+
 
     if (!email || !password) {
-        alert("Please enter email and password");
+
+        alert(
+            "Please enter email and password"
+        );
+
         return;
+
     }
+
 
     try {
 
-        const response = await fetch("https://academy-backend-eatl.onrender.com/api/auth/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
+        const response =
+            await fetch(
+                "https://academy-backend-eatl.onrender.com/api/auth/login",
+                {
 
-    email,
+                    method:"POST",
 
-    password,
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
 
-    role: "student"
+                    body:JSON.stringify({
 
-})
-        });
+                        email,
 
-        const data = await response.json();
+                        password,
+
+                        role:"student"
+
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
 
         console.log(
-"USER OBJECT:",
-data.user
-);
+            "USER OBJECT:",
+            data.user
+        );
+
 
         if (response.ok) {
 
-            // 🔐 ROLE CHECK
-            if (data.role !== "student") {
-                alert("Access denied. Not a Student account.");
+
+            /* =================================================
+               ROLE CHECK
+               ================================================= */
+
+            if (
+                data.role !== "student"
+            ) {
+
+                alert(
+                    "Access denied. Not a Student account."
+                );
+
                 return;
+
             }
 
-localStorage.setItem(
-"token",
-data.token
-);
 
-console.log(
-"LOGIN DATA:",
-data
-);
+            /* =================================================
+               SAVE LOGIN DATA
+               ================================================= */
 
-localStorage.setItem(
-"studentId",
-data.user._id
-);
+            localStorage.setItem(
+                "token",
+                data.token
+            );
 
-localStorage.setItem(
-"studentName",
-data.user.studentName
-);
 
-localStorage.setItem(
-"className",
-data.user.className
-);
+            console.log(
+                "LOGIN DATA:",
+                data
+            );
 
-console.log(
-"Saved Name:",
-data.user.studentName
-);
 
-console.log(
-"Saved Class:",
-data.user.className
-);
+            localStorage.setItem(
+                "studentId",
+                data.user._id
+            );
 
-console.log(
-localStorage
-);
 
-window.location.href =
-"student-dashboard.html";
+            localStorage.setItem(
+                "studentName",
+                data.user.studentName
+            );
 
-        } else {
-            alert(data.message || "Login failed");
+
+            localStorage.setItem(
+                "className",
+                data.user.className
+            );
+
+
+            console.log(
+                "Saved Name:",
+                data.user.studentName
+            );
+
+
+            console.log(
+                "Saved Class:",
+                data.user.className
+            );
+
+
+            console.log(
+                localStorage
+            );
+
+
+            /* =================================================
+               GO TO STUDENT DASHBOARD
+               ================================================= */
+
+            window.location.href =
+                "student-dashboard.html";
+
+
+        }
+        else {
+
+            alert(
+                data.message ||
+                "Login failed"
+            );
+
         }
 
-    } catch (error) {
-        alert("Server not running");
+
     }
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+        alert(
+            "Server not running"
+        );
+
+    }
+
 }
+
 </script>
+
+
 </body>
 </html>
