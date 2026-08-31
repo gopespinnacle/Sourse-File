@@ -509,15 +509,25 @@ const data = await res.json();
 
 const formatted = (data.assignments || []).map(a => {
 
+const studentId =
+    typeof a.student === "object"
+        ? a.student._id
+        : a.student;
+
 const studentCard = document.querySelector(
-`.studentCheck[value="${a.student}"]`
+    `.studentCheck[value="${studentId}"]`
 )?.closest(".student-card");
 
-const name = studentCard?.querySelector(".student-name")?.innerText;
+const name =
+    studentCard?.querySelector(".student-name")?.innerText;
 
 return {
-    studentId: a.student,
-    studentName: name || "Unknown",
+    studentId: studentId,
+    studentName:
+        name ||
+        (typeof a.student === "object"
+            ? a.student.name || a.student.studentName
+            : "Unknown"),
     subjects: a.subjects || [],
     languages: a.languages || [],
     eca: a.eca || []
