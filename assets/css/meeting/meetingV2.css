@@ -1039,3 +1039,64 @@ body {
     border-radius: 10px;
 
 }
+
+/* =====================================================
+   TEACHER — STUDENT MEDIA CONTROLS
+   ===================================================== */
+
+.student-media-controls {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 4px;
+
+    margin-left: auto;
+
+}
+
+
+.student-control-button {
+
+    width: 28px;
+
+    height: 28px;
+
+    padding: 0;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: rgba(255,255,255,0.08);
+
+    color: white;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 13px;
+
+    flex-shrink: 0;
+
+}
+
+
+.student-control-button:hover {
+
+    background: rgba(255,255,255,0.18);
+
+}
+
+
+.student-control-button:active {
+
+    transform: scale(0.95);
+
+}

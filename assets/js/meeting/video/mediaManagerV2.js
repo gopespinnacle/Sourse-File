@@ -31,6 +31,17 @@ const MediaManagerV2 = {
 
     /*
     ======================================================
+    TEACHER CONTROL
+    ======================================================
+    */
+
+    cameraLocked: false,
+
+    microphoneLocked: false,
+
+
+    /*
+    ======================================================
     START CAMERA + MICROPHONE
     ======================================================
     */
@@ -683,6 +694,25 @@ attachLocalVideoWhenReady() {
 
     setCameraEnabled(enabled) {
 
+            /*
+    ======================================================
+    TEACHER CAMERA LOCK
+    ======================================================
+    */
+
+    if (
+        enabled &&
+        this.cameraLocked
+    ) {
+
+        console.warn(
+            "CAMERA BLOCKED — LOCKED BY TEACHER"
+        );
+
+        return;
+
+    }
+
         if (!this.localStream) {
 
             return;
@@ -725,6 +755,25 @@ attachLocalVideoWhenReady() {
     */
 
     setMicrophoneEnabled(enabled) {
+
+            /*
+    ======================================================
+    TEACHER MICROPHONE LOCK
+    ======================================================
+    */
+
+    if (
+        enabled &&
+        this.microphoneLocked
+    ) {
+
+        console.warn(
+            "MICROPHONE BLOCKED — LOCKED BY TEACHER"
+        );
+
+        return;
+
+    }
 
         if (!this.localStream) {
 
@@ -769,18 +818,37 @@ attachLocalVideoWhenReady() {
 
     toggleCamera() {
 
-        if (!this.localStream) {
+    if (!this.localStream) {
 
-            return;
+        return;
 
-        }
+    }
 
 
-        this.setCameraEnabled(
-            !this.cameraEnabled
+    /*
+    ======================================================
+    TEACHER CAMERA LOCK
+    ======================================================
+    */
+
+    if (
+        this.cameraLocked
+    ) {
+
+        console.warn(
+            "CAMERA CANNOT BE CHANGED — LOCKED BY TEACHER"
         );
 
-    },
+        return;
+
+    }
+
+
+    this.setCameraEnabled(
+        !this.cameraEnabled
+    );
+
+},
 
 
     /*
@@ -789,21 +857,160 @@ attachLocalVideoWhenReady() {
     ======================================================
     */
 
-    toggleMicrophone() {
+   toggleMicrophone() {
 
-        if (!this.localStream) {
+    if (!this.localStream) {
 
-            return;
+        return;
 
-        }
+    }
 
 
-        this.setMicrophoneEnabled(
-            !this.microphoneEnabled
+    /*
+    ======================================================
+    TEACHER MICROPHONE LOCK
+    ======================================================
+    */
+
+    if (
+        this.microphoneLocked
+    ) {
+
+        console.warn(
+            "MICROPHONE CANNOT BE CHANGED — LOCKED BY TEACHER"
         );
 
-    },
+        return;
 
+    }
+
+
+    this.setMicrophoneEnabled(
+        !this.microphoneEnabled
+    );
+
+},
+
+/*
+==========================================================
+TEACHER FORCE MICROPHONE
+==========================================================
+*/
+
+forceMicrophone(enabled, locked = false) {
+
+    /*
+    ------------------------------------------------------
+    SAVE LOCK STATE
+    ------------------------------------------------------
+    */
+
+    this.microphoneLocked =
+        locked;
+
+
+    /*
+    ------------------------------------------------------
+    CHANGE REAL AUDIO TRACK
+    ------------------------------------------------------
+    */
+
+    if (this.localStream) {
+
+        this.localStream
+            .getAudioTracks()
+            .forEach(
+                track => {
+
+                    track.enabled =
+                        enabled;
+
+                }
+            );
+
+    }
+
+
+    /*
+    ------------------------------------------------------
+    SAVE CURRENT STATE
+    ------------------------------------------------------
+    */
+
+    this.microphoneEnabled =
+        enabled;
+
+
+    console.log(
+        "TEACHER MIC CONTROL:",
+        {
+            enabled,
+            locked
+        }
+    );
+
+},
+
+
+/*
+==========================================================
+TEACHER FORCE CAMERA
+==========================================================
+*/
+
+forceCamera(enabled, locked = false) {
+
+    /*
+    ------------------------------------------------------
+    SAVE LOCK STATE
+    ------------------------------------------------------
+    */
+
+    this.cameraLocked =
+        locked;
+
+
+    /*
+    ------------------------------------------------------
+    CHANGE REAL VIDEO TRACK
+    ------------------------------------------------------
+    */
+
+    if (this.localStream) {
+
+        this.localStream
+            .getVideoTracks()
+            .forEach(
+                track => {
+
+                    track.enabled =
+                        enabled;
+
+                }
+            );
+
+    }
+
+
+    /*
+    ------------------------------------------------------
+    SAVE CURRENT STATE
+    ------------------------------------------------------
+    */
+
+    this.cameraEnabled =
+        enabled;
+
+
+    console.log(
+        "TEACHER CAMERA CONTROL:",
+        {
+            enabled,
+            locked
+        }
+    );
+
+},
 
     /*
     ======================================================

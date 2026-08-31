@@ -2786,6 +2786,219 @@ window.MeetingConfig.role === "teacher" &&
     }
 );
 
+
+/*
+=========================================================
+TEACHER CONTROL — FORCE MICROPHONE
+=========================================================
+*/
+
+socket.on(
+    "forceMute",
+    (data = {}) => {
+
+        console.log(
+            "TEACHER FORCE MUTE RECEIVED:",
+            data
+        );
+
+
+        /*
+        -------------------------------------------------
+        ONLY STUDENT SHOULD PROCESS THIS
+        -------------------------------------------------
+        */
+
+        if (
+            window.MeetingConfig &&
+            MeetingConfig.role !== "student"
+        ) {
+
+            return;
+
+        }
+
+
+        const muted =
+            data.muted === true;
+
+        const locked =
+            data.locked === true;
+
+
+        /*
+        -------------------------------------------------
+        APPLY TO REAL MEDIA
+        -------------------------------------------------
+        */
+
+        if (
+            window.MediaManagerV2 &&
+            typeof MediaManagerV2.forceMicrophone ===
+                "function"
+        ) {
+
+            MediaManagerV2.forceMicrophone(
+                !muted,
+                locked
+            );
+
+        }
+
+
+        /*
+        -------------------------------------------------
+        UPDATE STUDENT MIC BUTTON
+        -------------------------------------------------
+        */
+
+        const micButton =
+            document.getElementById(
+                "micButton"
+            );
+
+
+        if (micButton) {
+
+            micButton.textContent =
+                muted
+                    ? "🔇"
+                    : "🎤";
+
+
+            if (locked) {
+
+                micButton.title =
+                    "Microphone locked by teacher";
+
+            }
+            else {
+
+                micButton.title =
+                    "Microphone";
+
+            }
+
+        }
+
+
+        console.log(
+            "STUDENT MICROPHONE UPDATED:",
+            {
+                muted,
+                locked
+            }
+        );
+
+    }
+);
+
+/*
+=========================================================
+TEACHER CONTROL — FORCE CAMERA
+=========================================================
+*/
+
+socket.on(
+    "forceStopCamera",
+    (data = {}) => {
+
+        console.log(
+            "TEACHER FORCE CAMERA RECEIVED:",
+            data
+        );
+
+
+        /*
+        -------------------------------------------------
+        ONLY STUDENT SHOULD PROCESS THIS
+        -------------------------------------------------
+        */
+
+        if (
+            window.MeetingConfig &&
+            MeetingConfig.role !== "student"
+        ) {
+
+            return;
+
+        }
+
+
+        const stopped =
+            data.stopped === true;
+
+        const locked =
+            data.locked === true;
+
+
+        /*
+        -------------------------------------------------
+        APPLY TO REAL MEDIA
+        -------------------------------------------------
+        */
+
+        if (
+            window.MediaManagerV2 &&
+            typeof MediaManagerV2.forceCamera ===
+                "function"
+        ) {
+
+            MediaManagerV2.forceCamera(
+                !stopped,
+                locked
+            );
+
+        }
+
+
+        /*
+        -------------------------------------------------
+        UPDATE STUDENT CAMERA BUTTON
+        -------------------------------------------------
+        */
+
+        const cameraButton =
+            document.getElementById(
+                "cameraButton"
+            );
+
+
+        if (cameraButton) {
+
+            cameraButton.innerHTML =
+                stopped
+                    ? "📷"
+                    : "📹";
+
+
+            if (locked) {
+
+                cameraButton.title =
+                    "Camera locked by teacher";
+
+            }
+            else {
+
+                cameraButton.title =
+                    "Camera";
+
+            }
+
+        }
+
+
+        console.log(
+            "STUDENT CAMERA UPDATED:",
+            {
+                stopped,
+                locked
+            }
+        );
+
+    }
+);
+
 /* =====================================================
    WEBRTC OFFER
    ===================================================== */

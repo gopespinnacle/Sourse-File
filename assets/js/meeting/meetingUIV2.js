@@ -1144,6 +1144,273 @@ tile.appendChild(
         );
 
 
+        /*
+==========================================================
+TEACHER — STUDENT MEDIA CONTROLS
+==========================================================
+*/
+
+if (
+    window.MeetingConfig &&
+    MeetingConfig.role === "teacher" &&
+    participant.role === "student"
+) {
+
+    const controls =
+        document.createElement(
+            "div"
+        );
+
+
+    controls.className =
+        "student-media-controls";
+
+
+    /*
+    ======================================================
+    MICROPHONE ON / OFF
+    ======================================================
+    */
+
+    const micButton =
+        document.createElement(
+            "button"
+        );
+
+
+    micButton.type =
+        "button";
+
+
+    micButton.className =
+        "student-control-button";
+
+
+    micButton.textContent =
+        participant.micMuted
+            ? "🔇"
+            : "🎤";
+
+
+    micButton.title =
+        participant.micMuted
+            ? "Turn microphone ON"
+            : "Turn microphone OFF";
+
+
+    micButton.addEventListener(
+        "click",
+        event => {
+
+            event.stopPropagation();
+
+
+            MeetingSocket.emit(
+                "muteStudent",
+                {
+
+                    socketId:
+                        participant.socketId
+
+                }
+            );
+
+        }
+    );
+
+
+    /*
+    ======================================================
+    MICROPHONE LOCK
+    ======================================================
+    */
+
+    const micLockButton =
+        document.createElement(
+            "button"
+        );
+
+
+    micLockButton.type =
+        "button";
+
+
+    micLockButton.className =
+        "student-control-button";
+
+
+    micLockButton.textContent =
+        participant.micLocked
+            ? "🔓"
+            : "🔒";
+
+
+    micLockButton.title =
+        participant.micLocked
+            ? "Unlock microphone"
+            : "Lock microphone";
+
+
+    micLockButton.addEventListener(
+        "click",
+        event => {
+
+            event.stopPropagation();
+
+
+            MeetingSocket.emit(
+                "lockMic",
+                {
+
+                    socketId:
+                        participant.socketId
+
+                }
+            );
+
+        }
+    );
+
+
+    /*
+    ======================================================
+    CAMERA ON / OFF
+    ======================================================
+    */
+
+    const cameraButton =
+        document.createElement(
+            "button"
+        );
+
+
+    cameraButton.type =
+        "button";
+
+
+    cameraButton.className =
+        "student-control-button";
+
+
+    cameraButton.textContent =
+        participant.cameraStopped
+            ? "📷"
+            : "📹";
+
+
+    cameraButton.title =
+        participant.cameraStopped
+            ? "Turn camera ON"
+            : "Turn camera OFF";
+
+
+    cameraButton.addEventListener(
+        "click",
+        event => {
+
+            event.stopPropagation();
+
+
+            MeetingSocket.emit(
+                "stopCamera",
+                {
+
+                    socketId:
+                        participant.socketId
+
+                }
+            );
+
+        }
+    );
+
+
+    /*
+    ======================================================
+    CAMERA LOCK
+    ======================================================
+    */
+
+    const cameraLockButton =
+        document.createElement(
+            "button"
+        );
+
+
+    cameraLockButton.type =
+        "button";
+
+
+    cameraLockButton.className =
+        "student-control-button";
+
+
+    cameraLockButton.textContent =
+        participant.cameraLocked
+            ? "🔓"
+            : "🔒";
+
+
+    cameraLockButton.title =
+        participant.cameraLocked
+            ? "Unlock camera"
+            : "Lock camera";
+
+
+    cameraLockButton.addEventListener(
+        "click",
+        event => {
+
+            event.stopPropagation();
+
+
+            MeetingSocket.emit(
+                "lockCamera",
+                {
+
+                    socketId:
+                        participant.socketId
+
+                }
+            );
+
+        }
+    );
+
+
+    /*
+    ======================================================
+    ADD CONTROLS
+    ======================================================
+    */
+
+    controls.appendChild(
+        micButton
+    );
+
+
+    controls.appendChild(
+        micLockButton
+    );
+
+
+    controls.appendChild(
+        cameraButton
+    );
+
+
+    controls.appendChild(
+        cameraLockButton
+    );
+
+
+    item.appendChild(
+        controls
+    );
+
+}
+
+
         this.peopleList.appendChild(
             item
         );
