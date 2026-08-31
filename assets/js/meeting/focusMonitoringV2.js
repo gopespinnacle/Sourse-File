@@ -315,6 +315,16 @@ window.FocusMonitoringV2 = (() => {
 
     function updateViewportState() {
 
+        console.log(
+    "FOCUS VIEWPORT CHECK:",
+    {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        screenWidth: window.screen.width,
+        screenHeight: window.screen.height
+    }
+);
+
         const width =
             window.innerWidth;
 
