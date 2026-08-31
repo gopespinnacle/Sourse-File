@@ -403,6 +403,65 @@ const AISpeechCapture = {
 
     },
 
+    /*
+==========================================================
+GET CURRENT AUDIO SEGMENT AND CLEAR BUFFER
+==========================================================
+*/
+
+getAndClearBlob() {
+
+    if (
+        !this.chunks.length
+    ) {
+
+        return null;
+
+    }
+
+    let mimeType =
+        "audio/webm";
+
+
+    if (
+        this.recorder &&
+        this.recorder.mimeType
+    ) {
+
+        mimeType =
+            this.recorder.mimeType;
+
+    }
+
+
+    const blob =
+        new Blob(
+            this.chunks,
+            {
+                type: mimeType
+            }
+        );
+
+
+    /*
+    ------------------------------------------------------
+    CLEAR ONLY THE OLD AUDIO CHUNKS
+    ------------------------------------------------------
+    */
+
+    this.chunks = [];
+
+
+    console.log(
+        "AI SPEECH AUDIO SEGMENT CREATED:",
+        blob.size
+    );
+
+
+    return blob;
+
+},
+
 
     /*
     ======================================================
