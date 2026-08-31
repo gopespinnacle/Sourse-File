@@ -2618,6 +2618,89 @@ socket.on(
 
         MeetingUI.render();
 
+        /*
+==========================================================
+BATTERY STATUS UPDATE
+Update student battery in participant list
+==========================================================
+*/
+
+MeetingSocket.on(
+    "focusMonitoringUpdate",
+    data => {
+
+        if (!data) return;
+
+        if (
+            data.type !==
+            "battery_status"
+        ) return;
+
+
+        if (
+            !data.studentId
+        ) {
+
+            console.warn(
+                "BATTERY UPDATE: studentId missing",
+                data
+            );
+
+            return;
+
+        }
+
+
+        const participant =
+            MeetingParticipants
+                .getAll()
+                .find(
+                    p =>
+                        p.studentId ===
+                        data.studentId
+                );
+
+
+        if (!participant) {
+
+            console.warn(
+                "BATTERY UPDATE: Student not found",
+                data.studentId
+            );
+
+            return;
+
+        }
+
+
+        /*
+        --------------------------------------------------
+        UPDATE BATTERY
+        --------------------------------------------------
+        */
+
+        participant.battery =
+            data.battery || null;
+
+
+        console.log(
+            "BATTERY UPDATED:",
+            participant.name,
+            participant.battery
+        );
+
+
+        /*
+        --------------------------------------------------
+        REFRESH PARTICIPANT UI
+        --------------------------------------------------
+        */
+
+        MeetingUI.render();
+
+    }
+);
+
 
         /*
         =================================================
@@ -4261,7 +4344,14 @@ if (
             ? MeetingConfig.role
             : null,
 
-    room: MeetingConfig.room
+    room:
+        MeetingConfig.room,
+
+    studentId:
+        MeetingConfig.userId,
+
+    studentName:
+        MeetingConfig.userName
 
 });
 

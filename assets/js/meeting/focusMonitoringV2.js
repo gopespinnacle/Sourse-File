@@ -647,6 +647,7 @@ function setupWindowFocusMonitoring() {
 
                 online:
     navigator.onLine,
+    
 
 battery: battery
     ? {
