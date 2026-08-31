@@ -13,6 +13,15 @@ body {
     background:#f1f5f9;
 }
 
+
+.mobile-header {
+    display: none;
+}
+
+.sidebar-overlay {
+    display: none;
+}
+
 /* SIDEBAR */
 .sidebar {
     width:240px;
@@ -169,10 +178,529 @@ body {
     line-height: 1.6;
 }
 
+/* =========================================================
+   STUDENT DASHBOARD — MOBILE PROFESSIONAL UI
+   DESKTOP UI IS NOT CHANGED
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    body {
+        background: #f4f7fb;
+        overflow-x: hidden;
+    }
+
+
+    /* =====================================================
+       MOBILE TOP HEADER
+       ===================================================== */
+
+    .mobile-header {
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        position: fixed;
+
+        top: 0;
+        left: 0;
+        right: 0;
+
+        height: 64px;
+
+        padding: 0 16px;
+
+        background: #0f172a;
+
+        color: white;
+
+        z-index: 1000;
+
+        box-shadow:
+            0 3px 12px rgba(0,0,0,.18);
+
+    }
+
+
+    .mobile-menu-btn {
+
+        width: 42px;
+
+        height: 42px;
+
+        border: none;
+
+        border-radius: 10px;
+
+        background: #1e293b;
+
+        color: white;
+
+        font-size: 20px;
+
+        cursor: pointer;
+
+    }
+
+
+    .mobile-logo {
+
+        width: 145px;
+
+        height: auto;
+
+        object-fit: contain;
+
+    }
+
+
+    .mobile-header-title {
+
+        font-size: 14px;
+
+        font-weight: 600;
+
+        letter-spacing: .3px;
+
+    }
+
+
+    /* =====================================================
+       SIDEBAR
+       ===================================================== */
+
+    .sidebar {
+
+        width: 270px;
+
+        height: 100vh;
+
+        position: fixed;
+
+        top: 0;
+
+        left: -290px;
+
+        z-index: 1200;
+
+        transition:
+            left .3s ease;
+
+        box-shadow:
+            5px 0 25px rgba(0,0,0,.25);
+
+    }
+
+
+    .sidebar.mobile-open {
+
+        left: 0;
+
+    }
+
+
+    .sidebar h2 {
+
+        padding: 20px;
+
+    }
+
+
+    .sidebar ul li {
+
+        padding: 16px 20px;
+
+        font-size: 16px;
+
+    }
+
+
+    /* =====================================================
+       SIDEBAR OVERLAY
+       ===================================================== */
+
+    .sidebar-overlay {
+
+        display: none;
+
+        position: fixed;
+
+        inset: 0;
+
+        background:
+            rgba(0,0,0,.45);
+
+        z-index: 1100;
+
+    }
+
+
+    .sidebar-overlay.active {
+
+        display: block;
+
+    }
+
+
+    /* =====================================================
+       MAIN CONTENT
+       ===================================================== */
+
+    .main {
+
+        margin-left: 0;
+
+        padding: 84px 15px 30px;
+
+        width: auto;
+
+    }
+
+
+    /* =====================================================
+       TOPBAR
+       ===================================================== */
+
+    .topbar {
+
+        display: block;
+
+        margin-bottom: 22px;
+
+    }
+
+
+    .topbar h2 {
+
+        margin: 0;
+
+        font-size: 24px;
+
+        line-height: 1.3;
+
+        color: #172033;
+
+    }
+
+
+    /* =====================================================
+       GENERAL SECTION
+       ===================================================== */
+
+    .class-box {
+
+        margin-top: 20px;
+
+        margin-bottom: 22px;
+
+    }
+
+
+    .class-box h3 {
+
+        font-size: 19px;
+
+        margin-bottom: 12px;
+
+        color: #172033;
+
+    }
+
+
+    /* =====================================================
+       CLASS CARDS
+       ===================================================== */
+
+    .class-item {
+
+        padding: 17px;
+
+        border-radius: 16px;
+
+        margin-bottom: 13px;
+
+        box-shadow:
+            0 4px 16px rgba(15,23,42,.08);
+
+        border: 1px solid #e8edf4;
+
+        line-height: 1.7;
+
+    }
+
+
+    /* =====================================================
+       TODAY CLASS CARD
+       ===================================================== */
+
+    .class-item[style*="display:flex"] {
+
+        display: flex !important;
+
+        flex-direction: column;
+
+        align-items: stretch !important;
+
+        gap: 14px;
+
+    }
+
+
+    .class-item button {
+
+        width: 100%;
+
+        min-height: 46px;
+
+        font-size: 15px;
+
+        font-weight: 700;
+
+        border-radius: 10px !important;
+
+    }
+
+
+    /* =====================================================
+       CALENDAR CARD
+       ===================================================== */
+
+    .class-box .class-item {
+
+        display: flex !important;
+
+        flex-direction: column;
+
+        align-items: stretch !important;
+
+        gap: 14px;
+
+    }
+
+
+    .class-box .class-item button {
+
+        width: 100%;
+
+        padding: 12px 18px !important;
+
+    }
+
+
+    /* =====================================================
+       ACADEMIC CONTINUITY
+       ===================================================== */
+
+    .academic-continuity-section {
+
+        margin-top: 22px;
+
+    }
+
+
+    .academic-continuity-title {
+
+        font-size: 19px;
+
+        line-height: 1.4;
+
+    }
+
+
+    .continuity-notice {
+
+        padding: 20px 17px;
+
+        border-left-width: 5px;
+
+        border-radius: 15px;
+
+        box-shadow:
+            0 5px 18px rgba(0,0,0,.08);
+
+    }
+
+
+    .continuity-notice::before {
+
+        top: 15px;
+
+        right: 15px;
+
+        font-size: 22px;
+
+    }
+
+
+    .continuity-heading {
+
+        font-size: 17px;
+
+        padding-right: 28px;
+
+        line-height: 1.4;
+
+    }
+
+
+    .continuity-message {
+
+        font-size: 14px;
+
+        line-height: 1.7;
+
+    }
+
+
+    .continuity-compensation {
+
+        padding: 13px;
+
+        font-size: 14px;
+
+        line-height: 1.6;
+
+    }
+
+
+    .continuity-footer {
+
+        font-size: 13px;
+
+    }
+
+
+    /* =====================================================
+       RECORDING FILTER
+       ===================================================== */
+
+    #subjectFilter {
+
+        width: 100%;
+
+        height: 46px;
+
+        padding: 0 12px;
+
+        border: 1px solid #d7dee8;
+
+        border-radius: 10px;
+
+        background: white;
+
+        font-size: 15px;
+
+        margin-bottom: 14px;
+
+    }
+
+
+    /* =====================================================
+       RECORDING CARDS
+       ===================================================== */
+
+    #recordingList > div {
+
+        border-radius: 15px !important;
+
+        padding: 15px !important;
+
+        margin-bottom: 14px !important;
+
+        box-shadow:
+            0 4px 16px rgba(15,23,42,.08);
+
+        border: 1px solid #e7ebf1;
+
+    }
+
+
+    #recordingList video {
+
+        width: 100% !important;
+
+        height: auto;
+
+        max-height: 230px;
+
+        border-radius: 10px;
+
+        margin-top: 8px;
+
+        background: #000;
+
+    }
+
+
+    /* =====================================================
+       MOBILE SPACING
+       ===================================================== */
+
+    #classList {
+
+        width: 100%;
+
+    }
+
+
+    #academicContinuityList {
+
+        width: 100%;
+
+    }
+
+
+    #recordingList {
+
+        width: 100%;
+
+    }
+
+}
+
 </style>
 </head>
 
 <body>
+
+    <!-- =====================================================
+     MOBILE HEADER
+     ===================================================== -->
+
+<div class="mobile-header">
+
+    <button
+        class="mobile-menu-btn"
+        onclick="toggleMobileMenu()"
+        aria-label="Open menu">
+
+        <i class="fa-solid fa-bars"></i>
+
+    </button>
+
+
+    <div class="mobile-header-title">
+
+        Student Portal
+
+    </div>
+
+
+    <img
+        src="images/logo.png"
+        class="mobile-logo">
+
+</div>
+
+
+<div
+    class="sidebar-overlay"
+    id="sidebarOverlay"
+    onclick="closeMobileMenu()">
+</div>
 
 <div class="sidebar">
     <div style="text-align:center; padding:40px;">
@@ -879,6 +1407,57 @@ function formatContinuityTime(value){
 loadAcademicContinuity();
 
 loadRecordings();
+
+/* =========================================================
+   MOBILE MENU
+   ========================================================= */
+
+function toggleMobileMenu(){
+
+    const sidebar =
+        document.querySelector(
+            ".sidebar"
+        );
+
+    const overlay =
+        document.getElementById(
+            "sidebarOverlay"
+        );
+
+
+    sidebar.classList.toggle(
+        "mobile-open"
+    );
+
+    overlay.classList.toggle(
+        "active"
+    );
+
+}
+
+
+function closeMobileMenu(){
+
+    const sidebar =
+        document.querySelector(
+            ".sidebar"
+        );
+
+    const overlay =
+        document.getElementById(
+            "sidebarOverlay"
+        );
+
+
+    sidebar.classList.remove(
+        "mobile-open"
+    );
+
+    overlay.classList.remove(
+        "active"
+    );
+
+}
 </script>
 
 </body>
