@@ -843,71 +843,311 @@ headers:{
 const data = await res.json();
 
 document.getElementById("studentName").innerText = data.name;
-/* CLASS LIST */
+// =========================================================
+// TODAY'S CLASSES — TIME / STATUS PRIORITY
+// =========================================================
 
-const container = document.getElementById("classList");
-container.innerHTML = "";
-
-// ✅ GET TODAY NAME
-const today = new Date().toLocaleDateString('en-US', {
-    weekday: 'long'
-});
-
-// ✅ FILTER ONLY TODAY CLASSES
-const todayClasses = data.classes.filter(c =>
-    c.day.trim().toLowerCase() === today.toLowerCase()
+// GET TODAY NAME
+const today = new Date().toLocaleDateString(
+    'en-US',
+    {
+        weekday: 'long'
+    }
 );
 
-// ✅ SHOW MESSAGE IF NO CLASS
-if(todayClasses.length === 0){
-    container.innerHTML = `
-    <div class="class-item">
-        No classes for today
-    </div>
-    `;
-}
-else{
 
-    todayClasses.forEach(c=>{
+// FILTER ONLY TODAY
+const todayClasses =
+    data.classes.filter(c =>
 
-    container.innerHTML += `
-    <div class="class-item"
-    style="
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    ">
+        c.day.trim().toLowerCase() ===
+        today.toLowerCase()
+
+    );
+
+
+// =========================================================
+// CREATE THREE GROUPS
+// =========================================================
+
+const upcomingClasses = [];
+
+const liveClasses = [];
+
+const completedClasses = [];
+
+
+// =========================================================
+// CHECK CLASS STATUS
+// =========================================================
+
+todayClasses.forEach(c => {
+
+    const now = new Date();
+
+
+    // START TIME
+    const [startHour, startMinute] =
+        c.startTime.split(":");
+
+    const start =
+        new Date();
+
+    start.setHours(
+        Number(startHour),
+        Number(startMinute),
+        0,
+        0
+    );
+
+
+    // END TIME
+    const [endHour, endMinute] =
+        c.endTime.split(":");
+
+    const end =
+        new Date();
+
+    end.setHours(
+        Number(endHour),
+        Number(endMinute),
+        0,
+        0
+    );
+
+
+    // =====================================================
+    // UPCOMING
+    // =====================================================
+
+    if (now < start) {
+
+        upcomingClasses.push(c);
+
+    }
+
+
+    // =====================================================
+    // LIVE
+    // =====================================================
+
+    else if (
+        now >= start &&
+        now <= end
+    ) {
+
+        liveClasses.push(c);
+
+    }
+
+
+    // =====================================================
+    // COMPLETED
+    // =====================================================
+
+    else {
+
+        completedClasses.push(c);
+
+    }
+
+});
+
+
+// =========================================================
+// SORT EACH GROUP BY START TIME
+// =========================================================
+
+const sortByTime = (a, b) => {
+
+    return a.startTime.localeCompare(
+        b.startTime
+    );
+
+};
+
+
+upcomingClasses.sort(sortByTime);
+
+liveClasses.sort(sortByTime);
+
+completedClasses.sort(sortByTime);
+
+
+// =========================================================
+// BUILD CLASS CARD
+// =========================================================
+
+function createClassCard(c) {
+
+    return `
+
+    <div
+        class="class-item"
+        style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        "
+    >
 
         <div>
-        📘 ${c.subject || "General"} |
-        🏫 ${c.className} |
-        📅 ${c.day} |
-        ⏰ ${c.startTime} - ${c.endTime}
+
+            📘 ${c.subject || "General"}
+            |
+            🏫 ${c.className}
+            |
+            📅 ${c.day}
+            |
+            ⏰ ${c.startTime} - ${c.endTime}
+
         </div>
 
+
         <button
-        onclick='joinClass(
-    "${c._id}",
-    "${c.className}",
-    "${c.subject}",
-    "${c.day}",
-    "${c.startTime}",
-    "${c.endTime}"
-)'
-        style="
-        background:green;
-        color:white;
-        border:none;
-        padding:8px 14px;
-        border-radius:6px;
-        cursor:pointer;
-        ">
-        Join Class
+
+            onclick='joinClass(
+                "${c._id}",
+                "${c.className}",
+                "${c.subject}",
+                "${c.day}",
+                "${c.startTime}",
+                "${c.endTime}"
+            )'
+
+            style="
+                background:green;
+                color:white;
+                border:none;
+                padding:8px 14px;
+                border-radius:6px;
+                cursor:pointer;
+            "
+        >
+
+            Join Class
+
         </button>
 
     </div>
+
     `;
-});
+
+}
+
+
+// =========================================================
+// RENDER SECTION
+// =========================================================
+
+function renderClassSection(
+    title,
+    classes,
+    icon
+) {
+
+    if (classes.length === 0) {
+
+        return "";
+
+    }
+
+
+    let html = `
+
+        <div
+            class="today-class-section"
+            style="
+                margin-bottom:20px;
+            "
+        >
+
+            <h4
+                style="
+                    margin:0 0 10px 0;
+                    font-size:16px;
+                "
+            >
+
+                ${icon} ${title}
+
+            </h4>
+
+    `;
+
+
+    classes.forEach(c => {
+
+        html += createClassCard(c);
+
+    });
+
+
+    html += `
+
+        </div>
+
+    `;
+
+
+    return html;
+
+}
+
+
+// =========================================================
+// NO CLASSES
+// =========================================================
+
+if (todayClasses.length === 0) {
+
+    container.innerHTML = `
+
+        <div class="class-item">
+
+            No classes for today
+
+        </div>
+
+    `;
+
+}
+
+
+// =========================================================
+// SHOW CLASSES IN REQUIRED PRIORITY
+// =========================================================
+
+else {
+
+    let html = "";
+
+
+    // 1️⃣ UPCOMING FIRST
+    html += renderClassSection(
+        "UPCOMING CLASSES",
+        upcomingClasses,
+        "🟡"
+    );
+
+
+    // 2️⃣ LIVE SECOND
+    html += renderClassSection(
+        "LIVE CLASSES",
+        liveClasses,
+        "🟢"
+    );
+
+
+    // 3️⃣ COMPLETED LAST
+    html += renderClassSection(
+        "CLASSES OVER",
+        completedClasses,
+        "⚪"
+    );
+
+
+    container.innerHTML = html;
 
 }
 
