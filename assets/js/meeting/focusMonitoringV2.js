@@ -139,20 +139,13 @@ window.FocusMonitoringV2 = (() => {
 
 
         studentName =
-            options.studentName ||
-            null;
-
-            meetingRoom =
-    options.room ||
+    options.studentName ||
     null;
 
-            let meetingRoom =
+
+meetingRoom =
     options.room ||
-    (
-        window.room
-            ? window.room
-            : null
-    );
+    null;
 
 
         console.log(
