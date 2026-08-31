@@ -1165,6 +1165,52 @@ if (
     controls.className =
         "student-media-controls";
 
+        /*
+======================================================
+BATTERY STATUS
+======================================================
+*/
+
+const batteryStatus =
+    document.createElement(
+        "span"
+    );
+
+
+batteryStatus.className =
+    "student-battery-status";
+
+
+const batteryData =
+    participant.battery;
+
+
+if (
+    batteryData &&
+    batteryData.level !== undefined
+) {
+
+    batteryStatus.textContent =
+        "🔋 " +
+        batteryData.level +
+        "%";
+
+    if (
+        batteryData.charging
+    ) {
+
+        batteryStatus.textContent +=
+            " ⚡";
+
+    }
+
+} else {
+
+    batteryStatus.textContent =
+        "🔋 --%";
+
+}
+
 
     /*
     ======================================================
@@ -1377,12 +1423,19 @@ if (
         }
     );
 
+    
+
 
     /*
     ======================================================
     ADD CONTROLS
     ======================================================
     */
+
+    controls.appendChild(
+    batteryStatus
+);    
+
 
     controls.appendChild(
         micButton
