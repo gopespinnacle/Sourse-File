@@ -5872,6 +5872,258 @@ if(
 
 })();
 
+/* =========================================================
+   END MEETING BUTTON
+   ========================================================= */
+
+const leaveButton =
+    document.getElementById("leaveButton");
+
+if (leaveButton) {
+
+    leaveButton.addEventListener(
+        "click",
+        () => {
+
+            /*
+            ONLY TEACHER CAN END CLASS
+            */
+
+            if (meetingRole !== "teacher") {
+
+                console.log(
+                    "STUDENT LEAVE BUTTON"
+                );
+
+                return;
+            }
+
+            /*
+            CONFIRM
+            */
+
+            const confirmed =
+                window.confirm(
+                    "Are you sure you want to end this class for everyone?"
+                );
+
+            if (!confirmed) {
+                return;
+            }
+
+            /*
+            DISABLE BUTTON
+            */
+
+            leaveButton.disabled = true;
+
+            leaveButton.style.opacity = "0.5";
+
+            /*
+            STATUS
+            */
+
+            const systemStatus =
+                document.getElementById(
+                    "systemStatus"
+                );
+
+            if (systemStatus) {
+
+                systemStatus.textContent =
+                    "Ending class...";
+
+            }
+
+            /*
+            SEND TO SERVER
+            */
+
+            socket.emit(
+                "endMeeting",
+                {
+                    room: meetingRoom
+                }
+            );
+
+        }
+    );
+
+}
+
+/* =========================================================
+   MEETING ENDED BY TEACHER
+   ========================================================= */
+
+socket.on(
+    "meetingEnded",
+    (data = {}) => {
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log(
+            "MEETING ENDED"
+        );
+
+        console.log(
+            data
+        );
+
+        console.log(
+            "=========================================="
+        );
+
+
+        /*
+        ---------------------------------------------
+        UPDATE STATUS
+        ---------------------------------------------
+        */
+
+        const systemStatus =
+            document.getElementById(
+                "systemStatus"
+            );
+
+
+        if (systemStatus) {
+
+            systemStatus.textContent =
+                meetingRole === "teacher"
+                    ? "Class ended."
+                    : "Teacher has ended the class.";
+
+        }
+
+
+        /*
+        ---------------------------------------------
+        STOP LOCAL MEDIA
+        ---------------------------------------------
+        */
+
+        if (
+            window.MediaManagerV2 &&
+            typeof MediaManagerV2.stopMedia ===
+                "function"
+        ) {
+
+            try {
+
+                MediaManagerV2.stopMedia();
+
+            }
+            catch (error) {
+
+                console.warn(
+                    "MEDIA STOP ERROR:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /*
+        ---------------------------------------------
+        STOP SCREEN SHARE
+        ---------------------------------------------
+        */
+
+        if (
+            window.ScreenShare &&
+            typeof ScreenShare.stop ===
+                "function"
+        ) {
+
+            try {
+
+                ScreenShare.stop();
+
+            }
+            catch (error) {
+
+                console.warn(
+                    "SCREEN SHARE STOP ERROR:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /*
+        ---------------------------------------------
+        DISCONNECT SOCKET
+        ---------------------------------------------
+        */
+
+        setTimeout(
+            () => {
+
+                try {
+
+                    if (
+                        socket.connected
+                    ) {
+
+                        socket.disconnect();
+
+                    }
+
+                }
+                catch (error) {
+
+                    console.warn(
+                        "SOCKET DISCONNECT ERROR:",
+                        error
+                    );
+
+                }
+
+
+                /*
+                -----------------------------------------
+                REDIRECT
+                -----------------------------------------
+                */
+
+                if (
+                    meetingRole === "teacher"
+                ) {
+
+                    window.location.href =
+                        "teacher-dashboard.html";
+
+                }
+                else if (
+                    meetingRole === "student"
+                ) {
+
+                    window.location.href =
+                        "student-dashboard.html";
+
+                }
+                else if (
+                    meetingRole === "founder"
+                ) {
+
+                    window.location.href =
+                        "founder-dashboard.html";
+
+                }
+
+            },
+            1000
+        );
+
+    }
+);
+
     </script>
 
 
