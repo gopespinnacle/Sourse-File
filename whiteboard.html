@@ -5936,15 +5936,24 @@ if (leaveButton) {
             }
 
             /*
-            SEND TO SERVER
-            */
+SEND FINAL TEACHER LEAVE TIME
+*/
 
-            socket.emit(
-                "endMeeting",
-                {
-                    room: meetingRoom
-                }
-            );
+socket.emit(
+    "teacherFinalLeave"
+);
+
+
+/*
+SEND END MEETING
+*/
+
+socket.emit(
+    "endMeeting",
+    {
+        room: meetingRoom
+    }
+);
 
         }
     );
