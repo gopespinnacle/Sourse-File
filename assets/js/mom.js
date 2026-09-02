@@ -720,82 +720,121 @@ document.addEventListener(
                     ===================================== */
 
                     for (
-                        let i = 0;
-                        i < blocks.length;
-                        i++
-                    ) {
+    let i = 0;
+    i < blocks.length;
+    i++
+) {
 
-                        const block =
-                            blocks[i];
-
-
-                        if (
-                            !block.textContent.trim() &&
-                            !block.innerHTML.trim()
-                        ) {
-
-                            continue;
-
-                        }
+    const block =
+        blocks[i];
 
 
-                        const clone =
-                            block.cloneNode(true);
+    if (
+        !block.textContent.trim() &&
+        !block.innerHTML.trim()
+    ) {
+
+        continue;
+
+    }
 
 
-                        clone.style.fontFamily =
-                            'Georgia, "Times New Roman", serif';
+    const clone =
+        block.cloneNode(true);
 
 
-                        clone.style.fontSize =
-                            "18px";
+    clone.style.fontFamily =
+        'Georgia, "Times New Roman", serif';
+
+    clone.style.fontSize =
+        "18px";
+
+    clone.style.lineHeight =
+        "1.8";
+
+    clone.style.marginTop =
+        "0";
+
+    clone.style.marginBottom =
+        "14px";
+
+    clone.style.overflowWrap =
+        "break-word";
 
 
-                        clone.style.lineHeight =
-                            "1.8";
+    /*
+     * Add the block to the current page.
+     */
+
+    currentContent.appendChild(
+        clone
+    );
 
 
-                        clone.style.marginTop =
-                            "0";
+    /*
+     * If the block fits, keep it here.
+     */
+
+    if (
+        currentContent.scrollHeight <=
+        CONTENT_HEIGHT
+    ) {
+
+        continue;
+
+    }
 
 
-                        clone.style.marginBottom =
-                            "14px";
+    /*
+     * The block does not fit.
+     * Remove it first.
+     */
+
+    currentContent.removeChild(
+        clone
+    );
 
 
-                        clone.style.overflowWrap =
-                            "break-word";
+    /*
+     * Start a new page.
+     */
+
+    createBodyPage();
 
 
-                        currentContent.appendChild(
-                            clone
-                        );
+    /*
+     * Add the block to the new page.
+     */
+
+    currentContent.appendChild(
+        clone
+    );
 
 
-                        /* =================================
-                           DOES IT FIT?
-                        ================================= */
+    /*
+     * If the block itself is larger than
+     * one complete page, allow it to remain
+     * on the page rather than creating
+     * unnecessary blank space.
+     */
 
-                        if (
-                            currentContent.scrollHeight >
-                            CONTENT_HEIGHT
-                        ) {
+    if (
+        currentContent.scrollHeight >
+        CONTENT_HEIGHT
+    ) {
 
-                            currentContent.removeChild(
-                                clone
-                            );
+        clone.style.height =
+            "auto";
 
+        clone.style.maxHeight =
+            "none";
 
-                            createBodyPage();
+        clone.style.overflow =
+            "visible";
 
+    }
 
-                            currentContent.appendChild(
-                                clone
-                            );
-
-                        }
-
-                    }
+}
 
 
                     /* =====================================
