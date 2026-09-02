@@ -67,7 +67,7 @@
         position: "fixed",
 
         bottom: "18px",
-        right: "455px",
+        right: "433px",
 
         zIndex: "99999"
 
