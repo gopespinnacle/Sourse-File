@@ -715,126 +715,310 @@ document.addEventListener(
                     }
 
 
-                    /* =====================================
+                                       /* =====================================
                        ADD BLOCKS
+                       TABLE-AWARE PAGINATION
                     ===================================== */
 
                     for (
-    let i = 0;
-    i < blocks.length;
-    i++
-) {
+                        let i = 0;
+                        i < blocks.length;
+                        i++
+                    ) {
 
-    const block =
-        blocks[i];
-
-
-    if (
-        !block.textContent.trim() &&
-        !block.innerHTML.trim()
-    ) {
-
-        continue;
-
-    }
+                        const block =
+                            blocks[i];
 
 
-    const clone =
-        block.cloneNode(true);
+                        if (
+                            !block.textContent.trim() &&
+                            !block.innerHTML.trim()
+                        ) {
+
+                            continue;
+
+                        }
 
 
-    clone.style.fontFamily =
-        'Georgia, "Times New Roman", serif';
+                        /* =================================
+                           TABLE HANDLING
+                        ================================= */
 
-    clone.style.fontSize =
-        "18px";
+                        if (
+                            block.tagName &&
+                            block.tagName.toLowerCase() ===
+                            "table"
+                        ) {
 
-    clone.style.lineHeight =
-        "1.8";
-
-    clone.style.marginTop =
-        "0";
-
-    clone.style.marginBottom =
-        "14px";
-
-    clone.style.overflowWrap =
-        "break-word";
+                            const rows =
+                                Array.from(
+                                    block.querySelectorAll("tr")
+                                );
 
 
-    /*
-     * Add the block to the current page.
-     */
-
-    currentContent.appendChild(
-        clone
-    );
+                            if (!rows.length) {
+                                continue;
+                            }
 
 
-    /*
-     * If the block fits, keep it here.
-     */
+                            /*
+                             * First row is treated as
+                             * the table header.
+                             */
 
-    if (
-        currentContent.scrollHeight <=
-        CONTENT_HEIGHT
-    ) {
-
-        continue;
-
-    }
+                            const headerRow =
+                                rows[0];
 
 
-    /*
-     * The block does not fit.
-     * Remove it first.
-     */
-
-    currentContent.removeChild(
-        clone
-    );
+                            let tableOnPage = null;
+                            let tableBody = null;
 
 
-    /*
-     * Start a new page.
-     */
+                            /*
+                             * Create a new table on
+                             * the current page.
+                             */
 
-    createBodyPage();
+                            function createTableOnCurrentPage() {
 
-
-    /*
-     * Add the block to the new page.
-     */
-
-    currentContent.appendChild(
-        clone
-    );
+                                const table =
+                                    block.cloneNode(true);
 
 
-    /*
-     * If the block itself is larger than
-     * one complete page, allow it to remain
-     * on the page rather than creating
-     * unnecessary blank space.
-     */
+                                /*
+                                 * Remove all existing rows.
+                                 */
 
-    if (
-        currentContent.scrollHeight >
-        CONTENT_HEIGHT
-    ) {
+                                table
+                                    .querySelectorAll("tr")
+                                    .forEach(row => {
+                                        row.remove();
+                                    });
 
-        clone.style.height =
-            "auto";
 
-        clone.style.maxHeight =
-            "none";
+                                /*
+                                 * Find tbody.
+                                 */
 
-        clone.style.overflow =
-            "visible";
+                                let tbody =
+                                    table.querySelector("tbody");
 
-    }
 
-}
+                                if (!tbody) {
+
+                                    tbody =
+                                        document.createElement(
+                                            "tbody"
+                                        );
+
+                                    table.appendChild(
+                                        tbody
+                                    );
+
+                                }
+
+
+                                /*
+                                 * Copy table width/style.
+                                 */
+
+                                table.style.width =
+                                    "100%";
+
+                                table.style.borderCollapse =
+                                    "collapse";
+
+                                table.style.marginTop =
+                                    "0";
+
+                                table.style.marginBottom =
+                                    "14px";
+
+
+                                /*
+                                 * Add table to page.
+                                 */
+
+                                currentContent.appendChild(
+                                    table
+                                );
+
+
+                                /*
+                                 * Add header row.
+                                 */
+
+                                const headerClone =
+                                    headerRow.cloneNode(true);
+
+                                tbody.appendChild(
+                                    headerClone
+                                );
+
+
+                                tableOnPage =
+                                    table;
+
+                                tableBody =
+                                    tbody;
+
+                            }
+
+
+                            /*
+                             * Create table on the
+                             * current page first.
+                             */
+
+                            createTableOnCurrentPage();
+
+
+                            /*
+                             * Add remaining rows one
+                             * at a time.
+                             */
+
+                            for (
+                                let r = 1;
+                                r < rows.length;
+                                r++
+                            ) {
+
+                                const row =
+                                    rows[r];
+
+
+                                const rowClone =
+                                    row.cloneNode(true);
+
+
+                                tableBody.appendChild(
+                                    rowClone
+                                );
+
+
+                                /*
+                                 * Check whether this row
+                                 * fits on the current page.
+                                 */
+
+                                if (
+                                    currentContent.scrollHeight >
+                                    CONTENT_HEIGHT
+                                ) {
+
+                                    /*
+                                     * Remove the row that
+                                     * caused overflow.
+                                     */
+
+                                    tableBody.removeChild(
+                                        rowClone
+                                    );
+
+
+                                    /*
+                                     * Start a new A4 page.
+                                     */
+
+                                    createBodyPage();
+
+
+                                    /*
+                                     * Create a new table
+                                     * with the header.
+                                     */
+
+                                    createTableOnCurrentPage();
+
+
+                                    /*
+                                     * Add the row to the
+                                     * new page.
+                                     */
+
+                                    const newRow =
+                                        row.cloneNode(true);
+
+                                    tableBody.appendChild(
+                                        newRow
+                                    );
+
+                                }
+
+                            }
+
+
+                            /*
+                             * Move to next body block.
+                             */
+
+                            continue;
+
+                        }
+
+
+                        /* =================================
+                           NORMAL BLOCK HANDLING
+                        ================================= */
+
+                        const clone =
+                            block.cloneNode(true);
+
+
+                        clone.style.fontFamily =
+                            'Georgia, "Times New Roman", serif';
+
+                        clone.style.fontSize =
+                            "18px";
+
+                        clone.style.lineHeight =
+                            "1.8";
+
+                        clone.style.marginTop =
+                            "0";
+
+                        clone.style.marginBottom =
+                            "14px";
+
+                        clone.style.overflowWrap =
+                            "break-word";
+
+
+                        /*
+                         * Add normal block to current page.
+                         */
+
+                        currentContent.appendChild(
+                            clone
+                        );
+
+
+                        /*
+                         * If it does not fit,
+                         * move it to a new page.
+                         */
+
+                        if (
+                            currentContent.scrollHeight >
+                            CONTENT_HEIGHT
+                        ) {
+
+                            currentContent.removeChild(
+                                clone
+                            );
+
+
+                            createBodyPage();
+
+
+                            currentContent.appendChild(
+                                clone
+                            );
+
+                        }
+
+                    }
 
 
                     /* =====================================
