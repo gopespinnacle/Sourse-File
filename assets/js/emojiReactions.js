@@ -67,7 +67,7 @@
         position: "fixed",
 
         bottom: "18px",
-        right: "430px",
+        right: "455px",
 
         zIndex: "99999"
 
@@ -106,7 +106,7 @@
         position: "fixed",
 
         bottom: "82px",
-        right: "390px",
+right: "415px",
 
         width: "250px",
 
