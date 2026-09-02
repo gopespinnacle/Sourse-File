@@ -509,41 +509,10 @@ document.addEventListener(
 
 
                 /* =========================================
-                   ADD BODY TO PDF
-                   
-                   jsPDF automatically creates
-                   additional A4 pages when the
-                   content becomes longer.
-                ========================================= */
+   REMOVE TEMPORARY BODY
+========================================= */
 
-                await pdf.html(
-                    pdfBody,
-                    {
-                        x: 0,
-                        y: 0,
-                        width: 210,
-                        windowWidth: 794,
-
-                        autoPaging: "text",
-
-                        margin: 0,
-
-                        html2canvas: {
-                            scale: 1,
-                            useCORS: true,
-                            backgroundColor: "#ffffff",
-                            logging: false,
-                            windowWidth: 794
-                        }
-                    }
-                );
-
-
-                /*
-                 * Remove temporary body copy.
-                 */
-
-                pdfBody.remove();
+pdfBody.remove();
 
 
                 /* =========================================
