@@ -98,6 +98,10 @@ document.addEventListener(
                    COVER PAGE
                 ========================================= */
 
+                                /* =========================================
+                   COVER PAGE
+                ========================================= */
+
                 const coverPage =
                     document.querySelector(".cover-page");
 
@@ -107,38 +111,226 @@ document.addEventListener(
                 }
 
 
+                /* =========================================
+                   CREATE PDF-SPECIFIC COVER COPY
+                ========================================= */
+
+                const pdfCover =
+                    coverPage.cloneNode(true);
+
+
                 /*
-                 * Temporarily make the cover visible to
-                 * html2canvas for accurate rendering.
+                 * Remove editable form controls and replace
+                 * them with normal text elements.
+                 * This prevents html2canvas from incorrectly
+                 * rendering textarea/input content.
                  */
 
-                const originalPosition =
-                    coverPage.style.position;
+                const replaceField =
+                    (selector, className) => {
 
-                const originalWidth =
-                    coverPage.style.width;
+                        const field =
+                            pdfCover.querySelector(selector);
+
+                        if (!field) {
+                            return;
+                        }
+
+                        const value =
+                            field.value || "";
+
+                        const text =
+                            document.createElement("div");
+
+                        text.className =
+                            className;
+
+                        text.textContent =
+                            value;
+
+                        field.replaceWith(text);
+                    };
 
 
-                coverPage.style.position = "relative";
-                coverPage.style.width = "794px";
+                /* Date */
 
+                const dateField =
+                    pdfCover.querySelector("#momDate");
+
+                if (dateField) {
+
+                    let dateText = "";
+
+                    if (dateField.value) {
+
+                        const date =
+                            new Date(
+                                dateField.value +
+                                "T00:00:00"
+                            );
+
+                        dateText =
+                            date.toLocaleDateString(
+                                "en-GB"
+                            );
+
+                    }
+
+                    const text =
+                        document.createElement("div");
+
+                    text.className =
+                        "pdf-cover-field-value";
+
+                    text.textContent =
+                        dateText;
+
+                    dateField.replaceWith(text);
+
+                }
+
+
+                /* Day */
+
+                replaceField(
+                    "#momDay",
+                    "pdf-cover-field-value"
+                );
+
+
+                /* Time */
+
+                replaceField(
+                    "#momTime",
+                    "pdf-cover-field-value"
+                );
+
+
+                /* Teachers Present */
+
+                const teachersField =
+                    pdfCover.querySelector(
+                        "#teachersPresent"
+                    );
+
+                if (teachersField) {
+
+                    const teachersText =
+                        teachersField.value || "";
+
+                    const teachersBox =
+                        document.createElement("div");
+
+                    teachersBox.className =
+                        "pdf-teachers-present-value";
+
+                    teachersBox.innerHTML =
+                        teachersText
+                            .split(/\r?\n/)
+                            .filter(
+                                name =>
+                                    name.trim() !== ""
+                            )
+                            .map(
+                                name =>
+                                    `<div>• ${name.trim()}</div>`
+                            )
+                            .join("");
+
+                    teachersField.replaceWith(
+                        teachersBox
+                    );
+
+                }
+
+
+                /* Meeting Theme */
+
+                const themeField =
+                    pdfCover.querySelector(
+                        "#meetingTheme"
+                    );
+
+                if (themeField) {
+
+                    const themeText =
+                        themeField.value || "";
+
+                    const themeBox =
+                        document.createElement("div");
+
+                    themeBox.className =
+                        "pdf-meeting-theme-value";
+
+                    themeBox.textContent =
+                        themeText;
+
+                    themeField.replaceWith(
+                        themeBox
+                    );
+
+                }
+
+
+                /* =========================================
+                   TEMPORARY PDF COVER CONTAINER
+                ========================================= */
+
+                pdfCover.style.width =
+                    "794px";
+
+                pdfCover.style.height =
+                    "1123px";
+
+                pdfCover.style.minHeight =
+                    "0";
+
+                pdfCover.style.boxSizing =
+                    "border-box";
+
+                pdfCover.style.overflow =
+                    "hidden";
+
+                pdfCover.style.position =
+                    "fixed";
+
+                pdfCover.style.left =
+                    "-10000px";
+
+                pdfCover.style.top =
+                    "0";
+
+                pdfCover.style.visibility =
+                    "visible";
+
+                pdfCover.style.background =
+                    "#ffffff";
+
+
+                document.body.appendChild(
+                    pdfCover
+                );
+
+
+                /* =========================================
+                   CAPTURE PDF COVER
+                ========================================= */
 
                 const canvas =
                     await html2canvas(
-                        coverPage,
+                        pdfCover,
                         {
                             scale: 2,
                             useCORS: true,
-                            backgroundColor: "#ffffff"
+                            backgroundColor: "#ffffff",
+                            logging: false
                         }
                     );
 
 
-                coverPage.style.position =
-                    originalPosition;
+                /* Remove temporary cover */
 
-                coverPage.style.width =
-                    originalWidth;
+                pdfCover.remove();
 
 
                 /* =========================================
