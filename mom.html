@@ -329,6 +329,534 @@
 
         }
 
+        /* =====================================================
+   COVER PAGE
+===================================================== */
+
+.cover-page {
+
+    width: 100%;
+
+    min-height: 820px;
+
+    padding:
+        35px 70px 45px;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fffdf8,
+            #f8f3e8
+        );
+
+    border:
+        1px solid #d1a044;
+
+    position: relative;
+
+}
+
+
+/* =====================================================
+   LOGO
+===================================================== */
+
+.cover-logo {
+
+    width: 120px;
+
+    max-height: 90px;
+
+    object-fit: contain;
+
+    margin:
+        0 auto 10px;
+
+}
+
+
+/* =====================================================
+   ACADEMY NAME
+===================================================== */
+
+.cover-academy-name {
+
+    font-size: 42px;
+
+    font-weight: bold;
+
+    letter-spacing: 4px;
+
+    color:
+        #14243b;
+
+}
+
+
+.cover-academy-subtitle {
+
+    margin-top: 5px;
+
+    font-size: 25px;
+
+    letter-spacing: 5px;
+
+    color:
+        #a47720;
+
+}
+
+
+/* =====================================================
+   DECORATION
+===================================================== */
+
+.cover-decoration {
+
+    margin:
+        12px auto;
+
+    color:
+        #b4862c;
+
+    font-size:
+        28px;
+
+}
+
+
+/* =====================================================
+   MOM TITLE
+===================================================== */
+
+.cover-mom-title {
+
+    font-size: 48px;
+
+    font-weight: bold;
+
+    letter-spacing: 7px;
+
+    line-height: 1.05;
+
+    color:
+        #14243b;
+
+}
+
+
+/* =====================================================
+   DATE / DAY / TIME
+===================================================== */
+
+.cover-details {
+
+    width:
+        430px;
+
+    max-width:
+        100%;
+
+    margin:
+        35px auto 25px;
+
+}
+
+
+.cover-detail-row {
+
+    display: grid;
+
+    grid-template-columns:
+        100px 20px 1fr;
+
+    align-items: center;
+
+    padding:
+        9px 0;
+
+    border-bottom:
+        1px solid #c99732;
+
+    text-align: left;
+
+}
+
+
+.cover-detail-row label {
+
+    font-size:
+        18px;
+
+    color:
+        #14243b;
+
+}
+
+
+.cover-detail-row span {
+
+    font-size:
+        18px;
+
+}
+
+
+.cover-detail-row input {
+
+    width: 100%;
+
+    border: none;
+
+    outline: none;
+
+    background:
+        transparent;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        18px;
+
+    color:
+        #14243b;
+
+}
+
+
+/* =====================================================
+   MEETING THEME
+===================================================== */
+
+.theme-heading {
+
+    display:
+        inline-block;
+
+    padding:
+        10px 45px;
+
+    margin-top:
+        15px;
+
+    background:
+        #14243b;
+
+    color:
+        #ffffff;
+
+    border:
+        3px solid #c99732;
+
+    font-size:
+        18px;
+
+    font-weight:
+        bold;
+
+    letter-spacing:
+        1px;
+
+}
+
+
+.meeting-theme-input {
+
+    display:
+        block;
+
+    width:
+        75%;
+
+    min-height:
+        90px;
+
+    margin:
+        0 auto;
+
+    padding:
+        18px;
+
+    resize:
+        vertical;
+
+    border:
+        1px solid #c99732;
+
+    outline:
+        none;
+
+    background:
+        rgba(255,255,255,0.55);
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        22px;
+
+    text-align:
+        center;
+
+    color:
+        #674b1d;
+
+}
+
+
+/* =====================================================
+   LEADERSHIP
+===================================================== */
+
+.leadership-section {
+
+    width:
+        80%;
+
+    margin:
+        45px auto 25px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+}
+
+
+.leader-box {
+
+    width:
+        40%;
+
+}
+
+
+.leader-title {
+
+    font-size:
+        19px;
+
+    color:
+        #14243b;
+
+    margin-bottom:
+        18px;
+
+}
+
+
+.leader-name {
+
+    font-size:
+        20px;
+
+    color:
+        #7a571b;
+
+}
+
+
+.leader-divider {
+
+    font-size:
+        50px;
+
+    color:
+        #b4862c;
+
+    margin:
+        0 30px;
+
+}
+
+
+/* =====================================================
+   INTERNAL DOCUMENT
+===================================================== */
+
+.internal-document {
+
+    display:
+        inline-block;
+
+    margin-top:
+        15px;
+
+    padding:
+        10px 40px;
+
+    background:
+        #14243b;
+
+    color:
+        #ffffff;
+
+    border:
+        3px solid #c99732;
+
+    font-size:
+        17px;
+
+    font-weight:
+        bold;
+
+}
+
+
+.academy-document-name {
+
+    margin-top:
+        15px;
+
+    font-size:
+        18px;
+
+    color:
+        #14243b;
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (
+    max-width: 600px
+) {
+
+    .cover-page {
+
+        padding:
+            25px 15px 35px;
+
+    }
+
+
+    .cover-academy-name {
+
+        font-size:
+            25px;
+
+        letter-spacing:
+            2px;
+
+    }
+
+
+    .cover-academy-subtitle {
+
+        font-size:
+            16px;
+
+        letter-spacing:
+            3px;
+
+    }
+
+
+    .cover-mom-title {
+
+        font-size:
+            34px;
+
+        letter-spacing:
+            4px;
+
+    }
+
+
+    .cover-details {
+
+        width:
+            100%;
+
+    }
+
+
+    .cover-detail-row {
+
+        grid-template-columns:
+            70px 15px 1fr;
+
+    }
+
+
+    .cover-detail-row input {
+
+        font-size:
+            15px;
+
+    }
+
+
+    .meeting-theme-input {
+
+        width:
+            100%;
+
+        font-size:
+            18px;
+
+    }
+
+
+    .leadership-section {
+
+        width:
+            100%;
+
+    }
+
+
+    .leader-title {
+
+        font-size:
+            14px;
+
+    }
+
+
+    .leader-name {
+
+        font-size:
+            15px;
+
+    }
+
+
+    .leader-divider {
+
+        margin:
+            0 10px;
+
+    }
+
+
+    .internal-document {
+
+        font-size:
+            13px;
+
+        padding:
+            9px 15px;
+
+    }
+
+}
+
     </style>
 
 </head>
@@ -380,9 +908,181 @@
             </h2>
 
 
-            <!-- COVER PAGE CONTENT
-                 WILL BE ADDED IN STEP 2
-            -->
+            <!-- =================================================
+     COVER PAGE CONTENT
+================================================= -->
+
+<div class="cover-page">
+
+
+    <!-- ACADEMY LOGO -->
+
+    <img
+        src="assets/images/academy-logo.png"
+        alt="Gopes Pinnacle Academy Logo"
+        class="cover-logo"
+    >
+
+
+    <!-- ACADEMY NAME -->
+
+    <div class="cover-academy-name">
+        GOPES PINNACLE
+    </div>
+
+    <div class="cover-academy-subtitle">
+        ONLINE ACADEMY
+    </div>
+
+
+    <!-- DECORATIVE LINE -->
+
+    <div class="cover-decoration">
+        ∞
+    </div>
+
+
+    <!-- MOM TITLE -->
+
+    <div class="cover-mom-title">
+        MINUTES
+    </div>
+
+    <div class="cover-mom-title">
+        OF MEETING
+    </div>
+
+
+    <!-- =================================================
+         DATE / DAY / TIME
+    ================================================= -->
+
+    <div class="cover-details">
+
+        <div class="cover-detail-row">
+
+            <label>
+                Date
+            </label>
+
+            <span>:</span>
+
+            <input
+                type="date"
+                id="momDate"
+            >
+
+        </div>
+
+
+        <div class="cover-detail-row">
+
+            <label>
+                Day
+            </label>
+
+            <span>:</span>
+
+            <input
+                type="text"
+                id="momDay"
+                placeholder="Tuesday"
+            >
+
+        </div>
+
+
+        <div class="cover-detail-row">
+
+            <label>
+                Time
+            </label>
+
+            <span>:</span>
+
+            <input
+                type="text"
+                id="momTime"
+                placeholder="11:00 AM – 12:00 PM"
+            >
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         MEETING THEME
+    ================================================= -->
+
+    <div class="theme-heading">
+        MEETING THEME
+    </div>
+
+
+    <textarea
+        id="meetingTheme"
+        class="meeting-theme-input"
+        placeholder="Type Meeting Theme"
+    ></textarea>
+
+
+    <!-- =================================================
+         FOUNDER / DIRECTOR
+    ================================================= -->
+
+    <div class="leadership-section">
+
+
+        <div class="leader-box">
+
+            <div class="leader-title">
+                Founder &amp; Mentor
+            </div>
+
+            <div class="leader-name">
+                Mrs. Vishnu Gopeka S
+            </div>
+
+        </div>
+
+
+        <div class="leader-divider">
+            |
+        </div>
+
+
+        <div class="leader-box">
+
+            <div class="leader-title">
+                Chief Director
+            </div>
+
+            <div class="leader-name">
+                Mr. Sowbarnik S
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =================================================
+         INTERNAL DOCUMENT
+    ================================================= -->
+
+    <div class="internal-document">
+        INTERNAL ACADEMIC DOCUMENT
+    </div>
+
+
+    <div class="academy-document-name">
+        Gopes Pinnacle Online Academy
+    </div>
+
+
+</div>
 
 
         </section>
