@@ -270,12 +270,40 @@
 
 
     /* =====================================================
-       ADD TO PAGE
-    ===================================================== */
+   ADD TO EXISTING MEETING CONTROL BAR
+===================================================== */
 
-    document.body.appendChild(emojiButton);
+const meetingControls =
+    document.querySelector(
+        ".meeting-controls"
+    );
 
-    document.body.appendChild(emojiPopup);
+if (meetingControls) {
+
+    meetingControls.appendChild(
+        emojiButton
+    );
+
+    meetingControls.appendChild(
+        emojiPopup
+    );
+
+} else {
+
+    /*
+     * Fallback if the meeting control
+     * container is not available.
+     */
+
+    document.body.appendChild(
+        emojiButton
+    );
+
+    document.body.appendChild(
+        emojiPopup
+    );
+
+}
 
 
     console.log(
