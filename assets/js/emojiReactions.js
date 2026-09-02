@@ -359,33 +359,67 @@ window.addEventListener(
 
 
         /* =================================================
-           CREATE EMOJI
-        ================================================= */
+   CREATE 10 SCATTERED EMOJIS
+================================================= */
 
-        const emojiElement =
-            document.createElement("div");
+for (let i = 0; i < 10; i++) {
 
-        emojiElement.className =
-            "meetingEmojiReaction";
+    const emojiElement =
+        document.createElement("div");
 
-        emojiElement.textContent =
-            emoji;
+    emojiElement.className =
+        "meetingEmojiReaction";
 
-
-        overlay.appendChild(
-            emojiElement
-        );
+    emojiElement.textContent =
+        emoji;
 
 
-        /* =================================================
-           REMOVE AFTER ANIMATION
-        ================================================= */
+    /* =============================================
+       RANDOM POSITION
+    ============================================= */
 
-        setTimeout(() => {
+    const randomLeft =
+        10 + Math.random() * 80;
 
-            emojiElement.remove();
+    const randomBottom =
+        15 + Math.random() * 65;
 
-        }, 2000);
+    const randomDelay =
+        Math.random() * 0.35;
+
+    const randomSize =
+        55 + Math.random() * 30;
+
+
+    emojiElement.style.left =
+        randomLeft + "%";
+
+    emojiElement.style.bottom =
+        randomBottom + "%";
+
+    emojiElement.style.fontSize =
+        randomSize + "px";
+
+    emojiElement.style.animationDelay =
+        randomDelay + "s";
+
+
+    overlay.appendChild(
+        emojiElement
+    );
+
+
+    /* =============================================
+       REMOVE AFTER ANIMATION
+    ============================================= */
+
+    setTimeout(() => {
+
+        emojiElement.remove();
+
+    }, 2500);
+
+}
 
     }
 );
