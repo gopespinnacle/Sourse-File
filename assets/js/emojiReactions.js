@@ -270,40 +270,65 @@ right: "415px",
 
 
     /* =====================================================
-   ADD TO EXISTING MEETING CONTROL BAR
+   ADD EMOJI BUTTON TO RESERVED CONTROL SPACE
 ===================================================== */
 
-const meetingControls =
-    document.querySelector(
-        ".meeting-controls"
+const emojiSpace =
+    document.getElementById(
+        "emojiReactionSpace"
     );
 
-if (meetingControls) {
 
-    meetingControls.appendChild(
+if (emojiSpace) {
+
+    /* Put emoji button inside the
+       actual meeting-control gap */
+
+    emojiSpace.appendChild(
         emojiButton
     );
 
-    meetingControls.appendChild(
-        emojiPopup
+
+    /* Override fixed positioning */
+
+    Object.assign(
+        emojiButton.style,
+        {
+
+            position: "relative",
+
+            right: "auto",
+
+            bottom: "auto",
+
+            flexShrink: "0"
+
+        }
     );
 
 } else {
 
-    /*
-     * Fallback if the meeting control
-     * container is not available.
-     */
+    /* Fallback */
 
     document.body.appendChild(
         emojiButton
     );
 
-    document.body.appendChild(
-        emojiPopup
-    );
-
 }
+
+
+/* =====================================================
+   POPUP STAYS FIXED
+===================================================== */
+
+document.body.appendChild(
+    emojiPopup
+);
+
+
+console.log(
+    "✅ EMOJI REACTIONS UI LOADED"
+);
 
 
     console.log(
