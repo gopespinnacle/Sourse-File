@@ -382,8 +382,172 @@ document.addEventListener(
                 );
 
 
+                                /* =========================================
+                   BODY OF MOM
+                ========================================= */
+
+                const bodyPage =
+                    document.querySelector(".mom-body-page");
+
+                const bodyEditor =
+                    document.getElementById("momBodyContent");
+
+
+                if (!bodyPage || !bodyEditor) {
+
+                    alert("MOM body not found.");
+                    return;
+
+                }
+
+
+                /*
+                 * Create a temporary copy of the body.
+                 * The original website page is NOT changed.
+                 */
+
+                const pdfBody =
+                    bodyPage.cloneNode(true);
+
+
+                /*
+                 * Find the copied editor.
+                 */
+
+                const pdfBodyEditor =
+                    pdfBody.querySelector(
+                        "#momBodyContent"
+                    );
+
+
+                if (pdfBodyEditor) {
+
+                    /*
+                     * Copy the complete body content.
+                     */
+
+                    pdfBodyEditor.innerHTML =
+                        bodyEditor.innerHTML;
+
+
+                    /*
+                     * Make the copied editor behave
+                     * like a normal document.
+                     */
+
+                    pdfBodyEditor.style.minHeight =
+                        "0";
+
+                    pdfBodyEditor.style.height =
+                        "auto";
+
+                    pdfBodyEditor.style.overflow =
+                        "visible";
+
+                    pdfBodyEditor.style.resize =
+                        "none";
+
+                    pdfBodyEditor.style.background =
+                        "transparent";
+
+                }
+
+
+                /*
+                 * Remove editor placeholder if body
+                 * is empty.
+                 */
+
+                if (
+                    !bodyEditor.innerText.trim()
+                ) {
+
+                    pdfBodyEditor.innerHTML =
+                        "<p></p>";
+
+                }
+
+
                 /* =========================================
-                   TEST DOWNLOAD
+                   PREPARE BODY FOR PDF
+                ========================================= */
+
+                pdfBody.style.width =
+                    "794px";
+
+                pdfBody.style.minHeight =
+                    "1123px";
+
+                pdfBody.style.height =
+                    "auto";
+
+                pdfBody.style.boxSizing =
+                    "border-box";
+
+                pdfBody.style.overflow =
+                    "visible";
+
+                pdfBody.style.position =
+                    "fixed";
+
+                pdfBody.style.left =
+                    "-10000px";
+
+                pdfBody.style.top =
+                    "0";
+
+                pdfBody.style.visibility =
+                    "visible";
+
+                pdfBody.style.background =
+                    "#ffffff";
+
+
+                document.body.appendChild(
+                    pdfBody
+                );
+
+
+                /* =========================================
+                   ADD BODY TO PDF
+                   
+                   jsPDF automatically creates
+                   additional A4 pages when the
+                   content becomes longer.
+                ========================================= */
+
+                await pdf.html(
+                    pdfBody,
+                    {
+                        x: 0,
+                        y: 0,
+                        width: 210,
+                        windowWidth: 794,
+
+                        autoPaging: "text",
+
+                        margin: 0,
+
+                        html2canvas: {
+                            scale: 1,
+                            useCORS: true,
+                            backgroundColor: "#ffffff",
+                            logging: false,
+                            windowWidth: 794
+                        }
+                    }
+                );
+
+
+                /*
+                 * Remove temporary body copy.
+                 */
+
+                pdfBody.remove();
+
+
+                /* =========================================
+                   FINAL DOWNLOAD
                 ========================================= */
 
                 pdf.save(
