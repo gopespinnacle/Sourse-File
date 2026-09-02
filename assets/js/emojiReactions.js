@@ -283,3 +283,196 @@
     );
 
 })();
+
+/* =========================================================
+   EMOJI REACTION DISPLAY
+   ========================================================= */
+
+window.addEventListener(
+    "meeting:emojiReaction",
+    event => {
+
+        const data = event.detail || {};
+
+        const emoji = data.emoji;
+
+        if (!emoji) {
+            return;
+        }
+
+        console.log(
+            "😀 DISPLAYING EMOJI:",
+            emoji
+        );
+
+
+        /* =================================================
+           CREATE OVERLAY CONTAINER
+        ================================================= */
+
+        let overlay =
+            document.getElementById(
+                "emojiReactionOverlay"
+            );
+
+        if (!overlay) {
+
+            overlay =
+                document.createElement("div");
+
+            overlay.id =
+                "emojiReactionOverlay";
+
+            document.body.appendChild(
+                overlay
+            );
+
+        }
+
+
+        /* =================================================
+           CREATE EMOJI
+        ================================================= */
+
+        const emojiElement =
+            document.createElement("div");
+
+        emojiElement.className =
+            "meetingEmojiReaction";
+
+        emojiElement.textContent =
+            emoji;
+
+
+        overlay.appendChild(
+            emojiElement
+        );
+
+
+        /* =================================================
+           REMOVE AFTER ANIMATION
+        ================================================= */
+
+        setTimeout(() => {
+
+            emojiElement.remove();
+
+        }, 2000);
+
+    }
+);
+
+
+/* =========================================================
+   EMOJI REACTION STYLES
+   ========================================================= */
+
+if (
+    !document.getElementById(
+        "emojiReactionStyles"
+    )
+) {
+
+    const style =
+        document.createElement("style");
+
+    style.id =
+        "emojiReactionStyles";
+
+    style.textContent = `
+
+        #emojiReactionOverlay {
+
+            position: fixed;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            z-index: 999999;
+
+            overflow: hidden;
+
+        }
+
+
+        .meetingEmojiReaction {
+
+            position: absolute;
+
+            left: 50%;
+
+            bottom: 25%;
+
+            transform:
+                translateX(-50%)
+                scale(0.5);
+
+            font-size: 70px;
+
+            animation:
+                meetingEmojiFloat 2s ease-out forwards;
+
+            pointer-events: none;
+
+        }
+
+
+        @keyframes meetingEmojiFloat {
+
+            0% {
+
+                opacity: 0;
+
+                transform:
+                    translateX(-50%)
+                    translateY(40px)
+                    scale(0.5);
+
+            }
+
+
+            20% {
+
+                opacity: 1;
+
+                transform:
+                    translateX(-50%)
+                    translateY(0)
+                    scale(1.15);
+
+            }
+
+
+            70% {
+
+                opacity: 1;
+
+                transform:
+                    translateX(-50%)
+                    translateY(-80px)
+                    scale(1);
+
+            }
+
+
+            100% {
+
+                opacity: 0;
+
+                transform:
+                    translateX(-50%)
+                    translateY(-160px)
+                    scale(0.8);
+
+            }
+
+        }
+
+    `;
+
+    document.head.appendChild(
+        style
+    );
+
+}
