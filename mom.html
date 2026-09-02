@@ -857,6 +857,163 @@
 
 }
 
+/* =====================================================
+   BODY OF MOM PAGE
+===================================================== */
+
+.mom-body-page {
+
+    width: 100%;
+
+    min-height: 600px;
+
+    padding: 45px 55px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fffdf8,
+            #f8f3e8
+        );
+
+    border:
+        1px solid #d1a044;
+
+}
+
+
+/* =====================================================
+   BODY TITLE
+===================================================== */
+
+.body-document-title {
+
+    text-align: center;
+
+    font-size: 34px;
+
+    font-weight: bold;
+
+    letter-spacing: 4px;
+
+    color: #14243b;
+
+}
+
+
+.body-document-subtitle {
+
+    text-align: center;
+
+    margin-top: 8px;
+
+    font-size: 16px;
+
+    letter-spacing: 2px;
+
+    color: #a47720;
+
+}
+
+
+/* =====================================================
+   EDITOR
+===================================================== */
+
+.body-editor-wrapper {
+
+    margin-top: 35px;
+
+    width: 100%;
+
+}
+
+
+.mom-body-editor {
+
+    display: block;
+
+    width: 100%;
+
+    min-height: 480px;
+
+    padding: 25px;
+
+    resize: vertical;
+
+    outline: none;
+
+    border:
+        1px solid #c99732;
+
+    background:
+        rgba(255,255,255,0.60);
+
+    color:
+        #14243b;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 18px;
+
+    line-height: 1.8;
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (
+    max-width: 600px
+) {
+
+    .mom-body-page {
+
+        padding:
+            30px 15px;
+
+    }
+
+
+    .body-document-title {
+
+        font-size:
+            24px;
+
+        letter-spacing:
+            2px;
+
+    }
+
+
+    .body-document-subtitle {
+
+        font-size:
+            13px;
+
+    }
+
+
+    .mom-body-editor {
+
+        min-height:
+            500px;
+
+        padding:
+            15px;
+
+        font-size:
+            16px;
+
+    }
+
+}
+
     </style>
 
 </head>
@@ -1107,9 +1264,32 @@
             </h2>
 
 
-            <!-- MOM BODY EDITOR
-                 WILL BE ADDED IN A LATER STEP
-            -->
+            <!-- =================================================
+     BODY OF MOM EDITOR
+================================================= -->
+
+<div class="mom-body-page">
+
+    <div class="body-document-title">
+        MINUTES OF MEETING
+    </div>
+
+    <div class="body-document-subtitle">
+        GOPES PINNACLE ONLINE ACADEMY
+    </div>
+
+
+    <div class="body-editor-wrapper">
+
+        <textarea
+            id="momBodyContent"
+            class="mom-body-editor"
+            placeholder="Type the Minutes of Meeting here..."
+        ></textarea>
+
+    </div>
+
+</div>
 
 
         </section>
