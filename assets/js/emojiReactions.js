@@ -178,20 +178,51 @@
 
         button.addEventListener("click", () => {
 
-            console.log(
-                "😀 EMOJI SELECTED:",
-                emoji
-            );
+    console.log(
+        "😀 EMOJI SELECTED:",
+        emoji
+    );
 
-            /*
-             * SOCKET.IO SENDING
-             *
-             * WILL BE ADDED IN STEP 4
-             */
 
-            emojiPopup.style.display = "none";
+    /* =================================================
+       SEND EMOJI THROUGH EXISTING MEETING SOCKET
+    ================================================= */
 
-        });
+    if (
+        window.MeetingSocket &&
+        typeof window.MeetingSocket.emit === "function"
+    ) {
+
+        window.MeetingSocket.emit(
+            "emojiReaction",
+            {
+                emoji: emoji
+            }
+        );
+
+
+        console.log(
+            "😀 EMOJI SENT:",
+            emoji
+        );
+
+    }
+    else {
+
+        console.warn(
+            "⚠️ MeetingSocket is not available"
+        );
+
+    }
+
+
+    /* =================================================
+       CLOSE POPUP
+    ================================================= */
+
+    emojiPopup.style.display = "none";
+
+});
 
 
         emojiPopup.appendChild(button);
