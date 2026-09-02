@@ -106,7 +106,7 @@
         position: "fixed",
 
         bottom: "82px",
-right: "415px",
+right: "430px",
 
         width: "250px",
 
