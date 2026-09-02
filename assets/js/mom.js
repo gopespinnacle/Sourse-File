@@ -382,9 +382,10 @@ document.addEventListener(
                 );
 
 
-                                /* =========================================
+                                                /* =========================================
                    BODY OF MOM
                    AUTOMATIC A4 PAGINATION
+                   FONT: TIMES NEW ROMAN 12px
                 ========================================= */
 
                 const bodyEditor =
@@ -450,7 +451,6 @@ document.addEventListener(
                     const PAGE_PADDING_BOTTOM = 55;
                     const PAGE_PADDING_LEFT = 60;
                     const PAGE_PADDING_RIGHT = 60;
-
 
                     const CONTENT_HEIGHT =
                         PAGE_HEIGHT -
@@ -528,13 +528,13 @@ document.addEventListener(
                             "hidden";
 
                         content.style.fontFamily =
-                            'Georgia, "Times New Roman", serif';
+                            '"Times New Roman", Times, serif';
 
                         content.style.fontSize =
-                            "18px";
+                            "12px";
 
                         content.style.lineHeight =
-                            "1.8";
+                            "1.5";
 
 
                         /* =================================
@@ -555,22 +555,22 @@ document.addEventListener(
                                 "center";
 
                             title.style.fontFamily =
-                                'Georgia, "Times New Roman", serif';
+                                '"Times New Roman", Times, serif';
 
                             title.style.fontSize =
-                                "25px";
+                                "16px";
 
                             title.style.fontWeight =
                                 "bold";
 
                             title.style.letterSpacing =
-                                "3px";
+                                "2px";
 
                             title.style.color =
                                 "#14243b";
 
                             title.style.marginBottom =
-                                "6px";
+                                "4px";
 
 
                             const subtitle =
@@ -585,19 +585,19 @@ document.addEventListener(
                                 "center";
 
                             subtitle.style.fontFamily =
-                                'Georgia, "Times New Roman", serif';
+                                '"Times New Roman", Times, serif';
 
                             subtitle.style.fontSize =
-                                "14px";
+                                "12px";
 
-                            subtitle.style.letterSpacing =
-                                "2px";
+                            subtitle.style.fontWeight =
+                                "bold";
 
                             subtitle.style.color =
                                 "#c99732";
 
                             subtitle.style.marginBottom =
-                                "25px";
+                                "18px";
 
 
                             content.appendChild(
@@ -642,17 +642,14 @@ document.addEventListener(
                     source.style.width =
                         "100%";
 
-
                     source.style.fontFamily =
-                        'Georgia, "Times New Roman", serif';
-
+                        '"Times New Roman", Times, serif';
 
                     source.style.fontSize =
-                        "18px";
-
+                        "12px";
 
                     source.style.lineHeight =
-                        "1.8";
+                        "1.5";
 
 
                     /* =====================================
@@ -715,7 +712,7 @@ document.addEventListener(
                     }
 
 
-                                       /* =====================================
+                    /* =====================================
                        ADD BLOCKS
                        TABLE-AWARE PAGINATION
                     ===================================== */
@@ -761,23 +758,12 @@ document.addEventListener(
                             }
 
 
-                            /*
-                             * First row is treated as
-                             * the table header.
-                             */
-
                             const headerRow =
                                 rows[0];
 
 
-                            let tableOnPage = null;
                             let tableBody = null;
 
-
-                            /*
-                             * Create a new table on
-                             * the current page.
-                             */
 
                             function createTableOnCurrentPage() {
 
@@ -785,20 +771,12 @@ document.addEventListener(
                                     block.cloneNode(true);
 
 
-                                /*
-                                 * Remove all existing rows.
-                                 */
-
                                 table
                                     .querySelectorAll("tr")
                                     .forEach(row => {
                                         row.remove();
                                     });
 
-
-                                /*
-                                 * Find tbody.
-                                 */
 
                                 let tbody =
                                     table.querySelector("tbody");
@@ -818,10 +796,6 @@ document.addEventListener(
                                 }
 
 
-                                /*
-                                 * Copy table width/style.
-                                 */
-
                                 table.style.width =
                                     "100%";
 
@@ -834,30 +808,36 @@ document.addEventListener(
                                 table.style.marginBottom =
                                     "14px";
 
+                                table.style.fontFamily =
+                                    '"Times New Roman", Times, serif';
 
-                                /*
-                                 * Add table to page.
-                                 */
+                                table.style.fontSize =
+                                    "12px";
+
 
                                 currentContent.appendChild(
                                     table
                                 );
 
 
-                                /*
-                                 * Add header row.
-                                 */
-
                                 const headerClone =
                                     headerRow.cloneNode(true);
+
+
+                                headerClone.style.fontFamily =
+                                    '"Times New Roman", Times, serif';
+
+                                headerClone.style.fontSize =
+                                    "12px";
+
+                                headerClone.style.fontWeight =
+                                    "bold";
+
 
                                 tbody.appendChild(
                                     headerClone
                                 );
 
-
-                                tableOnPage =
-                                    table;
 
                                 tableBody =
                                     tbody;
@@ -865,18 +845,8 @@ document.addEventListener(
                             }
 
 
-                            /*
-                             * Create table on the
-                             * current page first.
-                             */
-
                             createTableOnCurrentPage();
 
-
-                            /*
-                             * Add remaining rows one
-                             * at a time.
-                             */
 
                             for (
                                 let r = 1;
@@ -892,53 +862,44 @@ document.addEventListener(
                                     row.cloneNode(true);
 
 
+                                rowClone.style.fontFamily =
+                                    '"Times New Roman", Times, serif';
+
+                                rowClone.style.fontSize =
+                                    "12px";
+
+
                                 tableBody.appendChild(
                                     rowClone
                                 );
 
-
-                                /*
-                                 * Check whether this row
-                                 * fits on the current page.
-                                 */
 
                                 if (
                                     currentContent.scrollHeight >
                                     CONTENT_HEIGHT
                                 ) {
 
-                                    /*
-                                     * Remove the row that
-                                     * caused overflow.
-                                     */
-
                                     tableBody.removeChild(
                                         rowClone
                                     );
 
 
-                                    /*
-                                     * Start a new A4 page.
-                                     */
-
                                     createBodyPage();
 
-
-                                    /*
-                                     * Create a new table
-                                     * with the header.
-                                     */
 
                                     createTableOnCurrentPage();
 
 
-                                    /*
-                                     * Add the row to the
-                                     * new page.
-                                     */
-
                                     const newRow =
                                         row.cloneNode(true);
+
+
+                                    newRow.style.fontFamily =
+                                        '"Times New Roman", Times, serif';
+
+                                    newRow.style.fontSize =
+                                        "12px";
+
 
                                     tableBody.appendChild(
                                         newRow
@@ -948,10 +909,6 @@ document.addEventListener(
 
                             }
 
-
-                            /*
-                             * Move to next body block.
-                             */
 
                             continue;
 
@@ -967,37 +924,45 @@ document.addEventListener(
 
 
                         clone.style.fontFamily =
-                            'Georgia, "Times New Roman", serif';
+                            '"Times New Roman", Times, serif';
 
                         clone.style.fontSize =
-                            "18px";
+                            "12px";
 
                         clone.style.lineHeight =
-                            "1.8";
+                            "1.5";
 
                         clone.style.marginTop =
                             "0";
 
                         clone.style.marginBottom =
-                            "14px";
+                            "10px";
 
                         clone.style.overflowWrap =
                             "break-word";
 
 
-                        /*
-                         * Add normal block to current page.
-                         */
+                        /* =================================
+                           HEADING = BOLD
+                        ================================= */
+
+                        if (
+                            clone.tagName &&
+                            /^H[1-6]$/.test(
+                                clone.tagName
+                            )
+                        ) {
+
+                            clone.style.fontWeight =
+                                "bold";
+
+                        }
+
 
                         currentContent.appendChild(
                             clone
                         );
 
-
-                        /*
-                         * If it does not fit,
-                         * move it to a new page.
-                         */
 
                         if (
                             currentContent.scrollHeight >
@@ -1090,6 +1055,8 @@ document.addEventListener(
                     "Gopes-Pinnacle-Academy-MOM.pdf"
                 );
 
+
+               
 
                 /* =========================================
                    FINAL DOWNLOAD
