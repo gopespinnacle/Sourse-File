@@ -384,16 +384,16 @@ document.addEventListener(
 
                                 /* =========================================
                    BODY OF MOM
+                   AUTOMATIC A4 PAGINATION
                 ========================================= */
 
-                const bodyPage =
-                    document.querySelector(".mom-body-page");
-
                 const bodyEditor =
-                    document.getElementById("momBodyContent");
+                    document.getElementById(
+                        "momBodyContent"
+                    );
 
 
-                if (!bodyPage || !bodyEditor) {
+                if (!bodyEditor) {
 
                     alert("MOM body not found.");
                     return;
@@ -401,118 +401,471 @@ document.addEventListener(
                 }
 
 
-                /*
-                 * Create a temporary copy of the body.
-                 * The original website page is NOT changed.
-                 */
-
-                const pdfBody =
-                    bodyPage.cloneNode(true);
+                const bodyHTML =
+                    bodyEditor.innerHTML.trim();
 
 
-                /*
-                 * Find the copied editor.
-                 */
+                /* =========================================
+                   CREATE BODY PAGES ONLY IF CONTENT EXISTS
+                ========================================= */
 
-                const pdfBodyEditor =
-                    pdfBody.querySelector(
-                        "#momBodyContent"
+                if (bodyHTML) {
+
+                    const paginationArea =
+                        document.createElement("div");
+
+
+                    paginationArea.style.position =
+                        "fixed";
+
+                    paginationArea.style.left =
+                        "-10000px";
+
+                    paginationArea.style.top =
+                        "0";
+
+                    paginationArea.style.width =
+                        "794px";
+
+                    paginationArea.style.background =
+                        "#ffffff";
+
+                    paginationArea.style.visibility =
+                        "visible";
+
+
+                    document.body.appendChild(
+                        paginationArea
                     );
 
 
-                if (pdfBodyEditor) {
+                    /* =====================================
+                       A4 SETTINGS
+                    ===================================== */
 
-                    /*
-                     * Copy the complete body content.
-                     */
+                    const PAGE_WIDTH = 794;
+                    const PAGE_HEIGHT = 1123;
 
-                    pdfBodyEditor.innerHTML =
-                        bodyEditor.innerHTML;
-
-
-                    /*
-                     * Make the copied editor behave
-                     * like a normal document.
-                     */
-
-                    pdfBodyEditor.style.minHeight =
-                        "0";
-
-                    pdfBodyEditor.style.height =
-                        "auto";
-
-                    pdfBodyEditor.style.overflow =
-                        "visible";
-
-                    pdfBodyEditor.style.resize =
-                        "none";
-
-                    pdfBodyEditor.style.background =
-                        "transparent";
-
-                }
+                    const PAGE_PADDING_TOP = 55;
+                    const PAGE_PADDING_BOTTOM = 55;
+                    const PAGE_PADDING_LEFT = 60;
+                    const PAGE_PADDING_RIGHT = 60;
 
 
-                /*
-                 * Remove editor placeholder if body
-                 * is empty.
-                 */
+                    const CONTENT_HEIGHT =
+                        PAGE_HEIGHT -
+                        PAGE_PADDING_TOP -
+                        PAGE_PADDING_BOTTOM;
 
-                if (
-                    !bodyEditor.innerText.trim()
-                ) {
 
-                    pdfBodyEditor.innerHTML =
-                        "<p></p>";
+                    let currentContent = null;
+                    let pageNumber = 0;
+
+
+                    /* =====================================
+                       CREATE ONE A4 BODY PAGE
+                    ===================================== */
+
+                    function createBodyPage() {
+
+                        pageNumber++;
+
+
+                        const page =
+                            document.createElement("div");
+
+
+                        page.className =
+                            "pdf-a4-body-page";
+
+
+                        page.style.width =
+                            PAGE_WIDTH + "px";
+
+                        page.style.height =
+                            PAGE_HEIGHT + "px";
+
+                        page.style.boxSizing =
+                            "border-box";
+
+                        page.style.padding =
+                            PAGE_PADDING_TOP +
+                            "px " +
+                            PAGE_PADDING_RIGHT +
+                            "px " +
+                            PAGE_PADDING_BOTTOM +
+                            "px " +
+                            PAGE_PADDING_LEFT +
+                            "px";
+
+                        page.style.background =
+                            "#ffffff";
+
+                        page.style.position =
+                            "relative";
+
+                        page.style.overflow =
+                            "hidden";
+
+                        page.style.border =
+                            "1px solid #d1a044";
+
+
+                        const content =
+                            document.createElement("div");
+
+
+                        content.style.width =
+                            "100%";
+
+                        content.style.height =
+                            CONTENT_HEIGHT + "px";
+
+                        content.style.boxSizing =
+                            "border-box";
+
+                        content.style.overflow =
+                            "hidden";
+
+                        content.style.fontFamily =
+                            'Georgia, "Times New Roman", serif';
+
+                        content.style.fontSize =
+                            "18px";
+
+                        content.style.lineHeight =
+                            "1.8";
+
+
+                        /* =================================
+                           TITLE ON FIRST BODY PAGE
+                        ================================= */
+
+                        if (pageNumber === 1) {
+
+                            const title =
+                                document.createElement("div");
+
+
+                            title.textContent =
+                                "MINUTES OF MEETING";
+
+
+                            title.style.textAlign =
+                                "center";
+
+                            title.style.fontFamily =
+                                'Georgia, "Times New Roman", serif';
+
+                            title.style.fontSize =
+                                "25px";
+
+                            title.style.fontWeight =
+                                "bold";
+
+                            title.style.letterSpacing =
+                                "3px";
+
+                            title.style.color =
+                                "#14243b";
+
+                            title.style.marginBottom =
+                                "6px";
+
+
+                            const subtitle =
+                                document.createElement("div");
+
+
+                            subtitle.textContent =
+                                "GOPES PINNACLE ONLINE ACADEMY";
+
+
+                            subtitle.style.textAlign =
+                                "center";
+
+                            subtitle.style.fontFamily =
+                                'Georgia, "Times New Roman", serif';
+
+                            subtitle.style.fontSize =
+                                "14px";
+
+                            subtitle.style.letterSpacing =
+                                "2px";
+
+                            subtitle.style.color =
+                                "#c99732";
+
+                            subtitle.style.marginBottom =
+                                "25px";
+
+
+                            content.appendChild(
+                                title
+                            );
+
+                            content.appendChild(
+                                subtitle
+                            );
+
+                        }
+
+
+                        page.appendChild(
+                            content
+                        );
+
+
+                        paginationArea.appendChild(
+                            page
+                        );
+
+
+                        currentContent =
+                            content;
+
+                    }
+
+
+                    /* =====================================
+                       SOURCE CONTENT
+                    ===================================== */
+
+                    const source =
+                        document.createElement("div");
+
+
+                    source.innerHTML =
+                        bodyHTML;
+
+
+                    source.style.width =
+                        "100%";
+
+
+                    source.style.fontFamily =
+                        'Georgia, "Times New Roman", serif';
+
+
+                    source.style.fontSize =
+                        "18px";
+
+
+                    source.style.lineHeight =
+                        "1.8";
+
+
+                    /* =====================================
+                       GET BODY BLOCKS
+                    ===================================== */
+
+                    const blocks = [];
+
+
+                    Array.from(
+                        source.childNodes
+                    ).forEach(node => {
+
+                        if (
+                            node.nodeType ===
+                            Node.TEXT_NODE
+                        ) {
+
+                            const text =
+                                node.textContent.trim();
+
+
+                            if (text) {
+
+                                const paragraph =
+                                    document.createElement(
+                                        "p"
+                                    );
+
+
+                                paragraph.textContent =
+                                    text;
+
+
+                                blocks.push(
+                                    paragraph
+                                );
+
+                            }
+
+                        } else {
+
+                            blocks.push(
+                                node.cloneNode(true)
+                            );
+
+                        }
+
+                    });
+
+
+                    /* =====================================
+                       CREATE FIRST PAGE
+                    ===================================== */
+
+                    if (!currentContent) {
+
+                        createBodyPage();
+
+                    }
+
+
+                    /* =====================================
+                       ADD BLOCKS
+                    ===================================== */
+
+                    for (
+                        let i = 0;
+                        i < blocks.length;
+                        i++
+                    ) {
+
+                        const block =
+                            blocks[i];
+
+
+                        if (
+                            !block.textContent.trim() &&
+                            !block.innerHTML.trim()
+                        ) {
+
+                            continue;
+
+                        }
+
+
+                        const clone =
+                            block.cloneNode(true);
+
+
+                        clone.style.fontFamily =
+                            'Georgia, "Times New Roman", serif';
+
+
+                        clone.style.fontSize =
+                            "18px";
+
+
+                        clone.style.lineHeight =
+                            "1.8";
+
+
+                        clone.style.marginTop =
+                            "0";
+
+
+                        clone.style.marginBottom =
+                            "14px";
+
+
+                        clone.style.overflowWrap =
+                            "break-word";
+
+
+                        currentContent.appendChild(
+                            clone
+                        );
+
+
+                        /* =================================
+                           DOES IT FIT?
+                        ================================= */
+
+                        if (
+                            currentContent.scrollHeight >
+                            CONTENT_HEIGHT
+                        ) {
+
+                            currentContent.removeChild(
+                                clone
+                            );
+
+
+                            createBodyPage();
+
+
+                            currentContent.appendChild(
+                                clone
+                            );
+
+                        }
+
+                    }
+
+
+                    /* =====================================
+                       CONVERT BODY PAGES TO PDF
+                    ===================================== */
+
+                    const bodyPages =
+                        Array.from(
+                            paginationArea.querySelectorAll(
+                                ".pdf-a4-body-page"
+                            )
+                        );
+
+
+                    for (
+                        let i = 0;
+                        i < bodyPages.length;
+                        i++
+                    ) {
+
+                        const bodyCanvas =
+                            await html2canvas(
+                                bodyPages[i],
+                                {
+                                    scale: 2,
+                                    useCORS: true,
+                                    backgroundColor:
+                                        "#ffffff",
+                                    logging: false,
+                                    width:
+                                        PAGE_WIDTH,
+                                    height:
+                                        PAGE_HEIGHT
+                                }
+                            );
+
+
+                        pdf.addPage();
+
+
+                        pdf.addImage(
+                            bodyCanvas.toDataURL(
+                                "image/png"
+                            ),
+                            "PNG",
+                            0,
+                            0,
+                            210,
+                            297
+                        );
+
+                    }
+
+
+                    /* =====================================
+                       REMOVE TEMPORARY BODY PAGES
+                    ===================================== */
+
+                    paginationArea.remove();
 
                 }
 
 
                 /* =========================================
-                   PREPARE BODY FOR PDF
+                   FINAL DOWNLOAD
                 ========================================= */
 
-                pdfBody.style.width =
-                    "794px";
-
-                pdfBody.style.minHeight =
-                    "1123px";
-
-                pdfBody.style.height =
-                    "auto";
-
-                pdfBody.style.boxSizing =
-                    "border-box";
-
-                pdfBody.style.overflow =
-                    "visible";
-
-                pdfBody.style.position =
-                    "fixed";
-
-                pdfBody.style.left =
-                    "-10000px";
-
-                pdfBody.style.top =
-                    "0";
-
-                pdfBody.style.visibility =
-                    "visible";
-
-                pdfBody.style.background =
-                    "#ffffff";
-
-
-                document.body.appendChild(
-                    pdfBody
+                pdf.save(
+                    "Gopes-Pinnacle-Academy-MOM.pdf"
                 );
-
-
-                /* =========================================
-   REMOVE TEMPORARY BODY
-========================================= */
-
-pdfBody.remove();
 
 
                 /* =========================================
