@@ -168,6 +168,41 @@ socket.on(
     }
 );
 
+/*
+===========================================================
+EMOJI REACTION
+Receive emoji reactions from classroom
+===========================================================
+*/
+
+socket.on(
+    "emojiReaction",
+    data => {
+
+        console.log(
+            "EMOJI REACTION RECEIVED:",
+            data
+        );
+
+        /*
+        ---------------------------------------------------
+        SEND TO EMOJI REACTION MODULE
+        ---------------------------------------------------
+        */
+
+        window.dispatchEvent(
+            new CustomEvent(
+                "meeting:emojiReaction",
+                {
+                    detail:
+                        data
+                }
+            )
+        );
+
+    }
+);
+
         return socket;
 
     }
