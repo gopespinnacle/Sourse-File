@@ -66,5 +66,29 @@ document.addEventListener(
 
         }
 
+                /* =================================================
+           DOWNLOAD MOM BUTTON
+        ================================================= */
+
+        const downloadBtn =
+            document.getElementById(
+                "downloadMomBtn"
+            );
+
+        if (downloadBtn) {
+
+            downloadBtn.addEventListener(
+                "click",
+                () => {
+
+                    alert(
+                        "MOM PDF generation is connected."
+                    );
+
+                }
+            );
+
+        }
+
     }
 );

@@ -1004,37 +1004,26 @@
 
 
 .mom-body-editor {
-
     display: block;
-
     width: 100%;
-
-    min-height: 480px;
-
-    padding: 25px;
-
-    resize: vertical;
-
+    min-height: 900px;
+    padding: 35px 45px;
     outline: none;
-
-    border:
-        1px solid #c99732;
-
-    background:
-        rgba(255,255,255,0.60);
-
-    color:
-        #14243b;
-
-    font-family:
-        Georgia,
-        "Times New Roman",
-        serif;
-
+    border: 1px solid #c99732;
+    background: rgba(255,255,255,0.60);
+    color: #14243b;
+    font-family: Georgia, "Times New Roman", serif;
     font-size: 18px;
-
     line-height: 1.8;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+}
 
+.mom-body-editor:empty::before {
+    content: attr(data-placeholder);
+    color: #888888;
+    pointer-events: none;
 }
 
 
@@ -1171,6 +1160,27 @@
 
 }
 
+/* =========================================
+   PDF A4 PAGE TEMPLATE
+   ========================================= */
+
+.pdf-page-template {
+    position: fixed;
+    left: -10000px;
+    top: 0;
+    width: 794px;
+    min-height: 1123px;
+    box-sizing: border-box;
+    padding: 55px 60px;
+    background: #ffffff;
+    overflow: hidden;
+    visibility: hidden;
+}
+
+.pdf-page-content {
+    width: 100%;
+    box-sizing: border-box;
+}
     </style>
 
 </head>
@@ -1452,14 +1462,14 @@
 
 
     <div class="body-editor-wrapper">
-
-        <textarea
-            id="momBodyContent"
-            class="mom-body-editor"
-            placeholder="Type the Minutes of Meeting here..."
-        ></textarea>
-
-    </div>
+    <div
+        id="momBodyContent"
+        class="mom-body-editor"
+        contenteditable="true"
+        spellcheck="true"
+        data-placeholder="Type the Minutes of Meeting here..."
+    ></div>
+</div>
 
 </div>
 
@@ -1488,6 +1498,13 @@
 
 
     </main>
+
+    <div id="pdfPageTemplate" class="pdf-page-template">
+    <div class="pdf-page-content"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script src="assets/js/mom.js"></script>
 </body>
