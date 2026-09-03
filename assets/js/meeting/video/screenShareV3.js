@@ -1519,7 +1519,7 @@ if (
         true;
 
     screenVideo.muted =
-        true;
+    false;
 
 
     /*
