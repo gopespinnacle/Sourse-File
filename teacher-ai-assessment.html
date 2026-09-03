@@ -152,6 +152,190 @@ type="text"
 id="chapter"
 placeholder="Chapter 1">
 
+<label>Question Paper Level</label>
+
+<select id="questionLevel">
+
+    <option value="Easy">Easy</option>
+
+    <option value="Medium" selected>
+        Medium
+    </option>
+
+    <option value="Hard">Hard</option>
+
+</select>
+
+<label>Total Marks</label>
+
+<select id="totalMarks">
+
+    <option value="10">10 Marks</option>
+
+    <option value="25" selected>25 Marks</option>
+
+    <option value="50">50 Marks</option>
+
+    <option value="80">80 Marks</option>
+
+    <option value="100">100 Marks</option>
+
+</select>
+
+<label>Duration</label>
+
+<input
+    type="text"
+    id="duration"
+    value="40 Minutes"
+    readonly
+    style="background:#f1f3f5;"
+>
+
+<label>Question Mode</label>
+
+<select id="questionMode">
+
+    <option value="Direct">Direct Question</option>
+
+    <option value="Indirect">Indirect Question</option>
+
+    <option value="Direct + Indirect" selected>
+        Direct + Indirect
+    </option>
+
+</select>
+
+<label>Question Type</label>
+
+<select id="questionTypes" multiple size="8">
+
+    <option value="MCQ">MCQ</option>
+
+    <option value="Fill in the Blanks">
+        Fill in the Blanks
+    </option>
+
+    <option value="True / False">
+        True / False
+    </option>
+
+    <option value="Match the Following">
+        Match the Following
+    </option>
+
+    <option value="One Word Answer">
+        One Word Answer
+    </option>
+
+    <option value="Very Short Answer">
+        Very Short Answer
+    </option>
+
+    <option value="Short Answer">
+        Short Answer
+    </option>
+
+    <option value="Long Answer">
+        Long Answer
+    </option>
+
+    <option value="Problem Solving">
+        Problem Solving
+    </option>
+
+    <option value="Word Problems">
+        Word Problems
+    </option>
+
+    <option value="Case Study">
+        Case Study
+    </option>
+
+    <option value="Competency-Based">
+        Competency-Based
+    </option>
+
+    <option value="Assertion & Reason">
+        Assertion & Reason
+    </option>
+
+    <option value="Statement-Based">
+        Statement-Based
+    </option>
+
+    <option value="Reasoning / Logical Thinking">
+        Reasoning / Logical Thinking
+    </option>
+
+    <option value="Odd One Out">
+        Odd One Out
+    </option>
+
+    <option value="Pattern-Based">
+        Pattern-Based
+    </option>
+
+    <option value="Sequence Questions">
+        Sequence Questions
+    </option>
+
+    <option value="Data Interpretation">
+        Data Interpretation
+    </option>
+
+    <option value="Diagram-Based">
+        Diagram-Based
+    </option>
+
+    <option value="Source-Based">Source-Based</option>
+
+    <option value="Error Identification">
+        Error Identification
+    </option>
+
+    <option value="Correct the Solution">
+        Correct the Solution
+    </option>
+
+    <option value="Compare & Explain">
+        Compare & Explain
+    </option>
+
+    <option value="Justify Your Answer">
+        Justify Your Answer
+    </option>
+
+    <option value="Prove / Show That">
+        Prove / Show That
+    </option>
+
+    <option value="Construction-Based">
+        Construction-Based
+    </option>
+
+    <option value="Practical / Application-Based">
+        Practical / Application-Based
+    </option>
+
+    <option value="Open-Ended">
+        Open-Ended
+    </option>
+
+    <option value="HOTS">
+        Higher-Order Thinking (HOTS)
+    </option>
+
+</select>
+
+<small style="
+    display:block;
+    margin-top:6px;
+    color:#666;
+">
+    Hold Ctrl (Windows) or Command (Mac) to select multiple types.
+</small>
+
 <label>Select PDF</label>
 
 <input
@@ -165,6 +349,23 @@ id="uploadBtn">
 Generate Question Bank
 
 </button>
+
+<div id="selectionSummary" style="
+    margin-top:20px;
+    padding:15px;
+    background:#f8f9fa;
+    border:1px solid #ddd;
+    border-radius:8px;
+    display:none;
+">
+
+    <strong>Question Paper Configuration</strong>
+
+    <div id="selectionSummaryText"
+         style="margin-top:8px; line-height:1.7;">
+    </div>
+
+</div>
 
 <div id="status"></div>
 
@@ -193,6 +394,52 @@ if (!token) {
 }
 
 document.getElementById("uploadBtn").onclick = async () => {
+
+    const questionLevel =
+    document.getElementById("questionLevel").value;
+
+const totalMarks =
+    document.getElementById("totalMarks").value;
+
+const questionMode =
+    document.getElementById("questionMode").value;
+
+const selectedQuestionTypes =
+    Array.from(
+        document.getElementById("questionTypes").selectedOptions
+    ).map(option => option.value);
+
+const summary =
+    document.getElementById("selectionSummary");
+
+const summaryText =
+    document.getElementById("selectionSummaryText");
+
+summary.style.display = "block";
+
+const durationMap = {
+    "10": "20 Minutes",
+    "25": "40 Minutes",
+    "50": "60 Minutes",
+    "80": "90 Minutes",
+    "100": "120 Minutes"
+};
+
+const duration =
+    durationMap[totalMarks] || "40 Minutes";
+
+document.getElementById("duration").value =
+    duration;
+
+summaryText.innerHTML = `
+    <b>Level:</b> ${questionLevel}<br>
+    <b>Total Marks:</b> ${totalMarks}<br>
+    <b>Mode:</b> ${questionMode}<br>
+    <b>Question Types:</b>
+    ${selectedQuestionTypes.length
+        ? selectedQuestionTypes.join(", ")
+        : "None selected"}
+`;
 
     const status = document.getElementById("status");
 
@@ -232,6 +479,43 @@ document.getElementById("uploadBtn").onclick = async () => {
         "chapter",
         document.getElementById("chapter").value
     );
+
+    formData.append(
+    "questionLevel",
+    document.getElementById("questionLevel").value
+);
+
+formData.append(
+    "totalMarks",
+    document.getElementById("totalMarks").value
+);
+
+formData.append(
+    "questionMode",
+    document.getElementById("questionMode").value
+);
+
+formData.append(
+    "duration",
+    duration
+);
+
+
+    if (selectedQuestionTypes.length === 0) {
+
+    status.style.color = "red";
+
+    status.innerHTML =
+        "Please select at least one Question Type.";
+
+    return;
+
+}
+
+formData.append(
+    "questionTypes",
+    JSON.stringify(selectedQuestionTypes)
+);
 
     /*
       Replace this with the logged-in teacher ID later.

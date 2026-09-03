@@ -86,7 +86,7 @@ paperInfo.innerHTML = `
 
         <span class="label">Duration</span>
 
-        <span class="value">: 40 Minutes</span>
+        <span class="value">: ${paper.duration || "40 Minutes"}</span>
 
     </div>
 
@@ -114,23 +114,47 @@ paperInfo.innerHTML = `
 
 <div class="paperQuestion">
 
-<div class="questionNo">
+    <div class="questionNo">
 
-Q${index+1}
+        Q${index + 1}
 
-<span class="questionMarks">
+        <span class="questionMarks">
 
-(${q.marks} Marks)
+            (${q.marks} Marks)
 
-</span>
+        </span>
 
-</div>
+    </div>
 
-<div class="questionText">
+    <div class="questionText">
 
-${q.question}
+        ${q.question}
 
-</div>
+    </div>
+
+    ${
+        q.type === "MCQ" &&
+        Array.isArray(q.options) &&
+        q.options.length > 0
+        ?
+        `
+        <div class="mcqOptions">
+
+            ${q.options.map((option, optionIndex) => `
+
+                <div class="mcqOption">
+
+                    ${String.fromCharCode(65 + optionIndex)}. ${option}
+
+                </div>
+
+            `).join("")}
+
+        </div>
+        `
+        :
+        ""
+    }
 
 </div>
 

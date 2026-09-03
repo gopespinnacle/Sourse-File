@@ -144,11 +144,63 @@ style="width:100%;height:90px;">${q.answer || ""}</textarea>
 
 <option value="MCQ" ${q.type==="MCQ"?"selected":""}>MCQ</option>
 
+<option value="Fill in the Blanks" ${q.type==="Fill in the Blanks"?"selected":""}>Fill in the Blanks</option>
+
+<option value="True / False" ${q.type==="True / False"?"selected":""}>True / False</option>
+
+<option value="Match the Following" ${q.type==="Match the Following"?"selected":""}>Match the Following</option>
+
+<option value="One Word Answer" ${q.type==="One Word Answer"?"selected":""}>One Word Answer</option>
+
+<option value="Very Short Answer" ${q.type==="Very Short Answer"?"selected":""}>Very Short Answer</option>
+
 <option value="Short Answer" ${q.type==="Short Answer"?"selected":""}>Short Answer</option>
 
 <option value="Long Answer" ${q.type==="Long Answer"?"selected":""}>Long Answer</option>
 
-<option value="True / False" ${q.type==="True / False"?"selected":""}>True / False</option>
+<option value="Problem Solving" ${q.type==="Problem Solving"?"selected":""}>Problem Solving</option>
+
+<option value="Word Problems" ${q.type==="Word Problems"?"selected":""}>Word Problems</option>
+
+<option value="Case Study" ${q.type==="Case Study"?"selected":""}>Case Study</option>
+
+<option value="Competency-Based" ${q.type==="Competency-Based"?"selected":""}>Competency-Based</option>
+
+<option value="Assertion & Reason" ${q.type==="Assertion & Reason"?"selected":""}>Assertion & Reason</option>
+
+<option value="Statement-Based" ${q.type==="Statement-Based"?"selected":""}>Statement-Based</option>
+
+<option value="Reasoning / Logical Thinking" ${q.type==="Reasoning / Logical Thinking"?"selected":""}>Reasoning / Logical Thinking</option>
+
+<option value="Odd One Out" ${q.type==="Odd One Out"?"selected":""}>Odd One Out</option>
+
+<option value="Pattern-Based" ${q.type==="Pattern-Based"?"selected":""}>Pattern-Based</option>
+
+<option value="Sequence Questions" ${q.type==="Sequence Questions"?"selected":""}>Sequence Questions</option>
+
+<option value="Data Interpretation" ${q.type==="Data Interpretation"?"selected":""}>Data Interpretation</option>
+
+<option value="Diagram-Based" ${q.type==="Diagram-Based"?"selected":""}>Diagram-Based</option>
+
+<option value="Source-Based" ${q.type==="Source-Based"?"selected":""}>Source-Based</option>
+
+<option value="Error Identification" ${q.type==="Error Identification"?"selected":""}>Error Identification</option>
+
+<option value="Correct the Solution" ${q.type==="Correct the Solution"?"selected":""}>Correct the Solution</option>
+
+<option value="Compare & Explain" ${q.type==="Compare & Explain"?"selected":""}>Compare & Explain</option>
+
+<option value="Justify Your Answer" ${q.type==="Justify Your Answer"?"selected":""}>Justify Your Answer</option>
+
+<option value="Prove / Show That" ${q.type==="Prove / Show That"?"selected":""}>Prove / Show That</option>
+
+<option value="Construction-Based" ${q.type==="Construction-Based"?"selected":""}>Construction-Based</option>
+
+<option value="Practical / Application-Based" ${q.type==="Practical / Application-Based"?"selected":""}>Practical / Application-Based</option>
+
+<option value="Open-Ended" ${q.type==="Open-Ended"?"selected":""}>Open-Ended</option>
+
+<option value="HOTS" ${q.type==="HOTS"?"selected":""}>Higher-Order Thinking (HOTS)</option>
 
 </select>
 
@@ -219,26 +271,34 @@ if(saveBtn){
 
     cards.forEach(card=>{
 
-        questions.push({
+        const questionIndex =
+    Array.from(cards).indexOf(card);
 
-            question:
-            card.querySelector(".questionText").value,
+const originalQuestion =
+    window.currentQuestionBank.questions[questionIndex];
 
-            answer:
-            card.querySelector(".answerText").value,
+questions.push({
 
-            type:
-            card.querySelector(".questionType").value,
+    ...originalQuestion,
 
-            marks:
-            Number(
-                card.querySelector(".marks").value
-            ),
+    question:
+    card.querySelector(".questionText").value,
 
-            difficulty:
-            card.querySelector(".difficulty").value
+    answer:
+    card.querySelector(".answerText").value,
 
-        });
+    type:
+    card.querySelector(".questionType").value,
+
+    marks:
+    Number(
+        card.querySelector(".marks").value
+    ),
+
+    difficulty:
+    card.querySelector(".difficulty").value
+
+});
 
     });
 
@@ -318,17 +378,19 @@ function addQuestion(){
 
     const newQuestion={
 
-        question:"",
+    question:"",
 
-        answer:"",
+    answer:"",
 
-        type:"MCQ",
+    type:"MCQ",
 
-        marks:1,
+    options:[],
 
-        difficulty:"Easy"
+    marks:1,
 
-    };
+    difficulty:"Easy"
+
+};
 
     window.currentQuestionBank.questions.push(
         newQuestion
