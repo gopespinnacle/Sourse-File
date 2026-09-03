@@ -3745,8 +3745,56 @@ catch (error) {
 
 }
 
+        }
+);
+
+
+/* =====================================================
+   MOBILE AUDIO UNLOCK
+   ===================================================== */
+
+document.addEventListener(
+    "click",
+    async () => {
+
+        const remoteVideos =
+            document.querySelectorAll(
+                "video.participant-video"
+            );
+
+        for (
+            const video of remoteVideos
+        ) {
+
+            try {
+
+                video.muted = false;
+
+                await video.play();
+
+                console.log(
+                    "REMOTE AUDIO UNLOCKED"
+                );
+
+            }
+
+            catch (error) {
+
+                console.warn(
+                    "REMOTE AUDIO UNLOCK FAILED:",
+                    error
+                );
+
+            }
+
+        }
+
+    },
+    {
+        once: true
     }
 );
+
 
 /* =====================================================
    PARTICIPANT RECONNECTED
