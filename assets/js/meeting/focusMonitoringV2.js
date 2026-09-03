@@ -1062,9 +1062,17 @@ function showCenterAlert(
     -------------------------------------------------------
     */
 
-    document.body.appendChild(
-        alert
-    );
+    const pip = document.getElementById("participantGrid");
+
+if (pip && pip.classList.contains("annotation-active")) {
+    pip.appendChild(alert);
+
+    alert.style.position = "absolute";
+    alert.style.inset = "10px";
+    alert.style.zIndex = "1000000";
+} else {
+    document.body.appendChild(alert);
+}
 
     const okButton =
     alert.querySelector(
