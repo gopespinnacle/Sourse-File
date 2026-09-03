@@ -3490,8 +3490,7 @@ document.addEventListener(
 
 
            video.muted =
-    false;
-
+    true;
 
             video.style.width =
                 "100%";
@@ -3573,7 +3572,7 @@ document.addEventListener(
         */
 
         video.muted =
-    false;
+    true;
 
 
         /*
@@ -3601,44 +3600,13 @@ document.addEventListener(
         */
 
         video.onloadedmetadata =
-            async () => {
+    async () => {
 
-                console.log(
-                    "REMOTE VIDEO METADATA READY:",
-                    socketId
-                );
+        console.log(
+            "REMOTE VIDEO METADATA READY:",
+            socketId
+        );
 
-
-                try {
-
-                    await video.play();
-
-
-                    console.log(
-                        "REMOTE VIDEO PLAYING:",
-                        socketId
-                    );
-
-                }
-
-                catch (error) {
-
-                    console.warn(
-                        "REMOTE VIDEO PLAY FAILED:",
-                        socketId,
-                        error
-                    );
-
-                }
-
-            };
-
-
-        /*
-        =================================================
-        ATTEMPT IMMEDIATE PLAY
-        =================================================
-        */
 
         try {
 
@@ -3646,7 +3614,7 @@ document.addEventListener(
 
 
             console.log(
-                "REMOTE VIDEO ATTACHED:",
+                "REMOTE VIDEO PLAYING:",
                 socketId
             );
 
@@ -3655,12 +3623,127 @@ document.addEventListener(
         catch (error) {
 
             console.warn(
-                "REMOTE VIDEO INITIAL PLAY FAILED:",
+                "REMOTE VIDEO PLAY FAILED:",
                 socketId,
                 error
             );
 
+            /*
+            =================================================
+            RETRY AFTER BROWSER BECOMES ACTIVE
+            =================================================
+            */
+
+            const retryPlay =
+                async () => {
+
+                    try {
+
+                        await video.play();
+
+                        console.log(
+                            "REMOTE VIDEO ACTIVE RETRY SUCCESS:",
+                            socketId
+                        );
+
+                    }
+
+                    catch (retryError) {
+
+                        console.warn(
+                            "REMOTE VIDEO ACTIVE RETRY FAILED:",
+                            socketId,
+                            retryError
+                        );
+
+                    }
+
+                };
+
+
+            document.addEventListener(
+                "visibilitychange",
+                () => {
+
+                    if (
+                        document.visibilityState ===
+                        "visible"
+                    ) {
+
+                        retryPlay();
+
+                    }
+
+                },
+                { once: true }
+            );
+
         }
+
+    };
+
+
+        /*
+=================================================
+ATTEMPT IMMEDIATE PLAY
+=================================================
+*/
+
+try {
+
+    await video.play();
+
+    console.log(
+        "REMOTE VIDEO ATTACHED:",
+        socketId
+    );
+
+}
+
+catch (error) {
+
+    console.warn(
+        "REMOTE VIDEO INITIAL PLAY FAILED:",
+        socketId,
+        error
+    );
+
+
+    /*
+    =================================================
+    MOBILE PLAY RETRY
+    =================================================
+    */
+
+    setTimeout(
+        async () => {
+
+            try {
+
+                await video.play();
+
+                console.log(
+                    "REMOTE VIDEO RETRY PLAY SUCCESS:",
+                    socketId
+                );
+
+            }
+
+            catch (retryError) {
+
+                console.warn(
+                    "REMOTE VIDEO RETRY PLAY FAILED:",
+                    socketId,
+                    retryError
+                );
+
+            }
+
+        },
+        1000
+    );
+
+}
 
     }
 );
@@ -4233,38 +4316,56 @@ socket.on(
 
 
         /* =====================================================
-           RECONNECTED
-           ===================================================== */
+   RECONNECTED
+   ===================================================== */
 
-        socket.io.on(
-            "reconnect",
-            (attempt) => {
+socket.io.on(
+    "reconnect",
+    async (attempt) => {
 
-                console.log(
-                    "SOCKET RECONNECTED:",
-                    attempt
-                );
-
-
-                document.getElementById(
-                    "connectionDot"
-                ).style.background =
-                    "#22c55e";
-
-
-                document.getElementById(
-                    "connectionText"
-                ).textContent =
-                    "Connected";
-
-
-                document.getElementById(
-                    "systemStatus"
-                ).textContent =
-                    "Connection restored";
-
-            }
+        console.log(
+            "SOCKET RECONNECTED:",
+            attempt
         );
+
+
+        document.getElementById(
+            "connectionDot"
+        ).style.background =
+            "#22c55e";
+
+
+        document.getElementById(
+            "connectionText"
+        ).textContent =
+            "Connected";
+
+
+        document.getElementById(
+            "systemStatus"
+        ).textContent =
+            "Connection restored";
+
+
+        /*
+        =================================================
+        REJOIN MEETING ROOM
+        =================================================
+        */
+
+        console.log(
+            "RECONNECT: REJOINING MEETING ROOM"
+        );
+
+
+        window.MeetingConfig.joined =
+            false;
+
+
+        joinMeetingRoom();
+
+    }
+);
        
    
 

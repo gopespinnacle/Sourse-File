@@ -17,32 +17,84 @@ window.MeetingWebRTC = (() => {
 
     const rtcConfig = {
 
-        iceServers: [
+    iceServers: [
 
-            {
-                urls: [
-                    "stun:stun.l.google.com:19302",
-                    "stun:stun1.l.google.com:19302"
-                ]
-            },
+        /*
+        =====================================================
+        GOOGLE STUN
+        =====================================================
+        */
 
-            {
-                urls: "turn:openrelay.metered.ca:80",
-                username: "openrelayproject",
-                credential: "openrelayproject"
-            },
+        {
+            urls: [
+                "stun:stun.l.google.com:19302",
+                "stun:stun1.l.google.com:19302"
+            ]
+        },
 
-            {
-                urls: "turn:openrelay.metered.ca:443",
-                username: "openrelayproject",
-                credential: "openrelayproject"
-            }
 
-        ],
+        /*
+        =====================================================
+        TURN UDP
+        =====================================================
+        */
 
-        iceCandidatePoolSize: 10
+        {
+            urls: "turn:openrelay.metered.ca:80",
+            username: "openrelayproject",
+            credential: "openrelayproject"
+        },
 
-    };
+
+        /*
+        =====================================================
+        TURN TCP
+        =====================================================
+        */
+
+        {
+            urls: "turn:openrelay.metered.ca:80?transport=tcp",
+            username: "openrelayproject",
+            credential: "openrelayproject"
+        },
+
+
+        /*
+        =====================================================
+        TURN UDP - PORT 443
+        =====================================================
+        */
+
+        {
+            urls: "turn:openrelay.metered.ca:443",
+            username: "openrelayproject",
+            credential: "openrelayproject"
+        },
+
+
+        /*
+        =====================================================
+        TURN TLS / TCP - PORT 443
+        =====================================================
+        */
+
+        {
+            urls: "turns:openrelay.metered.ca:443?transport=tcp",
+            username: "openrelayproject",
+            credential: "openrelayproject"
+        }
+
+    ],
+
+    /*
+    =====================================================
+    ICE CANDIDATE POOL
+    =====================================================
+    */
+
+    iceCandidatePoolSize: 10
+
+};
 
     /*
     ===========================================================
@@ -66,6 +118,8 @@ OFFER STATE
 */
 
 let makingOffer = {};
+
+let receivingOffer = {};
 
 let pendingIceCandidates = {};
 
@@ -468,21 +522,201 @@ function setLocalStream(stream) {
 
         peer.onconnectionstatechange = () => {
 
-            MeetingUtils.log(
+    const state =
+        peer.connectionState;
 
-                "Connection State",
 
-                peer.connectionState
+    MeetingUtils.log(
+        "Connection State",
+        state
+    );
 
-            );
 
-            if (peer.connectionState === "failed") {
+    console.log(
+        "WEBRTC CONNECTION STATE:",
+        remoteSocketId,
+        state
+    );
 
-                peer.restartIce();
+    
+    /*
+    =================================================
+    DETAILED WEBRTC CONNECTION DIAGNOSTICS
+    =================================================
+    */
 
-            }
+    console.log(
+        "WEBRTC CONNECTION DETAILS:",
+        {
+            remoteSocketId:
+                remoteSocketId,
 
-        };
+            connectionState:
+                peer.connectionState,
+
+            iceConnectionState:
+                peer.iceConnectionState,
+
+            iceGatheringState:
+                peer.iceGatheringState,
+
+            signalingState:
+                peer.signalingState
+        }
+    );
+
+
+
+    /*
+    =====================================================
+    CONNECTED
+    =====================================================
+    */
+
+    if (
+        state === "connected"
+    ) {
+
+        console.log(
+            "WEBRTC CONNECTION ESTABLISHED:",
+            remoteSocketId
+        );
+
+        return;
+
+    }
+
+
+    /*
+    =====================================================
+    DISCONNECTED
+    =====================================================
+
+    Mobile networks can temporarily disconnect.
+
+    Give the connection a short opportunity to recover
+    before restarting ICE.
+    =====================================================
+    */
+
+    if (
+        state === "disconnected"
+    ) {
+
+        console.warn(
+            "WEBRTC TEMPORARILY DISCONNECTED:",
+            remoteSocketId
+        );
+
+
+        setTimeout(
+            () => {
+
+                /*
+                -----------------------------------------
+                CHECK CURRENT STATE AGAIN
+                -----------------------------------------
+                */
+
+                if (
+                    !peers[remoteSocketId]
+                ) {
+
+                    return;
+
+                }
+
+
+                const currentState =
+                    peers[
+                        remoteSocketId
+                    ].connectionState;
+
+
+                console.log(
+                    "WEBRTC DISCONNECT RECHECK:",
+                    remoteSocketId,
+                    currentState
+                );
+
+
+                /*
+                -----------------------------------------
+                ONLY RESTART IF STILL DISCONNECTED
+                -----------------------------------------
+                */
+
+                if (
+                    currentState ===
+                    "disconnected"
+                ) {
+
+                    console.warn(
+                        "WEBRTC RESTARTING ICE AFTER DISCONNECT:",
+                        remoteSocketId
+                    );
+
+
+                    restartIce(
+                        remoteSocketId
+                    );
+
+                }
+
+            },
+            3000
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+    =====================================================
+    FAILED
+    =====================================================
+    */
+
+    if (
+        state === "failed"
+    ) {
+
+        console.warn(
+            "WEBRTC CONNECTION FAILED:",
+            remoteSocketId
+        );
+
+
+        restartIce(
+            remoteSocketId
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+    =====================================================
+    CLOSED
+    =====================================================
+    */
+
+    if (
+        state === "closed"
+    ) {
+
+        console.warn(
+            "WEBRTC CONNECTION CLOSED:",
+            remoteSocketId
+        );
+
+    }
+
+};
 
         return peer;
 
@@ -538,19 +772,19 @@ function setLocalStream(stream) {
         =====================================================
         */
 
-        if (
-            peer.signalingState !== "stable"
-        ) {
+            if (
+        peer.signalingState !== "stable"
+    ) {
 
-            console.log(
-                "WEBRTC PEER NOT STABLE:",
-                remoteSocketId,
-                peer.signalingState
-            );
+        console.log(
+            "WEBRTC OFFER SKIPPED - PEER NOT STABLE:",
+            remoteSocketId,
+            peer.signalingState
+        );
 
-            return;
+        return;
 
-        }
+    }
 
 
         /*
@@ -633,6 +867,13 @@ function setLocalStream(stream) {
 
     async function receiveOffer(remoteSocketId, offer) {
 
+            if (receivingOffer[remoteSocketId]) {
+        console.log("⚠️ Already receiving offer from:", remoteSocketId);
+        return;
+    }
+
+    receivingOffer[remoteSocketId] = true;
+
     /*
     ===========================================================
     RECEIVE OFFER
@@ -706,12 +947,14 @@ function setLocalStream(stream) {
 
 
         }
-        catch (error) {
+                catch (error) {
 
             console.error(
                 "WEBRTC FAILED TO START LOCAL MEDIA:",
                 error
             );
+
+            receivingOffer[remoteSocketId] = false;
 
             throw error;
 
@@ -728,11 +971,13 @@ function setLocalStream(stream) {
 
     if (!localStream) {
 
-        throw new Error(
-            "Cannot answer WebRTC offer: local media stream is unavailable."
-        );
+    receivingOffer[remoteSocketId] = false;
 
-    }
+    throw new Error(
+        "Cannot answer WebRTC offer: local media stream is unavailable."
+    );
+
+}
 
 
     console.log(
@@ -893,14 +1138,16 @@ if (
     );
 
 
-    console.log(
+        console.log(
         "WEBRTC ANSWER SENT"
     );
 
 
     console.log(
-        "=========================================="
-    );
+    "=========================================="
+);
+
+receivingOffer[remoteSocketId] = false;
 
 }
 
@@ -1110,6 +1357,20 @@ async function receiveAnswer(
     const peer =
         peers[remoteSocketId];
 
+            if (
+        peer &&
+        peer.connectionState === "closed"
+    ) {
+
+        console.log(
+            "WEBRTC ICE IGNORED - PEER CLOSED:",
+            remoteSocketId
+        );
+
+        return;
+
+    }
+
 
     /*
     =========================================================
@@ -1259,6 +1520,8 @@ async function receiveAnswer(
 
 delete makingOffer[remoteSocketId];
 
+delete receivingOffer[remoteSocketId];
+
         document.dispatchEvent(
 
             new CustomEvent("meeting:participantLeft",{
@@ -1367,15 +1630,76 @@ delete makingOffer[remoteSocketId];
 
         const peer = peers[remoteSocketId];
 
-        if(!peer) return;
+if (!peer) return;
 
-        try{
+if (
+    peer.connectionState === "closed"
+) {
 
-            const offer = await peer.createOffer({
+    console.log(
+        "WEBRTC ICE RESTART SKIPPED - PEER CLOSED:",
+        remoteSocketId
+    );
 
-                iceRestart:true
+    return;
 
-            });
+}
+
+if (
+    peer.connectionState !== "disconnected" &&
+    peer.connectionState !== "failed"
+) {
+
+    console.log(
+        "WEBRTC ICE RESTART SKIPPED - CONNECTION STATE:",
+        remoteSocketId,
+        peer.connectionState
+    );
+
+    return;
+
+}
+
+                if (makingOffer[remoteSocketId]) {
+
+                    
+
+            console.log(
+                "WEBRTC ICE RESTART SKIPPED - OFFER ALREADY IN PROGRESS:",
+                remoteSocketId
+            );
+
+            return;
+
+        }
+
+        makingOffer[remoteSocketId] = true;
+
+try{
+
+    if (
+        peer.signalingState !== "stable"
+    ) {
+
+        console.log(
+            "WEBRTC ICE RESTART SKIPPED - SIGNALING NOT STABLE:",
+            remoteSocketId,
+            peer.signalingState
+        );
+
+        return;
+
+    }
+
+    const offer = await peer.createOffer({
+
+    iceRestart: true,
+
+    offerToReceiveAudio: true,
+
+    offerToReceiveVideo: true
+
+});
 
             await peer.setLocalDescription(offer);
 
@@ -1387,9 +1711,15 @@ delete makingOffer[remoteSocketId];
 
             });
 
-        }catch(err){
+                }catch(err){
 
             console.error(err);
+
+        }
+
+        finally {
+
+            makingOffer[remoteSocketId] = false;
 
         }
 
@@ -1572,6 +1902,12 @@ async function stopScreenShare(){
     function destroy(){
 
         removeAllPeers();
+
+                makingOffer = {};
+
+        receivingOffer = {};
+
+        pendingIceCandidates = {};
 
         if(localStream){
 

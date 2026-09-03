@@ -18,7 +18,7 @@ window.MeetingSocket = (() => {
 
         socket = io(serverUrl, {
 
-            transports: ["websocket"],
+            transports: ["polling", "websocket"],
 
             reconnection: true,
 
