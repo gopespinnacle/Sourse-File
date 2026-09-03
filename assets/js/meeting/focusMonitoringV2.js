@@ -1062,16 +1062,47 @@ function showCenterAlert(
     -------------------------------------------------------
     */
 
-    const pip = document.getElementById("participantGrid");
+    const desktopPip =
+    window.DesktopScreenSharePip &&
+    window.DesktopScreenSharePip.pipWindow;
 
-if (pip && pip.classList.contains("annotation-active")) {
-    pip.appendChild(alert);
+if (
+    desktopPip &&
+    !desktopPip.closed &&
+    window.DesktopScreenSharePip.root
+) {
 
-    alert.style.position = "absolute";
-    alert.style.inset = "10px";
-    alert.style.zIndex = "1000000";
+    const pipDoc =
+        desktopPip.document;
+
+    const pipRoot =
+        pipDoc.getElementById(
+            "desktopScreenSharePip"
+        );
+
+    if (pipRoot) {
+
+        pipRoot.appendChild(alert);
+
+        alert.style.position =
+            "absolute";
+
+        alert.style.inset =
+            "10px";
+
+        alert.style.zIndex =
+            "1000000";
+
+    } else {
+
+        document.body.appendChild(alert);
+
+    }
+
 } else {
+
     document.body.appendChild(alert);
+
 }
 
     const okButton =
