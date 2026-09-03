@@ -16,9 +16,9 @@ window.MeetingSocket = (() => {
 
         if (socket) return socket;
 
-        socket = io(serverUrl, {
+        socket = window.io(serverUrl, {
 
-            transports: ["polling", "websocket"],
+            transports: ["polling"],
 
             reconnection: true,
 
