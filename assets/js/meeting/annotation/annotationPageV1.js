@@ -854,43 +854,19 @@ if (!materialDetails) {
         */
 
         const payload = {
-
-            teacher:
-                teacherId,
-
-            teacherName:
-                teacherName,
-
-            className:
-                className,
-
-            subject:
-                subject,
-
-            chapterNo:
-                materialDetails.chapterNo,
-
-            chapterName:
-                materialDetails.chapterName,
-
-            topic:
-                materialDetails.topic,
-
-            description:
-                materialDetails.description ||
-                "",
-
-            materialDate:
-                materialDetails.materialDate ||
-                new Date().toISOString(),
-
-            room:
-                room,
-
-            pages:
-                pages
-
-        };
+    teacher: teacherId,
+    teacherName: teacherName,
+    className: className,
+    subject: subject,
+    chapterNo: materialDetails.chapterNo,
+    chapterName: materialDetails.chapterName,
+    topic: materialDetails.topic,
+    description: materialDetails.description || "",
+    materialDate: materialDetails.materialDate || new Date().toISOString(),
+    room: room,
+    periodId: periodId,
+    pages: pages
+};
 
 
         /*
