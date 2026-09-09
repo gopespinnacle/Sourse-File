@@ -16,20 +16,31 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 
 <style>
 
-.fee-page {
+.main-content.fee-page {
     padding: 25px;
     display: block !important;
+    flex-direction: column !important;
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
+    float: none !important;
+    position: relative;
+}
+.main-content.fee-page > .fee-header,
+.main-content.fee-page > .fee-summary,
+.main-content.fee-page > .fee-table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    float: none !important;
 }
 .fee-header {
     display: flex !important;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column !important;
+    align-items: stretch !important;
     width: 100%;
     margin-bottom: 20px;
-    gap: 20px;
-    flex-wrap: wrap;
+    gap: 15px;
     box-sizing: border-box;
 }
 
@@ -46,12 +57,13 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 }
 
 .fee-controls {
-    display: flex;
+    display: flex !important;
     align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
+    justify-content: flex-start;
+    gap: 12px;
     flex-wrap: wrap;
-    flex: 1;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .fee-control-input,
