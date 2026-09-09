@@ -218,6 +218,7 @@ window.location.href = page;
 <table id="teacherTable">
 <thead>
 <tr>
+<th>Teacher ID</th>
 <th>Name</th>
 <th>Subject</th>
 <th>ECA</th>          <!-- ✅ ADD -->
@@ -458,8 +459,9 @@ function renderTeachers(){
 
         tbody.innerHTML += `
         <tr>
-            <td>${t.name}</td>
-            <td>${t.subject ? t.subject.join(", ") : "-"}</td>
+    <td>${t.teacherId || "-"}</td>
+    <td>${t.name}</td>
+    <td>${t.subject ? t.subject.join(", ") : "-"}</td>
             <td>${t.eca ? t.eca.join(", ") : "-"}</td>         <!-- ✅ ADD -->
 
 <td>${t.language ? t.language.join(", ") : "-"}</td> <!-- ✅ ADD -->
