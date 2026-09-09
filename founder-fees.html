@@ -38,6 +38,43 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
+}
+
+.fee-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.fee-control-input,
+.fee-control-select {
+    padding: 9px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+    background: white;
+}
+
+.fee-control-input {
+    width: 180px;
+}
+
+.fee-control-select {
+    min-width: 220px;
+}
+
+.fee-control-input:focus,
+.fee-control-select:focus {
+    outline: none;
+    border-color: #12395f;
+}
+
+.fee-control-label {
+    font-weight: 600;
+    color: #333;
 }
 
 .month-filter label {
@@ -243,15 +280,97 @@ fetch("sidebar.html")
         </h1>
 
 
-        <div class="month-filter">
+        <div class="fee-controls">
 
-            <label for="feeMonth">
-                Month:
-            </label>
+    <!-- MONTH -->
+    <div class="month-filter">
 
-            <select id="feeMonth">
+        <label for="feeMonth">
+            Month:
+        </label>
 
-            </select>
+        <select id="feeMonth" class="fee-control-select">
+        </select>
+
+    </div>
+
+
+    <!-- NAME SEARCH -->
+    <div class="month-filter">
+
+        <label
+            for="studentNameFilter"
+            class="fee-control-label"
+        >
+            Name:
+        </label>
+
+        <input
+            type="text"
+            id="studentNameFilter"
+            class="fee-control-input"
+            placeholder="Search student name..."
+        >
+
+    </div>
+
+
+    <!-- STUDENT ID SEARCH -->
+    <div class="month-filter">
+
+        <label
+            for="studentIdFilter"
+            class="fee-control-label"
+        >
+            Student ID:
+        </label>
+
+        <input
+            type="text"
+            id="studentIdFilter"
+            class="fee-control-input"
+            placeholder="Search GPA-0001..."
+        >
+
+    </div>
+
+
+    <!-- SORT -->
+    <div class="month-filter">
+
+        <label
+            for="studentSort"
+            class="fee-control-label"
+        >
+            Sort:
+        </label>
+
+        <select
+            id="studentSort"
+            class="fee-control-select"
+        >
+
+            <option value="id-asc">
+                Student ID: GPA-0001 → GPA-∞
+            </option>
+
+            <option value="id-desc">
+                Student ID: GPA-∞ → GPA-0001
+            </option>
+
+            <option value="name-asc">
+                Name: A → Z
+            </option>
+
+            <option value="name-desc">
+                Name: Z → A
+            </option>
+
+        </select>
+
+    </div>
+
+</div>
 
         </div>
 
@@ -428,6 +547,7 @@ fetch("sidebar.html")
 
 const API_BASE =
 "https://academy-backend-eatl.onrender.com";
+let currentFeeReport = [];
 
 
 const monthNames = [
@@ -752,94 +872,11 @@ async function saveFeeRecord(studentId, actualFee) {
 
 function renderFeeReport(data){
 
-    const tbody =
-        document.getElementById(
-            "feeTableBody"
-        );
+    currentFeeReport = data.report || [];
 
-    tbody.innerHTML = "";
-
-
-    data.report.forEach(student => {
-
-        const row =
-            document.createElement("tr");
-
-
-        row.innerHTML = `
-
-    <td>
-        ${student.studentId || "-"}
-    </td>
-
-    <td>
-        ${student.studentName || "-"}
-    </td>
-
-    <td>
-        ${formatCurrency(student.actualFee)}
-    </td>
-
-    <td>
-
-        <input
-            type="number"
-            min="0"
-            step="1"
-            class="fee-input"
-            id="paid-${student.studentId}"
-            value="${student.feePaid || 0}"
-        >
-
-    </td>
-
-    <td>
-
-        <input
-            type="number"
-            min="0"
-            step="1"
-            class="fee-input"
-            id="teacher-${student.studentId}"
-            value="${student.teacherFee || 0}"
-        >
-
-    </td>
-
-    <td>
-
-        <span
-            id="academy-${student.studentId}"
-        >
-            ${formatCurrency(student.academyFee)}
-        </span>
-
-    </td>
-
-    <td>
-
-        <button
-            class="save-fee-btn"
-            onclick="saveFeeRecord(
-                '${student.studentId}',
-                ${student.actualFee}
-            )"
-        >
-            Save
-        </button>
-
-    </td>
-
-`;
-
-
-        tbody.appendChild(row);
-
-    });
-
+    renderFilteredFeeReport();
 
     // ================= TOTALS =================
-
 
     const totals =
         data.totals;
@@ -869,9 +906,7 @@ function renderFeeReport(data){
         formatCurrency(totals.academyFee);
 
 
-
     // TABLE TOTALS
-
 
     document.getElementById(
         "tableTotalActual"
@@ -898,13 +933,301 @@ function renderFeeReport(data){
 
 }
 
+function renderFilteredFeeReport(){
 
+    const tbody =
+        document.getElementById(
+            "feeTableBody"
+        );
+
+    tbody.innerHTML = "";
+
+
+    // ================= FILTER VALUES =================
+
+    const nameFilter =
+        document.getElementById(
+            "studentNameFilter"
+        ).value
+        .trim()
+        .toLowerCase();
+
+
+    const idFilter =
+        document.getElementById(
+            "studentIdFilter"
+        ).value
+        .trim()
+        .toLowerCase();
+
+
+    const sortType =
+        document.getElementById(
+            "studentSort"
+        ).value;
+
+
+    // ================= FILTER =================
+
+    let filteredStudents =
+        currentFeeReport.filter(student => {
+
+            const studentName =
+                String(
+                    student.studentName || ""
+                ).toLowerCase();
+
+
+            const studentId =
+                String(
+                    student.studentId || ""
+                ).toLowerCase();
+
+
+            const nameMatch =
+                studentName.includes(
+                    nameFilter
+                );
+
+
+            const idMatch =
+                studentId.includes(
+                    idFilter
+                );
+
+
+            return nameMatch && idMatch;
+
+        });
+
+
+    // ================= SORT =================
+
+    filteredStudents.sort((a, b) => {
+
+        const nameA =
+            String(
+                a.studentName || ""
+            ).toLowerCase();
+
+        const nameB =
+            String(
+                b.studentName || ""
+            ).toLowerCase();
+
+
+        const idA =
+            String(
+                a.studentId || ""
+            ).toUpperCase();
+
+        const idB =
+            String(
+                b.studentId || ""
+            ).toUpperCase();
+
+
+        if(sortType === "name-asc"){
+
+            return nameA.localeCompare(
+                nameB,
+                undefined,
+                {
+                    sensitivity: "base"
+                }
+            );
+
+        }
+
+
+        if(sortType === "name-desc"){
+
+            return nameB.localeCompare(
+                nameA,
+                undefined,
+                {
+                    sensitivity: "base"
+                }
+            );
+
+        }
+
+
+        // Extract number from GPA-0001
+
+        const numberA =
+            parseInt(
+                idA.replace(/\D/g, ""),
+                10
+            ) || 0;
+
+
+        const numberB =
+            parseInt(
+                idB.replace(/\D/g, ""),
+                10
+            ) || 0;
+
+
+        if(sortType === "id-desc"){
+
+            return numberB - numberA;
+
+        }
+
+
+        // Default:
+        // GPA-0001 → GPA-∞
+
+        return numberA - numberB;
+
+    });
+
+
+    // ================= NO RESULTS =================
+
+    if(filteredStudents.length === 0){
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="7"
+                    class="loading-row"
+                >
+                    No students found.
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    // ================= RENDER =================
+
+    filteredStudents.forEach(student => {
+
+        const row =
+            document.createElement("tr");
+
+
+        row.innerHTML = `
+
+            <td>
+                ${student.studentId || "-"}
+            </td>
+
+            <td>
+                ${student.studentName || "-"}
+            </td>
+
+            <td>
+                ${formatCurrency(
+                    student.actualFee
+                )}
+            </td>
+
+            <td>
+
+                <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    class="fee-input"
+                    id="paid-${student.studentId}"
+                    value="${student.feePaid || 0}"
+                >
+
+            </td>
+
+            <td>
+
+                <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    class="fee-input"
+                    id="teacher-${student.studentId}"
+                    value="${student.teacherFee || 0}"
+                >
+
+            </td>
+
+            <td>
+
+                <span
+                    id="academy-${student.studentId}"
+                >
+                    ${formatCurrency(
+                        student.academyFee
+                    )}
+                </span>
+
+            </td>
+
+            <td>
+
+                <button
+                    class="save-fee-btn"
+                    onclick="saveFeeRecord(
+                        '${student.studentId}',
+                        ${student.actualFee}
+                    )"
+                >
+                    Save
+                </button>
+
+            </td>
+
+        `;
+
+
+        tbody.appendChild(row);
+
+    });
+
+}
 
 document.getElementById(
     "feeMonth"
 ).addEventListener(
     "change",
     loadFeeReport
+);
+
+
+// ================= NAME FILTER =================
+
+document.getElementById(
+    "studentNameFilter"
+).addEventListener(
+    "input",
+    renderFilteredFeeReport
+);
+
+
+// ================= STUDENT ID FILTER =================
+
+document.getElementById(
+    "studentIdFilter"
+).addEventListener(
+    "input",
+    renderFilteredFeeReport
+);
+
+
+// ================= SORT =================
+
+document.getElementById(
+    "studentSort"
+).addEventListener(
+    "change",
+    renderFilteredFeeReport
 );
 
 
