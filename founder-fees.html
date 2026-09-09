@@ -18,15 +18,19 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 
 .fee-page {
     padding: 25px;
+    display: block !important;
+    width: 100%;
+    box-sizing: border-box;
 }
-
 .fee-header {
-    display: flex;
+    display: flex !important;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
     margin-bottom: 20px;
     gap: 20px;
     flex-wrap: wrap;
+    box-sizing: border-box;
 }
 
 .fee-header h1 {
@@ -44,8 +48,10 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 .fee-controls {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 10px;
     flex-wrap: wrap;
+    flex: 1;
 }
 
 .fee-control-input,
@@ -89,11 +95,13 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 }
 
 .fee-summary {
-    display: grid;
-    grid-template-columns:
-        repeat(4, 1fr);
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr);
     gap: 15px;
+    width: 100%;
     margin-bottom: 25px;
+    box-sizing: border-box;
+    clear: both;
 }
 
 .fee-card {
@@ -120,7 +128,10 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
     border-radius: 10px;
     padding: 15px;
     overflow-x: auto;
+    width: 100%;
+    box-sizing: border-box;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    clear: both;
 }
 
 #feeTable {
