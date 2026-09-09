@@ -546,16 +546,233 @@ Error loading teacher data.
 ========================================= */
 
 async function submitSalary(
-teacherId,
-index
-){
+    teacherId,
+    index
+) {
 
-alert(
-"Payment submission backend will be connected in the next step."
-);
+    try {
+
+        // ================= DOCUMENT TYPE =================
+
+        const docType =
+            document.getElementById(
+                `docType-${index}`
+            ).value;
+
+
+        // ================= FILE =================
+
+        const fileInput =
+            document.getElementById(
+                `document-${index}`
+            );
+
+        const file =
+            fileInput.files[0];
+
+
+        // ================= VALIDATION =================
+
+        if (!docType) {
+
+            alert(
+                "Please select the payment document type."
+            );
+
+            return;
+        }
+
+
+        if (!file) {
+
+            alert(
+                "Please select the payment document."
+            );
+
+            return;
+        }
+
+
+        // ================= FEE MONTH =================
+
+        const feeMonth =
+            prompt(
+                "Enter Fee Month (Example: September 2026)"
+            );
+
+
+        if (!feeMonth) {
+            return;
+        }
+
+
+        // ================= TOTAL FEE =================
+
+        const card =
+            fileInput.closest(".salary-card");
+
+        const feeText =
+            card.querySelector(
+                ".salary-info .info-box:nth-child(3) .info-value"
+            ).innerText;
+
+        const totalFee =
+            Number(
+                feeText
+                    .replace(/[₹,]/g, "")
+                    .trim()
+            ) || 0;
+
+
+        // ================= CONFIRM =================
+
+        const confirmed =
+            confirm(
+                `Confirm payment?\n\n` +
+                `Teacher ID: ${teacherId}\n` +
+                `Fee Month: ${feeMonth}\n` +
+                `Total Fee: ₹${totalFee.toLocaleString("en-IN")}`
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        // ================= UPLOAD SELECTED DOCUMENT =================
+
+        const uploadData =
+            new FormData();
+
+        uploadData.append(
+            "file",
+            file
+        );
+
+
+        const uploadResponse =
+            await fetch(
+                "https://academy-backend-eatl.onrender.com/api/upload-file",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Authorization":
+                            "Bearer " + token
+                    },
+
+                    body: uploadData
+                }
+            );
+
+
+        const uploadResult =
+            await uploadResponse.json();
+
+
+        if (!uploadResponse.ok || !uploadResult.url) {
+
+            alert(
+                uploadResult.message ||
+                "Payment document upload failed."
+            );
+
+            return;
+        }
+
+
+        // ================= DOCUMENT URL =================
+
+        const documentUrl =
+            uploadResult.url;
+
+
+        console.log(
+            "Payment Document URL:",
+            documentUrl
+        );
+
+
+        // ================= PAYMENT API =================
+
+        const res =
+            await fetch(
+                "https://academy-backend-eatl.onrender.com/api/founder/teacher-salary-payment",
+                {
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " + token
+
+                    },
+
+                    body: JSON.stringify({
+
+                        teacherId:
+                            teacherId,
+
+                        feeMonth:
+                            feeMonth,
+
+                        totalFee:
+                            totalFee,
+
+                        documentType:
+                            docType,
+
+                        documentUrl:
+                            documentUrl
+
+                    })
+
+                }
+            );
+
+
+        const data =
+            await res.json();
+
+
+        // ================= RESULT =================
+
+        if (!res.ok || !data.success) {
+
+            alert(
+                data.message ||
+                "Payment failed."
+            );
+
+            return;
+        }
+
+
+        alert(
+            "Payment receipt created successfully.\n\n" +
+            "Receipt Number: " +
+            data.receiptNumber
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Salary payment error:",
+            error
+        );
+
+        alert(
+            "Something went wrong while processing the payment."
+        );
+
+    }
 
 }
-
 
 /* =========================================
    LOAD
