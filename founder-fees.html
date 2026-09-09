@@ -209,6 +209,42 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 
 }
 
+.teacher-fee-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 180px;
+}
+
+.teacher-fee-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.teacher-fee-item:last-child {
+    border-bottom: none;
+}
+
+.teacher-fee-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #12395f;
+}
+
+.teacher-fee-input {
+    width: 120px;
+    box-sizing: border-box;
+}
+
+.no-teacher {
+    color: #888;
+    font-size: 13px;
+    font-style: italic;
+}
+
 
 .fee-input:focus {
 
@@ -559,7 +595,10 @@ fetch("sidebar.html")
 
 const API_BASE =
 "https://academy-backend-eatl.onrender.com";
+
 let currentFeeReport = [];
+
+let periodAssignments = [];
 
 
 const monthNames = [
@@ -632,6 +671,65 @@ function populateMonthDropdown(){
 
     select.value =
         `${currentMonth}-${currentYear}`;
+
+}
+
+
+async function loadPeriodAssignments(){
+
+    const token =
+        localStorage.getItem("token");
+
+    try{
+
+        const response =
+            await fetch(
+                `${API_BASE}/api/founder/periodassignments`,
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Authorization":
+                            "Bearer " + token
+                    }
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data.message ||
+                "Failed to load period assignments"
+            );
+
+        }
+
+
+        periodAssignments =
+            data.data || [];
+
+
+        console.log(
+            "Period Assignments Loaded:",
+            periodAssignments
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "PERIOD ASSIGNMENT ERROR:",
+            error
+        );
+
+        periodAssignments = [];
+
+    }
 
 }
 
@@ -1127,6 +1225,73 @@ function renderFilteredFeeReport(){
         const row =
             document.createElement("tr");
 
+            const mappedTeachers = [];
+
+periodAssignments.forEach(period => {
+
+    if(!period.assignments){
+        return;
+    }
+
+    period.assignments.forEach(assignment => {
+
+        if(!assignment.student){
+            return;
+        }
+
+        const assignedStudentId =
+            assignment.student._id
+                ? assignment.student._id.toString()
+                : assignment.student.toString();
+
+        if(
+            assignedStudentId ===
+            student.studentMongoId
+        ){
+
+            if(
+                period.teacher &&
+                period.teacher._id
+            ){
+
+                const teacherId =
+                    period.teacher._id.toString();
+
+                const alreadyAdded =
+                    mappedTeachers.some(
+                        teacher =>
+                            teacher.id === teacherId
+                    );
+
+                if(!alreadyAdded){
+
+                    mappedTeachers.push({
+
+                        id: teacherId,
+
+                        name:
+                            period.teacher.name ||
+                            "Teacher"
+
+                    });
+
+                }
+
+            }
+
+        }
+
+    });
+
+});
+
+console.log(
+    "Student:",
+    student.studentId,
+    "Mapped Teachers:",
+    mappedTeachers
+);           
+
 
         row.innerHTML = `
 
@@ -1159,16 +1324,44 @@ function renderFilteredFeeReport(){
 
             <td>
 
-                <input
-                    type="number"
-                    min="0"
-                    step="1"
-                    class="fee-input"
-                    id="teacher-${student.studentId}"
-                    value="${student.teacherFee || 0}"
-                >
+    <div class="teacher-fee-list">
 
-            </td>
+        ${
+            mappedTeachers.length > 0
+
+            ? mappedTeachers.map((teacher, index) => `
+
+                <div class="teacher-fee-item">
+
+                    <div class="teacher-fee-name">
+                        ${teacher.name}
+                    </div>
+
+                    <input
+                        type="number"
+                        min="0"
+                        step="1"
+                        class="fee-input teacher-fee-input"
+                        data-student-id="${student.studentId}"
+                        data-teacher-id="${teacher.id}"
+                        value="0"
+                        placeholder="Amount"
+                    >
+
+                </div>
+
+            `).join("")
+
+            : `
+                <div class="no-teacher">
+                    No teacher mapped
+                </div>
+            `
+        }
+
+    </div>
+
+</td>
 
             <td>
 
@@ -1245,7 +1438,10 @@ document.getElementById(
 
 populateMonthDropdown();
 
-loadFeeReport();
+loadPeriodAssignments()
+    .then(() => {
+        loadFeeReport();
+    });
 
 
 </script>
