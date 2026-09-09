@@ -16,31 +16,18 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 
 <style>
 
-.main-content.fee-page {
+.fee-page {
     padding: 25px;
-    display: block !important;
-    flex-direction: column !important;
     width: 100%;
-    max-width: 100%;
     box-sizing: border-box;
-    float: none !important;
-    position: relative;
-}
-.main-content.fee-page > .fee-header,
-.main-content.fee-page > .fee-summary,
-.main-content.fee-page > .fee-table-wrapper {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    float: none !important;
 }
 .fee-header {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     width: 100%;
     margin-bottom: 20px;
-    gap: 15px;
+    gap: 20px;
     box-sizing: border-box;
 }
 
@@ -57,12 +44,11 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 }
 
 .fee-controls {
-    display: flex !important;
+    display: flex;
     align-items: center;
-    justify-content: flex-start;
-    gap: 12px;
+    justify-content: flex-end;
+    gap: 10px;
     flex-wrap: wrap;
-    width: 100%;
     box-sizing: border-box;
 }
 
@@ -107,13 +93,12 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 }
 
 .fee-summary {
-    display: grid !important;
+    display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 15px;
     width: 100%;
     margin-bottom: 25px;
     box-sizing: border-box;
-    clear: both;
 }
 
 .fee-card {
@@ -136,6 +121,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 }
 
 .fee-table-wrapper {
+    display: block;
     background: white;
     border-radius: 10px;
     padding: 15px;
@@ -143,7 +129,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
     width: 100%;
     box-sizing: border-box;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    clear: both;
 }
 
 #feeTable {
@@ -292,7 +277,9 @@ fetch("sidebar.html")
 
 <!-- MAIN CONTENT -->
 
-<div class="main-content fee-page">
+<div class="main-content">
+
+    <div class="fee-page">
 
 
     <div class="fee-header">
@@ -563,6 +550,8 @@ fetch("sidebar.html")
 
 </div>
 
+
+</div>
 
 
 <script>
