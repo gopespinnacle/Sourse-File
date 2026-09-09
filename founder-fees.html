@@ -847,21 +847,41 @@ async function saveFeeRecord(studentId, actualFee) {
 
 
     const paidInput =
-        document.getElementById(
-            `paid-${studentId}`
-        );
+    document.getElementById(
+        `paid-${studentId}`
+    );
 
-    const teacherInput =
-        document.getElementById(
-            `teacher-${studentId}`
-        );
+const feePaid =
+    Number(paidInput.value || 0);
 
 
-    const feePaid =
-        Number(paidInput.value || 0);
+const teacherInputs =
+    document.querySelectorAll(
+        `.teacher-fee-input[data-student-id="${studentId}"]`
+    );
 
-    const teacherFee =
-        Number(teacherInput.value || 0);
+let teacherFee = 0;
+
+const teacherFees = [];
+
+teacherInputs.forEach(input => {
+
+    const amount =
+        Number(input.value) || 0;
+
+    teacherFee += amount;
+
+    teacherFees.push({
+
+        teacherId:
+            input.dataset.teacherId,
+
+        amount:
+            amount
+
+    });
+
+});
 
 
     // ================= VALIDATION =================
