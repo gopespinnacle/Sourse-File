@@ -873,13 +873,16 @@ teacherInputs.forEach(input => {
 
     teacherFees.push({
 
-        teacherId:
-            input.dataset.teacherId,
+    teacherId:
+        input.dataset.teacherId,
 
-        amount:
-            amount
+    teacherName:
+        input.dataset.teacherName,
 
-    });
+    amount:
+        amount
+
+});
 
 });
 
@@ -943,17 +946,21 @@ teacherInputs.forEach(input => {
 
                     body: JSON.stringify({
 
-                        studentId,
+    studentId,
+    month,
+    year,
 
-                        month,
+    actualFee,
 
-                        year,
+    feePaid,
 
-                        feePaid,
+    teacherFee,
 
-                        teacherFee
+    teacherFees,
 
-                    })
+    academyFee
+
+})
 
                 }
             );
@@ -1358,15 +1365,25 @@ console.log(
                     </div>
 
                     <input
-                        type="number"
-                        min="0"
-                        step="1"
-                        class="fee-input teacher-fee-input"
-                        data-student-id="${student.studentId}"
-                        data-teacher-id="${teacher.id}"
-                        value="0"
-                        placeholder="Amount"
-                    >
+    type="number"
+    min="0"
+    step="1"
+    class="fee-input teacher-fee-input"
+    data-student-id="${student.studentId}"
+data-teacher-id="${teacher.id}"
+data-teacher-name="${teacher.name}"
+value="${
+        (
+            student.teacherFees || []
+        ).find(
+            saved =>
+                saved.teacherId === teacher.id ||
+                saved.teacher?.toString() === teacher.id
+        )?.amount || 0
+    }"
+    placeholder="Amount"
+    oninput="updateTeacherFeeTotal('${student.studentId}')"
+>
 
                 </div>
 
