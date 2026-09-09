@@ -835,6 +835,47 @@ async function loadFeeReport(){
 
 }
 
+function updateTeacherFeeTotal(studentId) {
+
+    const paidInput =
+        document.getElementById(
+            `paid-${studentId}`
+        );
+
+    const teacherInputs =
+        document.querySelectorAll(
+            `.teacher-fee-input[data-student-id="${studentId}"]`
+        );
+
+    const feePaid =
+        Number(paidInput?.value || 0);
+
+    let teacherFee = 0;
+
+    teacherInputs.forEach(input => {
+
+        teacherFee +=
+            Number(input.value || 0);
+
+    });
+
+    const academyFee =
+        feePaid - teacherFee;
+
+    const academyElement =
+        document.getElementById(
+            `academy-${studentId}`
+        );
+
+    if (academyElement) {
+
+        academyElement.innerText =
+            formatCurrency(academyFee);
+
+    }
+
+}
+
 async function saveFeeRecord(studentId, actualFee) {
 
     const select =
@@ -846,52 +887,62 @@ async function saveFeeRecord(studentId, actualFee) {
             .map(Number);
 
 
+    // ================= FEE PAID =================
+
     const paidInput =
-    document.getElementById(
-        `paid-${studentId}`
-    );
+        document.getElementById(
+            `paid-${studentId}`
+        );
 
-const feePaid =
-    Number(paidInput.value || 0);
+    const feePaid =
+        Number(paidInput.value || 0);
 
 
-const teacherInputs =
-    document.querySelectorAll(
-        `.teacher-fee-input[data-student-id="${studentId}"]`
-    );
+    // ================= TEACHER FEES =================
 
-let teacherFee = 0;
+    const teacherInputs =
+        document.querySelectorAll(
+            `.teacher-fee-input[data-student-id="${studentId}"]`
+        );
 
-const teacherFees = [];
 
-teacherInputs.forEach(input => {
+    let teacherFee = 0;
 
-    const amount =
-        Number(input.value) || 0;
+    const teacherFees = [];
 
-    teacherFee += amount;
 
-    teacherFees.push({
+    teacherInputs.forEach(input => {
 
-    teacherId:
-        input.dataset.teacherId,
+        const amount =
+            Number(input.value) || 0;
 
-    teacherName:
-        input.dataset.teacherName,
 
-    amount:
-        amount
+        teacherFee += amount;
 
-});
 
-});
+        teacherFees.push({
+
+            teacherId:
+                input.dataset.teacherId,
+
+            teacherName:
+                input.dataset.teacherName || "",
+
+            amount:
+                amount
+
+        });
+
+    });
 
 
     // ================= VALIDATION =================
 
     if (feePaid < 0) {
 
-        alert("Fee Paid cannot be negative.");
+        alert(
+            "Fee Paid cannot be negative."
+        );
 
         return;
 
@@ -900,20 +951,22 @@ teacherInputs.forEach(input => {
 
     if (teacherFee < 0) {
 
-        alert("Fee to Teacher cannot be negative.");
+        alert(
+            "Fee to Teacher cannot be negative."
+        );
 
         return;
 
     }
 
 
-    
+    // ================= ACADEMY FEE =================
 
     const academyFee =
         feePaid - teacherFee;
 
 
-    // Show calculated Academy Fee immediately
+    // ================= SHOW ACADEMY FEE =================
 
     document.getElementById(
         `academy-${studentId}`
@@ -921,9 +974,13 @@ teacherInputs.forEach(input => {
         formatCurrency(academyFee);
 
 
+    // ================= TOKEN =================
+
     const token =
         localStorage.getItem("token");
 
+
+    // ================= SAVE =================
 
     try {
 
@@ -946,21 +1003,23 @@ teacherInputs.forEach(input => {
 
                     body: JSON.stringify({
 
-    studentId,
-    month,
-    year,
+                        studentId,
 
-    actualFee,
+                        month,
 
-    feePaid,
+                        year,
 
-    teacherFee,
+                        actualFee,
 
-    teacherFees,
+                        feePaid,
 
-    academyFee
+                        teacherFee,
 
-})
+                        teacherFees,
+
+                        academyFee
+
+                    })
 
                 }
             );
@@ -985,7 +1044,7 @@ teacherInputs.forEach(input => {
         );
 
 
-        // Reload report so totals update
+        // Reload report
 
         loadFeeReport();
 
@@ -997,6 +1056,7 @@ teacherInputs.forEach(input => {
             error
         );
 
+
         alert(
             error.message ||
             "Error saving monthly fee."
@@ -1005,7 +1065,6 @@ teacherInputs.forEach(input => {
     }
 
 }
-
 
 function renderFeeReport(data){
 
