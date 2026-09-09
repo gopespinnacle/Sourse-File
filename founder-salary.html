@@ -373,11 +373,7 @@ return;
 container.innerHTML =
 teachers.map((teacher,index)=>{
 
-const teacherId =
-teacher.teacherId ||
-teacher.userId ||
-teacher._id ||
-"";
+const teacherId = teacher.teacherId || "";
 
 const teacherName =
 teacher.name ||
