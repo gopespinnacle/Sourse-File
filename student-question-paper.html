@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Student Question Paper</title>
+
+
+<link
+rel="stylesheet"
+href="assets/css/questionPaper.css">
+
+
+<style>
+
+/*
+====================================================
+STUDENT QUESTION PAPER
+ADDITIONAL SAFE STYLES
+====================================================
+*/
+
+body {
+
+    margin: 0;
+
+    background: #f5f7fb;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+}
+
+
+.paperContainer {
+
+    max-width: 900px;
+
+    margin: 30px auto;
+
+    background: white;
+
+    padding: 30px;
+
+    box-sizing: border-box;
+
+    box-shadow:
+        0 2px 12px
+        rgba(0,0,0,0.10);
+
+}
+
+
+#paperHeader {
+
+    width: 100%;
+
+}
+
+
+.headerTop {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 25px;
+
+}
+
+
+.logoArea {
+
+    flex-shrink: 0;
+
+}
+
+
+#academyLogo {
+
+    width: 120px;
+
+    height: auto;
+
+}
+
+
+.academyArea {
+
+    text-align: center;
+
+}
+
+
+.academyArea h1 {
+
+    margin: 0;
+
+    color: #1464ff;
+
+    font-size: 28px;
+
+}
+
+
+.academyArea h2 {
+
+    margin-top: 8px;
+
+    font-size: 16px;
+
+    font-weight: normal;
+
+    color: #555;
+
+}
+
+
+#paperHeader hr {
+
+    margin: 25px 0;
+
+    border: 0;
+
+    border-top: 1px solid #1464ff;
+
+}
+
+
+/*
+====================================================
+PAPER INFORMATION
+====================================================
+*/
+
+.paperInfoGrid {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 12px 30px;
+
+    margin-bottom: 25px;
+
+}
+
+
+.infoRow {
+
+    display: flex;
+
+    gap: 8px;
+
+    font-size: 15px;
+
+    line-height: 1.5;
+
+}
+
+
+.infoRow.fullWidth {
+
+    grid-column: 1 / -1;
+
+}
+
+
+.infoRow .label {
+
+    font-weight: bold;
+
+    min-width: 90px;
+
+}
+
+
+.infoRow .value {
+
+    flex: 1;
+
+}
+
+
+/*
+====================================================
+QUESTIONS
+====================================================
+*/
+
+.paperQuestion {
+
+    padding: 18px 0;
+
+    border-bottom:
+        1px solid #ddd;
+
+}
+
+
+.questionNo {
+
+    font-weight: bold;
+
+    font-size: 17px;
+
+    margin-bottom: 12px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+}
+
+
+.questionMarks {
+
+    color: #1464ff;
+
+    font-size: 14px;
+
+}
+
+
+.questionText {
+
+    font-size: 16px;
+
+    line-height: 1.7;
+
+    white-space: pre-wrap;
+
+}
+
+
+/*
+====================================================
+MCQ
+====================================================
+*/
+
+.mcqOptions {
+
+    margin-top: 12px;
+
+    padding-left: 20px;
+
+}
+
+
+.mcqOption {
+
+    margin: 7px 0;
+
+    line-height: 1.5;
+
+}
+
+
+/*
+====================================================
+LOADING / ERROR
+====================================================
+*/
+
+#paperBody {
+
+    min-height: 100px;
+
+}
+
+
+.loadingMessage {
+
+    padding: 40px;
+
+    text-align: center;
+
+    color: #555;
+
+}
+
+
+/*
+====================================================
+MOBILE
+====================================================
+*/
+
+@media (
+    max-width: 600px
+) {
+
+    .paperContainer {
+
+        margin: 0;
+
+        padding: 18px;
+
+        box-shadow: none;
+
+    }
+
+
+    .headerTop {
+
+        flex-direction: column;
+
+        gap: 10px;
+
+    }
+
+
+    #academyLogo {
+
+        width: 90px;
+
+    }
+
+
+    .academyArea h1 {
+
+        font-size: 21px;
+
+    }
+
+
+    .academyArea h2 {
+
+        font-size: 13px;
+
+    }
+
+
+    .paperInfoGrid {
+
+        grid-template-columns: 1fr;
+
+        gap: 10px;
+
+    }
+
+
+    .infoRow.fullWidth {
+
+        grid-column: auto;
+
+    }
+
+
+    .questionText {
+
+        font-size: 15px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="paperContainer">
+
+
+    <!--
+    ==================================================
+    ACADEMY HEADER
+    ==================================================
+    -->
+
+
+    <div id="paperHeader">
+
+
+        <div class="headerTop">
+
+
+            <div class="logoArea">
+
+
+                <img
+                    src="images/logo.png"
+                    alt="Gopes Pinnacle Academy"
+                    id="academyLogo">
+
+
+            </div>
+
+
+            <div class="academyArea">
+
+
+                <h1>
+                    GOPES PINNACLE ACADEMY
+                </h1>
+
+
+                <h2>
+                    India's Structured Online Academy
+                </h2>
+
+
+            </div>
+
+
+        </div>
+
+
+        <hr>
+
+
+        <!--
+        Question paper information
+        will be inserted by JavaScript
+        -->
+
+
+        <div id="paperInfo">
+
+        </div>
+
+
+    </div>
+
+
+
+    <!--
+    ==================================================
+    QUESTION PAPER BODY
+    ==================================================
+    -->
+
+
+    <div id="paperBody">
+
+
+        <div class="loadingMessage">
+
+            Loading Question Paper...
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!--
+======================================================
+IMPORTANT
+======================================================
+
+Your questionPaper.js is located at:
+
+assets/js/meeting/ai/questionPaper.js
+
+Therefore this path is intentional.
+======================================================
+-->
+
+
+<script
+src="assets/js/meeting/ai/questionPaper.js">
+</script>
+
+
+</body>
+
+</html>
