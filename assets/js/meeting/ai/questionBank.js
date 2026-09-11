@@ -413,6 +413,73 @@ async function generateQuestionPaper(){
 
     }
 
+
+    /*
+    ====================================================
+    GET SELECTED STUDENTS
+    ====================================================
+    */
+
+    let selectedStudents = [];
+
+    try {
+
+      const storedStudents =
+    sessionStorage.getItem("currentAssignedStudents") ||
+    sessionStorage.getItem("selectedStudents");
+
+        if(storedStudents){
+
+            selectedStudents =
+                JSON.parse(storedStudents);
+
+        }
+
+    }
+    catch(err){
+
+        console.error(
+            "Failed to read selected students:",
+            err
+        );
+
+        selectedStudents = [];
+
+    }
+
+
+    console.log(
+        "Students being sent to generate-paper:",
+        selectedStudents
+    );
+
+
+    /*
+    ====================================================
+    VALIDATE STUDENT SELECTION
+    ====================================================
+    */
+
+    if(
+        !Array.isArray(selectedStudents) ||
+        selectedStudents.length === 0
+    ){
+
+        alert(
+            "Please select at least one student before generating the question paper."
+        );
+
+        return;
+
+    }
+
+
+    /*
+    ====================================================
+    GENERATE QUESTION PAPER
+    ====================================================
+    */
+
     try{
 
         const response = await fetch(
@@ -425,14 +492,20 @@ async function generateQuestionPaper(){
 
                 headers:{
 
-                    "Content-Type":"application/json"
+                    "Content-Type":
+                    "application/json"
 
                 },
 
                 body:JSON.stringify({
 
                     questionBankId:
-                    window.currentQuestionBank._id
+                    window.currentQuestionBank._id,
+
+                    assignedStudents:
+                    JSON.stringify(
+                        selectedStudents
+                    )
 
                 })
 
@@ -440,38 +513,85 @@ async function generateQuestionPaper(){
 
         );
 
+
         const result =
         await response.json();
 
+
+        console.log(
+            "Generate paper response:",
+            result
+        );
+
+
         if(result.success){
 
-    console.log(result);
+            /*
+            ============================================
+            SAVE GENERATED PAPER
+            ============================================
+            */
 
-    sessionStorage.setItem(
+            sessionStorage.setItem(
 
-        "generatedQuestionPaper",
+                "generatedQuestionPaper",
 
-        JSON.stringify(result.paper)
+                JSON.stringify(
+                    result.paper
+                )
 
-    );
+            );
 
-    window.location.href =
-    "teacher-question-paper.html";
 
-}
+            /*
+            ============================================
+            SAVE ASSIGNED STUDENTS
+            ============================================
+            */
+
+            sessionStorage.setItem(
+
+                "assignedStudents",
+
+                JSON.stringify(
+                    result.assignedStudents ||
+                    selectedStudents
+                )
+
+            );
+
+
+            /*
+            ============================================
+            OPEN QUESTION PAPER
+            ============================================
+            */
+
+            window.location.href =
+                "teacher-question-paper.html";
+
+        }
 
         else{
 
-            alert(result.message);
+            alert(
+                result.message ||
+                "Failed to generate question paper."
+            );
 
         }
 
     }
     catch(err){
 
-        console.error(err);
+        console.error(
+            "Generate Question Paper Error:",
+            err
+        );
 
-        alert(err.message);
+        alert(
+            err.message
+        );
 
     }
 
