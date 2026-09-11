@@ -336,6 +336,46 @@ placeholder="Chapter 1">
     Hold Ctrl (Windows) or Command (Mac) to select multiple types.
 </small>
 
+
+<!-- =================================================
+     SELECT STUDENTS
+================================================= -->
+
+<label>Select Students</label>
+
+<select
+    id="studentSelection"
+    multiple
+    size="8"
+    style="
+        width:100%;
+        padding:10px;
+        margin-top:6px;
+        border:1px solid #ccc;
+        border-radius:6px;
+        box-sizing:border-box;
+    "
+>
+</select>
+
+<small style="
+    display:block;
+    margin-top:6px;
+    color:#666;
+">
+    Only students mapped to this teacher for the selected
+    class and subject will appear here.
+    Hold Ctrl (Windows) or Command (Mac) to select multiple students.
+</small>
+
+<div id="studentSelectionStatus" style="
+    margin-top:8px;
+    color:#666;
+">
+    Loading students...
+</div>
+
+
 <label>Select PDF</label>
 
 <input
@@ -393,6 +433,186 @@ if (!token) {
 
 }
 
+/* =====================================================
+   LOAD STUDENTS MAPPED TO LOGGED-IN TEACHER
+===================================================== */
+
+async function loadMappedStudents() {
+
+    const className =
+        document.getElementById("className").value;
+
+    const subject =
+        document.getElementById("subject").value.trim();
+
+    const studentSelection =
+        document.getElementById("studentSelection");
+
+    const studentStatus =
+        document.getElementById("studentSelectionStatus");
+
+
+    studentSelection.innerHTML = "";
+
+    studentStatus.style.color = "#666";
+    studentStatus.innerHTML =
+        "Loading students...";
+
+
+    if (!className || !subject) {
+
+        studentStatus.innerHTML =
+            "Please select class and enter subject.";
+
+        return;
+    }
+
+
+    try {
+
+        const response = await fetch(
+
+            "https://academy-backend-eatl.onrender.com/api/teacher/students" +
+            "?className=" +
+            encodeURIComponent(className) +
+            "&subject=" +
+            encodeURIComponent(subject),
+
+            {
+                method: "GET",
+
+                headers: {
+                    "Authorization":
+                        "Bearer " + token
+                }
+            }
+
+        );
+
+
+        const result =
+            await response.json();
+
+
+        console.log(
+            "Mapped students:",
+            result
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.message ||
+                "Unable to load students."
+            );
+
+        }
+
+
+        const students =
+            result.data || [];
+
+
+        if (students.length === 0) {
+
+            studentStatus.style.color = "red";
+
+            studentStatus.innerHTML =
+                "No students are mapped to this teacher for this class and subject.";
+
+            return;
+
+        }
+
+
+        students.forEach(mapping => {
+
+            if (!mapping.student) {
+                return;
+            }
+
+
+            const student =
+                mapping.student;
+
+
+            const option =
+                document.createElement("option");
+
+
+            option.value =
+                student._id;
+
+
+            option.textContent =
+                `${student.name || "Unknown Student"} - ${student.studentId || "ID unavailable"}`;
+
+
+            option.dataset.studentName =
+                student.name || "";
+
+
+            option.dataset.studentId =
+                student.studentId || "";
+
+
+            studentSelection.appendChild(
+                option
+            );
+
+        });
+
+
+        studentStatus.style.color = "green";
+
+        studentStatus.innerHTML =
+            `${students.length} mapped student(s) available.`;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Student loading error:",
+            error
+        );
+
+        studentStatus.style.color = "red";
+
+        studentStatus.innerHTML =
+            error.message;
+
+    }
+
+}
+
+/* =====================================================
+   REFRESH STUDENTS WHEN CLASS / SUBJECT CHANGES
+===================================================== */
+
+document
+    .getElementById("className")
+    .addEventListener(
+        "change",
+        loadMappedStudents
+    );
+
+
+document
+    .getElementById("subject")
+    .addEventListener(
+        "change",
+        loadMappedStudents
+    );
+
+    /* =====================================================
+   INITIAL STUDENT LOAD
+===================================================== */
+
+loadMappedStudents();
+
+
 document.getElementById("uploadBtn").onclick = async () => {
 
     const questionLevel =
@@ -408,6 +628,36 @@ const selectedQuestionTypes =
     Array.from(
         document.getElementById("questionTypes").selectedOptions
     ).map(option => option.value);
+
+    /* =====================================================
+   GET SELECTED STUDENTS
+===================================================== */
+
+const selectedStudentOptions =
+    Array.from(
+        document.getElementById("studentSelection").selectedOptions
+    );
+
+
+const selectedStudents =
+    selectedStudentOptions.map(option => ({
+
+        studentId:
+            option.dataset.studentId,
+
+        studentName:
+            option.dataset.studentName,
+
+        userId:
+            option.value
+
+    }));
+
+
+console.log(
+    "Selected students:",
+    selectedStudents
+);
 
 const summary =
     document.getElementById("selectionSummary");
@@ -512,9 +762,26 @@ formData.append(
 
 }
 
+
+if (selectedStudents.length === 0) {
+
+    status.style.color = "red";
+
+    status.innerHTML =
+        "Please select at least one student.";
+
+    return;
+
+}
+
 formData.append(
     "questionTypes",
     JSON.stringify(selectedQuestionTypes)
+);
+
+formData.append(
+    "assignedStudents",
+    JSON.stringify(selectedStudents)
 );
 
     /*
@@ -602,6 +869,11 @@ window.location.href =
 sessionStorage.setItem(
     "currentQuestionBankId",
     result.questionBank._id
+);
+
+sessionStorage.setItem(
+    "currentAssignedStudents",
+    JSON.stringify(selectedStudents)
 );
 
     const container =

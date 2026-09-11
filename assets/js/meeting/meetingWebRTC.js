@@ -15,7 +15,7 @@ window.MeetingWebRTC = (() => {
     ===========================================================
     */
 
-    const rtcConfig = {
+   const rtcConfig = {
 
     iceServers: [
 
@@ -28,7 +28,8 @@ window.MeetingWebRTC = (() => {
         {
             urls: [
                 "stun:stun.l.google.com:19302",
-                "stun:stun1.l.google.com:19302"
+                "stun:stun1.l.google.com:19302",
+                "stun:stun2.l.google.com:19302"
             ]
         },
 
@@ -61,7 +62,7 @@ window.MeetingWebRTC = (() => {
 
         /*
         =====================================================
-        TURN UDP - PORT 443
+        TURN UDP 443
         =====================================================
         */
 
@@ -74,7 +75,7 @@ window.MeetingWebRTC = (() => {
 
         /*
         =====================================================
-        TURN TLS / TCP - PORT 443
+        TURN TLS 443
         =====================================================
         */
 
@@ -86,13 +87,20 @@ window.MeetingWebRTC = (() => {
 
     ],
 
+
     /*
     =====================================================
-    ICE CANDIDATE POOL
+    ICE CONFIGURATION
     =====================================================
     */
 
-    iceCandidatePoolSize: 10
+    iceCandidatePoolSize: 10,
+
+    bundlePolicy: "max-bundle",
+
+    rtcpMuxPolicy: "require",
+
+    iceTransportPolicy: "all"
 
 };
 
@@ -520,7 +528,81 @@ function setLocalStream(stream) {
 
 };
 
+/*
+===========================================================
+ICE CONNECTION STATE
+===========================================================
+*/
+
+peer.oniceconnectionstatechange = () => {
+
+    console.log(
+        "WEBRTC ICE STATE:",
+        remoteSocketId,
+        peer.iceConnectionState
+    );
+
+};
+
+
+/*
+===========================================================
+ICE GATHERING STATE
+===========================================================
+*/
+
+peer.onicegatheringstatechange = () => {
+
+    console.log(
+        "WEBRTC ICE GATHERING:",
+        remoteSocketId,
+        peer.iceGatheringState
+    );
+
+};
+
+
+/*
+===========================================================
+ICE CANDIDATE TYPE
+===========================================================
+*/
+
+peer.onicecandidate = (event) => {
+
+    if (!event.candidate) {
+
+        console.log(
+            "WEBRTC ICE GATHERING COMPLETE:",
+            remoteSocketId
+        );
+
+        return;
+
+    }
+
+    console.log(
+        "WEBRTC ICE CANDIDATE:",
+        remoteSocketId,
+        event.candidate.candidate
+    );
+
+
+    MeetingSocket.emit("ice-candidate", {
+
+        targetSocketId:
+            remoteSocketId,
+
+        candidate:
+            event.candidate
+
+    });
+
+};
+
         peer.onconnectionstatechange = () => {
+
+
 
     const state =
         peer.connectionState;
@@ -1200,6 +1282,24 @@ async function receiveAnswer(
         return;
 
     }
+
+    /*
+===========================================================
+CHECK SIGNALING STATE BEFORE ACCEPTING ANSWER
+===========================================================
+*/
+
+if (peer.signalingState !== "have-local-offer") {
+
+    console.warn(
+        "WEBRTC ANSWER IGNORED - WRONG SIGNALING STATE:",
+        remoteSocketId,
+        peer.signalingState
+    );
+
+    return;
+
+}
 
 
     /*
