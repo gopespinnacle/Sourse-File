@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Assessment Sheet</title>
+
+<style>
+
+body {
+
+    margin: 0;
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    background: #f1f5f9;
+
+    color: #1e293b;
+
+}
+
+
+.header {
+
+    background: #0f172a;
+
+    color: white;
+
+    padding: 20px 30px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+}
+
+
+.header h1 {
+
+    margin: 0;
+
+    font-size: 24px;
+
+}
+
+
+.backBtn {
+
+    background: #2563eb;
+
+    color: white;
+
+    border: none;
+
+    padding: 10px 18px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+}
+
+
+.container {
+
+    max-width: 1200px;
+
+    margin: 30px auto;
+
+    padding: 0 20px;
+
+}
+
+
+.pageTitle {
+
+    margin-bottom: 20px;
+
+}
+
+
+.pageTitle h2 {
+
+    margin: 0 0 5px;
+
+}
+
+
+.pageTitle p {
+
+    margin: 0;
+
+    color: #64748b;
+
+}
+
+
+/*
+====================================================
+ASSESSMENT GRID
+====================================================
+*/
+
+#assessmentList {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(300px, 1fr)
+        );
+
+    gap: 20px;
+
+}
+
+
+/*
+====================================================
+ASSESSMENT CARD
+====================================================
+*/
+
+.assessmentCard {
+
+    background: white;
+
+    border-radius: 14px;
+
+    padding: 22px;
+
+    box-shadow:
+        0 4px 15px
+        rgba(15,23,42,.08);
+
+    border: 1px solid #e2e8f0;
+
+}
+
+
+.assessmentHeader {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 15px;
+
+}
+
+
+.assessmentHeader h3 {
+
+    margin: 0;
+
+    color: #0f172a;
+
+}
+
+
+.status {
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+}
+
+
+.status.notSubmitted {
+
+    background: #fef3c7;
+
+    color: #92400e;
+
+}
+
+
+.status.submitted {
+
+    background: #dbeafe;
+
+    color: #1d4ed8;
+
+}
+
+
+.status.corrected {
+
+    background: #dcfce7;
+
+    color: #166534;
+
+}
+
+
+.info {
+
+    margin: 10px 0;
+
+    color: #475569;
+
+}
+
+
+.info strong {
+
+    color: #1e293b;
+
+}
+
+
+.actions {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 20px;
+
+    flex-wrap: wrap;
+
+}
+
+
+.actionBtn {
+
+    border: none;
+
+    padding: 10px 15px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+}
+
+
+.viewBtn {
+
+    background: #2563eb;
+
+    color: white;
+
+}
+
+
+.submitBtn {
+
+    background: #16a34a;
+
+    color: white;
+
+}
+
+
+/*
+====================================================
+NO ASSESSMENTS
+====================================================
+*/
+
+.noAssessment {
+
+    background: white;
+
+    padding: 40px;
+
+    border-radius: 14px;
+
+    text-align: center;
+
+    color: #64748b;
+
+    box-shadow:
+        0 4px 15px
+        rgba(15,23,42,.06);
+
+}
+
+
+/*
+====================================================
+MOBILE
+====================================================
+*/
+
+@media(max-width:600px) {
+
+    .header {
+
+        padding: 15px;
+
+    }
+
+
+    .header h1 {
+
+        font-size: 19px;
+
+    }
+
+
+    .container {
+
+        margin: 20px auto;
+
+        padding: 0 15px;
+
+    }
+
+
+    .assessmentCard {
+
+        padding: 18px;
+
+    }
+
+
+    .actions {
+
+        flex-direction: column;
+
+    }
+
+
+    .actionBtn {
+
+        width: 100%;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="header">
+
+    <h1>
+        📝 Assessment Sheet
+    </h1>
+
+    <button
+        class="backBtn"
+        onclick="goBack()">
+
+        ← Dashboard
+
+    </button>
+
+</div>
+
+
+<div class="container">
+
+    <div class="pageTitle">
+
+        <h2>
+            My Assessments
+        </h2>
+
+        <p>
+            Question papers assigned by your teachers
+        </p>
+
+    </div>
+
+
+    <div id="assessmentList">
+
+        <div class="noAssessment">
+
+            Loading assessments...
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script
+src="assets/js/meeting/ai/studentAssessment.js">
+</script>
+
+
+</body>
+
+</html>

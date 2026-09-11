@@ -1,0 +1,566 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+
+    margin: 0;
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    background:
+        #f1f5f9;
+
+    color:
+        #172033;
+
+}
+
+
+/* =====================================================
+   PAGE
+   ===================================================== */
+
+.page {
+
+    max-width: 1200px;
+
+    margin: auto;
+
+    padding: 25px;
+
+}
+
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+
+.pageHeader {
+
+    background: white;
+
+    border-radius: 16px;
+
+    padding: 20px 25px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 25px;
+
+    box-shadow:
+        0 4px 15px rgba(15,23,42,.08);
+
+    margin-bottom: 25px;
+
+}
+
+
+.headerLogo img {
+
+    width: 120px;
+
+    height: auto;
+
+}
+
+
+.headerTitle h1 {
+
+    margin: 0;
+
+    color: #1468ff;
+
+    font-size: 28px;
+
+}
+
+
+.headerTitle p {
+
+    margin: 6px 0 0;
+
+    color: #64748b;
+
+}
+
+
+/* =====================================================
+   TITLE
+   ===================================================== */
+
+.pageTitle {
+
+    margin-bottom: 25px;
+
+}
+
+
+.pageTitle h2 {
+
+    margin: 0;
+
+    font-size: 25px;
+
+}
+
+
+.pageTitle p {
+
+    margin-top: 7px;
+
+    color: #64748b;
+
+}
+
+
+/* =====================================================
+   GRID
+   ===================================================== */
+
+.assessmentGrid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(320px, 1fr)
+        );
+
+    gap: 20px;
+
+}
+
+
+/* =====================================================
+   ASSESSMENT CARD
+   ===================================================== */
+
+.assessmentCard {
+
+    background: white;
+
+    border-radius: 16px;
+
+    padding: 22px;
+
+    border:
+        1px solid #e2e8f0;
+
+    box-shadow:
+        0 5px 18px rgba(15,23,42,.08);
+
+    transition:
+        transform .2s,
+        box-shadow .2s;
+
+}
+
+
+.assessmentCard:hover {
+
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 9px 25px rgba(15,23,42,.12);
+
+}
+
+
+/* =====================================================
+   CARD HEADER
+   ===================================================== */
+
+.assessmentHeader {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 18px;
+
+}
+
+
+.assessmentIcon {
+
+    width: 48px;
+
+    height: 48px;
+
+    border-radius: 12px;
+
+    background:
+        #eaf2ff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 24px;
+
+}
+
+
+.assessmentHeader h3 {
+
+    margin: 0;
+
+    font-size: 19px;
+
+}
+
+
+.assessmentSubject {
+
+    color:
+        #64748b;
+
+    font-size:
+        14px;
+
+}
+
+
+/* =====================================================
+   DETAILS
+   ===================================================== */
+
+.assessmentDetails {
+
+    display: grid;
+
+    gap: 10px;
+
+    margin-bottom: 20px;
+
+}
+
+
+.detailRow {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+}
+
+
+.detailLabel {
+
+    color:
+        #64748b;
+
+    font-size:
+        14px;
+
+}
+
+
+.detailValue {
+
+    font-weight:
+        600;
+
+    text-align:
+        right;
+
+}
+
+
+/* =====================================================
+   STATUS
+   ===================================================== */
+
+.statusBox {
+
+    padding:
+        10px 12px;
+
+    border-radius:
+        9px;
+
+    background:
+        #f8fafc;
+
+    margin-bottom:
+        18px;
+
+    font-size:
+        14px;
+
+}
+
+
+.statusPending {
+
+    color:
+        #b45309;
+
+}
+
+
+.statusSubmitted {
+
+    color:
+        #15803d;
+
+}
+
+
+/* =====================================================
+   BUTTONS
+   ===================================================== */
+
+.cardActions {
+
+    display:
+        flex;
+
+    gap:
+        10px;
+
+    flex-wrap:
+        wrap;
+
+}
+
+
+.cardButton {
+
+    flex:
+        1;
+
+    min-width:
+        130px;
+
+    border:
+        none;
+
+    border-radius:
+        9px;
+
+    padding:
+        11px 15px;
+
+    cursor:
+        pointer;
+
+    font-weight:
+        700;
+
+    font-size:
+        14px;
+
+}
+
+
+.viewButton {
+
+    background:
+        #1468ff;
+
+    color:
+        white;
+
+}
+
+
+.submitButton {
+
+    background:
+        #16a34a;
+
+    color:
+        white;
+
+}
+
+
+.cardButton:disabled {
+
+    opacity:
+        .55;
+
+    cursor:
+        not-allowed;
+
+}
+
+
+/* =====================================================
+   LOADING
+   ===================================================== */
+
+.loading {
+
+    text-align:
+        center;
+
+    padding:
+        60px;
+
+    color:
+        #64748b;
+
+}
+
+
+/* =====================================================
+   EMPTY
+   ===================================================== */
+
+.emptyState {
+
+    background:
+        white;
+
+    border-radius:
+        16px;
+
+    padding:
+        60px 25px;
+
+    text-align:
+        center;
+
+}
+
+
+.emptyIcon {
+
+    font-size:
+        50px;
+
+}
+
+
+.emptyState h3 {
+
+    margin-bottom:
+        5px;
+
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media(max-width:768px) {
+
+    .page {
+
+        padding:
+            15px;
+
+    }
+
+
+    .pageHeader {
+
+        padding:
+            17px;
+
+        gap:
+            15px;
+
+    }
+
+
+    .headerLogo img {
+
+        width:
+            80px;
+
+    }
+
+
+    .headerTitle h1 {
+
+        font-size:
+            18px;
+
+    }
+
+
+    .headerTitle p {
+
+        font-size:
+            12px;
+
+    }
+
+
+    .pageTitle h2 {
+
+        font-size:
+            21px;
+
+    }
+
+
+    .assessmentGrid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .assessmentCard {
+
+        padding:
+            18px;
+
+    }
+
+
+    .detailRow {
+
+        flex-direction:
+            column;
+
+        gap:
+            3px;
+
+    }
+
+
+    .detailValue {
+
+        text-align:
+            left;
+
+    }
+
+
+    .cardActions {
+
+        flex-direction:
+            column;
+
+    }
+
+
+    .cardButton {
+
+        width:
+            100%;
+
+    }
+
+}
