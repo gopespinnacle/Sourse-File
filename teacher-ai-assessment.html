@@ -861,6 +861,11 @@ console.log("Saved Subject:",
 console.log("Saved Chapter:",
     sessionStorage.getItem("currentChapter"));
 
+    sessionStorage.setItem(
+    "selectedStudents",
+    JSON.stringify(selectedStudents)
+);
+
 window.location.href =
 "teacher-question-bank.html";
 
