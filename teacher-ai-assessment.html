@@ -640,18 +640,54 @@ const selectedStudentOptions =
 
 
 const selectedStudents =
-    selectedStudentOptions.map(option => ({
+    selectedStudentOptions
+        .map(option => ({
 
-        studentId:
-            option.dataset.studentId,
+            studentId:
+                option.dataset.studentId || "",
 
-        studentName:
-            option.dataset.studentName,
+            studentName:
+                option.dataset.studentName || "",
 
-        userId:
-            option.value
+            userId:
+                option.value || ""
 
-    }));
+        }))
+        .filter(student =>
+            student.userId &&
+            student.studentId &&
+            student.studentName
+        );
+
+        const uniqueStudents = [];
+
+const seenStudentIds = new Set();
+
+selectedStudents.forEach(student => {
+
+    if (
+        !seenStudentIds.has(
+            student.userId
+        )
+    ) {
+
+        seenStudentIds.add(
+            student.userId
+        );
+
+        uniqueStudents.push(
+            student
+        );
+
+    }
+
+});
+
+selectedStudents.length = 0;
+
+selectedStudents.push(
+    ...uniqueStudents
+);
 
 
 console.log(
