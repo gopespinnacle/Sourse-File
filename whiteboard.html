@@ -2188,15 +2188,76 @@ async function testLiveKitToken() {
             );
 
             console.log(
-                "LiveKit token received successfully."
-            );
+    "LiveKit token received successfully."
+);
 
-            console.log(
-                "=========================================="
-            );
+console.log(
+    "=========================================="
+);
 
 
-            return true;
+/*
+=========================================================
+START ACTUAL LIVEKIT CONNECTION
+=========================================================
+*/
+
+try {
+
+    console.log(
+        "LIVEKIT: STARTING ACTUAL CONNECTION..."
+    );
+
+
+    LiveKitManager.init({
+
+        liveKitUrl:
+            "wss://gopes-pinnacle-academy-zft29swz.livekit.cloud",
+
+        roomName:
+            meetingRoom,
+
+        role:
+            meetingRole,
+
+        userId:
+            meetingUserId,
+
+        userName:
+            meetingUserName
+
+    });
+
+
+    await LiveKitManager.connect(
+        data.token
+    );
+
+
+    console.log(
+        "=========================================="
+    );
+
+    console.log(
+        "LIVEKIT ACTUAL CONNECTION SUCCESS"
+    );
+
+    console.log(
+        "=========================================="
+    );
+
+}
+catch (liveKitError) {
+
+    console.error(
+        "LIVEKIT ACTUAL CONNECTION FAILED:",
+        liveKitError
+    );
+
+}
+
+
+return true;
 
         }
 
