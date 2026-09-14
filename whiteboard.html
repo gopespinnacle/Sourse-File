@@ -2053,6 +2053,184 @@ window.MeetingConfig = {
 
 };
 
+/* =========================================================
+   LIVEKIT TOKEN TEST
+   ========================================================= */
+
+async function testLiveKitToken() {
+
+    console.log(
+        "=========================================="
+    );
+
+    console.log(
+        "LIVEKIT TOKEN TEST STARTED"
+    );
+
+    console.log(
+        "=========================================="
+    );
+
+
+    /*
+    ---------------------------------------------------------
+    GET ACADEMY LOGIN TOKEN
+    ---------------------------------------------------------
+    */
+
+    const academyToken =
+        sessionStorage.getItem("token") ||
+        localStorage.getItem("token");
+
+
+    /*
+    ---------------------------------------------------------
+    TOKEN CHECK
+    ---------------------------------------------------------
+    */
+
+    if (!academyToken) {
+
+        console.error(
+            "LIVEKIT TOKEN TEST: Academy login token not found."
+        );
+
+        return false;
+
+    }
+
+
+    /*
+    ---------------------------------------------------------
+    ROOM CHECK
+    ---------------------------------------------------------
+    */
+
+    if (!meetingRoom) {
+
+        console.error(
+            "LIVEKIT TOKEN TEST: Meeting room is missing."
+        );
+
+        return false;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${SERVER_URL}/api/livekit/token`,
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            `Bearer ${academyToken}`
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            roomName:
+                                meetingRoom
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        /*
+        -----------------------------------------------------
+        SUCCESS
+        -----------------------------------------------------
+        */
+
+        if (
+            response.ok &&
+            data.success &&
+            data.token
+        ) {
+
+            console.log(
+                "=========================================="
+            );
+
+            console.log(
+                "LIVEKIT TOKEN TEST SUCCESS"
+            );
+
+            console.log(
+                "Room:",
+                data.roomName
+            );
+
+            console.log(
+                "Identity:",
+                data.identity
+            );
+
+            console.log(
+                "Role:",
+                data.role
+            );
+
+            console.log(
+                "LiveKit token received successfully."
+            );
+
+            console.log(
+                "=========================================="
+            );
+
+
+            return true;
+
+        }
+
+
+        /*
+        -----------------------------------------------------
+        SERVER REJECTED
+        -----------------------------------------------------
+        */
+
+        console.error(
+            "LIVEKIT TOKEN TEST FAILED:",
+            data
+        );
+
+
+        return false;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "LIVEKIT TOKEN REQUEST ERROR:",
+            error
+        );
+
+
+        return false;
+
+    }
+
+}
+
 
             /* =====================================================
    JOIN MEETING ROOM
@@ -2372,6 +2550,14 @@ socket.on(
 
         window.MeetingConfig.joined =
             true;
+
+            /*
+=========================================================
+TEST LIVEKIT TOKEN
+=========================================================
+*/
+
+testLiveKitToken();
 
 
         /*
