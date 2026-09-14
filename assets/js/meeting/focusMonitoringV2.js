@@ -984,25 +984,7 @@ CENTER SCREEN ALERT
 
 
 
-/*
-===========================================================
-FOCUS MONITORING V2
-RECEIVE CLASSROOM ALERT
-===========================================================
-*/
 
-/*
-===========================================================
-FOCUS MONITORING V2
-CLASSROOM ALERT DISPLAY DISABLED
-===========================================================
-
-Focus monitoring events are still received by the
-monitoring system and can continue to be processed/stored.
-
-ONLY the visual CLASSROOM ALERT popup is disabled.
-===========================================================
-*/
 
 function setupFocusSocketListener() {
 
