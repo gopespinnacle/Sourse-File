@@ -991,195 +991,29 @@ RECEIVE CLASSROOM ALERT
 ===========================================================
 */
 
+/*
+===========================================================
+FOCUS MONITORING V2
+CLASSROOM ALERT DISPLAY DISABLED
+===========================================================
+
+Focus monitoring events are still received by the
+monitoring system and can continue to be processed/stored.
+
+ONLY the visual CLASSROOM ALERT popup is disabled.
+===========================================================
+*/
+
 function setupFocusSocketListener() {
 
-    if (
-        !window.MeetingSocket
-    ) {
-
-        console.warn(
-            "FOCUS MONITORING: MeetingSocket unavailable"
-        );
-
-        return;
-
-    }
-
-
-    MeetingSocket.on(
-        "focusMonitoringUpdate",
-        data => {
-
-            if (!data) return;
-
-
-            console.log(
-                "FOCUS MONITORING UPDATE:",
-                data
-            );
-
-
-            let message =
-                "";
-
-
-            switch (
-                data.type
-            ) {
-
-                case "split_screen":
-
-                    message =
-                        data.studentName +
-                        " is using split screen.";
-
-                    break;
-
-
-                case "classroom_hidden":
-
-                    message =
-                        data.studentName +
-                        " has left the classroom view.";
-
-                    break;
-
-
-                case "classroom_visible":
-
-                    message =
-                        data.studentName +
-                        " has returned to the classroom.";
-
-                    break;
-
-
-                case "student_offline":
-
-                    message =
-                        data.studentName +
-                        " has gone offline.";
-
-                    break;
-
-
-                case "student_online":
-
-                    message =
-                        data.studentName +
-                        " is back online.";
-
-                    break;
-
-
-                case "split_screen_closed":
-
-                    message =
-                        data.studentName +
-                        " returned to normal screen.";
-
-                    break;
-
-
-                    case "window_blur":
-
-    message =
-        data.studentName +
-        " has left the classroom window.";
-
-    break;
-
-
-case "window_focus":
-
-    message =
-        data.studentName +
-        " has returned to the classroom window.";
-
-    break;
-
-    case "battery_low":
-
-    message =
-        data.studentName +
-        " has low battery (" +
-        (
-            data.battery &&
-            data.battery.level !== undefined
-                ? data.battery.level
-                : "Unknown"
-        ) +
-        "%).";
-
-    break;
-
-
-case "battery_critical":
-
-    message =
-        data.studentName +
-        " has critically low battery (" +
-        (
-            data.battery &&
-            data.battery.level !== undefined
-                ? data.battery.level
-                : "Unknown"
-        ) +
-        "%).";
-
-    break;
-
-
-case "battery_status":
-
-    if (
-        data.battery &&
-        data.battery.level <=
-        10
-    ) {
-
-        message =
-            data.studentName +
-            " has critically low battery (" +
-            data.battery.level +
-            "%).";
-
-    }
-
-    else if (
-        data.battery &&
-        data.battery.level <=
-        20
-    ) {
-
-        message =
-            data.studentName +
-            " has low battery (" +
-            data.battery.level +
-            "%).";
-
-    }
-
-    else {
-
-        return;
-
-    }
-
-    break;
-
-
-                default:
-
-                    message =
-                        "A classroom focus event was detected.";
-
-            }
-
-
-            
-
-        }
+    /*
+    -------------------------------------------------------
+    DO NOT DISPLAY CLASSROOM ALERTS
+    -------------------------------------------------------
+    */
+
+    console.log(
+        "FOCUS MONITORING: CLASSROOM ALERT POPUPS DISABLED"
     );
 
 }
