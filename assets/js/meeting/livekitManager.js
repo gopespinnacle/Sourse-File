@@ -1,46 +1,11 @@
 /*
-============================================================
+=============================================================
  GOPES PINNACLE ACADEMY
- LIVEKIT MEETING MANAGER
-============================================================
-
- PURPOSE:
-
- This module replaces the OLD custom WebRTC video layer.
-
- RESPONSIBILITIES:
-
- 1. Connect to LiveKit
- 2. Disconnect from LiveKit
- 3. Publish camera
- 4. Publish microphone
- 5. Receive remote participants
- 6. Render participant videos
- 7. Render participant audio
- 8. Toggle microphone
- 9. Toggle camera
-10. Screen sharing
-11. Reconnection handling
-12. Connection quality
-13. Participant join/leave handling
-14. Clean LEAVE operation
-
- IMPORTANT:
-
- This module is deliberately independent of:
-
- - Whiteboard
- - PDF
- - Annotation
- - MongoDB
- - Socket.IO signaling
- - Academy timetable
-
- Those systems will be connected later.
-
-============================================================
+ LIVEKIT MANAGER
+ PHASE 2
+ LIVEKIT CAMERA + MICROPHONE + PARTICIPANTS
+=============================================================
 */
-
 
 (function () {
 
@@ -48,1492 +13,1163 @@
 
 
     /*
-    ========================================================
-    GLOBAL OBJECT
-    ========================================================
+    =========================================================
+    GLOBAL CHECK
+    =========================================================
+    */
+
+    if (!window.LivekitClient) {
+
+        console.error(
+            "LIVEKIT: LivekitClient SDK not found."
+        );
+
+        return;
+
+    }
+
+
+    const {
+        Room,
+        RoomEvent
+    } = window.LivekitClient;
+
+
+    /*
+    =========================================================
+    PRIVATE VARIABLES
+    =========================================================
+    */
+
+    let room = null;
+
+    let config = {
+
+        liveKitUrl: "",
+        roomName: "",
+        role: "",
+        userId: "",
+        userName: ""
+
+    };
+
+
+    let connected = false;
+
+
+    /*
+    =========================================================
+    INIT
+    =========================================================
+    */
+
+    function init(options = {}) {
+
+        config = {
+
+            liveKitUrl:
+                options.liveKitUrl || "",
+
+            roomName:
+                options.roomName || "",
+
+            role:
+                options.role || "",
+
+            userId:
+                options.userId || "",
+
+            userName:
+                options.userName || ""
+
+        };
+
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log(
+            "LIVEKIT MANAGER INITIALIZED"
+        );
+
+        console.log(
+            "Room:",
+            config.roomName
+        );
+
+        console.log(
+            "Role:",
+            config.role
+        );
+
+        console.log(
+            "User:",
+            config.userName
+        );
+
+        console.log(
+            "=========================================="
+        );
+
+    }
+
+
+    /*
+    =========================================================
+    CREATE LIVEKIT CONTAINER
+    =========================================================
+    */
+
+    function getContainer() {
+
+        let container =
+            document.getElementById(
+                "livekitParticipantGrid"
+            );
+
+
+        if (container) {
+
+            return container;
+
+        }
+
+
+        const parent =
+            document.getElementById(
+                "participantGrid"
+            );
+
+
+        if (!parent) {
+
+            console.error(
+                "LIVEKIT: participantGrid not found."
+            );
+
+            return null;
+
+        }
+
+
+        container =
+            document.createElement(
+                "div"
+            );
+
+
+        container.id =
+            "livekitParticipantGrid";
+
+
+        container.style.position =
+            "absolute";
+
+        container.style.inset =
+            "0";
+
+        container.style.width =
+            "100%";
+
+        container.style.height =
+            "100%";
+
+        container.style.display =
+            "grid";
+
+        container.style.gridTemplateColumns =
+            "repeat(auto-fit, minmax(280px, 1fr))";
+
+        container.style.gridAutoRows =
+            "minmax(180px, 1fr)";
+
+        container.style.gap =
+            "8px";
+
+        container.style.padding =
+            "8px";
+
+        container.style.boxSizing =
+            "border-box";
+
+        container.style.background =
+            "#111";
+
+        container.style.zIndex =
+            "50";
+
+        container.style.overflow =
+            "hidden";
+
+
+        /*
+        -----------------------------------------------------
+        MAKE SURE PARENT CAN CONTAIN ABSOLUTE CHILD
+        -----------------------------------------------------
+        */
+
+        const computed =
+            window.getComputedStyle(
+                parent
+            );
+
+
+        if (
+            computed.position ===
+            "static"
+        ) {
+
+            parent.style.position =
+                "relative";
+
+        }
+
+
+        parent.appendChild(
+            container
+        );
+
+
+        return container;
+
+    }
+
+
+    /*
+    =========================================================
+    CREATE PARTICIPANT CARD
+    =========================================================
+    */
+
+    function createParticipantCard(
+        participant,
+        isLocal
+    ) {
+
+        const container =
+            getContainer();
+
+
+        if (!container) {
+
+            return null;
+
+        }
+
+
+        const identity =
+            participant.identity;
+
+
+        let card =
+            document.querySelector(
+                `[data-livekit-identity="${CSS.escape(identity)}"]`
+            );
+
+
+        if (card) {
+
+            return card;
+
+        }
+
+
+        card =
+            document.createElement(
+                "div"
+            );
+
+
+        card.className =
+            "livekit-participant";
+
+
+        card.dataset.livekitIdentity =
+            identity;
+
+
+        card.style.position =
+            "relative";
+
+        card.style.width =
+            "100%";
+
+        card.style.height =
+            "100%";
+
+        card.style.minHeight =
+            "180px";
+
+        card.style.background =
+            "#222";
+
+        card.style.borderRadius =
+            "10px";
+
+        card.style.overflow =
+            "hidden";
+
+        card.style.display =
+            "flex";
+
+        card.style.alignItems =
+            "center";
+
+        card.style.justifyContent =
+            "center";
+
+
+        /*
+        -----------------------------------------------------
+        NAME LABEL
+        -----------------------------------------------------
+        */
+
+        const name =
+            document.createElement(
+                "div"
+            );
+
+
+        name.className =
+            "livekit-participant-name";
+
+
+        name.textContent =
+            participant.name ||
+            identity;
+
+
+        name.style.position =
+            "absolute";
+
+        name.style.left =
+            "10px";
+
+        name.style.bottom =
+            "10px";
+
+        name.style.zIndex =
+            "10";
+
+        name.style.padding =
+            "5px 9px";
+
+        name.style.borderRadius =
+            "6px";
+
+        name.style.background =
+            "rgba(0,0,0,.65)";
+
+        name.style.color =
+            "#fff";
+
+        name.style.fontSize =
+            "13px";
+
+
+        if (isLocal) {
+
+            name.textContent =
+                "You - " +
+                (
+                    participant.name ||
+                    identity
+                );
+
+        }
+
+
+        card.appendChild(
+            name
+        );
+
+
+        container.appendChild(
+            card
+        );
+
+
+        return card;
+
+    }
+
+
+    /*
+    =========================================================
+    ATTACH TRACK
+    =========================================================
+    */
+
+    function attachTrack(
+        track,
+        participant
+    ) {
+
+        if (!track) {
+
+            return;
+
+        }
+
+
+        const isLocal =
+            participant.isLocal;
+
+
+        const card =
+            createParticipantCard(
+                participant,
+                isLocal
+            );
+
+
+        if (!card) {
+
+            return;
+
+        }
+
+
+        /*
+        -----------------------------------------------------
+        AUDIO
+        -----------------------------------------------------
+        */
+
+        if (
+            track.kind ===
+            "audio"
+        ) {
+
+            const audio =
+                track.attach();
+
+
+            audio.autoplay =
+                true;
+
+
+            audio.style.display =
+                "none";
+
+
+            audio.dataset.livekitTrack =
+                track.sid || "";
+
+
+            card.appendChild(
+                audio
+            );
+
+
+            console.log(
+                "LIVEKIT: AUDIO ATTACHED",
+                participant.identity
+            );
+
+
+            return;
+
+        }
+
+
+        /*
+        -----------------------------------------------------
+        VIDEO
+        -----------------------------------------------------
+        */
+
+        if (
+            track.kind ===
+            "video"
+        ) {
+
+            const video =
+                track.attach();
+
+
+            video.autoplay =
+                true;
+
+
+            video.playsInline =
+                true;
+
+
+            video.muted =
+                isLocal;
+
+
+            video.style.width =
+                "100%";
+
+            video.style.height =
+                "100%";
+
+            video.style.objectFit =
+                "cover";
+
+
+            video.dataset.livekitTrack =
+                track.sid || "";
+
+
+            card.insertBefore(
+                video,
+                card.firstChild
+            );
+
+
+            console.log(
+                "LIVEKIT: VIDEO ATTACHED",
+                participant.identity
+            );
+
+        }
+
+    }
+
+
+    /*
+    =========================================================
+    REMOVE PARTICIPANT
+    =========================================================
+    */
+
+    function removeParticipant(
+        participant
+    ) {
+
+        if (!participant) {
+
+            return;
+
+        }
+
+
+        const identity =
+            participant.identity;
+
+
+        const card =
+            document.querySelector(
+                `[data-livekit-identity="${CSS.escape(identity)}"]`
+            );
+
+
+        if (card) {
+
+            card.remove();
+
+        }
+
+
+        console.log(
+            "LIVEKIT: PARTICIPANT REMOVED",
+            identity
+        );
+
+    }
+
+
+    /*
+    =========================================================
+    CONNECT
+    =========================================================
+    */
+
+    async function connect(
+        token
+    ) {
+
+        if (!config.liveKitUrl) {
+
+            throw new Error(
+                "LiveKit URL is missing."
+            );
+
+        }
+
+
+        if (!config.roomName) {
+
+            throw new Error(
+                "LiveKit room name is missing."
+            );
+
+        }
+
+
+        if (!token) {
+
+            throw new Error(
+                "LiveKit token is missing."
+            );
+
+        }
+
+
+        /*
+        -----------------------------------------------------
+        CREATE ROOM
+        -----------------------------------------------------
+        */
+
+        room =
+            new Room({
+
+                adaptiveStream:
+                    true,
+
+                dynacast:
+                    true
+
+            });
+
+
+        /*
+        =====================================================
+        ROOM EVENTS
+        =====================================================
+        */
+
+        room.on(
+            RoomEvent.Connected,
+            () => {
+
+                connected =
+                    true;
+
+
+                console.log(
+                    "=========================================="
+                );
+
+                console.log(
+                    "LIVEKIT CONNECTED"
+                );
+
+                console.log(
+                    "Room:",
+                    room.name
+                );
+
+                console.log(
+                    "Local identity:",
+                    room.localParticipant.identity
+                );
+
+                console.log(
+                    "=========================================="
+                );
+
+
+                /*
+                ------------------------------------------------
+                EXISTING REMOTE PARTICIPANTS
+                ------------------------------------------------
+                */
+
+                room.remoteParticipants.forEach(
+                    participant => {
+
+                        createParticipantCard(
+                            participant,
+                            false
+                        );
+
+                        participant.trackPublications.forEach(
+                            publication => {
+
+                                if (
+                                    publication.track
+                                ) {
+
+                                    attachTrack(
+                                        publication.track,
+                                        participant
+                                    );
+
+                                }
+
+                            }
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+        /*
+        =====================================================
+        PARTICIPANT CONNECTED
+        =====================================================
+        */
+
+        room.on(
+            RoomEvent.ParticipantConnected,
+            participant => {
+
+                console.log(
+                    "LIVEKIT: PARTICIPANT CONNECTED",
+                    participant.identity,
+                    participant.name
+                );
+
+
+                createParticipantCard(
+                    participant,
+                    false
+                );
+
+            }
+        );
+
+
+        /*
+        =====================================================
+        PARTICIPANT DISCONNECTED
+        =====================================================
+        */
+
+        room.on(
+            RoomEvent.ParticipantDisconnected,
+            participant => {
+
+                console.log(
+                    "LIVEKIT: PARTICIPANT DISCONNECTED",
+                    participant.identity
+                );
+
+
+                removeParticipant(
+                    participant
+                );
+
+            }
+        );
+
+
+        /*
+        =====================================================
+        TRACK SUBSCRIBED
+        =====================================================
+        */
+
+        room.on(
+            RoomEvent.TrackSubscribed,
+            (
+                track,
+                publication,
+                participant
+            ) => {
+
+                console.log(
+                    "LIVEKIT: TRACK SUBSCRIBED",
+                    track.kind,
+                    participant.identity
+                );
+
+
+                attachTrack(
+                    track,
+                    participant
+                );
+
+            }
+        );
+
+
+        /*
+        =====================================================
+        TRACK UNSUBSCRIBED
+        =====================================================
+        */
+
+        room.on(
+            RoomEvent.TrackUnsubscribed,
+            (
+                track,
+                publication,
+                participant
+            ) => {
+
+                console.log(
+                    "LIVEKIT: TRACK UNSUBSCRIBED",
+                    track.kind,
+                    participant.identity
+                );
+
+
+                track.detach();
+
+            }
+        );
+
+
+        /*
+        =====================================================
+        LOCAL TRACK PUBLISHED
+        =====================================================
+        */
+
+        room.on(
+            RoomEvent.LocalTrackPublished,
+            (
+                publication,
+                participant
+            ) => {
+
+                console.log(
+                    "LIVEKIT: LOCAL TRACK PUBLISHED",
+                    publication.kind,
+                    publication.source
+                );
+
+
+                if (
+                    publication.track
+                ) {
+
+                    attachTrack(
+                        publication.track,
+                        participant
+                    );
+
+                }
+
+            }
+        );
+
+
+        /*
+        =====================================================
+        LOCAL TRACK UNPUBLISHED
+        =====================================================
+        */
+
+        room.on(
+            RoomEvent.LocalTrackUnpublished,
+            (
+                publication,
+                participant
+            ) => {
+
+                console.log(
+                    "LIVEKIT: LOCAL TRACK UNPUBLISHED",
+                    publication.kind
+                );
+
+            }
+        );
+
+
+        /*
+        =====================================================
+        DISCONNECTED
+        =====================================================
+        */
+
+        room.on(
+            RoomEvent.Disconnected,
+            () => {
+
+                connected =
+                    false;
+
+
+                console.log(
+                    "LIVEKIT: DISCONNECTED"
+                );
+
+            }
+        );
+
+
+        /*
+        =====================================================
+        CONNECT TO LIVEKIT CLOUD
+        =====================================================
+        */
+
+        console.log(
+            "LIVEKIT: CONNECTING..."
+        );
+
+
+        await room.connect(
+            config.liveKitUrl,
+            token
+        );
+
+
+        /*
+        =====================================================
+        ENABLE CAMERA + MICROPHONE
+        =====================================================
+        */
+
+        console.log(
+            "LIVEKIT: ENABLING CAMERA + MICROPHONE..."
+        );
+
+
+        await room.localParticipant
+            .enableCameraAndMicrophone();
+
+
+        /*
+        =====================================================
+        LOCAL PARTICIPANT CARD
+        =====================================================
+        */
+
+        createParticipantCard(
+            room.localParticipant,
+            true
+        );
+
+
+        /*
+        -----------------------------------------------------
+        ATTACH ALREADY-PUBLISHED LOCAL TRACKS
+        -----------------------------------------------------
+        */
+
+        room.localParticipant
+            .trackPublications
+            .forEach(
+                publication => {
+
+                    if (
+                        publication.track
+                    ) {
+
+                        attachTrack(
+                            publication.track,
+                            room.localParticipant
+                        );
+
+                    }
+
+                }
+            );
+
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log(
+            "LIVEKIT CAMERA + MICROPHONE READY"
+        );
+
+        console.log(
+            "=========================================="
+        );
+
+
+        return room;
+
+    }
+
+
+    /*
+    =========================================================
+    CAMERA
+    =========================================================
+    */
+
+    async function setCameraEnabled(
+        enabled
+    ) {
+
+        if (!room) {
+
+            return;
+
+        }
+
+
+        await room.localParticipant
+            .setCameraEnabled(
+                enabled
+            );
+
+    }
+
+
+    /*
+    =========================================================
+    MICROPHONE
+    =========================================================
+    */
+
+    async function setMicrophoneEnabled(
+        enabled
+    ) {
+
+        if (!room) {
+
+            return;
+
+        }
+
+
+        await room.localParticipant
+            .setMicrophoneEnabled(
+                enabled
+            );
+
+    }
+
+
+    /*
+    =========================================================
+    SCREEN SHARE
+    =========================================================
+    */
+
+    async function setScreenShareEnabled(
+        enabled
+    ) {
+
+        if (!room) {
+
+            return;
+
+        }
+
+
+        await room.localParticipant
+            .setScreenShareEnabled(
+                enabled
+            );
+
+    }
+
+
+    /*
+    =========================================================
+    GET ROOM
+    =========================================================
+    */
+
+    function getRoom() {
+
+        return room;
+
+    }
+
+
+    /*
+    =========================================================
+    IS CONNECTED
+    =========================================================
+    */
+
+    function isConnected() {
+
+        return connected;
+
+    }
+
+
+    /*
+    =========================================================
+    LEAVE
+    =========================================================
+    */
+
+    async function leave() {
+
+        if (!room) {
+
+            return;
+
+        }
+
+
+        console.log(
+            "LIVEKIT: LEAVING ROOM"
+        );
+
+
+        await room.disconnect();
+
+
+        room =
+            null;
+
+
+        connected =
+            false;
+
+
+        const container =
+            document.getElementById(
+                "livekitParticipantGrid"
+            );
+
+
+        if (container) {
+
+            container.innerHTML =
+                "";
+
+            container.remove();
+
+        }
+
+
+        console.log(
+            "LIVEKIT: LEFT ROOM"
+        );
+
+    }
+
+
+    /*
+    =========================================================
+    EXPORT
+    =========================================================
     */
 
     window.LiveKitManager = {
 
+        init,
 
-        /*
-        ====================================================
-        STATE
-        ====================================================
-        */
+        connect,
 
-        room: null,
+        leave,
 
-        connected: false,
+        setCameraEnabled,
 
-        localCameraTrack: null,
+        setMicrophoneEnabled,
 
-        localMicrophoneTrack: null,
+        setScreenShareEnabled,
 
-        localScreenTrack: null,
+        getRoom,
 
-        localParticipant: null,
-
-        roomName: null,
-
-        role: null,
-
-        userId: null,
-
-        userName: null,
-
-        liveKitUrl: null,
-
-
-        /*
-        ====================================================
-        INITIALIZE
-        ====================================================
-        */
-
-        init: function (config) {
-
-            console.log(
-                "================================================"
-            );
-
-            console.log(
-                "GOPES PINNACLE ACADEMY"
-            );
-
-            console.log(
-                "LIVEKIT MANAGER INITIALIZING"
-            );
-
-            console.log(
-                "================================================"
-            );
-
-
-            config =
-                config || {};
-
-
-            this.roomName =
-                config.roomName || "";
-
-
-            this.role =
-                config.role || "";
-
-
-            this.userId =
-                config.userId || "";
-
-
-            this.userName =
-                config.userName || "";
-
-
-            /*
-            ------------------------------------------------
-            LIVEKIT URL
-            ------------------------------------------------
-
-            IMPORTANT:
-
-            We will eventually move this into backend
-            configuration / environment configuration.
-
-            For now it is intentionally a placeholder.
-            ------------------------------------------------
-            */
-
-            this.liveKitUrl =
-                config.liveKitUrl || "";
-
-
-            console.log(
-                "LiveKit configuration:",
-                {
-                    roomName: this.roomName,
-                    role: this.role,
-                    userId: this.userId,
-                    userName: this.userName,
-                    liveKitUrl: this.liveKitUrl
-                }
-            );
-
-        },
-
-
-        /*
-        ====================================================
-        CONNECT
-        ====================================================
-        */
-
-        connect: async function (token) {
-
-            console.log(
-                "LIVEKIT: CONNECT REQUEST"
-            );
-
-
-            if (!window.LiveKitClient) {
-
-                console.error(
-                    "LIVEKIT SDK NOT LOADED"
-                );
-
-                throw new Error(
-                    "LiveKit SDK is not loaded."
-                );
-
-            }
-
-
-            if (!this.liveKitUrl) {
-
-                console.error(
-                    "LIVEKIT URL IS EMPTY"
-                );
-
-                throw new Error(
-                    "LiveKit URL is not configured."
-                );
-
-            }
-
-
-            if (!token) {
-
-                console.error(
-                    "LIVEKIT TOKEN IS EMPTY"
-                );
-
-                throw new Error(
-                    "LiveKit access token is required."
-                );
-
-            }
-
-
-            /*
-            ------------------------------------------------
-            CREATE ROOM
-            ------------------------------------------------
-            */
-
-            this.room =
-                new LiveKitClient.Room({
-
-                    /*
-                    ------------------------------------------------
-                    ADAPTIVE STREAM
-                    ------------------------------------------------
-                    */
-
-                    adaptiveStream: true,
-
-
-                    /*
-                    ------------------------------------------------
-                    DYNACAST
-                    ------------------------------------------------
-                    */
-
-                    dynacast: true
-
-                });
-
-
-            /*
-            ------------------------------------------------
-            ROOM EVENTS
-            ------------------------------------------------
-            */
-
-            this.registerRoomEvents();
-
-
-            /*
-            ------------------------------------------------
-            CONNECT
-            ------------------------------------------------
-            */
-
-            await this.room.connect(
-                this.liveKitUrl,
-                token
-            );
-
-
-            /*
-            ------------------------------------------------
-            STATE
-            ------------------------------------------------
-            */
-
-            this.connected =
-                true;
-
-
-            this.localParticipant =
-                this.room.localParticipant;
-
-
-            console.log(
-                "LIVEKIT: CONNECTED"
-            );
-
-
-            console.log(
-                "LIVEKIT LOCAL PARTICIPANT:",
-                this.localParticipant
-            );
-
-
-            this.updateConnectionStatus(
-                "connected"
-            );
-
-
-            return this.room;
-
-        },
-
-
-        /*
-        ====================================================
-        ROOM EVENTS
-        ====================================================
-        */
-
-        registerRoomEvents: function () {
-
-            if (!this.room) {
-
-                return;
-
-            }
-
-
-            /*
-            ------------------------------------------------
-            PARTICIPANT CONNECTED
-            ------------------------------------------------
-            */
-
-            this.room.on(
-                LiveKitClient.RoomEvent.ParticipantConnected,
-                (participant) => {
-
-                    console.log(
-                        "LIVEKIT PARTICIPANT CONNECTED:",
-                        participant.identity
-                    );
-
-
-                    this.renderParticipant(
-                        participant
-                    );
-
-                }
-            );
-
-
-            /*
-            ------------------------------------------------
-            PARTICIPANT DISCONNECTED
-            ------------------------------------------------
-            */
-
-            this.room.on(
-                LiveKitClient.RoomEvent.ParticipantDisconnected,
-                (participant) => {
-
-                    console.log(
-                        "LIVEKIT PARTICIPANT DISCONNECTED:",
-                        participant.identity
-                    );
-
-
-                    this.removeParticipant(
-                        participant
-                    );
-
-                }
-            );
-
-
-            /*
-            ------------------------------------------------
-            TRACK SUBSCRIBED
-            ------------------------------------------------
-            */
-
-            this.room.on(
-                LiveKitClient.RoomEvent.TrackSubscribed,
-                (
-                    track,
-                    publication,
-                    participant
-                ) => {
-
-                    console.log(
-                        "LIVEKIT TRACK SUBSCRIBED:",
-                        {
-                            kind: track.kind,
-                            participant:
-                                participant.identity
-                        }
-                    );
-
-
-                    this.attachTrack(
-                        track,
-                        participant
-                    );
-
-                }
-            );
-
-
-            /*
-            ------------------------------------------------
-            TRACK UNSUBSCRIBED
-            ------------------------------------------------
-            */
-
-            this.room.on(
-                LiveKitClient.RoomEvent.TrackUnsubscribed,
-                (
-                    track,
-                    publication,
-                    participant
-                ) => {
-
-                    console.log(
-                        "LIVEKIT TRACK UNSUBSCRIBED:",
-                        {
-                            kind: track.kind,
-                            participant:
-                                participant.identity
-                        }
-                    );
-
-
-                    this.detachTrack(
-                        track,
-                        participant
-                    );
-
-                }
-            );
-
-
-            /*
-            ------------------------------------------------
-            CONNECTION STATE
-            ------------------------------------------------
-            */
-
-            this.room.on(
-                LiveKitClient.RoomEvent.ConnectionStateChanged,
-                (state) => {
-
-                    console.log(
-                        "LIVEKIT CONNECTION STATE:",
-                        state
-                    );
-
-
-                    if (
-                        state ===
-                        "connected"
-                    ) {
-
-                        this.connected =
-                            true;
-
-
-                        this.updateConnectionStatus(
-                            "connected"
-                        );
-
-                    }
-
-
-                    else if (
-                        state ===
-                        "reconnecting"
-                    ) {
-
-                        this.updateConnectionStatus(
-                            "reconnecting"
-                        );
-
-                    }
-
-
-                    else if (
-                        state ===
-                        "disconnected"
-                    ) {
-
-                        this.connected =
-                            false;
-
-
-                        this.updateConnectionStatus(
-                            "disconnected"
-                        );
-
-                    }
-
-                }
-            );
-
-
-            /*
-            ------------------------------------------------
-            LOCAL TRACK PUBLISHED
-            ------------------------------------------------
-            */
-
-            this.room.on(
-                LiveKitClient.RoomEvent.LocalTrackPublished,
-                (
-                    publication,
-                    participant
-                ) => {
-
-                    console.log(
-                        "LIVEKIT LOCAL TRACK PUBLISHED:",
-                        publication.kind
-                    );
-
-                }
-            );
-
-
-            /*
-            ------------------------------------------------
-            PARTICIPANT TRACK MUTED
-            ------------------------------------------------
-            */
-
-            this.room.on(
-                LiveKitClient.RoomEvent.TrackMuted,
-                (
-                    publication,
-                    participant
-                ) => {
-
-                    console.log(
-                        "LIVEKIT TRACK MUTED:",
-                        participant.identity,
-                        publication.kind
-                    );
-
-                }
-            );
-
-
-            /*
-            ------------------------------------------------
-            PARTICIPANT TRACK UNMUTED
-            ------------------------------------------------
-            */
-
-            this.room.on(
-                LiveKitClient.RoomEvent.TrackUnmuted,
-                (
-                    publication,
-                    participant
-                ) => {
-
-                    console.log(
-                        "LIVEKIT TRACK UNMUTED:",
-                        participant.identity,
-                        publication.kind
-                    );
-
-                }
-            );
-
-        },
-
-
-        /*
-        ====================================================
-        CAMERA
-        ====================================================
-        */
-
-        enableCamera: async function () {
-
-            if (!this.room) {
-
-                throw new Error(
-                    "Not connected to LiveKit."
-                );
-
-            }
-
-
-            console.log(
-                "LIVEKIT: ENABLING CAMERA"
-            );
-
-
-            await this.room.localParticipant
-                .setCameraEnabled(true);
-
-
-            console.log(
-                "LIVEKIT: CAMERA ENABLED"
-            );
-
-        },
-
-
-        /*
-        ====================================================
-        DISABLE CAMERA
-        ====================================================
-        */
-
-        disableCamera: async function () {
-
-            if (!this.room) {
-
-                return;
-
-            }
-
-
-            console.log(
-                "LIVEKIT: DISABLING CAMERA"
-            );
-
-
-            await this.room.localParticipant
-                .setCameraEnabled(false);
-
-
-            console.log(
-                "LIVEKIT: CAMERA DISABLED"
-            );
-
-        },
-
-
-        /*
-        ====================================================
-        TOGGLE CAMERA
-        ====================================================
-        */
-
-        toggleCamera: async function () {
-
-            if (!this.room) {
-
-                return;
-
-            }
-
-
-            const participant =
-                this.room.localParticipant;
-
-
-            const enabled =
-                participant.isCameraEnabled;
-
-
-            if (enabled) {
-
-                await this.disableCamera();
-
-            }
-
-            else {
-
-                await this.enableCamera();
-
-            }
-
-        },
-
-
-        /*
-        ====================================================
-        MICROPHONE
-        ====================================================
-        */
-
-        enableMicrophone: async function () {
-
-            if (!this.room) {
-
-                throw new Error(
-                    "Not connected to LiveKit."
-                );
-
-            }
-
-
-            console.log(
-                "LIVEKIT: ENABLING MICROPHONE"
-            );
-
-
-            await this.room.localParticipant
-                .setMicrophoneEnabled(true);
-
-
-            console.log(
-                "LIVEKIT: MICROPHONE ENABLED"
-            );
-
-        },
-
-
-        /*
-        ====================================================
-        DISABLE MICROPHONE
-        ====================================================
-        */
-
-        disableMicrophone: async function () {
-
-            if (!this.room) {
-
-                return;
-
-            }
-
-
-            console.log(
-                "LIVEKIT: DISABLING MICROPHONE"
-            );
-
-
-            await this.room.localParticipant
-                .setMicrophoneEnabled(false);
-
-
-            console.log(
-                "LIVEKIT: MICROPHONE DISABLED"
-            );
-
-        },
-
-
-        /*
-        ====================================================
-        TOGGLE MICROPHONE
-        ====================================================
-        */
-
-        toggleMicrophone: async function () {
-
-            if (!this.room) {
-
-                return;
-
-            }
-
-
-            const participant =
-                this.room.localParticipant;
-
-
-            const enabled =
-                participant.isMicrophoneEnabled;
-
-
-            if (enabled) {
-
-                await this.disableMicrophone();
-
-            }
-
-            else {
-
-                await this.enableMicrophone();
-
-            }
-
-        },
-
-
-        /*
-        ====================================================
-        SCREEN SHARE
-        ====================================================
-        */
-
-        enableScreenShare: async function () {
-
-            if (!this.room) {
-
-                throw new Error(
-                    "Not connected to LiveKit."
-                );
-
-            }
-
-
-            console.log(
-                "LIVEKIT: STARTING SCREEN SHARE"
-            );
-
-
-            await this.room.localParticipant
-                .setScreenShareEnabled(true);
-
-
-            console.log(
-                "LIVEKIT: SCREEN SHARE STARTED"
-            );
-
-        },
-
-
-        /*
-        ====================================================
-        STOP SCREEN SHARE
-        ====================================================
-        */
-
-        disableScreenShare: async function () {
-
-            if (!this.room) {
-
-                return;
-
-            }
-
-
-            console.log(
-                "LIVEKIT: STOPPING SCREEN SHARE"
-            );
-
-
-            await this.room.localParticipant
-                .setScreenShareEnabled(false);
-
-
-            console.log(
-                "LIVEKIT: SCREEN SHARE STOPPED"
-            );
-
-        },
-
-
-        /*
-        ====================================================
-        TOGGLE SCREEN SHARE
-        ====================================================
-        */
-
-        toggleScreenShare: async function () {
-
-            if (!this.room) {
-
-                return;
-
-            }
-
-
-            const participant =
-                this.room.localParticipant;
-
-
-            /*
-            ------------------------------------------------
-            CHECK SCREEN SHARE PUBLICATIONS
-            ------------------------------------------------
-            */
-
-            let sharing =
-                false;
-
-
-            participant.trackPublications
-                .forEach(
-                    publication => {
-
-                        if (
-                            publication.source ===
-                            LiveKitClient.Track.Source.ScreenShare
-                        ) {
-
-                            sharing =
-                                true;
-
-                        }
-
-                    }
-                );
-
-
-            if (sharing) {
-
-                await this.disableScreenShare();
-
-            }
-
-            else {
-
-                await this.enableScreenShare();
-
-            }
-
-        },
-
-
-        /*
-        ====================================================
-        RENDER PARTICIPANT
-        ====================================================
-        */
-
-        renderParticipant: function (
-            participant
-        ) {
-
-            if (!participant) {
-
-                return;
-
-            }
-
-
-            console.log(
-                "LIVEKIT: RENDER PARTICIPANT:",
-                participant.identity
-            );
-
-
-            /*
-            ------------------------------------------------
-            CREATE CARD
-            ------------------------------------------------
-            */
-
-            let card =
-                document.querySelector(
-                    `[data-livekit-identity="${CSS.escape(participant.identity)}"]`
-                );
-
-
-            if (!card) {
-
-                card =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                card.className =
-                    "meeting-participant";
-
-
-                card.dataset.livekitIdentity =
-                    participant.identity;
-
-
-                card.innerHTML = `
-
-                    <div class="participant-video-container">
-
-                        <div class="participant-placeholder">
-
-                            <div class="participant-avatar">
-                                👤
-                            </div>
-
-                            <div class="participant-name">
-                                ${this.escapeHtml(
-                                    participant.name ||
-                                    participant.identity
-                                )}
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="participant-name-label">
-
-                        ${this.escapeHtml(
-                            participant.name ||
-                            participant.identity
-                        )}
-
-                    </div>
-
-                `;
-
-
-                const grid =
-                    document.getElementById(
-                        "participantGrid"
-                    );
-
-
-                if (grid) {
-
-                    grid.appendChild(
-                        card
-                    );
-
-                }
-
-            }
-
-
-            /*
-            ------------------------------------------------
-            ATTACH EXISTING TRACKS
-            ------------------------------------------------
-            */
-
-            participant.trackPublications
-                .forEach(
-                    publication => {
-
-                        if (
-                            publication.isSubscribed &&
-                            publication.track
-                        ) {
-
-                            this.attachTrack(
-                                publication.track,
-                                participant
-                            );
-
-                        }
-
-                    }
-                );
-
-        },
-
-
-        /*
-        ====================================================
-        ATTACH TRACK
-        ====================================================
-        */
-
-        attachTrack: function (
-            track,
-            participant
-        ) {
-
-            if (!track) {
-
-                return;
-
-            }
-
-
-            console.log(
-                "LIVEKIT: ATTACH TRACK:",
-                track.kind,
-                participant.identity
-            );
-
-
-            /*
-            ------------------------------------------------
-            FIND / CREATE CARD
-            ------------------------------------------------
-            */
-
-            this.renderParticipant(
-                participant
-            );
-
-
-            const card =
-                document.querySelector(
-                    `[data-livekit-identity="${CSS.escape(participant.identity)}"]`
-                );
-
-
-            if (!card) {
-
-                return;
-
-            }
-
-
-            const container =
-                card.querySelector(
-                    ".participant-video-container"
-                );
-
-
-            if (!container) {
-
-                return;
-
-            }
-
-
-            /*
-            ------------------------------------------------
-            ATTACH LIVEKIT TRACK
-            ------------------------------------------------
-            */
-
-            const element =
-                track.attach();
-
-
-            element.autoplay =
-                true;
-
-
-            element.playsInline =
-                true;
-
-
-            if (
-                track.kind ===
-                "video"
-            ) {
-
-                element.className =
-                    "participant-livekit-video";
-
-            }
-
-
-            if (
-                track.kind ===
-                "audio"
-            ) {
-
-                element.className =
-                    "participant-livekit-audio";
-
-            }
-
-
-            /*
-            ------------------------------------------------
-            REMOVE PLACEHOLDER FOR VIDEO
-            ------------------------------------------------
-            */
-
-            if (
-                track.kind ===
-                "video"
-            ) {
-
-                const placeholder =
-                    container.querySelector(
-                        ".participant-placeholder"
-                    );
-
-
-                if (placeholder) {
-
-                    placeholder.remove();
-
-                }
-
-            }
-
-
-            container.appendChild(
-                element
-            );
-
-        },
-
-
-        /*
-        ====================================================
-        DETACH TRACK
-        ====================================================
-        */
-
-        detachTrack: function (
-            track,
-            participant
-        ) {
-
-            if (!track) {
-
-                return;
-
-            }
-
-
-            try {
-
-                const elements =
-                    track.detach();
-
-
-                elements.forEach(
-                    element => {
-
-                        element.remove();
-
-                    }
-                );
-
-            }
-
-            catch (error) {
-
-                console.warn(
-                    "LIVEKIT DETACH ERROR:",
-                    error
-                );
-
-            }
-
-        },
-
-
-        /*
-        ====================================================
-        REMOVE PARTICIPANT
-        ====================================================
-        */
-
-        removeParticipant: function (
-            participant
-        ) {
-
-            if (!participant) {
-
-                return;
-
-            }
-
-
-            const card =
-                document.querySelector(
-                    `[data-livekit-identity="${CSS.escape(participant.identity)}"]`
-                );
-
-
-            if (card) {
-
-                card.remove();
-
-            }
-
-
-            this.checkEmptyRoom();
-
-        },
-
-
-        /*
-        ====================================================
-        EMPTY ROOM
-        ====================================================
-        */
-
-        checkEmptyRoom: function () {
-
-            const grid =
-                document.getElementById(
-                    "participantGrid"
-                );
-
-
-            if (!grid) {
-
-                return;
-
-            }
-
-
-            const participants =
-                grid.querySelectorAll(
-                    ".meeting-participant"
-                );
-
-
-            const emptyRoom =
-                document.getElementById(
-                    "emptyRoom"
-                );
-
-
-            if (emptyRoom) {
-
-                emptyRoom.style.display =
-                    participants.length
-                        ? "none"
-                        : "flex";
-
-            }
-
-        },
-
-
-        /*
-        ====================================================
-        CONNECTION STATUS
-        ====================================================
-        */
-
-        updateConnectionStatus: function (
-            status
-        ) {
-
-            const dot =
-                document.getElementById(
-                    "connectionDot"
-                );
-
-
-            const text =
-                document.getElementById(
-                    "connectionText"
-                );
-
-
-            const systemStatus =
-                document.getElementById(
-                    "systemStatus"
-                );
-
-
-            if (
-                status ===
-                "connected"
-            ) {
-
-                if (dot) {
-
-                    dot.style.background =
-                        "#22c55e";
-
-                }
-
-
-                if (text) {
-
-                    text.textContent =
-                        "Connected";
-
-                }
-
-
-                if (systemStatus) {
-
-                    systemStatus.textContent =
-                        "Connected to classroom";
-
-                }
-
-            }
-
-
-            else if (
-                status ===
-                "reconnecting"
-            ) {
-
-                if (dot) {
-
-                    dot.style.background =
-                        "#f59e0b";
-
-                }
-
-
-                if (text) {
-
-                    text.textContent =
-                        "Reconnecting...";
-
-                }
-
-
-                if (systemStatus) {
-
-                    systemStatus.textContent =
-                        "Reconnecting to classroom...";
-
-                }
-
-            }
-
-
-            else {
-
-                if (dot) {
-
-                    dot.style.background =
-                        "#ef4444";
-
-                }
-
-
-                if (text) {
-
-                    text.textContent =
-                        "Disconnected";
-
-                }
-
-
-                if (systemStatus) {
-
-                    systemStatus.textContent =
-                        "Disconnected from classroom";
-
-                }
-
-            }
-
-        },
-
-
-        /*
-        ====================================================
-        LEAVE
-        ====================================================
-        */
-
-        leave: async function () {
-
-            console.log(
-                "================================================"
-            );
-
-            console.log(
-                "LIVEKIT: LEAVING CLASSROOM"
-            );
-
-            console.log(
-                "================================================"
-            );
-
-
-            /*
-            ------------------------------------------------
-            DO NOT END THE ROOM
-            ------------------------------------------------
-
-            This is extremely important.
-
-            LEAVE means:
-
-            "This participant leaves."
-
-            It does NOT mean:
-
-            "Destroy the class for everyone."
-            ------------------------------------------------
-            */
-
-
-            if (this.room) {
-
-                try {
-
-                    await this.room.disconnect();
-
-                }
-
-                catch (error) {
-
-                    console.warn(
-                        "LIVEKIT DISCONNECT ERROR:",
-                        error
-                    );
-
-                }
-
-            }
-
-
-            this.connected =
-                false;
-
-
-            this.room =
-                null;
-
-
-            this.localParticipant =
-                null;
-
-
-            this.localCameraTrack =
-                null;
-
-
-            this.localMicrophoneTrack =
-                null;
-
-
-            this.localScreenTrack =
-                null;
-
-
-            this.updateConnectionStatus(
-                "disconnected"
-            );
-
-
-            console.log(
-                "LIVEKIT: PARTICIPANT LEFT"
-            );
-
-        },
-
-
-        /*
-        ====================================================
-        ESCAPE HTML
-        ====================================================
-        */
-
-        escapeHtml: function (
-            value
-        ) {
-
-            const div =
-                document.createElement(
-                    "div"
-                );
-
-
-            div.textContent =
-                value || "";
-
-
-            return div.innerHTML;
-
-        }
+        isConnected
 
     };
 
 
     console.log(
-        "================================================"
+        "=========================================="
     );
 
     console.log(
-        "LiveKitManager loaded."
+        "LIVEKIT MANAGER LOADED"
     );
 
     console.log(
-        "================================================"
+        "=========================================="
     );
-
 
 })();
