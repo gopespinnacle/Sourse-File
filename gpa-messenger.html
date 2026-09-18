@@ -1,0 +1,2549 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>GPA Messenger</title>
+
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+>
+
+<style>
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    background: #f1f5f9;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   MAIN APP
+   ========================================================= */
+
+.messenger-app {
+
+    width: 100%;
+    height: 100vh;
+
+    display: flex;
+
+    background: white;
+
+}
+
+
+/* =========================================================
+   LEFT CHAT LIST
+   ========================================================= */
+
+.chat-list {
+
+    width: 360px;
+
+    min-width: 360px;
+
+    height: 100%;
+
+    border-right:
+        1px solid #e2e8f0;
+
+    background: #ffffff;
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+/* HEADER */
+
+.chat-list-header {
+
+    height: 72px;
+
+    background: #0f172a;
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 18px;
+
+}
+
+
+.brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+
+.brand-icon {
+
+    width: 40px;
+
+    height: 40px;
+
+    border-radius: 12px;
+
+    background: #2563eb;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 18px;
+
+}
+
+
+.brand-title {
+
+    font-size: 18px;
+
+    font-weight: 700;
+
+}
+
+
+.back-button {
+
+    border: none;
+
+    background: transparent;
+
+    color: white;
+
+    font-size: 20px;
+
+    cursor: pointer;
+
+}
+
+
+/* SEARCH */
+
+.search-box {
+
+    padding: 12px;
+
+    border-bottom:
+        1px solid #e2e8f0;
+
+}
+
+
+.search-box input {
+
+    width: 100%;
+
+    height: 42px;
+
+    border: none;
+
+    outline: none;
+
+    border-radius: 10px;
+
+    background: #f1f5f9;
+
+    padding: 0 14px;
+
+    font-size: 14px;
+
+}
+
+
+/* CONTACT LIST */
+
+.contact-list {
+
+    flex: 1;
+
+    overflow-y: auto;
+
+}
+
+
+.contact-item {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 14px;
+
+    cursor: pointer;
+
+    border-bottom:
+        1px solid #f1f5f9;
+
+}
+
+
+.contact-item:hover {
+
+    background: #f8fafc;
+
+}
+
+
+.contact-item.active {
+
+    background: #eff6ff;
+
+}
+
+
+.avatar {
+
+    width: 46px;
+
+    height: 46px;
+
+    min-width: 46px;
+
+    border-radius: 50%;
+
+    background: #dbeafe;
+
+    color: #1d4ed8;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-weight: 700;
+
+    font-size: 17px;
+
+}
+
+
+.contact-info {
+
+    flex: 1;
+
+    min-width: 0;
+
+}
+
+
+.contact-name {
+
+    font-weight: 600;
+
+    color: #172033;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+}
+
+
+.contact-role {
+
+    font-size: 12px;
+
+    color: #64748b;
+
+    margin-top: 3px;
+
+}
+
+
+.unread-badge {
+
+    min-width: 22px;
+
+    height: 22px;
+
+    padding: 0 6px;
+
+    border-radius: 20px;
+
+    background: #2563eb;
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================================
+   CHAT AREA
+   ========================================================= */
+
+.chat-area {
+
+    flex: 1;
+
+    height: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    background: #f8fafc;
+
+}
+
+
+.chat-header {
+
+    height: 72px;
+
+    background: white;
+
+    border-bottom:
+        1px solid #e2e8f0;
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 0 20px;
+
+    gap: 12px;
+
+}
+
+
+.mobile-back {
+
+    display: none;
+
+    border: none;
+
+    background: transparent;
+
+    font-size: 20px;
+
+    cursor: pointer;
+
+}
+
+
+.selected-avatar {
+
+    width: 42px;
+
+    height: 42px;
+
+    border-radius: 50%;
+
+    background: #dbeafe;
+
+    color: #1d4ed8;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-weight: 700;
+
+}
+
+
+.selected-info {
+
+    flex: 1;
+
+}
+
+
+.selected-name {
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    color: #172033;
+
+}
+
+
+.selected-role {
+
+    font-size: 12px;
+
+    color: #64748b;
+
+    margin-top: 2px;
+
+}
+
+
+/* =========================================================
+   MESSAGE AREA
+   ========================================================= */
+
+.messages {
+
+    flex: 1;
+
+    overflow-y: auto;
+
+    padding: 20px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+}
+
+
+.empty-chat {
+
+    margin: auto;
+
+    text-align: center;
+
+    color: #64748b;
+
+}
+
+
+.empty-chat i {
+
+    font-size: 46px;
+
+    margin-bottom: 12px;
+
+    color: #94a3b8;
+
+}
+
+
+/* MESSAGE */
+
+.message-row {
+
+    display: flex;
+
+}
+
+
+.message-row.mine {
+
+    justify-content: flex-end;
+
+}
+
+
+.message-bubble {
+
+    max-width: 70%;
+
+    padding: 10px 13px;
+
+    border-radius: 14px;
+
+    font-size: 14px;
+
+    line-height: 1.45;
+
+    word-wrap: break-word;
+
+}
+
+
+.message-row.mine
+.message-bubble {
+
+    background: #2563eb;
+
+    color: white;
+
+    border-bottom-right-radius: 4px;
+
+}
+
+
+.message-row.theirs
+.message-bubble {
+
+    background: white;
+
+    color: #172033;
+
+    border:
+        1px solid #e2e8f0;
+
+    border-bottom-left-radius: 4px;
+
+}
+
+
+.message-time {
+
+    display: block;
+
+    font-size: 10px;
+
+    margin-top: 4px;
+
+    opacity: .65;
+
+    text-align: right;
+
+}
+
+
+/* =========================================================
+   TYPING
+   ========================================================= */
+
+.typing-indicator {
+
+    min-height: 22px;
+
+    padding:
+        0 20px
+        5px;
+
+    font-size: 12px;
+
+    color: #64748b;
+
+}
+
+
+/* =========================================================
+   MESSAGE INPUT
+   ========================================================= */
+
+.message-input-area {
+
+    background: white;
+
+    border-top:
+        1px solid #e2e8f0;
+
+    padding: 12px;
+
+    display: flex;
+
+    gap: 10px;
+
+}
+
+
+.message-input {
+
+    flex: 1;
+
+    min-width: 0;
+
+    height: 44px;
+
+    border:
+        1px solid #dbe2ea;
+
+    border-radius: 22px;
+
+    outline: none;
+
+    padding:
+        0 16px;
+
+    font-size: 14px;
+
+}
+
+
+.send-button {
+
+    width: 44px;
+
+    height: 44px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #2563eb;
+
+    color: white;
+
+    cursor: pointer;
+
+    font-size: 16px;
+
+}
+
+
+.send-button:hover {
+
+    background: #1d4ed8;
+
+}
+
+
+/* =========================================================
+   FOUNDER ACTION AREA
+   ========================================================= */
+
+.founder-actions {
+
+    display: none;
+
+    gap: 8px;
+
+}
+
+
+.founder-actions button {
+
+    border: none;
+
+    background: #f1f5f9;
+
+    width: 38px;
+
+    height: 38px;
+
+    border-radius: 50%;
+
+    cursor: pointer;
+
+}
+
+
+body.founder-mode
+.founder-actions {
+
+    display: flex;
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .chat-list {
+
+        width: 100%;
+
+        min-width: 100%;
+
+        border-right: none;
+
+    }
+
+
+    .chat-area {
+
+        display: none;
+
+        width: 100%;
+
+    }
+
+
+    body.mobile-chat-open
+    .chat-list {
+
+        display: none;
+
+    }
+
+
+    body.mobile-chat-open
+    .chat-area {
+
+        display: flex;
+
+    }
+
+
+    .mobile-back {
+
+        display: block;
+
+    }
+
+
+    .message-bubble {
+
+        max-width: 82%;
+
+    }
+
+
+    .chat-list-header {
+
+        height: 64px;
+
+    }
+
+
+    .chat-header {
+
+        height: 64px;
+
+        padding: 0 12px;
+
+    }
+
+
+    .messages {
+
+        padding: 14px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="messenger-app">
+
+
+    <!-- =====================================================
+         CONTACT LIST
+         ===================================================== -->
+
+    <div class="chat-list">
+
+        <div class="chat-list-header">
+
+            <div class="brand">
+
+                <div class="brand-icon">
+
+                    <i class="fa-solid fa-comments"></i>
+
+                </div>
+
+                <div class="brand-title">
+
+                    GPA Messenger
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="back-button"
+                onclick="goBack()">
+
+                <i class="fa-solid fa-arrow-left"></i>
+
+            </button>
+
+        </div>
+
+
+        <div class="search-box">
+
+            <input
+                id="searchInput"
+                type="text"
+                placeholder="Search..."
+                oninput="filterContacts()"
+            >
+
+        </div>
+
+
+        <div
+            id="contactList"
+            class="contact-list">
+
+            <div
+                style="
+                padding:30px;
+                text-align:center;
+                color:#64748b;
+                ">
+
+                Loading...
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         CHAT
+         ===================================================== -->
+
+    <div class="chat-area">
+
+
+        <div class="chat-header">
+
+
+            <button
+                class="mobile-back"
+                onclick="closeMobileChat()">
+
+                <i class="fa-solid fa-arrow-left"></i>
+
+            </button>
+
+
+            <div
+                id="selectedAvatar"
+                class="selected-avatar">
+
+                ?
+
+            </div>
+
+
+            <div class="selected-info">
+
+                <div
+                    id="selectedName"
+                    class="selected-name">
+
+                    Select a conversation
+
+                </div>
+
+                <div
+                    id="selectedRole"
+                    class="selected-role">
+
+                </div>
+
+            </div>
+
+
+            <!-- Founder-only actions -->
+            <div class="founder-actions">
+
+                <button
+                    title="Voice Call"
+                    onclick="founderVoiceCall()">
+
+                    <i class="fa-solid fa-phone"></i>
+
+                </button>
+
+
+                <button
+                    title="Attachment"
+                    onclick="founderAttachment()">
+
+                    <i class="fa-solid fa-paperclip"></i>
+
+                </button>
+
+
+                <button
+                    title="Image / File"
+                    onclick="founderFile()">
+
+                    <i class="fa-solid fa-image"></i>
+
+                </button>
+
+            </div>
+
+
+        </div>
+
+
+        <div
+            id="messages"
+            class="messages">
+
+            <div class="empty-chat">
+
+                <i class="fa-solid fa-comments"></i>
+
+                <div>
+
+                    Select a contact to start messaging.
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="typingIndicator"
+            class="typing-indicator">
+
+        </div>
+
+
+        <div class="message-input-area">
+
+            <input
+                id="messageInput"
+                class="message-input"
+                type="text"
+                placeholder="Type a message..."
+                autocomplete="off"
+            >
+
+
+            <button
+                id="sendButton"
+                class="send-button"
+                onclick="sendMessage()">
+
+                <i class="fa-solid fa-paper-plane"></i>
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     SOCKET.IO
+     ========================================================= -->
+
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
+
+<script>
+
+/* =========================================================
+   CONFIGURATION
+   ========================================================= */
+
+const API_BASE =
+    "https://academy-backend-eatl.onrender.com";
+
+
+/* =========================================================
+   AUTH
+   ========================================================= */
+
+const token =
+    sessionStorage.getItem("token") ||
+    localStorage.getItem("token");
+
+
+const role =
+    sessionStorage.getItem("role") ||
+    localStorage.getItem("role");
+
+
+/* =========================================================
+   AUTH CHECK
+   ========================================================= */
+
+if (!token) {
+
+    window.location.href =
+        "index.html";
+
+}
+
+
+/* =========================================================
+   STATE
+   ========================================================= */
+
+let socket = null;
+
+let currentUser = null;
+
+let contacts = [];
+
+let conversations = [];
+
+let selectedContact = null;
+
+let selectedConversation = null;
+
+let typingTimeout = null;
+
+
+/* =========================================================
+   INITIALIZE
+   ========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
+
+        if (role === "founder") {
+
+            document.body.classList.add(
+                "founder-mode"
+            );
+
+        }
+
+        const userLoaded =
+            await loadCurrentUser();
+
+        if (!userLoaded) {
+
+            return;
+
+        }
+
+        connectMessenger();
+
+        loadContacts();
+
+        loadConversations();
+
+    }
+);
+
+
+/* =========================================================
+   SOCKET CONNECTION
+   ========================================================= */
+
+function connectMessenger() {
+
+    socket =
+        io(
+            API_BASE + "/messenger",
+            {
+
+                auth: {
+                    token: token
+                },
+
+                transports: [
+                    "websocket"
+                ]
+
+            }
+        );
+
+
+    socket.on(
+        "connect",
+        () => {
+
+            console.log(
+                "GPA Messenger connected:",
+                socket.id
+            );
+
+        }
+    );
+
+
+    socket.on(
+        "messengerAuthenticated",
+        data => {
+
+            console.log(
+                "Messenger authenticated",
+                data
+            );
+
+        }
+    );
+
+
+    socket.on(
+        "messengerError",
+        data => {
+
+            console.error(
+                "Messenger error:",
+                data
+            );
+
+        }
+    );
+
+
+    socket.on(
+        "newMessengerMessage",
+        message => {
+
+            handleIncomingMessage(
+                message
+            );
+
+        }
+    );
+
+
+    socket.on(
+        "messengerNewMessageNotification",
+        data => {
+
+            handleNotification(
+                data
+            );
+
+        }
+    );
+
+
+    socket.on(
+        "messengerConversationRead",
+        data => {
+
+            console.log(
+                "Conversation read:",
+                data
+            );
+
+        }
+    );
+
+
+    socket.on(
+        "messengerTyping",
+        data => {
+
+            if (
+                selectedConversation &&
+                String(
+                    data.conversationId
+                ) ===
+                String(
+                    selectedConversation._id
+                )
+            ) {
+
+                if (
+                    data.isTyping
+                ) {
+
+                    document.getElementById(
+                        "typingIndicator"
+                    ).innerText =
+                        data.userName +
+                        " is typing...";
+
+                }
+                else {
+
+                    document.getElementById(
+                        "typingIndicator"
+                    ).innerText = "";
+
+                }
+
+            }
+
+        }
+    );
+
+}
+
+/* =========================================================
+   LOAD CURRENT USER
+   ========================================================= */
+
+async function loadCurrentUser() {
+
+    try {
+
+        const res =
+            await fetch(
+                API_BASE +
+                "/api/messenger/me",
+                {
+
+                    headers: {
+
+                        "Authorization":
+                            "Bearer " + token
+
+                    }
+
+                }
+            );
+
+
+        const data =
+            await res.json();
+
+
+        if (!res.ok) {
+
+            throw new Error(
+                data.message ||
+                "Unable to identify logged-in user."
+            );
+
+        }
+
+
+        currentUser =
+            data.user;
+
+
+        console.log(
+            "GPA Messenger current user:",
+            currentUser
+        );
+
+
+        return true;
+
+    }
+    catch (error) {
+
+        console.error(
+            "CURRENT USER ERROR:",
+            error
+        );
+
+
+        alert(
+            "Unable to identify your Messenger account. Please login again."
+        );
+
+
+        return false;
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD CONTACTS
+   ========================================================= */
+
+async function loadContacts() {
+
+    try {
+
+        const res =
+            await fetch(
+                API_BASE +
+                "/api/messenger/contacts",
+                {
+
+                    headers: {
+
+                        "Authorization":
+                            "Bearer " + token
+
+                    }
+
+                }
+            );
+
+
+        const data =
+            await res.json();
+
+
+        if (!res.ok) {
+
+            throw new Error(
+                data.message ||
+                "Unable to load contacts"
+            );
+
+        }
+
+
+        contacts =
+            Array.isArray(
+                data.contacts
+            )
+                ? data.contacts
+                : [];
+
+
+        renderContacts();
+
+    }
+    catch (error) {
+
+        console.error(
+            "CONTACT ERROR:",
+            error
+        );
+
+
+        document.getElementById(
+            "contactList"
+        ).innerHTML = `
+
+            <div
+                style="
+                padding:30px;
+                text-align:center;
+                color:#dc2626;
+                ">
+
+                Unable to load contacts.
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD CONVERSATIONS
+   ========================================================= */
+
+async function loadConversations() {
+
+    try {
+
+        const res =
+            await fetch(
+                API_BASE +
+                "/api/messenger/conversations",
+                {
+
+                    headers: {
+
+                        "Authorization":
+                            "Bearer " + token
+
+                    }
+
+                }
+            );
+
+
+        const data =
+            await res.json();
+
+
+        if (!res.ok) {
+
+            throw new Error(
+                data.message ||
+                "Unable to load conversations"
+            );
+
+        }
+
+
+        conversations =
+            Array.isArray(
+                data.conversations
+            )
+                ? data.conversations
+                : [];
+
+
+        renderContacts();
+
+    }
+    catch (error) {
+
+        console.error(
+            "CONVERSATION ERROR:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDER CONTACTS
+   ========================================================= */
+
+function renderContacts(
+    list = contacts
+) {
+
+    const container =
+        document.getElementById(
+            "contactList"
+        );
+
+
+    if (!list.length) {
+
+        container.innerHTML = `
+
+            <div
+                style="
+                padding:30px;
+                text-align:center;
+                color:#64748b;
+                ">
+
+                No contacts available.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    list.forEach(
+        contact => {
+
+            const conversation =
+                conversations.find(
+                    c =>
+                        c.participants?.some(
+                            p =>
+                                String(
+                                    p._id
+                                ) ===
+                                String(
+                                    contact._id
+                                )
+                        )
+                );
+
+
+            const unread =
+                getUnreadCount(
+                    conversation
+                );
+
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "contact-item";
+
+
+            if (
+                selectedContact &&
+                String(
+                    selectedContact._id
+                ) ===
+                String(
+                    contact._id
+                )
+            ) {
+
+                item.classList.add(
+                    "active"
+                );
+
+            }
+
+
+            item.onclick =
+                () =>
+                    openContact(
+                        contact
+                    );
+
+
+            item.innerHTML = `
+
+                <div class="avatar">
+
+                    ${getInitial(
+                        contact.name
+                    )}
+
+                </div>
+
+
+                <div class="contact-info">
+
+                    <div class="contact-name">
+
+                        ${escapeHtml(
+                            contact.name
+                        )}
+
+                    </div>
+
+
+                    <div class="contact-role">
+
+                        ${formatRole(
+                            contact.role
+                        )}
+
+                    </div>
+
+                </div>
+
+
+                ${
+                    unread > 0
+                        ? `
+                        <div class="unread-badge">
+
+                            ${unread}
+
+                        </div>
+                        `
+                        : ""
+                }
+
+            `;
+
+
+            container.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   OPEN CONTACT
+   ========================================================= */
+
+async function openContact(
+    contact
+) {
+
+    selectedContact =
+        contact;
+
+
+    document.body.classList.add(
+        "mobile-chat-open"
+    );
+
+
+    updateSelectedContact();
+
+
+    let conversation =
+        findConversationForContact(
+            contact
+        );
+
+
+    try {
+
+        if (!conversation) {
+
+            const res =
+                await fetch(
+                    API_BASE +
+                    "/api/messenger/conversations",
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json",
+
+                            "Authorization":
+                                "Bearer " +
+                                token
+
+                        },
+
+                        body:
+                            JSON.stringify({
+                                userId:
+                                    contact._id
+                            })
+
+                    }
+                );
+
+
+            const data =
+                await res.json();
+
+
+            if (!res.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Unable to create conversation"
+                );
+
+            }
+
+
+            conversation =
+                data.conversation;
+
+
+            conversations.unshift(
+                conversation
+            );
+
+        }
+
+
+        selectedConversation =
+            conversation;
+
+
+        renderContacts();
+
+
+        socket.emit(
+            "joinMessengerConversation",
+            String(
+                conversation._id
+            )
+        );
+
+
+        await loadMessages(
+            conversation._id
+        );
+
+
+        socket.emit(
+            "markMessengerConversationRead",
+            String(
+                conversation._id
+            )
+        );
+
+
+    }
+    catch (error) {
+
+        console.error(
+            "OPEN CONTACT ERROR:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Unable to open conversation."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD MESSAGES
+   ========================================================= */
+
+async function loadMessages(
+    conversationId
+) {
+
+    try {
+
+        const res =
+            await fetch(
+
+                API_BASE +
+                "/api/messenger/conversations/" +
+                conversationId +
+                "/messages",
+
+                {
+
+                    headers: {
+
+                        "Authorization":
+                            "Bearer " +
+                            token
+
+                    }
+
+                }
+
+            );
+
+
+        const data =
+            await res.json();
+
+
+        if (!res.ok) {
+
+            throw new Error(
+                data.message ||
+                "Unable to load messages"
+            );
+
+        }
+
+
+        renderMessages(
+            data.messages || []
+        );
+
+
+        // Reload conversation data
+        await loadConversations();
+
+
+        // Mark read
+        socket.emit(
+            "markMessengerConversationRead",
+            String(
+                conversationId
+            )
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "LOAD MESSAGES ERROR:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDER MESSAGES
+   ========================================================= */
+
+function renderMessages(
+    messages
+) {
+
+    const container =
+        document.getElementById(
+            "messages"
+        );
+
+
+    if (!messages.length) {
+
+        container.innerHTML = `
+
+            <div class="empty-chat">
+
+                <i class="fa-solid fa-comments"></i>
+
+                <div>
+
+                    No messages yet.
+
+                </div>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    messages.forEach(
+        message => {
+
+            appendMessage(
+                message,
+                false
+            );
+
+        }
+    );
+
+
+    scrollMessages();
+
+}
+
+
+/* =========================================================
+   APPEND MESSAGE
+   ========================================================= */
+
+function appendMessage(
+    message,
+    scroll = true
+) {
+
+    const container =
+        document.getElementById(
+            "messages"
+        );
+
+
+    // Avoid duplicate
+    if (
+        document.querySelector(
+            `[data-message-id="${message._id}"]`
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    const senderId =
+        typeof message.sender ===
+        "object"
+            ? message.sender._id
+            : message.sender;
+
+
+    const currentUserId =
+        getCurrentUserId();
+
+
+    const mine =
+        String(senderId) ===
+        String(currentUserId);
+
+
+    const row =
+        document.createElement(
+            "div"
+        );
+
+
+    row.className =
+        "message-row " +
+        (
+            mine
+                ? "mine"
+                : "theirs"
+        );
+
+
+    row.dataset.messageId =
+        message._id;
+
+
+    const bubble =
+        document.createElement(
+            "div"
+        );
+
+
+    bubble.className =
+        "message-bubble";
+
+
+    const text =
+        document.createElement(
+            "div"
+        );
+
+
+    text.innerText =
+        message.message;
+
+
+    bubble.appendChild(
+        text
+    );
+
+
+    const time =
+        document.createElement(
+            "span"
+        );
+
+
+    time.className =
+        "message-time";
+
+
+    time.innerText =
+        formatTime(
+            message.createdAt
+        );
+
+
+    bubble.appendChild(
+        time
+    );
+
+
+    row.appendChild(
+        bubble
+    );
+
+
+    container.appendChild(
+        row
+    );
+
+
+    if (scroll) {
+
+        scrollMessages();
+
+    }
+
+}
+
+
+/* =========================================================
+   SEND MESSAGE
+   ========================================================= */
+
+function sendMessage() {
+
+    if (
+        !selectedConversation
+    ) {
+
+        return;
+
+    }
+
+
+    const input =
+        document.getElementById(
+            "messageInput"
+        );
+
+
+    const message =
+        input.value.trim();
+
+
+    if (!message) {
+
+        return;
+
+    }
+
+
+    socket.emit(
+        "sendMessengerMessage",
+        {
+
+            conversationId:
+                String(
+                    selectedConversation._id
+                ),
+
+            message:
+                message,
+
+            // Needed for Founder
+            receiverId:
+                selectedContact
+                    ? selectedContact._id
+                    : null
+
+        }
+    );
+
+
+    input.value = "";
+
+    stopTyping();
+
+}
+
+
+/* =========================================================
+   ENTER TO SEND
+   ========================================================= */
+
+document.getElementById(
+    "messageInput"
+).addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key ===
+            "Enter"
+        ) {
+
+            event.preventDefault();
+
+            sendMessage();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   TYPING
+   ========================================================= */
+
+document.getElementById(
+    "messageInput"
+).addEventListener(
+    "input",
+    () => {
+
+        if (
+            !selectedConversation ||
+            !socket
+        ) {
+
+            return;
+
+        }
+
+
+        socket.emit(
+            "messengerTyping",
+            {
+
+                conversationId:
+                    String(
+                        selectedConversation._id
+                    ),
+
+                isTyping: true
+
+            }
+        );
+
+
+        clearTimeout(
+            typingTimeout
+        );
+
+
+        typingTimeout =
+            setTimeout(
+                stopTyping,
+                1000
+            );
+
+    }
+);
+
+
+function stopTyping() {
+
+    clearTimeout(
+        typingTimeout
+    );
+
+
+    if (
+        !selectedConversation ||
+        !socket
+    ) {
+
+        return;
+
+    }
+
+
+    socket.emit(
+        "messengerTyping",
+        {
+
+            conversationId:
+                String(
+                    selectedConversation._id
+                ),
+
+            isTyping: false
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   INCOMING MESSAGE
+   ========================================================= */
+
+function handleIncomingMessage(
+    message
+) {
+
+    // Current conversation
+    if (
+        selectedConversation &&
+        String(
+            message.conversation
+        ) ===
+        String(
+            selectedConversation._id
+        )
+    ) {
+
+        appendMessage(
+            message
+        );
+
+
+        socket.emit(
+            "markMessengerConversationRead",
+            String(
+                selectedConversation._id
+            )
+        );
+
+    }
+
+
+    loadConversations();
+
+}
+
+
+/* =========================================================
+   NOTIFICATION
+   ========================================================= */
+
+function handleNotification(
+    data
+) {
+
+    console.log(
+        "New Messenger message:",
+        data
+    );
+
+
+    loadConversations();
+
+}
+
+
+/* =========================================================
+   FIND CONVERSATION
+   ========================================================= */
+
+function findConversationForContact(
+    contact
+) {
+
+    return conversations.find(
+        conversation => {
+
+            return conversation.participants?.some(
+                participant => {
+
+                    return String(
+                        participant._id
+                    ) ===
+                    String(
+                        contact._id
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   UNREAD
+   ========================================================= */
+
+function getUnreadCount(
+    conversation
+) {
+
+    if (!conversation) {
+
+        return 0;
+
+    }
+
+
+    const currentUserId =
+        getCurrentUserId();
+
+
+    const entry =
+        conversation.unreadCounts?.find(
+            item =>
+                String(
+                    item.user
+                ) ===
+                String(
+                    currentUserId
+                )
+        );
+
+
+    return entry
+        ? entry.count
+        : 0;
+
+}
+
+
+/* =========================================================
+   CURRENT USER ID
+   ========================================================= */
+
+function getCurrentUserId() {
+
+    if (
+        currentUser &&
+        currentUser._id
+    ) {
+
+        return currentUser._id;
+
+    }
+
+    return null;
+
+}
+
+
+/* =========================================================
+   SELECTED CONTACT
+   ========================================================= */
+
+function updateSelectedContact() {
+
+    if (!selectedContact) {
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "selectedAvatar"
+    ).innerText =
+        getInitial(
+            selectedContact.name
+        );
+
+
+    document.getElementById(
+        "selectedName"
+    ).innerText =
+        selectedContact.name;
+
+
+    document.getElementById(
+        "selectedRole"
+    ).innerText =
+        formatRole(
+            selectedContact.role
+        );
+
+}
+
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+
+function filterContacts() {
+
+    const value =
+        document.getElementById(
+            "searchInput"
+        ).value
+        .trim()
+        .toLowerCase();
+
+
+    const filtered =
+        contacts.filter(
+            contact =>
+                contact.name
+                    ?.toLowerCase()
+                    .includes(
+                        value
+                    )
+        );
+
+
+    renderContacts(
+        filtered
+    );
+
+}
+
+
+/* =========================================================
+   MOBILE BACK
+   ========================================================= */
+
+function closeMobileChat() {
+
+    document.body.classList.remove(
+        "mobile-chat-open"
+    );
+
+}
+
+
+/* =========================================================
+   BACK
+   ========================================================= */
+
+function goBack() {
+
+    if (
+        role === "teacher"
+    ) {
+
+        window.location.href =
+            "teacher-dashboard.html";
+
+        return;
+
+    }
+
+
+    if (
+        role === "student"
+    ) {
+
+        window.location.href =
+            "student-dashboard.html";
+
+        return;
+
+    }
+
+
+    if (
+        role === "founder"
+    ) {
+
+        window.location.href =
+            "founder-dashboard.html";
+
+        return;
+
+    }
+
+
+    window.history.back();
+
+}
+
+
+/* =========================================================
+   FOUNDER ACTION PLACEHOLDERS
+   ========================================================= */
+
+function founderVoiceCall() {
+
+    alert(
+        "Founder voice calling will be connected in the next step."
+    );
+
+}
+
+
+function founderAttachment() {
+
+    alert(
+        "Founder attachments will be connected in the next step."
+    );
+
+}
+
+
+function founderFile() {
+
+    alert(
+        "Founder image/file sharing will be connected in the next step."
+    );
+
+}
+
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
+function getInitial(
+    name
+) {
+
+    if (!name) {
+
+        return "?";
+
+    }
+
+
+    return name
+        .trim()
+        .charAt(0)
+        .toUpperCase();
+
+}
+
+
+function formatRole(
+    role
+) {
+
+    if (!role) {
+
+        return "";
+
+    }
+
+
+    return role
+        .charAt(0)
+        .toUpperCase() +
+        role.slice(1);
+
+}
+
+
+function formatTime(
+    value
+) {
+
+    if (!value) {
+
+        return "";
+
+    }
+
+
+    return new Date(
+        value
+    ).toLocaleTimeString(
+        [],
+        {
+            hour: "2-digit",
+            minute: "2-digit"
+        }
+    );
+
+}
+
+
+function escapeHtml(
+    value
+) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+    div.innerText =
+        value || "";
+
+    return div.innerHTML;
+
+}
+
+
+function scrollMessages() {
+
+    const container =
+        document.getElementById(
+            "messages"
+        );
+
+
+    container.scrollTop =
+        container.scrollHeight;
+
+}
+
+</script>
+
+</body>
+</html>
