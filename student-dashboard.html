@@ -738,16 +738,42 @@ body {
     </li>
 
     <li onclick="go('student-results.html')">
-        📊 Results
-    </li>
-
-    <li onclick="go('gpa-messenger.html')">
-    💬 GPA Messenger
+    📊 Results
 </li>
 
-    <li onclick="logout()">
-        🚪 Logout
-    </li>
+<li
+    id="menu-messenger"
+    onclick="go('gpa-messenger.html')"
+    style="position:relative;">
+
+    💬 GPA Messenger
+
+    <span
+        id="messengerUnreadBadge"
+        style="
+            display:none;
+            position:absolute;
+            right:12px;
+            top:50%;
+            transform:translateY(-50%);
+            min-width:20px;
+            height:20px;
+            padding:0 6px;
+            border-radius:20px;
+            background:#ef4444;
+            color:white;
+            font-size:11px;
+            font-weight:700;
+            text-align:center;
+            line-height:20px;
+        ">
+    </span>
+
+</li>
+
+<li onclick="logout()">
+    🚪 Logout
+</li>
 </ul>
 </div>
 
@@ -1714,6 +1740,166 @@ function closeMobileMenu(){
     );
 
 }
+
+// =========================================================
+// GPA MESSENGER UNREAD NOTIFICATION
+// =========================================================
+
+async function updateMessengerUnreadBadge(){
+
+    try{
+
+        if(!token){
+            return;
+        }
+
+
+        // Get current logged-in user
+        const meRes = await fetch(
+            "https://academy-backend-eatl.onrender.com/api/messenger/me",
+            {
+                headers:{
+                    "Authorization":
+                        "Bearer " + token
+                }
+            }
+        );
+
+
+        if(!meRes.ok){
+            return;
+        }
+
+
+        const meData =
+            await meRes.json();
+
+
+        if(
+            !meData.success ||
+            !meData.user ||
+            !meData.user._id
+        ){
+            return;
+        }
+
+
+        const currentUserId =
+            meData.user._id;
+
+
+        // Get Messenger conversations
+        const conversationRes =
+            await fetch(
+                "https://academy-backend-eatl.onrender.com/api/messenger/conversations",
+                {
+                    headers:{
+                        "Authorization":
+                            "Bearer " + token
+                    }
+                }
+            );
+
+
+        if(!conversationRes.ok){
+            return;
+        }
+
+
+        const conversationData =
+            await conversationRes.json();
+
+
+        const conversations =
+            Array.isArray(
+                conversationData.conversations
+            )
+                ? conversationData.conversations
+                : [];
+
+
+        // Calculate total unread messages
+        let totalUnread = 0;
+
+
+        conversations.forEach(
+            conversation => {
+
+                const unreadEntry =
+                    conversation.unreadCounts?.find(
+                        item =>
+                            String(item.user) ===
+                            String(currentUserId)
+                    );
+
+
+                if(unreadEntry){
+
+                    totalUnread +=
+                        Number(
+                            unreadEntry.count || 0
+                        );
+
+                }
+
+            }
+        );
+
+
+        // Update badge
+        const badge =
+            document.getElementById(
+                "messengerUnreadBadge"
+            );
+
+
+        if(!badge){
+            return;
+        }
+
+
+        if(totalUnread > 0){
+
+            badge.innerText =
+                totalUnread > 99
+                    ? "99+"
+                    : totalUnread;
+
+            badge.style.display =
+                "inline-block";
+
+        }
+        else{
+
+            badge.innerText = "";
+
+            badge.style.display =
+                "none";
+
+        }
+
+    }
+    catch(error){
+
+        console.error(
+            "MESSENGER UNREAD BADGE ERROR:",
+            error
+        );
+
+    }
+
+}
+
+
+// Initial check
+updateMessengerUnreadBadge();
+
+
+// Check every 5 seconds
+setInterval(
+    updateMessengerUnreadBadge,
+    5000
+);
 </script>
 
 </body>
