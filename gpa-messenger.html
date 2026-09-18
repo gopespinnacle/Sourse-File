@@ -56,6 +56,7 @@ body {
 
     width: 100%;
     height: 100vh;
+    height: 100dvh;
 
     display: flex;
 
@@ -339,6 +340,7 @@ body {
     flex: 1;
 
     height: 100%;
+    min-height: 0;
 
     display: flex;
 
@@ -443,6 +445,8 @@ body {
 .messages {
 
     flex: 1;
+
+    min-height: 0;
 
     overflow-y: auto;
 
@@ -586,9 +590,14 @@ body {
 
     padding: 12px;
 
+    padding-bottom:
+        max(12px, env(safe-area-inset-bottom));
+
     display: flex;
 
     gap: 10px;
+
+    flex-shrink: 0;
 
 }
 
@@ -687,6 +696,23 @@ body.founder-mode
    ========================================================= */
 
 @media (max-width: 768px) {
+        .messenger-app {
+        height: 100vh;
+        height: 100dvh;
+    }
+
+    .chat-area {
+        height: 100%;
+        min-height: 0;
+    }
+
+    .messages {
+        min-height: 0;
+    }
+
+    .message-input-area {
+        flex-shrink: 0;
+    }
 
     .chat-list {
 
