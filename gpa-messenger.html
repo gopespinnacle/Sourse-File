@@ -440,6 +440,15 @@ body {
     border-bottom:
         1px solid #f1f5f9;
 
+    cursor: pointer;
+
+}
+
+
+.founder-person-item:hover {
+
+    background: #f8fafc;
+
 }
 
 
@@ -2006,8 +2015,9 @@ function renderFounderConversations() {
                             student => `
 
                                 <div
-                                    class="founder-person-item"
-                                >
+    class="founder-person-item"
+    onclick="openFounderPersonConversation('${student._id}')"
+>
 
                                     <div class="avatar">
 
@@ -2102,9 +2112,10 @@ function renderFounderConversations() {
                         ? teachers.map(
                             teacher => `
 
-                                <div
-                                    class="founder-person-item"
-                                >
+                               <div
+    class="founder-person-item"
+    onclick="openFounderPersonConversation('${teacher._id}')"
+>
 
                                     <div class="avatar">
 
@@ -2421,6 +2432,58 @@ function openFounderConversationById(
 
 }
 
+// =========================================================
+// OPEN EXISTING CONVERSATION FROM FOUNDER STUDENT/TEACHER
+// =========================================================
+
+function openFounderPersonConversation(
+    personId
+) {
+
+    const conversation =
+        conversations.find(
+            conversation => {
+
+                return (
+                    conversation.participants || []
+                ).some(
+                    participant =>
+                        String(
+                            participant._id
+                        ) ===
+                        String(
+                            personId
+                        )
+                );
+
+            }
+        );
+
+
+    // -------------------------------------------------
+    // NO EXISTING CONVERSATION
+    // -------------------------------------------------
+
+    if (!conversation) {
+
+        alert(
+            "There is no existing conversation with this person yet."
+        );
+
+        return;
+
+    }
+
+
+    // -------------------------------------------------
+    // OPEN THE EXISTING TEACHER ↔ STUDENT CONVERSATION
+    // -------------------------------------------------
+
+    openFounderConversation(
+        conversation
+    );
+
+}
 
 // =========================================================
 // TOGGLE FOUNDER FOLDER
