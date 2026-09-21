@@ -1459,6 +1459,16 @@ function renderContacts(
     list = contacts
 ) {
 
+    // Founder sees existing conversations,
+    // not individual contacts.
+    if (role === "founder") {
+
+        renderFounderConversations();
+
+        return;
+
+    }
+
     const container =
         document.getElementById(
             "contactList"
@@ -1602,6 +1612,418 @@ function renderContacts(
 
         }
     );
+
+}
+
+// =========================================================
+// RENDER FOUNDER CONVERSATIONS
+// =========================================================
+
+function renderFounderConversations() {
+
+    const container =
+        document.getElementById(
+            "contactList"
+        );
+
+
+    if (!conversations.length) {
+
+        container.innerHTML = `
+
+            <div
+                style="
+                padding:30px;
+                text-align:center;
+                color:#64748b;
+                ">
+
+                No conversations available.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    conversations.forEach(
+        conversation => {
+
+            const participants =
+                conversation.participants || [];
+
+
+            const otherParticipants =
+                participants.filter(
+                    participant =>
+                        String(
+                            participant._id
+                        ) !==
+                        String(
+                            getCurrentUserId()
+                        )
+                );
+
+
+            const conversationName =
+                otherParticipants
+                    .map(
+                        participant =>
+                            participant.name
+                    )
+                    .join(" + ");
+
+
+            const firstParticipant =
+                otherParticipants[0];
+
+
+            const unread =
+                getUnreadCount(
+                    conversation
+                );
+
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "contact-item";
+
+
+            if (
+                selectedConversation &&
+                String(
+                    selectedConversation._id
+                ) ===
+                String(
+                    conversation._id
+                )
+            ) {
+
+                item.classList.add(
+                    "active"
+                );
+
+            }
+
+
+            item.onclick =
+                () =>
+                    openFounderConversation(
+                        conversation
+                    );
+
+
+            item.innerHTML = `
+
+                <div class="avatar">
+
+                    ${getInitial(
+                        firstParticipant?.name ||
+                        "C"
+                    )}
+
+                </div>
+
+
+                <div class="contact-info">
+
+                    <div class="contact-name">
+
+                        ${escapeHtml(
+                            conversationName ||
+                            "Conversation"
+                        )}
+
+                    </div>
+
+
+                    <div class="contact-role">
+
+                        ${
+                            conversation.conversationType ===
+                            "group"
+                                ? "Founder joined"
+                                : "Teacher + Student"
+                        }
+
+                    </div>
+
+                </div>
+
+
+                ${
+                    unread > 0
+                        ? `
+                        <div class="unread-badge">
+
+                            ${unread}
+
+                        </div>
+                        `
+                        : ""
+                }
+
+            `;
+
+
+            container.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+// =========================================================
+// OPEN FOUNDER CONVERSATION
+// =========================================================
+
+async function openFounderConversation(
+    conversation
+) {
+
+    try {
+
+        // -------------------------------------------------
+        // SELECT THE EXISTING CONVERSATION
+        // -------------------------------------------------
+
+        selectedConversation =
+            conversation;
+
+
+        // -------------------------------------------------
+        // GET OTHER PARTICIPANTS
+        // -------------------------------------------------
+
+        let otherParticipants =
+            (conversation.participants || [])
+                .filter(
+                    participant =>
+                        String(
+                            participant._id
+                        ) !==
+                        String(
+                            getCurrentUserId()
+                        )
+                );
+
+
+        // -------------------------------------------------
+        // FOUNDER JOINS THE EXISTING CONVERSATION
+        // -------------------------------------------------
+
+        const isAlreadyParticipant =
+            (conversation.participants || [])
+                .some(
+                    participant =>
+                        String(
+                            participant._id
+                        ) ===
+                        String(
+                            getCurrentUserId()
+                        )
+                );
+
+
+        if (!isAlreadyParticipant) {
+
+            const res =
+                await fetch(
+
+                    API_BASE +
+                    "/api/messenger/conversations/" +
+                    conversation._id +
+                    "/join",
+
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "Authorization":
+                                "Bearer " +
+                                token
+
+                        }
+
+                    }
+
+                );
+
+
+            const data =
+                await res.json();
+
+
+            if (!res.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Unable to join conversation."
+                );
+
+            }
+
+
+            // -------------------------------------------------
+            // USE UPDATED CONVERSATION
+            // -------------------------------------------------
+
+            conversation =
+                data.conversation;
+
+
+            selectedConversation =
+                conversation;
+
+
+            // Update conversation in local array
+            conversations =
+                conversations.map(
+                    item =>
+                        String(
+                            item._id
+                        ) ===
+                        String(
+                            conversation._id
+                        )
+                            ? conversation
+                            : item
+                );
+
+
+            // Recalculate participants
+            otherParticipants =
+                (conversation.participants || [])
+                    .filter(
+                        participant =>
+                            String(
+                                participant._id
+                            ) !==
+                            String(
+                                getCurrentUserId()
+                            )
+                    );
+
+        }
+
+
+        // -------------------------------------------------
+        // SET MOBILE CHAT MODE
+        // -------------------------------------------------
+
+        document.body.classList.add(
+            "mobile-chat-open"
+        );
+
+
+        // -------------------------------------------------
+        // UPDATE HEADER
+        // -------------------------------------------------
+
+        const conversationName =
+            otherParticipants
+                .map(
+                    participant =>
+                        participant.name
+                )
+                .join(" + ");
+
+
+        const firstParticipant =
+            otherParticipants[0];
+
+
+        document.getElementById(
+            "selectedAvatar"
+        ).innerText =
+            getInitial(
+                firstParticipant?.name ||
+                "C"
+            );
+
+
+        document.getElementById(
+            "selectedName"
+        ).innerText =
+            conversationName ||
+            "Conversation";
+
+
+        document.getElementById(
+            "selectedRole"
+        ).innerText =
+            "Teacher + Student + Founder";
+
+
+        // -------------------------------------------------
+        // JOIN SOCKET ROOM
+        // -------------------------------------------------
+
+        socket.emit(
+            "joinMessengerConversation",
+            String(
+                conversation._id
+            )
+        );
+
+
+        // -------------------------------------------------
+        // LOAD EXISTING MESSAGE HISTORY
+        // -------------------------------------------------
+
+        await loadMessages(
+            conversation._id
+        );
+
+
+        // -------------------------------------------------
+        // MARK FOUNDER'S MESSAGES AS READ
+        // -------------------------------------------------
+
+        socket.emit(
+            "markMessengerConversationRead",
+            String(
+                conversation._id
+            )
+        );
+
+
+        // -------------------------------------------------
+        // REFRESH FOUNDER CONVERSATION LIST
+        // -------------------------------------------------
+
+        renderFounderConversations();
+
+    }
+    catch (error) {
+
+        console.error(
+            "OPEN FOUNDER CONVERSATION ERROR:",
+            error
+        );
+
+
+        alert(
+            error.message ||
+            "Unable to open conversation."
+        );
+
+    }
 
 }
 
