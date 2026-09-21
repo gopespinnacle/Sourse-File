@@ -2726,53 +2726,140 @@ const groupConversations =
             >
 
                 ${
-                    students.length
-                        ? students.map(
-                            student => `
+    students.length
+        ? students.map(
+            student => {
 
-                                <div
-    class="founder-person-item"
-    onclick="openFounderPersonConversation('${student._id}')"
->
+                // FIND ONLY FOUNDER ↔ STUDENT
+                // PERSONAL DIRECT CONVERSATION
 
-                                    <div class="avatar">
+                const conversation =
+                    conversations.find(
+                        item => {
 
-                                        ${getInitial(
-                                            student.name
-                                        )}
+                            const participants =
+                                item.participants || [];
+
+
+                            if (
+                                item.conversationType !==
+                                "direct"
+                            ) {
+
+                                return false;
+
+                            }
+
+
+                            if (
+                                participants.length !==
+                                2
+                            ) {
+
+                                return false;
+
+                            }
+
+
+                            const hasFounder =
+                                participants.some(
+                                    participant =>
+                                        String(
+                                            participant._id
+                                        ) ===
+                                        String(
+                                            getCurrentUserId()
+                                        )
+                                );
+
+
+                            const hasStudent =
+                                participants.some(
+                                    participant =>
+                                        String(
+                                            participant._id
+                                        ) ===
+                                        String(
+                                            student._id
+                                        )
+                                );
+
+
+                            return (
+                                hasFounder &&
+                                hasStudent
+                            );
+
+                        }
+                    );
+
+
+                const unread =
+                    getUnreadCount(
+                        conversation
+                    );
+
+
+                return `
+
+                    <div
+                        class="founder-person-item"
+                        onclick="openFounderPersonConversation('${student._id}')"
+                    >
+
+                        <div class="avatar">
+
+                            ${getInitial(
+                                student.name
+                            )}
+
+                        </div>
+
+
+                        <div class="contact-info">
+
+                            <div class="contact-name">
+
+                                ${escapeHtml(
+                                    student.name
+                                )}
+
+                            </div>
+
+
+                            <div class="contact-role">
+
+                                Student ID:
+                                ${
+                                    escapeHtml(
+                                        student.studentId ||
+                                        "Not available"
+                                    )
+                                }
+
+                            </div>
+
+                        </div>
+
+
+                        ${
+                            unread > 0
+                                ? `
+                                    <div class="unread-badge">
+
+                                        ${unread}
 
                                     </div>
+                                `
+                                : ""
+                        }
 
+                    </div>
 
-                                    <div class="contact-info">
+                `;
 
-                                        <div class="contact-name">
-
-                                            ${escapeHtml(
-                                                student.name
-                                            )}
-
-                                        </div>
-
-
-                                        <div class="contact-role">
-
-                                            Student ID:
-                                            ${
-                                                escapeHtml(
-                                                    student.studentId ||
-                                                    "Not available"
-                                                )
-                                            }
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            `
-                        ).join("")
+            }
+        ).join("")
                         : `
                             <div class="founder-empty">
 
@@ -2824,53 +2911,140 @@ const groupConversations =
             >
 
                 ${
-                    teachers.length
-                        ? teachers.map(
-                            teacher => `
+    teachers.length
+        ? teachers.map(
+            teacher => {
 
-                               <div
-    class="founder-person-item"
-    onclick="openFounderPersonConversation('${teacher._id}')"
->
+                // FIND ONLY FOUNDER ↔ TEACHER
+                // PERSONAL DIRECT CONVERSATION
 
-                                    <div class="avatar">
+                const conversation =
+                    conversations.find(
+                        item => {
 
-                                        ${getInitial(
-                                            teacher.name
-                                        )}
+                            const participants =
+                                item.participants || [];
+
+
+                            if (
+                                item.conversationType !==
+                                "direct"
+                            ) {
+
+                                return false;
+
+                            }
+
+
+                            if (
+                                participants.length !==
+                                2
+                            ) {
+
+                                return false;
+
+                            }
+
+
+                            const hasFounder =
+                                participants.some(
+                                    participant =>
+                                        String(
+                                            participant._id
+                                        ) ===
+                                        String(
+                                            getCurrentUserId()
+                                        )
+                                );
+
+
+                            const hasTeacher =
+                                participants.some(
+                                    participant =>
+                                        String(
+                                            participant._id
+                                        ) ===
+                                        String(
+                                            teacher._id
+                                        )
+                                );
+
+
+                            return (
+                                hasFounder &&
+                                hasTeacher
+                            );
+
+                        }
+                    );
+
+
+                const unread =
+                    getUnreadCount(
+                        conversation
+                    );
+
+
+                return `
+
+                    <div
+                        class="founder-person-item"
+                        onclick="openFounderPersonConversation('${teacher._id}')"
+                    >
+
+                        <div class="avatar">
+
+                            ${getInitial(
+                                teacher.name
+                            )}
+
+                        </div>
+
+
+                        <div class="contact-info">
+
+                            <div class="contact-name">
+
+                                ${escapeHtml(
+                                    teacher.name
+                                )}
+
+                            </div>
+
+
+                            <div class="contact-role">
+
+                                Teacher ID:
+                                ${
+                                    escapeHtml(
+                                        teacher.teacherId ||
+                                        "Not available"
+                                    )
+                                }
+
+                            </div>
+
+                        </div>
+
+
+                        ${
+                            unread > 0
+                                ? `
+                                    <div class="unread-badge">
+
+                                        ${unread}
 
                                     </div>
+                                `
+                                : ""
+                        }
 
+                    </div>
 
-                                    <div class="contact-info">
+                `;
 
-                                        <div class="contact-name">
-
-                                            ${escapeHtml(
-                                                teacher.name
-                                            )}
-
-                                        </div>
-
-
-                                        <div class="contact-role">
-
-                                            Teacher ID:
-                                            ${
-                                                escapeHtml(
-                                                    teacher.teacherId ||
-                                                    "Not available"
-                                                )
-                                            }
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            `
-                        ).join("")
+            }
+        ).join("")
                         : `
                             <div class="founder-empty">
 
