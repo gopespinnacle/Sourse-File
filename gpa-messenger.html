@@ -2436,55 +2436,214 @@ function openFounderConversationById(
 // OPEN EXISTING CONVERSATION FROM FOUNDER STUDENT/TEACHER
 // =========================================================
 
-function openFounderPersonConversation(
+// =========================================================
+// OPEN FOUNDER PERSONAL CONVERSATION
+// =========================================================
+
+async function openFounderPersonConversation(
     personId
 ) {
 
-    const conversation =
-        conversations.find(
-            conversation => {
+    try {
 
-                return (
-                    conversation.participants || []
-                ).some(
-                    participant =>
-                        String(
-                            participant._id
-                        ) ===
-                        String(
-                            personId
-                        )
+        // -------------------------------------------------
+        // FIND THE SELECTED PERSON
+        // -------------------------------------------------
+
+        const person =
+            contacts.find(
+                contact =>
+                    String(
+                        contact._id
+                    ) ===
+                    String(
+                        personId
+                    )
+            );
+
+
+        if (!person) {
+
+            alert(
+                "Unable to find the selected person."
+            );
+
+            return;
+
+        }
+
+
+        // -------------------------------------------------
+        // IMPORTANT:
+        // Find ONLY a DIRECT conversation between
+        // Founder + this person.
+        //
+        // Do NOT open a Teacher + Student group here.
+        // -------------------------------------------------
+
+        let conversation =
+            conversations.find(
+                item => {
+
+                    const participants =
+                        item.participants || [];
+
+
+                    if (
+                        item.conversationType !==
+                        "direct"
+                    ) {
+
+                        return false;
+
+                    }
+
+
+                    if (
+                        participants.length !==
+                        2
+                    ) {
+
+                        return false;
+
+                    }
+
+
+                    const hasFounder =
+                        participants.some(
+                            participant =>
+                                String(
+                                    participant._id
+                                ) ===
+                                String(
+                                    getCurrentUserId()
+                                )
+                        );
+
+
+                    const hasPerson =
+                        participants.some(
+                            participant =>
+                                String(
+                                    participant._id
+                                ) ===
+                                String(
+                                    person._id
+                                )
+                        );
+
+
+                    return (
+                        hasFounder &&
+                        hasPerson
+                    );
+
+                }
+            );
+
+
+        // -------------------------------------------------
+        // IF PERSONAL CONVERSATION DOES NOT EXIST
+        // CREATE ONE
+        // -------------------------------------------------
+
+        if (!conversation) {
+
+            const res =
+                await fetch(
+                    API_BASE +
+                    "/api/messenger/conversations",
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json",
+
+                            "Authorization":
+                                "Bearer " +
+                                token
+
+                        },
+
+                        body:
+                            JSON.stringify({
+
+                                userId:
+                                    person._id
+
+                            })
+
+                    }
+                );
+
+
+            const data =
+                await res.json();
+
+
+            if (!res.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Unable to create personal conversation."
                 );
 
             }
+
+
+            conversation =
+                data.conversation;
+
+
+            // -------------------------------------------------
+            // ADD NEW CONVERSATION TO LOCAL LIST
+            // -------------------------------------------------
+
+            conversations.unshift(
+                conversation
+            );
+
+        }
+
+
+        // -------------------------------------------------
+        // IMPORTANT:
+        // Tell sendMessage() exactly who Founder is
+        // messaging.
+        // -------------------------------------------------
+
+        selectedContact =
+            person;
+
+
+        // -------------------------------------------------
+        // OPEN THE PERSONAL CONVERSATION
+        // -------------------------------------------------
+
+        await openFounderConversation(
+            conversation
         );
 
+    }
+    catch (error) {
 
-    // -------------------------------------------------
-    // NO EXISTING CONVERSATION
-    // -------------------------------------------------
+        console.error(
+            "OPEN FOUNDER PERSONAL CONVERSATION ERROR:",
+            error
+        );
 
-    if (!conversation) {
 
         alert(
-            "There is no existing conversation with this person yet."
+            error.message ||
+            "Unable to open personal conversation."
         );
-
-        return;
 
     }
 
-
-    // -------------------------------------------------
-    // OPEN THE EXISTING TEACHER ↔ STUDENT CONVERSATION
-    // -------------------------------------------------
-
-    openFounderConversation(
-        conversation
-    );
-
 }
-
 // =========================================================
 // TOGGLE FOUNDER FOLDER
 // =========================================================
@@ -2725,10 +2884,23 @@ async function openFounderConversation(
             "Conversation";
 
 
-        document.getElementById(
-            "selectedRole"
-        ).innerText =
-            "Teacher + Student + Founder";
+     const conversationParticipantRoles =
+    otherParticipants
+        .map(
+            participant =>
+                formatRole(
+                    participant.role
+                )
+        )
+        .filter(Boolean);
+
+
+document.getElementById(
+    "selectedRole"
+).innerText =
+    conversationParticipantRoles.join(
+        " + "
+    );
 
 
         // -------------------------------------------------
