@@ -1785,13 +1785,75 @@ function renderContacts(
 
     }
 
+
+    // =====================================================
+    // TEACHER / STUDENT
+    // SHOW ADMIN ONLY WHEN AN ADMIN CONVERSATION EXISTS
+    // =====================================================
+
+    let displayContacts = [
+        ...list
+    ];
+
+
+    if (
+        role === "teacher" ||
+        role === "student"
+    ) {
+
+        conversations.forEach(
+            conversation => {
+
+                const adminParticipant =
+                    conversation.participants?.find(
+                        participant =>
+                            participant.role === "admin"
+                    );
+
+
+                if (!adminParticipant) {
+
+                    return;
+
+                }
+
+
+                // Make sure this Admin is not already
+                // present in the contact list.
+
+                const alreadyExists =
+                    displayContacts.some(
+                        contact =>
+                            String(
+                                contact._id
+                            ) ===
+                            String(
+                                adminParticipant._id
+                            )
+                    );
+
+
+                if (!alreadyExists) {
+
+                    displayContacts.push(
+                        adminParticipant
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
     const container =
         document.getElementById(
             "contactList"
         );
 
 
-    if (!list.length) {
+    if (!displayContacts.length) {
 
         container.innerHTML = `
 
@@ -1816,7 +1878,7 @@ function renderContacts(
     container.innerHTML = "";
 
 
-    list.forEach(
+    displayContacts.forEach(
         contact => {
 
             const conversation =
