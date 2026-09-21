@@ -1785,6 +1785,19 @@ function renderContacts(
 
     }
 
+        // =====================================================
+    // ADMIN
+    // SHOW STUDENTS AND TEACHERS IN SEPARATE FOLDERS
+    // =====================================================
+
+    if (role === "admin") {
+
+        renderAdminContacts();
+
+        return;
+
+    }
+
 
     // =====================================================
     // TEACHER / STUDENT
@@ -1992,6 +2005,369 @@ function renderContacts(
     );
 
 }
+
+// =========================================================
+// RENDER ADMIN CONTACTS
+// =========================================================
+
+function renderAdminContacts() {
+
+    const container =
+        document.getElementById(
+            "contactList"
+        );
+
+
+    // -------------------------------------------------
+    // SEPARATE STUDENTS AND TEACHERS
+    // -------------------------------------------------
+
+    const students =
+        contacts.filter(
+            contact =>
+                contact.role ===
+                "student"
+        );
+
+
+    const teachers =
+        contacts.filter(
+            contact =>
+                contact.role ===
+                "teacher"
+        );
+
+
+    // -------------------------------------------------
+    // BUILD ADMIN PANEL
+    // -------------------------------------------------
+
+    container.innerHTML = `
+
+        <!-- =========================================
+             STUDENTS
+        ========================================== -->
+
+        <div class="founder-section">
+
+            <div
+                class="founder-section-header"
+                onclick="toggleAdminSection('adminStudentsSection')"
+            >
+
+                <div>
+
+                    <i class="fa-solid fa-folder"></i>
+
+                    Students
+
+                    <span class="founder-count">
+                        ${students.length}
+                    </span>
+
+                </div>
+
+
+                <i
+                    id="adminStudentsSectionIcon"
+                    class="fa-solid fa-chevron-down"
+                ></i>
+
+            </div>
+
+
+            <div
+                id="adminStudentsSection"
+                class="founder-section-content"
+            >
+
+                ${
+                    students.length
+                        ? students.map(
+                            student => `
+
+                                <div
+                                    class="founder-person-item"
+                                    onclick="openContactById('${student._id}')"
+                                >
+
+                                    <div class="avatar">
+
+                                        ${getInitial(
+                                            student.name
+                                        )}
+
+                                    </div>
+
+
+                                    <div class="contact-info">
+
+                                        <div class="contact-name">
+
+                                            ${escapeHtml(
+                                                student.name
+                                            )}
+
+                                        </div>
+
+
+                                        <div class="contact-role">
+
+                                            Student ID:
+                                            ${
+                                                escapeHtml(
+                                                    student.studentId ||
+                                                    "Not available"
+                                                )
+                                            }
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            `
+                        ).join("")
+                        : `
+                            <div class="founder-empty">
+
+                                No students found.
+
+                            </div>
+                        `
+                }
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             TEACHERS
+        ========================================== -->
+
+        <div class="founder-section">
+
+            <div
+                class="founder-section-header"
+                onclick="toggleAdminSection('adminTeachersSection')"
+            >
+
+                <div>
+
+                    <i class="fa-solid fa-folder"></i>
+
+                    Teachers
+
+                    <span class="founder-count">
+                        ${teachers.length}
+                    </span>
+
+                </div>
+
+
+                <i
+                    id="adminTeachersSectionIcon"
+                    class="fa-solid fa-chevron-down"
+                ></i>
+
+            </div>
+
+
+            <div
+                id="adminTeachersSection"
+                class="founder-section-content"
+            >
+
+                ${
+                    teachers.length
+                        ? teachers.map(
+                            teacher => `
+
+                                <div
+                                    class="founder-person-item"
+                                    onclick="openContactById('${teacher._id}')"
+                                >
+
+                                    <div class="avatar">
+
+                                        ${getInitial(
+                                            teacher.name
+                                        )}
+
+                                    </div>
+
+
+                                    <div class="contact-info">
+
+                                        <div class="contact-name">
+
+                                            ${escapeHtml(
+                                                teacher.name
+                                            )}
+
+                                        </div>
+
+
+                                        <div class="contact-role">
+
+                                            Teacher ID:
+                                            ${
+                                                escapeHtml(
+                                                    teacher.teacherId ||
+                                                    "Not available"
+                                                )
+                                            }
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            `
+                        ).join("")
+                        : `
+                            <div class="founder-empty">
+
+                                No teachers found.
+
+                            </div>
+                        `
+                }
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    // -------------------------------------------------
+    // OPEN BOTH FOLDERS
+    // -------------------------------------------------
+
+    const studentsSection =
+        document.getElementById(
+            "adminStudentsSection"
+        );
+
+
+    const teachersSection =
+        document.getElementById(
+            "adminTeachersSection"
+        );
+
+
+    if (studentsSection) {
+
+        studentsSection.style.display =
+            "block";
+
+    }
+
+
+    if (teachersSection) {
+
+        teachersSection.style.display =
+            "block";
+
+    }
+
+}
+
+// =========================================================
+// TOGGLE ADMIN FOLDER
+// =========================================================
+
+function toggleAdminSection(
+    sectionId
+) {
+
+    const section =
+        document.getElementById(
+            sectionId
+        );
+
+
+    if (!section) {
+
+        return;
+
+    }
+
+
+    const isOpen =
+        section.style.display !==
+        "none";
+
+
+    section.style.display =
+        isOpen
+            ? "none"
+            : "block";
+
+
+    const iconId =
+        sectionId ===
+        "adminStudentsSection"
+
+            ? "adminStudentsSectionIcon"
+
+            : "adminTeachersSectionIcon";
+
+
+    const icon =
+        document.getElementById(
+            iconId
+        );
+
+
+    if (icon) {
+
+        icon.className =
+            isOpen
+                ? "fa-solid fa-chevron-right"
+                : "fa-solid fa-chevron-down";
+
+    }
+
+}
+
+// =========================================================
+// OPEN ADMIN CONTACT
+// =========================================================
+
+function openContactById(
+    userId
+) {
+
+    const contact =
+        contacts.find(
+            item =>
+                String(
+                    item._id
+                ) ===
+                String(
+                    userId
+                )
+        );
+
+
+    if (!contact) {
+
+        return;
+
+    }
+
+
+    openContact(
+        contact
+    );
+
+}
+
 
 // =========================================================
 // RENDER FOUNDER CONVERSATIONS
