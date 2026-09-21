@@ -6037,6 +6037,43 @@ function startCallerVoiceConnection() {
 
         });
 
+        // =========================================================
+// ADD RECEIVER MICROPHONE TO WEBRTC CALL
+// =========================================================
+
+try {
+
+    voiceLocalStream =
+        await navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: false
+        });
+
+    voiceLocalStream
+        .getTracks()
+        .forEach(track => {
+
+            voicePeerConnection.addTrack(
+                track,
+                voiceLocalStream
+            );
+
+        });
+
+    console.log(
+        "Receiver microphone added successfully."
+    );
+
+}
+catch (error) {
+
+    console.error(
+        "RECEIVER MICROPHONE ERROR:",
+        error
+    );
+
+}
+
 
         // -------------------------------------------------
 // SEND ICE CANDIDATES THROUGH SOCKET.IO
