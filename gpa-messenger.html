@@ -2524,9 +2524,6 @@ function openContactById(
 }
 
 
-// =========================================================
-// RENDER FOUNDER CONVERSATIONS
-// =========================================================
 
 // =========================================================
 // RENDER FOUNDER PANEL
@@ -2550,6 +2547,65 @@ function renderFounderConversations() {
                 contact.role ===
                 "student"
         );
+
+        // =================================================
+// FOUNDER PERSONAL STUDENT/TEACHER CONVERSATIONS
+// =================================================
+
+const personalConversationForPerson = (personId) => {
+
+    return conversations.find(
+        conversation => {
+
+            const participants =
+                conversation.participants || [];
+
+            // Personal chat only
+            if (
+                conversation.conversationType !==
+                "direct"
+            ) {
+                return false;
+            }
+
+            // Exactly Founder + one person
+            if (
+                participants.length !== 2
+            ) {
+                return false;
+            }
+
+            const hasFounder =
+                participants.some(
+                    participant =>
+                        String(
+                            participant._id
+                        ) ===
+                        String(
+                            getCurrentUserId()
+                        )
+                );
+
+            const hasPerson =
+                participants.some(
+                    participant =>
+                        String(
+                            participant._id
+                        ) ===
+                        String(
+                            personId
+                        )
+                );
+
+            return (
+                hasFounder &&
+                hasPerson
+            );
+
+        }
+    );
+
+};
 
 
     const teachers =
@@ -2734,64 +2790,9 @@ const groupConversations =
                 // PERSONAL DIRECT CONVERSATION
 
                 const conversation =
-                    conversations.find(
-                        item => {
-
-                            const participants =
-                                item.participants || [];
-
-
-                            if (
-                                item.conversationType !==
-                                "direct"
-                            ) {
-
-                                return false;
-
-                            }
-
-
-                            if (
-                                participants.length !==
-                                2
-                            ) {
-
-                                return false;
-
-                            }
-
-
-                            const hasFounder =
-                                participants.some(
-                                    participant =>
-                                        String(
-                                            participant._id
-                                        ) ===
-                                        String(
-                                            getCurrentUserId()
-                                        )
-                                );
-
-
-                            const hasStudent =
-                                participants.some(
-                                    participant =>
-                                        String(
-                                            participant._id
-                                        ) ===
-                                        String(
-                                            student._id
-                                        )
-                                );
-
-
-                            return (
-                                hasFounder &&
-                                hasStudent
-                            );
-
-                        }
-                    );
+    personalConversationForPerson(
+        student._id
+    );
 
 
                 const unread =
