@@ -1819,6 +1819,102 @@ socket.on(
 );
 
 // =========================================================
+// VOICE CALL ENDED
+// =========================================================
+
+socket.on(
+    "voiceCallEnded",
+    () => {
+
+        console.log(
+            "Voice call ended."
+        );
+
+        // Stop call timer
+        clearInterval(
+            voiceCallTimer
+        );
+
+        voiceCallTimer =
+            null;
+
+        voiceCallStartTime =
+            null;
+
+        // Reset duration display
+        const durationText =
+            document.getElementById(
+                "gpaCallDuration"
+            );
+
+        if (durationText) {
+
+            durationText.innerText =
+                "00:00";
+
+        }
+
+        // Stop microphone
+        if (voiceLocalStream) {
+
+            voiceLocalStream
+                .getTracks()
+                .forEach(
+                    track => {
+                        track.stop();
+                    }
+                );
+
+            voiceLocalStream =
+                null;
+
+        }
+
+        // Close WebRTC connection
+        if (voicePeerConnection) {
+
+            voicePeerConnection.close();
+
+            voicePeerConnection =
+                null;
+
+        }
+
+        // Remove remote audio
+        const audio =
+            document.getElementById(
+                "gpaRemoteVoiceAudio"
+            );
+
+        if (audio) {
+
+            audio.srcObject =
+                null;
+
+            audio.remove();
+
+        }
+
+        // Remove call screen
+        const callBox =
+            document.getElementById(
+                "gpaIncomingCall"
+            );
+
+        if (callBox) {
+
+            callBox.remove();
+
+        }
+
+        // Clear active call
+        window.gpaActiveCall =
+            null;
+
+    }
+);
+
+// =========================================================
 // RECEIVE WEBRTC OFFER
 // =========================================================
 
