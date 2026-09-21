@@ -4374,28 +4374,90 @@ function handleNotification(
 }
 
 
+
+
 /* =========================================================
-   FIND CONVERSATION
+   FIND PERSONAL DIRECT CONVERSATION FOR CONTACT
    ========================================================= */
 
 function findConversationForContact(
     contact
 ) {
 
+    const currentUserId =
+        getCurrentUserId();
+
+
     return conversations.find(
         conversation => {
 
-            return conversation.participants?.some(
-                participant => {
+            const participants =
+                conversation.participants || [];
 
-                    return String(
-                        participant._id
-                    ) ===
-                    String(
-                        contact._id
-                    );
 
-                }
+            // -------------------------------------------------
+            // PERSONAL CHAT MUST BE DIRECT
+            // -------------------------------------------------
+
+            if (
+                conversation.conversationType !==
+                "direct"
+            ) {
+
+                return false;
+
+            }
+
+
+            // -------------------------------------------------
+            // PERSONAL CHAT MUST HAVE EXACTLY 2 PEOPLE
+            // -------------------------------------------------
+
+            if (
+                participants.length !==
+                2
+            ) {
+
+                return false;
+
+            }
+
+
+            // -------------------------------------------------
+            // CURRENT USER MUST BE ONE PARTICIPANT
+            // -------------------------------------------------
+
+            const hasCurrentUser =
+                participants.some(
+                    participant =>
+                        String(
+                            participant._id
+                        ) ===
+                        String(
+                            currentUserId
+                        )
+                );
+
+
+            // -------------------------------------------------
+            // SELECTED CONTACT MUST BE THE OTHER PERSON
+            // -------------------------------------------------
+
+            const hasContact =
+                participants.some(
+                    participant =>
+                        String(
+                            participant._id
+                        ) ===
+                        String(
+                            contact._id
+                        )
+                );
+
+
+            return (
+                hasCurrentUser &&
+                hasContact
             );
 
         }
