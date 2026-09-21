@@ -1374,6 +1374,14 @@ let selectedConversation = null;
 
 let typingTimeout = null;
 
+// =========================================================
+// WEBRTC VOICE CALL STATE
+// =========================================================
+
+let voicePeerConnection = null;
+
+let voiceLocalStream = null;
+
 
 /* =========================================================
    INITIALIZE
@@ -1794,6 +1802,354 @@ socket.on(
         alert(
             "Call accepted. Preparing voice connection..."
         );
+
+    }
+);
+
+// =========================================================
+// RECEIVE WEBRTC OFFER
+// =========================================================
+
+socket.on(
+    "voiceOffer",
+    async (data) => {
+
+        try {
+
+            console.log(
+                "WebRTC offer received:",
+                data
+            );
+
+            const {
+                conversationId,
+                callerId,
+                offer
+            } = data || {};
+
+            if (
+                !conversationId ||
+                !callerId ||
+                !offer
+            ) {
+                return;
+            }
+
+            window.gpaActiveCall = {
+                conversationId:
+                    String(conversationId),
+
+                callerId:
+                    String(callerId)
+            };
+
+            // ---------------------------------------------
+            // CREATE RECEIVER PEER CONNECTION
+            // ---------------------------------------------
+
+            voicePeerConnection =
+                new RTCPeerConnection({
+
+                    iceServers: [
+
+                        {
+                            urls:
+                                "stun:stun.l.google.com:19302"
+                        }
+
+                    ]
+
+                });
+
+                // -------------------------------------------------
+// SEND RECEIVER ICE CANDIDATES TO CALLER
+// -------------------------------------------------
+
+voicePeerConnection.onicecandidate = event => {
+
+    if (!event.candidate) {
+        return;
+    }
+
+    if (!window.gpaActiveCall) {
+        return;
+    }
+
+    socket.emit(
+        "voiceIceCandidate",
+        {
+
+            conversationId:
+                window.gpaActiveCall
+                    .conversationId,
+
+            receiverId:
+                window.gpaActiveCall
+                    .callerId,
+
+            candidate:
+                event.candidate
+
+        }
+    );
+
+};
+
+
+            // ---------------------------------------------
+            // RECEIVE REMOTE AUDIO
+            // ---------------------------------------------
+
+            voicePeerConnection.ontrack =
+                event => {
+
+                    console.log(
+                        "Remote voice audio received."
+                    );
+
+                    let audio =
+                        document.getElementById(
+                            "gpaRemoteVoiceAudio"
+                        );
+
+                    if (!audio) {
+
+                        audio =
+                            document.createElement(
+                                "audio"
+                            );
+
+                        audio.id =
+                            "gpaRemoteVoiceAudio";
+
+                        audio.autoplay = true;
+
+                        document.body.appendChild(
+                            audio
+                        );
+
+                    }
+
+                    audio.srcObject =
+                        event.streams[0];
+
+                };
+
+
+            // ---------------------------------------------
+            // SET CALLER OFFER
+            // ---------------------------------------------
+
+            await voicePeerConnection
+                .setRemoteDescription(
+                    new RTCSessionDescription(
+                        offer
+                    )
+                );
+
+            console.log(
+                "Remote offer set successfully."
+            );
+
+            // ---------------------------------------------
+// CREATE WEBRTC ANSWER
+// ---------------------------------------------
+
+const answer =
+    await voicePeerConnection
+        .createAnswer();
+
+await voicePeerConnection
+    .setLocalDescription(
+        answer
+    );
+
+console.log(
+    "Receiver WebRTC answer created."
+);
+
+// ---------------------------------------------
+// SEND ANSWER BACK TO CALLER
+// ---------------------------------------------
+
+socket.emit(
+    "voiceAnswer",
+    {
+
+        conversationId:
+            String(
+                conversationId
+            ),
+
+        callerId:
+            String(
+                callerId
+            ),
+
+        answer:
+            voicePeerConnection
+                .localDescription
+
+    }
+);
+
+        }
+        catch (error) {
+
+            console.error(
+                "RECEIVE VOICE OFFER ERROR:",
+                error
+            );
+
+        }
+
+    }
+);
+
+// =========================================================
+// RECEIVE WEBRTC ANSWER
+// =========================================================
+
+socket.on(
+    "voiceAnswer",
+    async (data) => {
+
+        try {
+
+            console.log(
+                "WebRTC answer received:",
+                data
+            );
+
+            const {
+                conversationId,
+                receiverId,
+                answer
+            } = data || {};
+
+            if (
+                !conversationId ||
+                !receiverId ||
+                !answer
+            ) {
+                return;
+            }
+
+            if (!voicePeerConnection) {
+
+                console.error(
+                    "Caller WebRTC connection not found."
+                );
+
+                return;
+
+            }
+
+            // ---------------------------------------------
+            // SAVE ACTIVE CALL INFORMATION
+            // ---------------------------------------------
+
+            window.gpaActiveCall = {
+
+                conversationId:
+                    String(
+                        conversationId
+                    ),
+
+                receiverId:
+                    String(
+                        receiverId
+                    )
+
+            };
+
+            // ---------------------------------------------
+            // SET RECEIVER ANSWER
+            // ---------------------------------------------
+
+            await voicePeerConnection
+                .setRemoteDescription(
+                    new RTCSessionDescription(
+                        answer
+                    )
+                );
+
+            console.log(
+                "Remote answer set successfully."
+            );
+
+        }
+        catch (error) {
+
+            console.error(
+                "RECEIVE VOICE ANSWER ERROR:",
+                error
+            );
+
+        }
+
+    }
+);
+
+// =========================================================
+// RECEIVE WEBRTC ICE CANDIDATE
+// =========================================================
+
+socket.on(
+    "voiceIceCandidate",
+    async (data) => {
+
+        try {
+
+            console.log(
+                "WebRTC ICE candidate received:",
+                data
+            );
+
+            const {
+                conversationId,
+                senderId,
+                candidate
+            } = data || {};
+
+            if (
+                !conversationId ||
+                !senderId ||
+                !candidate
+            ) {
+                return;
+            }
+
+            if (!voicePeerConnection) {
+
+                console.error(
+                    "WebRTC connection not found for ICE candidate."
+                );
+
+                return;
+
+            }
+
+            await voicePeerConnection
+                .addIceCandidate(
+                    new RTCIceCandidate(
+                        candidate
+                    )
+                );
+
+            console.log(
+                "Remote ICE candidate added successfully."
+            );
+
+        }
+        catch (error) {
+
+            console.error(
+                "RECEIVE VOICE ICE CANDIDATE ERROR:",
+                error
+            );
+
+        }
 
     }
 );
@@ -5629,7 +5985,22 @@ function founderVoiceCall() {
     );
 
 
-    socket.emit(
+    window.gpaActiveCall = {
+    conversationId:
+        String(selectedConversation._id),
+
+    receiverId:
+        String(selectedContact._id)
+};
+
+
+    // =================================================
+// START CALL + PREPARE CALLER WEBRTC
+// =================================================
+
+startCallerVoiceConnection();
+
+socket.emit(
     "startVoiceCall",
     {
 
@@ -5647,6 +6018,168 @@ function founderVoiceCall() {
 );
 
 }
+
+function startCallerVoiceConnection() {
+
+    // -------------------------------------------------
+    // CREATE WEBRTC CONNECTION
+    // -------------------------------------------------
+
+    voicePeerConnection =
+        new RTCPeerConnection({
+
+            iceServers: [
+                {
+                    urls:
+                        "stun:stun.l.google.com:19302"
+                }
+            ]
+
+        });
+
+
+        // -------------------------------------------------
+// SEND ICE CANDIDATES THROUGH SOCKET.IO
+// -------------------------------------------------
+
+voicePeerConnection.onicecandidate = event => {
+
+    if (!event.candidate) return;
+
+    if (!window.gpaActiveCall) return;
+
+    socket.emit("voiceIceCandidate", {
+
+        conversationId:
+            window.gpaActiveCall.conversationId,
+
+        receiverId:
+            window.gpaActiveCall.receiverId,
+
+        candidate:
+            event.candidate
+
+    });
+
+};
+
+
+    // -------------------------------------------------
+    // GET ADMIN / FOUNDER MICROPHONE
+    // -------------------------------------------------
+
+    navigator.mediaDevices
+        .getUserMedia({
+            audio: true,
+            video: false
+        })
+        .then(
+            stream => {
+
+                console.log(
+                    "Caller microphone ready."
+                );
+
+                voiceLocalStream =
+                    stream;
+
+
+                // -----------------------------------------
+                // ADD MICROPHONE TRACK TO WEBRTC
+                // -----------------------------------------
+
+                voiceLocalStream
+                    .getTracks()
+                    .forEach(
+                        track => {
+
+                            voicePeerConnection
+                                .addTrack(
+                                    track,
+                                    voiceLocalStream
+                                );
+
+                        }
+                    );
+
+                    // -------------------------------------------------
+// CREATE WEBRTC OFFER
+// -------------------------------------------------
+
+voicePeerConnection
+    .createOffer()
+    .then(
+        offer => {
+
+            return voicePeerConnection
+                .setLocalDescription(offer);
+
+        }
+    )
+    .then(
+        () => {
+
+            console.log(
+                "Caller WebRTC offer created."
+            );
+
+            socket.emit(
+                "voiceOffer",
+                {
+
+                    conversationId:
+                        window.gpaActiveCall
+                            .conversationId,
+
+                    receiverId:
+                        window.gpaActiveCall
+                            .receiverId,
+
+                    offer:
+                        voicePeerConnection
+                            .localDescription
+
+                }
+            );
+
+        }
+    )
+    .catch(
+        error => {
+
+            console.error(
+                "WEBRTC OFFER ERROR:",
+                error
+            );
+
+        }
+    );
+
+
+                console.log(
+                    "Caller audio track added to WebRTC."
+                );
+
+            }
+        )
+        .catch(
+            error => {
+
+                console.error(
+                    "CALLER MICROPHONE ERROR:",
+                    error
+                );
+
+                alert(
+                    "Microphone permission is required for voice calls."
+                );
+
+            }
+        );
+
+}
+
+
 
 
 function founderAttachment() {
