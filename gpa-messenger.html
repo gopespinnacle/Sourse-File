@@ -1455,6 +1455,26 @@ function connectMessenger() {
         }
     );
 
+    // =========================================================
+// VOICE CALL EVENTS
+// =========================================================
+
+socket.on(
+    "incomingVoiceCall",
+    (data) => {
+
+        console.log(
+            "Incoming voice call:",
+            data
+        );
+
+        alert(
+            `${data.callerName} is calling you.`
+        );
+
+    }
+);
+
 
     socket.on(
         "newMessengerMessage",
