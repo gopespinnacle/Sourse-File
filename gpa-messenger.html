@@ -4789,6 +4789,65 @@ function findConversationForContact(
         role === "student"
     ) {
 
+        // =================================================
+// TEACHER / STUDENT → FOUNDER
+// ALWAYS PRIVATE DIRECT CHAT
+// NEVER USE THE GROUP
+// =================================================
+
+if (contact.role === "founder") {
+
+    return conversations.find(
+        conversation => {
+
+            const participants =
+                conversation.participants || [];
+
+            if (
+                conversation.conversationType !==
+                "direct"
+            ) {
+                return false;
+            }
+
+            if (
+                participants.length !==
+                2
+            ) {
+                return false;
+            }
+
+            const hasCurrentUser =
+                participants.some(
+                    participant =>
+                        String(
+                            participant._id
+                        ) ===
+                        String(
+                            currentUserId
+                        )
+                );
+
+            const hasFounder =
+                participants.some(
+                    participant =>
+                        String(
+                            participant._id
+                        ) ===
+                        String(
+                            contact._id
+                        )
+                );
+
+            return (
+                hasCurrentUser &&
+                hasFounder
+            );
+        }
+    );
+
+}
+
         /*
         -----------------------------------------------------
         FIRST: FIND EXISTING GROUP
