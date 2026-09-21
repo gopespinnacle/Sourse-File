@@ -4603,6 +4603,10 @@ function handleNotification(
    FIND PERSONAL DIRECT CONVERSATION FOR CONTACT
    ========================================================= */
 
+/* =========================================================
+   FIND CONVERSATION FOR CONTACT
+   ========================================================= */
+
 function findConversationForContact(
     contact
 ) {
@@ -4611,80 +4615,322 @@ function findConversationForContact(
         getCurrentUserId();
 
 
-    return conversations.find(
-        conversation => {
+    /*
+    =========================================================
+    ADMIN
+    =========================================================
 
-            const participants =
-                conversation.participants || [];
+    Admin conversations are ALWAYS one-to-one.
+    */
 
+    if (role === "admin") {
 
-            // -------------------------------------------------
-            // PERSONAL CHAT MUST BE DIRECT
-            // -------------------------------------------------
+        return conversations.find(
+            conversation => {
 
-            if (
-                conversation.conversationType !==
-                "direct"
-            ) {
-
-                return false;
-
-            }
+                const participants =
+                    conversation.participants || [];
 
 
-            // -------------------------------------------------
-            // PERSONAL CHAT MUST HAVE EXACTLY 2 PEOPLE
-            // -------------------------------------------------
+                if (
+                    conversation.conversationType !==
+                    "direct"
+                ) {
 
-            if (
-                participants.length !==
-                2
-            ) {
+                    return false;
 
-                return false;
-
-            }
+                }
 
 
-            // -------------------------------------------------
-            // CURRENT USER MUST BE ONE PARTICIPANT
-            // -------------------------------------------------
+                if (
+                    participants.length !==
+                    2
+                ) {
 
-            const hasCurrentUser =
-                participants.some(
-                    participant =>
-                        String(
-                            participant._id
-                        ) ===
-                        String(
-                            currentUserId
-                        )
+                    return false;
+
+                }
+
+
+                const hasCurrentUser =
+                    participants.some(
+                        participant =>
+                            String(
+                                participant._id
+                            ) ===
+                            String(
+                                currentUserId
+                            )
+                    );
+
+
+                const hasContact =
+                    participants.some(
+                        participant =>
+                            String(
+                                participant._id
+                            ) ===
+                            String(
+                                contact._id
+                            )
+                    );
+
+
+                return (
+                    hasCurrentUser &&
+                    hasContact
                 );
 
+            }
+        );
 
-            // -------------------------------------------------
-            // SELECTED CONTACT MUST BE THE OTHER PERSON
-            // -------------------------------------------------
+    }
 
-            const hasContact =
-                participants.some(
-                    participant =>
-                        String(
-                            participant._id
-                        ) ===
-                        String(
-                            contact._id
-                        )
+
+    /*
+    =========================================================
+    FOUNDER
+    =========================================================
+
+    Founder personal conversations are ALWAYS direct.
+    Groups are handled separately by Founder code.
+    */
+
+    if (role === "founder") {
+
+        return conversations.find(
+            conversation => {
+
+                const participants =
+                    conversation.participants || [];
+
+
+                if (
+                    conversation.conversationType !==
+                    "direct"
+                ) {
+
+                    return false;
+
+                }
+
+
+                if (
+                    participants.length !==
+                    2
+                ) {
+
+                    return false;
+
+                }
+
+
+                const hasCurrentUser =
+                    participants.some(
+                        participant =>
+                            String(
+                                participant._id
+                            ) ===
+                            String(
+                                currentUserId
+                            )
+                    );
+
+
+                const hasContact =
+                    participants.some(
+                        participant =>
+                            String(
+                                participant._id
+                            ) ===
+                            String(
+                                contact._id
+                            )
+                    );
+
+
+                return (
+                    hasCurrentUser &&
+                    hasContact
                 );
 
+            }
+        );
 
-            return (
-                hasCurrentUser &&
-                hasContact
+    }
+
+
+    /*
+    =========================================================
+    TEACHER / STUDENT
+    =========================================================
+
+    IMPORTANT:
+
+    Teacher <-> Student conversation can be:
+
+    1. direct
+       Teacher + Student
+
+    OR
+
+    2. group
+       Teacher + Student + Founder
+
+    We must find BOTH.
+
+    NEVER create a new conversation if one of
+    these already exists.
+    */
+
+
+    if (
+        role === "teacher" ||
+        role === "student"
+    ) {
+
+        /*
+        -----------------------------------------------------
+        FIRST: FIND EXISTING GROUP
+        -----------------------------------------------------
+        */
+
+        const groupConversation =
+            conversations.find(
+                conversation => {
+
+                    const participants =
+                        conversation.participants ||
+                        [];
+
+
+                    const hasCurrentUser =
+                        participants.some(
+                            participant =>
+                                String(
+                                    participant._id
+                                ) ===
+                                String(
+                                    currentUserId
+                                )
+                        );
+
+
+                    const hasContact =
+                        participants.some(
+                            participant =>
+                                String(
+                                    participant._id
+                                ) ===
+                                String(
+                                    contact._id
+                                )
+                        );
+
+
+                    return (
+                        hasCurrentUser &&
+                        hasContact &&
+                        (
+                            conversation.conversationType ===
+                            "group"
+                            ||
+                            participants.length >
+                            2
+                        )
+                    );
+
+                }
             );
 
+
+        if (groupConversation) {
+
+            return groupConversation;
+
         }
-    );
+
+
+        /*
+        -----------------------------------------------------
+        SECOND: FIND EXISTING DIRECT
+        -----------------------------------------------------
+        */
+
+        const directConversation =
+            conversations.find(
+                conversation => {
+
+                    const participants =
+                        conversation.participants ||
+                        [];
+
+
+                    if (
+                        conversation.conversationType !==
+                        "direct"
+                    ) {
+
+                        return false;
+
+                    }
+
+
+                    if (
+                        participants.length !==
+                        2
+                    ) {
+
+                        return false;
+
+                    }
+
+
+                    const hasCurrentUser =
+                        participants.some(
+                            participant =>
+                                String(
+                                    participant._id
+                                ) ===
+                                String(
+                                    currentUserId
+                                )
+                        );
+
+
+                    const hasContact =
+                        participants.some(
+                            participant =>
+                                String(
+                                    participant._id
+                                ) ===
+                                String(
+                                    contact._id
+                                )
+                        );
+
+
+                    return (
+                        hasCurrentUser &&
+                        hasContact
+                    );
+
+                }
+            );
+
+
+        return directConversation;
+
+    }
+
+
+    /*
+    =========================================================
+    FALLBACK
+    =========================================================
+    */
+
+    return undefined;
 
 }
 
