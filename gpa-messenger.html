@@ -5283,8 +5283,56 @@ function goBack() {
 
 function founderVoiceCall() {
 
-    alert(
-        "Founder voice calling will be connected in the next step."
+    // -------------------------------------------------
+    // MAKE SURE A CONVERSATION IS SELECTED
+    // -------------------------------------------------
+
+    if (!selectedConversation) {
+
+        alert(
+            "Please select a conversation first."
+        );
+
+        return;
+
+    }
+
+
+    // -------------------------------------------------
+    // MAKE SURE SOCKET IS CONNECTED
+    // -------------------------------------------------
+
+    if (!socket) {
+
+        alert(
+            "Messenger connection is not ready."
+        );
+
+        return;
+
+    }
+
+
+    // -------------------------------------------------
+    // START VOICE CALL
+    // -------------------------------------------------
+
+    console.log(
+        "Starting voice call:",
+        selectedConversation._id
+    );
+
+
+    socket.emit(
+        "startVoiceCall",
+        {
+
+            conversationId:
+                String(
+                    selectedConversation._id
+                )
+
+        }
     );
 
 }
