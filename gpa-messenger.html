@@ -1224,10 +1224,7 @@ const token =
     localStorage.getItem("token");
 
 
-const role =
-    sessionStorage.getItem("role") ||
-    localStorage.getItem("role");
-
+let role = null;
 
 /* =========================================================
    AUTH CHECK
@@ -1474,13 +1471,33 @@ async function loadCurrentUser() {
 
 
         currentUser =
-            data.user;
+    data.user;
 
 
-        console.log(
-            "GPA Messenger current user:",
-            currentUser
-        );
+// Use the authenticated user's actual role
+role =
+    currentUser.role;
+
+
+// Founder-only UI mode
+if (role === "founder") {
+
+    document.body.classList.add(
+        "founder-mode"
+    );
+
+}
+
+
+console.log(
+    "GPA Messenger current user:",
+    currentUser
+);
+
+console.log(
+    "GPA Messenger role:",
+    role
+);
 
 
         return true;
