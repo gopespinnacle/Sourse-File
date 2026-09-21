@@ -3904,20 +3904,22 @@ async function openContact(
 ) {
 
     selectedContact =
-        contact;
+    contact;
 
-        localStorage.setItem(
+localStorage.setItem(
     "gpaMessengerSelectedContactId",
     String(contact._id)
 );
 
 
-    document.body.classList.add(
-        "mobile-chat-open"
-    );
+document.body.classList.add(
+    "mobile-chat-open"
+);
 
 
-    updateSelectedContact();
+updateSelectedContact();
+
+updateMessageInputState();
 
 
     let conversation =
@@ -5088,7 +5090,57 @@ function updateSelectedContact() {
 
 }
 
+/* =========================================================
+   DISABLE REPLY TO ADMIN
+   TEACHER / STUDENT CANNOT REPLY TO ADMIN
+   ========================================================= */
 
+function updateMessageInputState() {
+
+    const inputArea =
+        document.querySelector(
+            ".message-input-area"
+        );
+
+    const input =
+        document.getElementById(
+            "messageInput"
+        );
+
+    const sendButton =
+        document.getElementById(
+            "sendButton"
+        );
+
+
+    // -------------------------------------------------
+    // Teacher / Student viewing Admin conversation
+    // -------------------------------------------------
+
+    if (
+        (role === "teacher" || role === "student") &&
+        selectedContact &&
+        selectedContact.role === "admin"
+    ) {
+
+        inputArea.style.display = "none";
+
+        return;
+
+    }
+
+
+    // -------------------------------------------------
+    // All other conversations
+    // -------------------------------------------------
+
+    inputArea.style.display = "flex";
+
+    input.disabled = false;
+
+    sendButton.disabled = false;
+
+}
 /* =========================================================
    SEARCH
    ========================================================= */
