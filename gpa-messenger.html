@@ -688,6 +688,43 @@ body {
 
 }
 
+.message-sender-name {
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    color: #64748b;
+
+    margin-bottom: 4px;
+
+    padding: 0 4px;
+
+}
+
+
+.message-row.mine {
+
+    justify-content: flex-end;
+
+}
+
+
+.message-row.mine
+.message-sender-name {
+
+    text-align: right;
+
+}
+
+
+.message-row.theirs
+.message-sender-name {
+
+    text-align: left;
+
+}
+
 
 .message-row.mine {
 
@@ -2940,6 +2977,39 @@ function appendMessage(
         String(currentUserId);
 
 
+    // -------------------------------------------------
+    // GET SENDER NAME
+    // -------------------------------------------------
+
+    let senderName =
+        "User";
+
+
+    if (
+        message.sender &&
+        typeof message.sender === "object"
+    ) {
+
+        if (
+            message.sender.role ===
+            "founder"
+        ) {
+
+            senderName =
+                "Founder";
+
+        }
+        else {
+
+            senderName =
+                message.sender.name ||
+                "User";
+
+        }
+
+    }
+
+
     const row =
         document.createElement(
             "div"
@@ -2958,6 +3028,43 @@ function appendMessage(
     row.dataset.messageId =
         message._id;
 
+
+    // -------------------------------------------------
+    // MESSAGE CONTENT WRAPPER
+    // -------------------------------------------------
+
+    const messageWrapper =
+        document.createElement(
+            "div"
+        );
+
+
+    // -------------------------------------------------
+    // SENDER NAME
+    // -------------------------------------------------
+
+    const senderLabel =
+        document.createElement(
+            "div"
+        );
+
+
+    senderLabel.className =
+        "message-sender-name";
+
+
+    senderLabel.innerText =
+        senderName;
+
+
+    messageWrapper.appendChild(
+        senderLabel
+    );
+
+
+    // -------------------------------------------------
+    // MESSAGE BUBBLE
+    // -------------------------------------------------
 
     const bubble =
         document.createElement(
@@ -2984,6 +3091,10 @@ function appendMessage(
     );
 
 
+    // -------------------------------------------------
+    // TIME
+    // -------------------------------------------------
+
     const time =
         document.createElement(
             "span"
@@ -3005,8 +3116,13 @@ function appendMessage(
     );
 
 
-    row.appendChild(
+    messageWrapper.appendChild(
         bubble
+    );
+
+
+    row.appendChild(
+        messageWrapper
     );
 
 
@@ -3022,7 +3138,6 @@ function appendMessage(
     }
 
 }
-
 
 /* =========================================================
    SEND MESSAGE
