@@ -1966,6 +1966,44 @@ function renderFounderConversations() {
                 "teacher"
         );
 
+        // -------------------------------------------------
+// GROUP CONVERSATIONS
+// ONLY conversations containing BOTH:
+// Teacher + Student
+// -------------------------------------------------
+
+const groupConversations =
+    conversations.filter(
+        conversation => {
+
+            const participants =
+                conversation.participants || [];
+
+
+            const hasTeacher =
+                participants.some(
+                    participant =>
+                        participant.role ===
+                        "teacher"
+                );
+
+
+            const hasStudent =
+                participants.some(
+                    participant =>
+                        participant.role ===
+                        "student"
+                );
+
+
+            return (
+                hasTeacher &&
+                hasStudent
+            );
+
+        }
+    );
+
 
     // -------------------------------------------------
     // BUILD FOUNDER PANEL
@@ -2187,7 +2225,7 @@ function renderFounderConversations() {
             Groups
 
             <span class="founder-count">
-                ${conversations.length}
+                ${groupConversations.length}
             </span>
 
         </div>
@@ -2206,9 +2244,9 @@ function renderFounderConversations() {
     >
 
                 ${
-                    conversations.length
-                        ? conversations.map(
-                            conversation => {
+                    groupConversations.length
+    ? groupConversations.map(
+        conversation => {
 
                                 const participants =
                                     conversation.participants ||
@@ -2333,11 +2371,11 @@ function renderFounderConversations() {
                         ).join("")
                         : `
 
-                            <div class="founder-empty">
+                          <div class="founder-empty">
 
-                                No conversations available.
+    No group conversations available.
 
-                            </div>
+</div>
 
                         `
                 }
