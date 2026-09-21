@@ -1484,9 +1484,268 @@ socket.on(
             data
         );
 
-        alert(
-            `${data.callerName} is calling you.`
+        // Remove any existing incoming call box
+        const oldCall =
+            document.getElementById(
+                "gpaIncomingCall"
+            );
+
+        if (oldCall) {
+            oldCall.remove();
+        }
+
+        // Create incoming call screen
+        const callBox =
+            document.createElement(
+                "div"
+            );
+
+        callBox.id =
+            "gpaIncomingCall";
+
+        callBox.innerHTML = `
+
+            <div
+                style="
+                    position:fixed;
+                    inset:0;
+                    background:rgba(0,0,0,0.88);
+                    z-index:99999;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    font-family:Arial,sans-serif;
+                "
+            >
+
+                <div
+                    style="
+                        width:90%;
+                        max-width:380px;
+                        background:#1f1f1f;
+                        border-radius:28px;
+                        padding:35px 25px;
+                        text-align:center;
+                        color:white;
+                        box-shadow:0 15px 50px rgba(0,0,0,0.5);
+                    "
+                >
+
+                    <div
+                        style="
+                            width:90px;
+                            height:90px;
+                            margin:0 auto 20px;
+                            border-radius:50%;
+                            background:#3b82f6;
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                            font-size:42px;
+                        "
+                    >
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+
+                    <div
+                        style="
+                            font-size:16px;
+                            opacity:0.75;
+                            margin-bottom:8px;
+                        "
+                    >
+                        Incoming Voice Call
+                    </div>
+
+                    <div
+                        style="
+                            font-size:26px;
+                            font-weight:bold;
+                            margin-bottom:8px;
+                        "
+                    >
+                        ${data.callerName || "Unknown"}
+                    </div>
+
+                    <div
+                        style="
+                            font-size:14px;
+                            opacity:0.65;
+                            margin-bottom:35px;
+                        "
+                    >
+                        ${data.callerRole || ""}
+                    </div>
+
+                    <div
+                        style="
+                            display:flex;
+                            justify-content:center;
+                            gap:45px;
+                        "
+                    >
+
+                        <button
+                            id="gpaDeclineCall"
+                            style="
+                                width:65px;
+                                height:65px;
+                                border:none;
+                                border-radius:50%;
+                                background:#ef4444;
+                                color:white;
+                                font-size:25px;
+                                cursor:pointer;
+                            "
+                        >
+                            <i class="fa-solid fa-phone-slash"></i>
+                        </button>
+
+                        <button
+                            id="gpaAcceptCall"
+                            style="
+                                width:65px;
+                                height:65px;
+                                border:none;
+                                border-radius:50%;
+                                background:#22c55e;
+                                color:white;
+                                font-size:25px;
+                                cursor:pointer;
+                            "
+                        >
+                            <i class="fa-solid fa-phone"></i>
+                        </button>
+
+                    </div>
+
+                    <div
+                        style="
+                            display:flex;
+                            justify-content:center;
+                            gap:58px;
+                            margin-top:10px;
+                            font-size:13px;
+                            opacity:0.7;
+                        "
+                    >
+                        <span>Decline</span>
+                        <span>Accept</span>
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+
+        document.body.appendChild(
+            callBox
         );
+
+
+        // -----------------------------
+        // DECLINE CALL
+        // -----------------------------
+
+        document
+            .getElementById(
+                "gpaDeclineCall"
+            )
+            .onclick = () => {
+
+                console.log(
+                    "Voice call declined"
+                );
+
+                socket.emit(
+                    "rejectVoiceCall",
+                    {
+                        conversationId:
+                            data.conversationId,
+
+                        callerId:
+                            data.callerId
+                    }
+                );
+
+                callBox.remove();
+            };
+
+
+        // -----------------------------
+        // ACCEPT CALL
+        // -----------------------------
+
+        document
+            .getElementById(
+                "gpaAcceptCall"
+            )
+            .onclick = () => {
+
+                console.log(
+                    "Voice call accepted"
+                );
+
+                // Keep the call information
+                // for the next WebRTC step
+                window.gpaActiveCall = {
+                    conversationId:
+                        data.conversationId,
+
+                    callerId:
+                        data.callerId,
+
+                    callerName:
+                        data.callerName,
+
+                    callerRole:
+                        data.callerRole
+                };
+
+                // Temporary visual change
+                callBox.querySelector(
+                    "div > div"
+                ).innerHTML = `
+
+                    <div
+                        style="
+                            width:90px;
+                            height:90px;
+                            margin:0 auto 20px;
+                            border-radius:50%;
+                            background:#22c55e;
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                            font-size:42px;
+                        "
+                    >
+                        <i class="fa-solid fa-phone"></i>
+                    </div>
+
+                    <div
+                        style="
+                            font-size:16px;
+                            opacity:0.75;
+                            margin-bottom:8px;
+                        "
+                    >
+                        Connecting...
+                    </div>
+
+                    <div
+                        style="
+                            font-size:26px;
+                            font-weight:bold;
+                            margin-bottom:8px;
+                        "
+                    >
+                        ${data.callerName || "Unknown"}
+                    </div>
+
+                `;
+
+            };
 
     }
 );
