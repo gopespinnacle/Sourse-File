@@ -1677,32 +1677,50 @@ socket.on(
         // -----------------------------
 
         document
-            .getElementById(
-                "gpaAcceptCall"
-            )
-            .onclick = () => {
+    .getElementById(
+        "gpaAcceptCall"
+    )
+    .onclick = () => {
 
-                console.log(
-                    "Voice call accepted"
-                );
+        console.log(
+            "Voice call accepted"
+        );
 
-                // Keep the call information
-                // for the next WebRTC step
-                window.gpaActiveCall = {
-                    conversationId:
-                        data.conversationId,
+        // -------------------------------------------------
+        // TELL CALLER THAT THE CALL WAS ACCEPTED
+        // -------------------------------------------------
 
-                    callerId:
-                        data.callerId,
+        socket.emit(
+            "acceptVoiceCall",
+            {
+                conversationId:
+                    data.conversationId,
 
-                    callerName:
-                        data.callerName,
+                callerId:
+                    data.callerId
+            }
+        );
 
-                    callerRole:
-                        data.callerRole
-                };
+        // -------------------------------------------------
+        // KEEP ACTIVE CALL INFORMATION
+        // -------------------------------------------------
 
-                // Temporary visual change
+        window.gpaActiveCall = {
+            conversationId:
+                data.conversationId,
+
+            callerId:
+                data.callerId,
+
+            callerName:
+                data.callerName,
+
+            callerRole:
+                data.callerRole
+        };
+
+        // Temporary visual change
+    
                 callBox.querySelector(
                     "div > div"
                 ).innerHTML = `
@@ -1750,6 +1768,35 @@ socket.on(
     }
 );
 
+// =========================================================
+// VOICE CALL ACCEPTED
+// =========================================================
+
+socket.on(
+    "voiceCallAccepted",
+    (data) => {
+
+        console.log(
+            "Voice call accepted:",
+            data
+        );
+
+        // Store accepted call information
+        window.gpaActiveCall = {
+            conversationId:
+                data.conversationId,
+
+            otherUserId:
+                data.acceptedBy
+        };
+
+        // Temporary status for testing
+        alert(
+            "Call accepted. Preparing voice connection..."
+        );
+
+    }
+);
 
     socket.on(
         "newMessengerMessage",
