@@ -6074,7 +6074,57 @@ function startCallerVoiceConnection() {
 
         });
 
-        
+        // =========================================================
+// RECEIVE REMOTE VOICE AUDIO
+// =========================================================
+
+voicePeerConnection.ontrack =
+    event => {
+
+        console.log(
+            "Remote voice audio received by caller."
+        );
+
+        let audio =
+            document.getElementById(
+                "gpaRemoteVoiceAudio"
+            );
+
+        if (!audio) {
+
+            audio =
+                document.createElement(
+                    "audio"
+                );
+
+            audio.id =
+                "gpaRemoteVoiceAudio";
+
+            audio.autoplay = true;
+
+            audio.controls = false;
+
+            document.body.appendChild(
+                audio
+            );
+
+        }
+
+        audio.srcObject =
+            event.streams[0];
+
+        audio.play().catch(
+            error => {
+
+                console.log(
+                    "Remote audio playback waiting:",
+                    error
+                );
+
+            }
+        );
+
+    };
 
 
         // -------------------------------------------------
