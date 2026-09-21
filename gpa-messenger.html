@@ -330,6 +330,203 @@ body {
 
 }
 
+/* =========================================================
+   FOUNDER FOLDERS
+   ========================================================= */
+
+.founder-section {
+
+    border-bottom:
+        1px solid #e2e8f0;
+
+}
+
+
+.founder-section-header {
+
+    min-height: 52px;
+
+    padding:
+        0 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    cursor: pointer;
+
+    background: #f8fafc;
+
+    color: #172033;
+
+    font-weight: 700;
+
+    font-size: 14px;
+
+}
+
+
+.founder-section-header:hover {
+
+    background: #eff6ff;
+
+}
+
+
+.founder-section-header > div {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+}
+
+
+.founder-section-header
+.fa-folder {
+
+    color: #f59e0b;
+
+}
+
+
+.founder-count {
+
+    min-width: 22px;
+
+    height: 20px;
+
+    padding: 0 6px;
+
+    border-radius: 10px;
+
+    background: #e2e8f0;
+
+    color: #475569;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 11px;
+
+}
+
+
+.founder-section-content {
+
+    display: block;
+
+}
+
+
+.founder-person-item {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding:
+        10px 14px;
+
+    border-bottom:
+        1px solid #f1f5f9;
+
+}
+
+
+.founder-person-item
+.avatar {
+
+    width: 38px;
+
+    height: 38px;
+
+    min-width: 38px;
+
+    font-size: 14px;
+
+}
+
+
+.founder-person-item
+.contact-role {
+
+    font-size: 11px;
+
+    color: #64748b;
+
+}
+
+
+.founder-conversation-item {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding:
+        12px 14px;
+
+    cursor: pointer;
+
+    border-bottom:
+        1px solid #f1f5f9;
+
+}
+
+
+.founder-conversation-item:hover {
+
+    background: #f8fafc;
+
+}
+
+
+.founder-conversation-item.active {
+
+    background: #eff6ff;
+
+}
+
+
+.founder-conversation-item
+.avatar {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 15px;
+
+}
+
+
+.founder-empty {
+
+    padding:
+        18px 14px;
+
+    text-align: center;
+
+    color: #94a3b8;
+
+    font-size: 12px;
+
+}
+
 
 /* =========================================================
    CHAT AREA
@@ -1619,6 +1816,10 @@ function renderContacts(
 // RENDER FOUNDER CONVERSATIONS
 // =========================================================
 
+// =========================================================
+// RENDER FOUNDER PANEL
+// =========================================================
+
 function renderFounderConversations() {
 
     const container =
@@ -1627,165 +1828,552 @@ function renderFounderConversations() {
         );
 
 
-    if (!conversations.length) {
+    // -------------------------------------------------
+    // SEPARATE STUDENTS AND TEACHERS
+    // -------------------------------------------------
 
-        container.innerHTML = `
+    const students =
+        contacts.filter(
+            contact =>
+                contact.role ===
+                "student"
+        );
+
+
+    const teachers =
+        contacts.filter(
+            contact =>
+                contact.role ===
+                "teacher"
+        );
+
+
+    // -------------------------------------------------
+    // BUILD FOUNDER PANEL
+    // -------------------------------------------------
+
+    container.innerHTML = `
+
+        <!-- =========================================
+             STUDENTS
+        ========================================== -->
+
+        <div class="founder-section">
 
             <div
-                style="
-                padding:30px;
-                text-align:center;
-                color:#64748b;
-                ">
+                class="founder-section-header"
+                onclick="toggleFounderSection('studentsSection')"
+            >
 
-                No conversations available.
+                <div>
+
+                    <i class="fa-solid fa-folder"></i>
+
+                    Students
+
+                    <span class="founder-count">
+                        ${students.length}
+                    </span>
+
+                </div>
+
+                <i
+                    id="studentsSectionIcon"
+                    class="fa-solid fa-chevron-down"
+                ></i>
 
             </div>
 
-        `;
+
+            <div
+                id="studentsSection"
+                class="founder-section-content"
+            >
+
+                ${
+                    students.length
+                        ? students.map(
+                            student => `
+
+                                <div
+                                    class="founder-person-item"
+                                >
+
+                                    <div class="avatar">
+
+                                        ${getInitial(
+                                            student.name
+                                        )}
+
+                                    </div>
+
+
+                                    <div class="contact-info">
+
+                                        <div class="contact-name">
+
+                                            ${escapeHtml(
+                                                student.name
+                                            )}
+
+                                        </div>
+
+
+                                        <div class="contact-role">
+
+                                            Student ID:
+                                            ${
+                                                escapeHtml(
+                                                    student.studentId ||
+                                                    "Not available"
+                                                )
+                                            }
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            `
+                        ).join("")
+                        : `
+                            <div class="founder-empty">
+
+                                No students found.
+
+                            </div>
+                        `
+                }
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             TEACHERS
+        ========================================== -->
+
+        <div class="founder-section">
+
+            <div
+                class="founder-section-header"
+                onclick="toggleFounderSection('teachersSection')"
+            >
+
+                <div>
+
+                    <i class="fa-solid fa-folder"></i>
+
+                    Teachers
+
+                    <span class="founder-count">
+                        ${teachers.length}
+                    </span>
+
+                </div>
+
+                <i
+                    id="teachersSectionIcon"
+                    class="fa-solid fa-chevron-down"
+                ></i>
+
+            </div>
+
+
+            <div
+                id="teachersSection"
+                class="founder-section-content"
+            >
+
+                ${
+                    teachers.length
+                        ? teachers.map(
+                            teacher => `
+
+                                <div
+                                    class="founder-person-item"
+                                >
+
+                                    <div class="avatar">
+
+                                        ${getInitial(
+                                            teacher.name
+                                        )}
+
+                                    </div>
+
+
+                                    <div class="contact-info">
+
+                                        <div class="contact-name">
+
+                                            ${escapeHtml(
+                                                teacher.name
+                                            )}
+
+                                        </div>
+
+
+                                        <div class="contact-role">
+
+                                            Teacher ID:
+                                            ${
+                                                escapeHtml(
+                                                    teacher.teacherId ||
+                                                    "Not available"
+                                                )
+                                            }
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            `
+                        ).join("")
+                        : `
+                            <div class="founder-empty">
+
+                                No teachers found.
+
+                            </div>
+                        `
+                }
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             EXISTING CONVERSATIONS
+        ========================================== -->
+
+        <div class="founder-section">
+
+            <div
+                class="founder-section-header"
+                onclick="toggleFounderSection('conversationsSection')"
+            >
+
+                <div>
+
+                    <i class="fa-solid fa-comments"></i>
+
+                    Conversations
+
+                    <span class="founder-count">
+                        ${conversations.length}
+                    </span>
+
+                </div>
+
+                <i
+                    id="conversationsSectionIcon"
+                    class="fa-solid fa-chevron-down"
+                ></i>
+
+            </div>
+
+
+            <div
+                id="conversationsSection"
+                class="founder-section-content"
+            >
+
+                ${
+                    conversations.length
+                        ? conversations.map(
+                            conversation => {
+
+                                const participants =
+                                    conversation.participants ||
+                                    [];
+
+
+                                const teacher =
+                                    participants.find(
+                                        participant =>
+                                            participant.role ===
+                                            "teacher"
+                                    );
+
+
+                                const student =
+                                    participants.find(
+                                        participant =>
+                                            participant.role ===
+                                            "student"
+                                    );
+
+
+                                const unread =
+                                    getUnreadCount(
+                                        conversation
+                                    );
+
+
+                                const isActive =
+                                    selectedConversation &&
+                                    String(
+                                        selectedConversation._id
+                                    ) ===
+                                    String(
+                                        conversation._id
+                                    );
+
+
+                                return `
+
+                                    <div
+                                        class="
+                                            founder-conversation-item
+                                            ${
+                                                isActive
+                                                    ? "active"
+                                                    : ""
+                                            }
+                                        "
+                                        onclick="openFounderConversationById('${conversation._id}')"
+                                    >
+
+                                        <div class="avatar">
+
+                                            <i
+                                                class="fa-solid fa-user-group"
+                                            ></i>
+
+                                        </div>
+
+
+                                        <div class="contact-info">
+
+                                            <div
+                                                class="contact-name"
+                                            >
+
+                                                ${escapeHtml(
+                                                    teacher?.name ||
+                                                    "Teacher"
+                                                )}
+
+                                                +
+
+                                                ${escapeHtml(
+                                                    student?.name ||
+                                                    "Student"
+                                                )}
+
+                                            </div>
+
+
+                                            <div
+                                                class="contact-role"
+                                            >
+
+                                                ${
+                                                    conversation.conversationType ===
+                                                    "group"
+
+                                                        ? "Founder joined"
+
+                                                        : "Teacher + Student"
+                                                }
+
+                                            </div>
+
+                                        </div>
+
+
+                                        ${
+                                            unread > 0
+                                                ? `
+
+                                                    <div
+                                                        class="unread-badge"
+                                                    >
+
+                                                        ${unread}
+
+                                                    </div>
+
+                                                `
+                                                : ""
+                                        }
+
+                                    </div>
+
+                                `;
+
+                            }
+                        ).join("")
+                        : `
+
+                            <div class="founder-empty">
+
+                                No conversations available.
+
+                            </div>
+
+                        `
+                }
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    // -------------------------------------------------
+    // DEFAULT FOLDER STATE
+    // -------------------------------------------------
+
+    const studentsSection =
+        document.getElementById(
+            "studentsSection"
+        );
+
+    const teachersSection =
+        document.getElementById(
+            "teachersSection"
+        );
+
+    const conversationsSection =
+        document.getElementById(
+            "conversationsSection"
+        );
+
+
+    // Students and Teachers open.
+    // Conversations open because this is the
+    // Founder messaging area.
+
+    if (studentsSection) {
+
+        studentsSection.style.display =
+            "block";
+
+    }
+
+
+    if (teachersSection) {
+
+        teachersSection.style.display =
+            "block";
+
+    }
+
+
+    if (conversationsSection) {
+
+        conversationsSection.style.display =
+            "block";
+
+    }
+
+}
+
+
+// =========================================================
+// OPEN FOUNDER CONVERSATION BY ID
+// =========================================================
+
+function openFounderConversationById(
+    conversationId
+) {
+
+    const conversation =
+        conversations.find(
+            item =>
+                String(
+                    item._id
+                ) ===
+                String(
+                    conversationId
+                )
+        );
+
+
+    if (!conversation) {
 
         return;
 
     }
 
 
-    container.innerHTML = "";
-
-
-    conversations.forEach(
-        conversation => {
-
-            const participants =
-                conversation.participants || [];
-
-
-            const otherParticipants =
-                participants.filter(
-                    participant =>
-                        String(
-                            participant._id
-                        ) !==
-                        String(
-                            getCurrentUserId()
-                        )
-                );
-
-
-            const conversationName =
-                otherParticipants
-                    .map(
-                        participant =>
-                            participant.name
-                    )
-                    .join(" + ");
-
-
-            const firstParticipant =
-                otherParticipants[0];
-
-
-            const unread =
-                getUnreadCount(
-                    conversation
-                );
-
-
-            const item =
-                document.createElement(
-                    "div"
-                );
-
-
-            item.className =
-                "contact-item";
-
-
-            if (
-                selectedConversation &&
-                String(
-                    selectedConversation._id
-                ) ===
-                String(
-                    conversation._id
-                )
-            ) {
-
-                item.classList.add(
-                    "active"
-                );
-
-            }
-
-
-            item.onclick =
-                () =>
-                    openFounderConversation(
-                        conversation
-                    );
-
-
-            item.innerHTML = `
-
-                <div class="avatar">
-
-                    ${getInitial(
-                        firstParticipant?.name ||
-                        "C"
-                    )}
-
-                </div>
-
-
-                <div class="contact-info">
-
-                    <div class="contact-name">
-
-                        ${escapeHtml(
-                            conversationName ||
-                            "Conversation"
-                        )}
-
-                    </div>
-
-
-                    <div class="contact-role">
-
-                        ${
-                            conversation.conversationType ===
-                            "group"
-                                ? "Founder joined"
-                                : "Teacher + Student"
-                        }
-
-                    </div>
-
-                </div>
-
-
-                ${
-                    unread > 0
-                        ? `
-                        <div class="unread-badge">
-
-                            ${unread}
-
-                        </div>
-                        `
-                        : ""
-                }
-
-            `;
-
-
-            container.appendChild(
-                item
-            );
-
-        }
+    openFounderConversation(
+        conversation
     );
 
 }
 
+
+// =========================================================
+// TOGGLE FOUNDER FOLDER
+// =========================================================
+
+function toggleFounderSection(
+    sectionId
+) {
+
+    const section =
+        document.getElementById(
+            sectionId
+        );
+
+
+    if (!section) {
+
+        return;
+
+    }
+
+
+    const isOpen =
+        section.style.display !==
+        "none";
+
+
+    section.style.display =
+        isOpen
+            ? "none"
+            : "block";
+
+
+    const iconId =
+        sectionId ===
+        "studentsSection"
+
+            ? "studentsSectionIcon"
+
+            : sectionId ===
+              "teachersSection"
+
+                ? "teachersSectionIcon"
+
+                : "conversationsSectionIcon";
+
+
+    const icon =
+        document.getElementById(
+            iconId
+        );
+
+
+    if (icon) {
+
+        icon.className =
+            isOpen
+                ? "fa-solid fa-chevron-right"
+                : "fa-solid fa-chevron-down";
+
+    }
+
+}
 // =========================================================
 // OPEN FOUNDER CONVERSATION
 // =========================================================
@@ -2992,6 +3580,8 @@ function scrollMessages() {
 }
 
 </script>
+
+<script src="/gpa-notifications-loader.js"></script>
 
 </body>
 </html>
