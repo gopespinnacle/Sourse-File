@@ -2170,40 +2170,40 @@ function renderFounderConversations() {
 
 
         <!-- =========================================
-             EXISTING CONVERSATIONS
-        ========================================== -->
+     GROUP CONVERSATIONS
+========================================== -->
 
-        <div class="founder-section">
+<div class="founder-section">
 
-            <div
-                class="founder-section-header"
-                onclick="toggleFounderSection('conversationsSection')"
-            >
+    <div
+        class="founder-section-header"
+        onclick="toggleFounderSection('groupsSection')"
+    >
 
-                <div>
+        <div>
 
-                    <i class="fa-solid fa-comments"></i>
+            <i class="fa-solid fa-user-group"></i>
 
-                    Conversations
+            Groups
 
-                    <span class="founder-count">
-                        ${conversations.length}
-                    </span>
+            <span class="founder-count">
+                ${conversations.length}
+            </span>
 
-                </div>
+        </div>
 
-                <i
-                    id="conversationsSectionIcon"
-                    class="fa-solid fa-chevron-down"
-                ></i>
+        <i
+            id="groupsSectionIcon"
+            class="fa-solid fa-chevron-down"
+        ></i>
 
-            </div>
+    </div>
 
 
-            <div
-                id="conversationsSection"
-                class="founder-section-content"
-            >
+    <div
+        id="groupsSection"
+        class="founder-section-content"
+    >
 
                 ${
                     conversations.length
@@ -2363,10 +2363,10 @@ function renderFounderConversations() {
             "teachersSection"
         );
 
-    const conversationsSection =
-        document.getElementById(
-            "conversationsSection"
-        );
+    const groupsSection =
+    document.getElementById(
+        "groupsSection"
+    );
 
 
     // Students and Teachers open.
@@ -2389,12 +2389,12 @@ function renderFounderConversations() {
     }
 
 
-    if (conversationsSection) {
+    if (groupsSection) {
 
-        conversationsSection.style.display =
-            "block";
+    groupsSection.style.display =
+        "block";
 
-    }
+}
 
 }
 
@@ -2518,17 +2518,17 @@ function toggleFounderSection(
 
 
     const iconId =
-        sectionId ===
-        "studentsSection"
+    sectionId ===
+    "studentsSection"
 
-            ? "studentsSectionIcon"
+        ? "studentsSectionIcon"
 
-            : sectionId ===
-              "teachersSection"
+        : sectionId ===
+          "teachersSection"
 
-                ? "teachersSectionIcon"
+            ? "teachersSectionIcon"
 
-                : "conversationsSectionIcon";
+            : "groupsSectionIcon";
 
 
     const icon =
