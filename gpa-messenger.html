@@ -989,6 +989,22 @@ body.founder-mode
 
 }
 
+body.admin-mode
+.founder-actions {
+
+    display: flex;
+
+}
+
+body.admin-mode
+.founder-actions button:nth-child(2),
+body.admin-mode
+.founder-actions button:nth-child(3) {
+
+    display: none;
+
+}
+
 
 /* =========================================================
    MOBILE
@@ -1601,11 +1617,19 @@ role =
     currentUser.role;
 
 
-// Founder-only UI mode
+// Founder / Admin UI mode
 if (role === "founder") {
 
     document.body.classList.add(
         "founder-mode"
+    );
+
+}
+
+if (role === "admin") {
+
+    document.body.classList.add(
+        "admin-mode"
     );
 
 }
