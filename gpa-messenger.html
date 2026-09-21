@@ -2037,6 +2037,91 @@ function renderAdminContacts() {
                 "teacher"
         );
 
+        // =================================================
+// MOVE UNREAD CONTACTS TO THE TOP
+// =================================================
+
+students.sort(
+    (a, b) => {
+
+        const conversationA =
+            conversations.find(
+                c =>
+                    c.participants?.some(
+                        p =>
+                            String(p._id) ===
+                            String(a._id)
+                    )
+            );
+
+        const conversationB =
+            conversations.find(
+                c =>
+                    c.participants?.some(
+                        p =>
+                            String(p._id) ===
+                            String(b._id)
+                    )
+            );
+
+
+        const unreadA =
+            getUnreadCount(
+                conversationA
+            );
+
+        const unreadB =
+            getUnreadCount(
+                conversationB
+            );
+
+
+        return unreadB - unreadA;
+
+    }
+);
+
+
+teachers.sort(
+    (a, b) => {
+
+        const conversationA =
+            conversations.find(
+                c =>
+                    c.participants?.some(
+                        p =>
+                            String(p._id) ===
+                            String(a._id)
+                    )
+            );
+
+        const conversationB =
+            conversations.find(
+                c =>
+                    c.participants?.some(
+                        p =>
+                            String(p._id) ===
+                            String(b._id)
+                    )
+            );
+
+
+        const unreadA =
+            getUnreadCount(
+                conversationA
+            );
+
+        const unreadB =
+            getUnreadCount(
+                conversationB
+            );
+
+
+        return unreadB - unreadA;
+
+    }
+);
+
 
     // -------------------------------------------------
     // BUILD ADMIN PANEL
