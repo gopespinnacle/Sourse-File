@@ -5324,16 +5324,21 @@ function founderVoiceCall() {
 
 
     socket.emit(
-        "startVoiceCall",
-        {
+    "startVoiceCall",
+    {
 
-            conversationId:
-                String(
-                    selectedConversation._id
-                )
+        conversationId:
+            String(
+                selectedConversation._id
+            ),
 
-        }
-    );
+        receiverId:
+            String(
+                selectedContact._id
+            )
+
+    }
+);
 
 }
 
