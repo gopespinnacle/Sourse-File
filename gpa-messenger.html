@@ -735,7 +735,9 @@ body {
 
 .message-bubble {
 
-    max-width: 70%;
+    width: fit-content;
+
+    max-width: 100%;
 
     padding: 10px 13px;
 
@@ -746,6 +748,60 @@ body {
     line-height: 1.45;
 
     word-wrap: break-word;
+
+    overflow-wrap: break-word;
+
+}
+
+/* =========================================================
+   MESSAGE WRAPPER
+   ========================================================= */
+
+.message-row > div {
+
+    width: max-content;
+
+    max-width: 70%;
+
+    min-width: 0;
+
+}
+
+
+.message-row.mine > div {
+
+    margin-left: auto;
+
+}
+
+
+.message-row.theirs > div {
+
+    margin-right: auto;
+
+}
+
+
+/* Keep the sender name on one line */
+
+.message-sender-name {
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    max-width: 100%;
+
+}
+
+
+/* Make sure the bubble uses the wrapper width */
+
+.message-row .message-bubble {
+
+    max-width: 100%;
 
 }
 
