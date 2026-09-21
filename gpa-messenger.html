@@ -2146,19 +2146,19 @@ function renderAdminContacts() {
 
                                         </div>
 
-                                    </div>
+                                                                        </div>
 
-                                                               </div>
+                                    ${
+                                        unread > 0
+                                            ? `
+                                                <div class="unread-badge">
+                                                    ${unread}
+                                                </div>
+                                            `
+                                            : ""
+                                    }
 
-                                ${
-                                    unread > 0
-                                        ? `
-                                            <div class="unread-badge">
-                                                ${unread}
-                                            </div>
-                                        `
-                                        : ""
-                                }
+                                </div>
 
                             `;
 
@@ -2280,19 +2280,19 @@ function renderAdminContacts() {
 
                                         </div>
 
-                                    </div>
+                                                                        </div>
 
-                                                                </div>
+                                    ${
+                                        unread > 0
+                                            ? `
+                                                <div class="unread-badge">
+                                                    ${unread}
+                                                </div>
+                                            `
+                                            : ""
+                                    }
 
-                                ${
-                                    unread > 0
-                                        ? `
-                                            <div class="unread-badge">
-                                                ${unread}
-                                            </div>
-                                        `
-                                        : ""
-                                }
+                                </div>
 
                             `;
 
