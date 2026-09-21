@@ -2084,7 +2084,30 @@ function renderAdminContacts() {
                 ${
                     students.length
                         ? students.map(
-                            student => `
+    student => {
+
+        const conversation =
+            conversations.find(
+                c =>
+                    c.participants?.some(
+                        p =>
+                            String(
+                                p._id
+                            ) ===
+                            String(
+                                student._id
+                            )
+                    )
+            );
+
+
+        const unread =
+            getUnreadCount(
+                conversation
+            );
+
+
+        return `
 
                                 <div
                                     class="founder-person-item"
@@ -2125,10 +2148,22 @@ function renderAdminContacts() {
 
                                     </div>
 
-                                </div>
+                                                               </div>
 
-                            `
-                        ).join("")
+                                ${
+                                    unread > 0
+                                        ? `
+                                            <div class="unread-badge">
+                                                ${unread}
+                                            </div>
+                                        `
+                                        : ""
+                                }
+
+                            `;
+
+                        }
+                    ).join("")
                         : `
                             <div class="founder-empty">
 
@@ -2183,7 +2218,30 @@ function renderAdminContacts() {
                 ${
                     teachers.length
                         ? teachers.map(
-                            teacher => `
+    teacher => {
+
+        const conversation =
+            conversations.find(
+                c =>
+                    c.participants?.some(
+                        p =>
+                            String(
+                                p._id
+                            ) ===
+                            String(
+                                teacher._id
+                            )
+                    )
+            );
+
+
+        const unread =
+            getUnreadCount(
+                conversation
+            );
+
+
+        return `
 
                                 <div
                                     class="founder-person-item"
@@ -2224,10 +2282,22 @@ function renderAdminContacts() {
 
                                     </div>
 
-                                </div>
+                                                                </div>
 
-                            `
-                        ).join("")
+                                ${
+                                    unread > 0
+                                        ? `
+                                            <div class="unread-badge">
+                                                ${unread}
+                                            </div>
+                                        `
+                                        : ""
+                                }
+
+                            `;
+
+                        }
+                    ).join("")
                         : `
                             <div class="founder-empty">
 
