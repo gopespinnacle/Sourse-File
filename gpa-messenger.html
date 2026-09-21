@@ -1382,6 +1382,10 @@ let voicePeerConnection = null;
 
 let voiceLocalStream = null;
 
+let voiceCallTimer = null;
+
+let voiceCallStartTime = null;
+
 
 /* =========================================================
    INITIALIZE
@@ -1757,6 +1761,17 @@ socket.on(
                         "
                     >
                         Connecting...
+
+                        <div
+    id="gpaCallDuration"
+    style="
+        margin-top:8px;
+        font-size:18px;
+        font-weight:bold;
+    "
+>
+    00:00
+</div>
                     </div>
 
                     <div
@@ -1798,10 +1813,7 @@ socket.on(
                 data.acceptedBy
         };
 
-        // Temporary status for testing
-        alert(
-            "Call accepted. Preparing voice connection..."
-        );
+        
 
     }
 );
@@ -1860,6 +1872,48 @@ socket.on(
                     ]
 
                 });
+
+                // =========================================================
+// DETECT VOICE CALL CONNECTION
+// =========================================================
+
+voicePeerConnection.onconnectionstatechange =
+    () => {
+
+        console.log(
+            "Receiver WebRTC connection state:",
+            voicePeerConnection.connectionState
+        );
+
+        if (
+            voicePeerConnection.connectionState ===
+            "connected"
+        ) {
+
+            const callBox =
+                document.getElementById(
+                    "gpaIncomingCall"
+                );
+
+            if (callBox) {
+
+                const connectingText =
+                    callBox.querySelector(
+                        "div[style*='font-size:16px']"
+                    );
+
+                if (connectingText) {
+
+                    connectingText.innerText =
+                        "Connected";
+
+                }
+
+            }
+
+        }
+
+    };
 
                 // =========================================================
 // ADD RECEIVER MICROPHONE TO WEBRTC CALL
@@ -6073,6 +6127,115 @@ function startCallerVoiceConnection() {
             ]
 
         });
+
+        // =========================================================
+// DETECT CALLER VOICE CONNECTION
+// =========================================================
+
+voicePeerConnection.onconnectionstatechange =
+    () => {
+
+        console.log(
+            "Caller WebRTC connection state:",
+            voicePeerConnection.connectionState
+        );
+
+        if (
+    voicePeerConnection.connectionState ===
+    "connected"
+) {
+
+    console.log(
+        "Voice call connected successfully."
+    );
+
+    // =================================================
+    // START CALL TIMER
+    // =================================================
+
+    voiceCallStartTime =
+        Date.now();
+
+    clearInterval(
+        voiceCallTimer
+    );
+
+    voiceCallTimer =
+        setInterval(
+            () => {
+
+                const elapsed =
+                    Math.floor(
+                        (
+                            Date.now() -
+                            voiceCallStartTime
+                        ) / 1000
+                    );
+
+                const minutes =
+                    Math.floor(
+                        elapsed / 60
+                    )
+                    .toString()
+                    .padStart(
+                        2,
+                        "0"
+                    );
+
+                const seconds =
+                    (
+                        elapsed % 60
+                    )
+                    .toString()
+                    .padStart(
+                        2,
+                        "0"
+                    );
+
+                const durationText =
+    document.getElementById(
+        "gpaCallDuration"
+    );
+
+if (durationText) {
+
+    durationText.innerText =
+        `${minutes}:${seconds}`;
+
+}
+
+            },
+            1000
+        );
+
+    // =================================================
+    // UPDATE CALL STATUS
+    // =================================================
+
+    const callBox =
+        document.getElementById(
+            "gpaIncomingCall"
+        );
+
+    if (callBox) {
+
+        const connectingText =
+            callBox.querySelector(
+                "div[style*='font-size:16px']"
+            );
+
+        if (connectingText) {
+
+            connectingText.innerText =
+                "Connected";
+
+        }
+
+    }
+
+}
+
+    };
 
         // =========================================================
 // RECEIVE REMOTE VOICE AUDIO
