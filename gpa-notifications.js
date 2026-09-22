@@ -38,132 +38,236 @@ if (!window.firebase) {
 
         async function registerGPAMessaging() {
 
-            try {
+    try {
 
-                if (!("serviceWorker" in navigator)) {
-                    console.warn("Service Worker is not supported.");
-                    return;
-                }
+        // ------------------------------------------
+        // Browser support
+        // ------------------------------------------
 
-                if (!("Notification" in window)) {
-                    console.warn("Browser notifications are not supported.");
-                    return;
-                }
+        if (!("serviceWorker" in navigator)) {
 
+            console.warn(
+                "Service Worker is not supported."
+            );
 
-                const registration =
-                    await navigator.serviceWorker.register(
-                        "/firebase-messaging-sw.js"
-                    );
-
-                console.log(
-                    "GPA Firebase Service Worker registered:",
-                    registration
-                );
-
-
-                // ------------------------------------------
-                // Ask notification permission
-                // ------------------------------------------
-
-                const permission =
-                    await Notification.requestPermission();
-
-                console.log(
-                    "GPA Notification permission:",
-                    permission
-                );
-
-                if (permission !== "granted") {
-                    console.warn(
-                        "GPA notification permission was not granted."
-                    );
-                    return;
-                }
-
-
-                // ------------------------------------------
-                // Get FCM token
-                // ------------------------------------------
-
-                const currentToken = await messaging.getToken({
-                    vapidKey: GPA_VAPID_KEY,
-                    serviceWorkerRegistration: registration
-                });
-
-
-                if (!currentToken) {
-
-                    console.warn(
-                        "No FCM registration token available."
-                    );
-
-                    return;
-                }
-
-
-                console.log(
-                    "GPA FCM TOKEN:",
-                    currentToken
-                );
-
-
-                // ------------------------------------------
-                // Save token for logged-in user
-                // ------------------------------------------
-
-                const token =
-                    sessionStorage.getItem("token") ||
-                    localStorage.getItem("token");
-
-                if (!token) {
-
-                    console.warn(
-                        "No GPA login token found."
-                    );
-
-                    return;
-                }
-
-
-                const response = await fetch(
-                    "https://academy-backend-eatl.onrender.com/api/messenger/fcm-token",
-                    {
-                        method: "POST",
-
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization":
-                                "Bearer " + token
-                        },
-
-                        body: JSON.stringify({
-                            token: currentToken,
-                            platform: "web"
-                        })
-                    }
-                );
-
-
-                const data = await response.json();
-
-                console.log(
-                    "GPA FCM token registration:",
-                    data
-                );
-
-            }
-
-            catch (error) {
-
-                console.error(
-                    "GPA FCM REGISTRATION ERROR:",
-                    error
-                );
-
-            }
+            return;
 
         }
+
+
+        if (!("Notification" in window)) {
+
+            console.warn(
+                "Browser notifications are not supported."
+            );
+
+            return;
+
+        }
+
+
+        // ------------------------------------------
+        // Register GPA Firebase Service Worker
+        // ------------------------------------------
+
+        const registration =
+            await navigator.serviceWorker.register(
+                "/firebase-messaging-sw.js",
+                {
+                    scope: "/"
+                }
+            );
+
+
+        console.log(
+            "GPA Firebase Service Worker registered:",
+            registration.scope
+        );
+
+
+        // ------------------------------------------
+        // Make sure Service Worker is ready
+        // ------------------------------------------
+
+        await navigator.serviceWorker.ready;
+
+
+        // ------------------------------------------
+        // Notification permission
+        // ------------------------------------------
+
+        let permission =
+            Notification.permission;
+
+
+        if (permission === "default") {
+
+            permission =
+                await Notification.requestPermission();
+
+        }
+
+
+        console.log(
+            "GPA Notification permission:",
+            permission
+        );
+
+
+        if (permission !== "granted") {
+
+            console.warn(
+                "GPA notification permission was not granted."
+            );
+
+            return;
+
+        }
+
+
+        // ------------------------------------------
+        // Get latest FCM token
+        // ------------------------------------------
+
+        const currentToken =
+            await messaging.getToken({
+
+                vapidKey:
+                    GPA_VAPID_KEY,
+
+                serviceWorkerRegistration:
+                    registration
+
+            });
+
+
+        if (!currentToken) {
+
+            console.warn(
+                "No FCM registration token available."
+            );
+
+            return;
+
+        }
+
+
+        console.log(
+            "GPA FCM TOKEN:",
+            currentToken
+        );
+
+
+        // ------------------------------------------
+        // Get logged-in GPA user token
+        // ------------------------------------------
+
+        const token =
+            sessionStorage.getItem("token") ||
+            localStorage.getItem("token");
+
+
+        if (!token) {
+
+            console.warn(
+                "No GPA login token found. Notification registration will be retried."
+            );
+
+            setTimeout(
+                registerGPAMessaging,
+                5000
+            );
+
+            return;
+
+        }
+
+
+        // ------------------------------------------
+        // Register FCM token with GPA backend
+        // ------------------------------------------
+
+        const response =
+            await fetch(
+                "https://academy-backend-eatl.onrender.com/api/messenger/fcm-token",
+                {
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " + token
+
+                    },
+
+                    body: JSON.stringify({
+
+                        token:
+                            currentToken,
+
+                        platform:
+                            "web"
+
+                    })
+
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "FCM token registration failed. HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "GPA FCM token registration:",
+            data
+        );
+
+
+        // ------------------------------------------
+        // Confirm registration
+        // ------------------------------------------
+
+        if (data.success) {
+
+            console.log(
+                "✅ GPA PUSH NOTIFICATIONS READY"
+            );
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "GPA FCM REGISTRATION ERROR:",
+            error
+        );
+
+        // Retry automatically after temporary failure
+
+        setTimeout(
+            registerGPAMessaging,
+            10000
+        );
+
+    }
+
+}
 
 
         // ------------------------------------------
