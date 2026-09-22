@@ -2459,12 +2459,9 @@ function toggleVoiceMute() {
         }
     );
 
-    const muteButton =
+   const muteButton =
     document.getElementById(
         "gpaCallerMuteCall"
-    ) ||
-    document.getElementById(
-        "gpaAcceptCall"
     );
 
     if (!muteButton) {
@@ -2541,7 +2538,7 @@ function toggleVoiceMute() {
 
 let gpaSpeakerEnabled = false;
 
-async function toggleVoiceSpeaker() {
+function toggleVoiceSpeaker() {
 
     const audio =
         document.getElementById(
@@ -2553,7 +2550,6 @@ async function toggleVoiceSpeaker() {
             "gpaSpeakerCall"
         );
 
-
     if (!audio) {
 
         console.log(
@@ -2564,106 +2560,90 @@ async function toggleVoiceSpeaker() {
 
     }
 
+    // ---------------------------------------------
+    // SPEAKER ON / OFF
+    // ---------------------------------------------
 
-    // -------------------------------------------------
-    // Browser support check
-    // -------------------------------------------------
+    if (audio.muted) {
 
-    if (
-        typeof audio.setSinkId !==
-        "function"
-    ) {
+        // SPEAKER ON
 
-        alert(
-            "Speaker control is not supported by this browser."
+        audio.muted = false;
+
+        gpaSpeakerEnabled = true;
+
+        if (speakerButton) {
+
+            const icon =
+                speakerButton.querySelector("i");
+
+            const label =
+                speakerButton.querySelector(
+                    ".gpa-active-call-button-label"
+                );
+
+            if (icon) {
+
+                icon.className =
+                    "fa-solid fa-volume-high";
+
+            }
+
+            if (label) {
+
+                label.innerText =
+                    "Speaker";
+
+            }
+
+        }
+
+        console.log(
+            "Speaker ON."
         );
 
-        return;
-
     }
+    else {
 
+        // SPEAKER OFF
 
-    try {
+        audio.muted = true;
 
-        if (!gpaSpeakerEnabled) {
+        gpaSpeakerEnabled = false;
 
-            /*
-             * Use the browser's available
-             * audio output device.
-             */
+        if (speakerButton) {
 
-            await audio.setSinkId(
-                "default"
-            );
+            const icon =
+                speakerButton.querySelector("i");
 
-            gpaSpeakerEnabled =
-                true;
+            const label =
+                speakerButton.querySelector(
+                    ".gpa-active-call-button-label"
+                );
 
+            if (icon) {
 
-            if (speakerButton) {
-
-                speakerButton
-                    .classList.add(
-                        "active"
-                    );
-
-                const icon =
-                    speakerButton
-                        .querySelector(
-                            "i"
-                        );
-
-                if (icon) {
-
-                    icon.className =
-                        "fa-solid fa-volume-high";
-
-                }
+                icon.className =
+                    "fa-solid fa-volume-xmark";
 
             }
 
-            console.log(
-                "Speaker enabled."
-            );
+            if (label) {
 
-        }
-        else {
-
-            await audio.setSinkId(
-                "default"
-            );
-
-            gpaSpeakerEnabled =
-                false;
-
-
-            if (speakerButton) {
-
-                speakerButton
-                    .classList.remove(
-                        "active"
-                    );
+                label.innerText =
+                    "Speaker Off";
 
             }
 
-            console.log(
-                "Speaker disabled."
-            );
-
         }
 
-    }
-    catch (error) {
-
-        console.error(
-            "SPEAKER CONTROL ERROR:",
-            error
+        console.log(
+            "Speaker OFF."
         );
 
     }
 
 }
-
 // =========================================================
 // VOICE CALL ENDED
 // =========================================================
@@ -2752,6 +2732,19 @@ socket.on(
             callBox.remove();
 
         }
+
+        // Remove Founder / Admin active call screen
+
+const callerCallBox =
+    document.getElementById(
+        "gpaCallerActiveCall"
+    );
+
+if (callerCallBox) {
+
+    callerCallBox.remove();
+
+}
 
         // Clear active call
         window.gpaActiveCall =
