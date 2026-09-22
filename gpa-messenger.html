@@ -2310,6 +2310,134 @@ if (muteButton) {
 
 
 
+// =========================================================
+// VOICE CALL REJECTED
+// =========================================================
+
+socket.on(
+    "voiceCallRejected",
+    (data) => {
+
+        console.log(
+            "Voice call rejected:",
+            data
+        );
+
+        // -------------------------------------------------
+        // UPDATE FOUNDER / ADMIN CALL STATUS
+        // -------------------------------------------------
+
+        const status =
+            document.getElementById(
+                "gpaCallerCallStatus"
+            );
+
+        if (status) {
+
+            status.innerText =
+                "Call declined";
+
+        }
+
+        // -------------------------------------------------
+        // STOP ANY CALL TIMER
+        // -------------------------------------------------
+
+        clearInterval(
+            voiceCallTimer
+        );
+
+        voiceCallTimer =
+            null;
+
+        voiceCallStartTime =
+            null;
+
+        // -------------------------------------------------
+        // CLEAN UP MICROPHONE
+        // -------------------------------------------------
+
+        if (voiceLocalStream) {
+
+            voiceLocalStream
+                .getTracks()
+                .forEach(
+                    track => {
+                        track.stop();
+                    }
+                );
+
+            voiceLocalStream =
+                null;
+
+        }
+
+        // -------------------------------------------------
+        // CLOSE WEBRTC CONNECTION
+        // -------------------------------------------------
+
+        if (voicePeerConnection) {
+
+            voicePeerConnection.close();
+
+            voicePeerConnection =
+                null;
+
+        }
+
+        // -------------------------------------------------
+        // REMOVE REMOTE AUDIO
+        // -------------------------------------------------
+
+        const audio =
+            document.getElementById(
+                "gpaRemoteVoiceAudio"
+            );
+
+        if (audio) {
+
+            audio.srcObject =
+                null;
+
+            audio.remove();
+
+        }
+
+        // -------------------------------------------------
+        // CLEAR OLD ICE CANDIDATES
+        // -------------------------------------------------
+
+        pendingVoiceIceCandidates = [];
+
+        // -------------------------------------------------
+        // SHOW MESSAGE FOR A SHORT TIME
+        // THEN CLOSE CALL SCREEN
+        // -------------------------------------------------
+
+        setTimeout(
+            () => {
+
+                const callerCallBox =
+                    document.getElementById(
+                        "gpaCallerActiveCall"
+                    );
+
+                if (callerCallBox) {
+
+                    callerCallBox.remove();
+
+                }
+
+                window.gpaActiveCall =
+                    null;
+
+            },
+            1500
+        );
+
+    }
+);
+
 
 // =========================================================
 // VOICE CALL ACCEPTED
