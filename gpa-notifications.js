@@ -249,6 +249,45 @@ if (!window.firebase) {
 
         }
 
+        setTimeout(async function () {
+
+    try {
+
+        const registration =
+            await navigator.serviceWorker.ready;
+
+        await registration.showNotification(
+            "Gopes Pinnacle Academy",
+            {
+                body:
+                    "GPA notification test is working.",
+                icon:
+                    "/favicon.ico",
+                badge:
+                    "/favicon.ico",
+                tag:
+                    "gpa-test-notification",
+                renotify:
+                    true
+            }
+        );
+
+        console.log(
+            "✅ TEST NOTIFICATION DISPLAYED"
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "❌ TEST NOTIFICATION FAILED:",
+            error
+        );
+
+    }
+
+}, 3000);
+
     }
 
     catch (error) {
@@ -274,88 +313,114 @@ if (!window.firebase) {
         // Foreground notification
         // ------------------------------------------
 
-        messaging.onMessage(async function(payload) {
+        // ------------------------------------------
+// FCM FOREGROUND MESSAGE
+// ------------------------------------------
+
+messaging.onMessage(function(payload) {
 
     console.log(
-        "GPA foreground notification:",
+        "🔥 FCM MESSAGE RECEIVED:",
         payload
     );
 
+
     const title =
         payload.notification?.title ||
+        payload.data?.title ||
         "GPA Messenger";
+
 
     const body =
         payload.notification?.body ||
+        payload.data?.body ||
         "You have a new message.";
 
-    try {
 
-        if (
-            Notification.permission !==
-            "granted"
-        ) {
+    const conversationId =
+        payload.data?.conversationId ||
+        "";
 
-            console.warn(
-                "GPA notification permission is not granted."
+
+    const targetUrl =
+        payload.data?.url ||
+        "https://www.gopespinnacle.com/gpa-messenger.html";
+
+
+    console.log(
+        "GPA FCM TITLE:",
+        title
+    );
+
+
+    console.log(
+        "GPA FCM BODY:",
+        body
+    );
+
+
+    console.log(
+        "GPA FCM CONVERSATION:",
+        conversationId
+    );
+
+
+    // ------------------------------------------
+    // SHOW THROUGH SERVICE WORKER
+    // ------------------------------------------
+
+    navigator.serviceWorker.ready
+        .then(function(registration) {
+
+            return registration.showNotification(
+                title,
+                {
+
+                    body:
+                        body,
+
+                    icon:
+                        "/favicon.ico",
+
+                    badge:
+                        "/favicon.ico",
+
+                    tag:
+                        "gpa-messenger-" +
+                        conversationId,
+
+                    renotify:
+                        true,
+
+                    data: {
+
+                        url:
+                            targetUrl,
+
+                        conversationId:
+                            conversationId
+
+                    }
+
+                }
             );
 
-            return;
+        })
+        .then(function() {
 
-        }
+            console.log(
+                "✅ GPA FCM NOTIFICATION DISPLAYED"
+            );
 
+        })
+        .catch(function(error) {
 
-        // ------------------------------------------
-        // SHOW NOTIFICATION THROUGH SERVICE WORKER
-        // ------------------------------------------
+            console.error(
+                "❌ GPA FCM NOTIFICATION DISPLAY ERROR:",
+                error
+            );
 
-        const registration =
-            await navigator.serviceWorker.ready;
-
-
-        await registration.showNotification(
-            title,
-            {
-                body: body,
-
-                icon:
-                    "/favicon.ico",
-
-                badge:
-                    "/favicon.ico",
-
-                tag:
-                    "gpa-messenger",
-
-                renotify:
-                    true,
-
-                data: {
-                    url:
-                        payload.data?.url ||
-                        "https://www.gopespinnacle.com/gpa-messenger.html",
-
-                    conversationId:
-                        payload.data?.conversationId ||
-                        ""
-                }
-            }
-        );
-
-
-        console.log(
-            "✅ GPA FOREGROUND NOTIFICATION DISPLAYED"
-        );
-
-    }
-    catch (error) {
-
-        console.error(
-            "❌ GPA FOREGROUND NOTIFICATION ERROR:",
-            error
-        );
-
-    }
+        });
 
 });
 
