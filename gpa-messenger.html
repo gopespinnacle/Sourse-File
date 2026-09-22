@@ -2092,6 +2092,12 @@ startGpaCallRingtone();
                     "Voice call declined"
                 );
 
+                // -------------------------------------------------
+// STOP INCOMING CALL RINGTONE
+// -------------------------------------------------
+
+stopGpaCallRingtone();
+
                 socket.emit(
                     "rejectVoiceCall",
                     {
@@ -2120,6 +2126,12 @@ startGpaCallRingtone();
         console.log(
             "Voice call accepted"
         );
+
+        // -------------------------------------------------
+// STOP INCOMING CALL RINGTONE
+// -------------------------------------------------
+
+stopGpaCallRingtone();
 
         // -------------------------------------------------
         // TELL CALLER THAT THE CALL WAS ACCEPTED
@@ -2829,6 +2841,12 @@ socket.on(
         console.log(
             "Voice call ended."
         );
+
+        // -------------------------------------------------
+// STOP INCOMING CALL RINGTONE
+// -------------------------------------------------
+
+stopGpaCallRingtone();
 
         // Stop call timer
         clearInterval(
