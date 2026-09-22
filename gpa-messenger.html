@@ -2393,18 +2393,36 @@ function endCurrentVoiceCall() {
     }
 
 
-    // Remove call screen
+    // -------------------------------------------------
+// Remove receiver call screen
+// -------------------------------------------------
 
-    const callBox =
-        document.getElementById(
-            "gpaIncomingCall"
-        );
+const callBox =
+    document.getElementById(
+        "gpaIncomingCall"
+    );
 
-    if (callBox) {
+if (callBox) {
 
-        callBox.remove();
+    callBox.remove();
 
-    }
+}
+
+
+// -------------------------------------------------
+// Remove Founder / Admin caller call screen
+// -------------------------------------------------
+
+const callerCallBox =
+    document.getElementById(
+        "gpaCallerActiveCall"
+    );
+
+if (callerCallBox) {
+
+    callerCallBox.remove();
+
+}
 
 
     // Clear active call
@@ -2810,6 +2828,8 @@ socket.on(
             callBox.remove();
 
         }
+
+
 
         // Remove Founder / Admin active call screen
 
@@ -7904,25 +7924,25 @@ if (durationText) {
     // =================================================
 
     const callBox =
+    document.getElementById(
+        "gpaCallerActiveCall"
+    );
+
+if (callBox) {
+
+    const connectingText =
         document.getElementById(
-            "gpaIncomingCall"
+            "gpaCallerCallStatus"
         );
 
-    if (callBox) {
+    if (connectingText) {
 
-        const connectingText =
-            callBox.querySelector(
-                "div[style*='font-size:16px']"
-            );
-
-        if (connectingText) {
-
-            connectingText.innerText =
-                "Connected";
-
-        }
+        connectingText.innerText =
+            "Connected";
 
     }
+
+}
 
 }
 
