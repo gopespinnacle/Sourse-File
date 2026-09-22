@@ -33,6 +33,8 @@
     body.gpa-intro-active {
         overflow: hidden;
     }
+
+    
 </style>
     
 <meta name="theme-color" content="#0d1b2a">
@@ -1034,6 +1036,18 @@ background:#0b5ed7;
 
 transform:translateY(-3px);
 
+}
+
+/* ===== GPA INTRO VIDEO - MOBILE/PWA ONLY ===== */
+
+@media (min-width: 769px) {
+    #gpaIntroScreen {
+        display: none !important;
+    }
+
+    body.gpa-intro-active {
+        overflow: auto !important;
+    }
 }
 </style>
 </head>
