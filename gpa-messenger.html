@@ -2257,568 +2257,7 @@ socket.on(
         };
 
 
-        // -------------------------------------------------
-        // REMOVE OLD CALL SCREEN IF ANY
-        // -------------------------------------------------
-
-        const oldCall =
-            document.getElementById(
-                "gpaCallerActiveCall"
-            );
-
-        if (oldCall) {
-
-            oldCall.remove();
-
-        }
-
-
-        // -------------------------------------------------
-        // CREATE FOUNDER / ADMIN ACTIVE CALL SCREEN
-        // -------------------------------------------------
-
-        const activeCall =
-            document.createElement(
-                "div"
-            );
-
-        activeCall.id =
-            "gpaCallerActiveCall";
-
-
-        activeCall.innerHTML = `
-
-<style>
-
-#gpaCallerActiveCall {
-
-    position: fixed;
-
-    inset: 0;
-
-    width: 100vw;
-
-    height: 100vh;
-
-    height: 100dvh;
-
-    z-index: 999999;
-
-    background:
-
-        radial-gradient(
-            circle at 50% 35%,
-            rgba(40, 80, 80, 0.30),
-            transparent 36%
-        ),
-
-        linear-gradient(
-            160deg,
-            #07191b,
-            #061315 55%,
-            #02090a
-        );
-
-    color: white;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    padding:
-
-        55px 20px
-        max(45px, env(safe-area-inset-bottom));
-
-    box-sizing: border-box;
-
-    overflow: hidden;
-
-}
-
-
-#gpaCallerActiveCall::before {
-
-    content: "";
-
-    position: absolute;
-
-    inset: 0;
-
-    opacity: 0.08;
-
-    background-image:
-
-        radial-gradient(
-            circle,
-            rgba(255,255,255,0.5) 1px,
-            transparent 1px
-        );
-
-    background-size: 22px 22px;
-
-    pointer-events: none;
-
-}
-
-
-/* =====================================================
-   TOP
-===================================================== */
-
-.gpa-active-call-top {
-
-    position: relative;
-
-    z-index: 2;
-
-    text-align: center;
-
-}
-
-
-.gpa-active-call-name {
-
-    font-size: 30px;
-
-    font-weight: 700;
-
-}
-
-
-.gpa-active-call-status {
-
-    margin-top: 8px;
-
-    font-size: 17px;
-
-    color:
-        rgba(255,255,255,0.70);
-
-}
-
-
-.gpa-active-call-duration {
-
-    margin-top: 6px;
-
-    font-size: 16px;
-
-    color:
-        rgba(255,255,255,0.60);
-
-}
-
-
-/* =====================================================
-   PROFILE INITIALS
-===================================================== */
-
-.gpa-active-call-avatar {
-
-    position: relative;
-
-    z-index: 2;
-
-    width: 190px;
-
-    height: 190px;
-
-    border-radius: 50%;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    background:
-
-        linear-gradient(
-            135deg,
-            #1fa5a8,
-            #087579
-        );
-
-    border:
-
-        4px solid
-        rgba(255,255,255,0.18);
-
-    box-shadow:
-
-        0 15px 45px
-        rgba(0,0,0,0.45),
-
-        0 0 0 14px
-        rgba(31,165,168,0.08);
-
-    font-size: 64px;
-
-    font-weight: 700;
-
-    letter-spacing: 3px;
-
-}
-
-
-/* =====================================================
-   BOTTOM CONTROL PANEL
-===================================================== */
-
-.gpa-active-call-controls {
-
-    position: relative;
-
-    z-index: 3;
-
-    width: 100%;
-
-    max-width: 430px;
-
-    display: flex;
-
-    justify-content: space-around;
-
-    align-items: center;
-
-    gap: 20px;
-
-    padding:
-
-        20px 12px;
-
-    border-radius: 30px;
-
-    background:
-        rgba(20,25,27,0.92);
-
-    box-shadow:
-
-        0 15px 40px
-        rgba(0,0,0,0.35);
-
-}
-
-
-/* =====================================================
-   CONTROL BUTTON
-===================================================== */
-
-.gpa-active-call-button {
-
-    border: none;
-
-    background: transparent;
-
-    color: white;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    gap: 10px;
-
-    cursor: pointer;
-
-    padding: 0;
-
-    -webkit-tap-highlight-color:
-        transparent;
-
-}
-
-
-.gpa-active-call-button-circle {
-
-    width: 68px;
-
-    height: 68px;
-
-    border-radius: 50%;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    font-size: 27px;
-
-    background:
-        #20292c;
-
-    box-shadow:
-
-        0 8px 25px
-        rgba(0,0,0,0.30);
-
-}
-
-
-.gpa-active-call-button-label {
-
-    font-size: 15px;
-
-    color:
-        rgba(255,255,255,0.85);
-
-}
-
-
-/* =====================================================
-   END CALL
-===================================================== */
-
-.gpa-active-end-circle {
-
-    background:
-        #ef233c;
-
-}
-
-
-/* =====================================================
-   MUTE
-===================================================== */
-
-#gpaCallerMuteCall.muted
-.gpa-active-call-button-circle {
-
-    background:
-        #ef233c;
-
-}
-
-
-@media (max-width:480px) {
-
-    #gpaCallerActiveCall {
-
-        padding-top: 70px;
-
-    }
-
-
-    .gpa-active-call-name {
-
-        font-size: 28px;
-
-    }
-
-
-    .gpa-active-call-avatar {
-
-        width: 175px;
-
-        height: 175px;
-
-        font-size: 58px;
-
-    }
-
-
-    .gpa-active-call-controls {
-
-        max-width: 360px;
-
-        padding: 18px 8px;
-
-        gap: 10px;
-
-    }
-
-
-    .gpa-active-call-button-circle {
-
-        width: 64px;
-
-        height: 64px;
-
-        font-size: 25px;
-
-    }
-
-}
-
-</style>
-
-
-<!-- =====================================================
-     TOP INFORMATION
-===================================================== -->
-
-<div class="gpa-active-call-top">
-
-    <div
-        class="gpa-active-call-name"
-    >
-
-        ${selectedContact?.name || "Connected"}
-
-    </div>
-
-
-    <div
-        class="gpa-active-call-status"
-        id="gpaCallerCallStatus"
-    >
-
-        Connected
-
-    </div>
-
-
-    <div
-        class="gpa-active-call-duration"
-        id="gpaCallerCallDuration"
-    >
-
-        00:00
-
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     PROFILE
-===================================================== -->
-
-<div
-    class="gpa-active-call-avatar"
->
-
-    ${(
-    selectedContact?.name ||
-    "User"
-)
-    .trim()
-    .slice(0, 2)
-    .toUpperCase()}
-
-</div>
-
-
-<!-- =====================================================
-     THREE CONTROLS ONLY
-===================================================== -->
-
-<div
-    class="gpa-active-call-controls"
->
-
-
-    <!-- SPEAKER -->
-
-    <button
-        id="gpaSpeakerCall"
-        class="gpa-active-call-button"
-        type="button"
-        onclick="toggleVoiceSpeaker()"
-    >
-
-        <div
-            class="gpa-active-call-button-circle"
-        >
-
-            <i
-                class="fa-solid fa-volume-high"
-            ></i>
-
-        </div>
-
-
-        <div
-            class="gpa-active-call-button-label"
-        >
-
-            Speaker
-
-        </div>
-
-    </button>
-
-
-    <!-- MUTE -->
-
-    <button
-        id="gpaCallerMuteCall"
-        class="gpa-active-call-button"
-        type="button"
-        onclick="toggleVoiceMute()"
-    >
-
-        <div
-            class="gpa-active-call-button-circle"
-        >
-
-            <i
-                class="fa-solid fa-microphone"
-            ></i>
-
-        </div>
-
-
-        <div
-            class="gpa-active-call-button-label"
-        >
-
-            Mute
-
-        </div>
-
-    </button>
-
-
-    <!-- END -->
-
-    <button
-        id="gpaCallerEndCall"
-        class="gpa-active-call-button"
-        type="button"
-        onclick="endCurrentVoiceCall()"
-    >
-
-        <div
-            class="
-                gpa-active-call-button-circle
-                gpa-active-end-circle
-            "
-        >
-
-            <i
-                class="fa-solid fa-phone-slash"
-            ></i>
-
-        </div>
-
-
-        <div
-            class="gpa-active-call-button-label"
-        >
-
-            End
-
-        </div>
-
-    </button>
-
-
-</div>
-
-`;
-
-
-        document.body.appendChild(
-            activeCall
-        );
+        
 
 
         // -------------------------------------------------
@@ -7701,6 +7140,569 @@ function founderVoiceCall() {
     receiverId:
         String(selectedContact._id)
 };
+
+// -------------------------------------------------
+        // REMOVE OLD CALL SCREEN IF ANY
+        // -------------------------------------------------
+
+        const oldCall =
+            document.getElementById(
+                "gpaCallerActiveCall"
+            );
+
+        if (oldCall) {
+
+            oldCall.remove();
+
+        }
+
+
+        // -------------------------------------------------
+        // CREATE FOUNDER / ADMIN ACTIVE CALL SCREEN
+        // -------------------------------------------------
+
+        const activeCall =
+            document.createElement(
+                "div"
+            );
+
+        activeCall.id =
+            "gpaCallerActiveCall";
+
+
+        activeCall.innerHTML = `
+
+<style>
+
+#gpaCallerActiveCall {
+
+    position: fixed;
+
+    inset: 0;
+
+    width: 100vw;
+
+    height: 100vh;
+
+    height: 100dvh;
+
+    z-index: 999999;
+
+    background:
+
+        radial-gradient(
+            circle at 50% 35%,
+            rgba(40, 80, 80, 0.30),
+            transparent 36%
+        ),
+
+        linear-gradient(
+            160deg,
+            #07191b,
+            #061315 55%,
+            #02090a
+        );
+
+    color: white;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding:
+
+        55px 20px
+        max(45px, env(safe-area-inset-bottom));
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+
+}
+
+
+#gpaCallerActiveCall::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    opacity: 0.08;
+
+    background-image:
+
+        radial-gradient(
+            circle,
+            rgba(255,255,255,0.5) 1px,
+            transparent 1px
+        );
+
+    background-size: 22px 22px;
+
+    pointer-events: none;
+
+}
+
+
+/* =====================================================
+   TOP
+===================================================== */
+
+.gpa-active-call-top {
+
+    position: relative;
+
+    z-index: 2;
+
+    text-align: center;
+
+}
+
+
+.gpa-active-call-name {
+
+    font-size: 30px;
+
+    font-weight: 700;
+
+}
+
+
+.gpa-active-call-status {
+
+    margin-top: 8px;
+
+    font-size: 17px;
+
+    color:
+        rgba(255,255,255,0.70);
+
+}
+
+
+.gpa-active-call-duration {
+
+    margin-top: 6px;
+
+    font-size: 16px;
+
+    color:
+        rgba(255,255,255,0.60);
+
+}
+
+
+/* =====================================================
+   PROFILE INITIALS
+===================================================== */
+
+.gpa-active-call-avatar {
+
+    position: relative;
+
+    z-index: 2;
+
+    width: 190px;
+
+    height: 190px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            #1fa5a8,
+            #087579
+        );
+
+    border:
+
+        4px solid
+        rgba(255,255,255,0.18);
+
+    box-shadow:
+
+        0 15px 45px
+        rgba(0,0,0,0.45),
+
+        0 0 0 14px
+        rgba(31,165,168,0.08);
+
+    font-size: 64px;
+
+    font-weight: 700;
+
+    letter-spacing: 3px;
+
+}
+
+
+/* =====================================================
+   BOTTOM CONTROL PANEL
+===================================================== */
+
+.gpa-active-call-controls {
+
+    position: relative;
+
+    z-index: 3;
+
+    width: 100%;
+
+    max-width: 430px;
+
+    display: flex;
+
+    justify-content: space-around;
+
+    align-items: center;
+
+    gap: 20px;
+
+    padding:
+
+        20px 12px;
+
+    border-radius: 30px;
+
+    background:
+        rgba(20,25,27,0.92);
+
+    box-shadow:
+
+        0 15px 40px
+        rgba(0,0,0,0.35);
+
+}
+
+
+/* =====================================================
+   CONTROL BUTTON
+===================================================== */
+
+.gpa-active-call-button {
+
+    border: none;
+
+    background: transparent;
+
+    color: white;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 10px;
+
+    cursor: pointer;
+
+    padding: 0;
+
+    -webkit-tap-highlight-color:
+        transparent;
+
+}
+
+
+.gpa-active-call-button-circle {
+
+    width: 68px;
+
+    height: 68px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 27px;
+
+    background:
+        #20292c;
+
+    box-shadow:
+
+        0 8px 25px
+        rgba(0,0,0,0.30);
+
+}
+
+
+.gpa-active-call-button-label {
+
+    font-size: 15px;
+
+    color:
+        rgba(255,255,255,0.85);
+
+}
+
+
+/* =====================================================
+   END CALL
+===================================================== */
+
+.gpa-active-end-circle {
+
+    background:
+        #ef233c;
+
+}
+
+
+/* =====================================================
+   MUTE
+===================================================== */
+
+#gpaCallerMuteCall.muted
+.gpa-active-call-button-circle {
+
+    background:
+        #ef233c;
+
+}
+
+
+@media (max-width:480px) {
+
+    #gpaCallerActiveCall {
+
+        padding-top: 70px;
+
+    }
+
+
+    .gpa-active-call-name {
+
+        font-size: 28px;
+
+    }
+
+
+    .gpa-active-call-avatar {
+
+        width: 175px;
+
+        height: 175px;
+
+        font-size: 58px;
+
+    }
+
+
+    .gpa-active-call-controls {
+
+        max-width: 360px;
+
+        padding: 18px 8px;
+
+        gap: 10px;
+
+    }
+
+
+    .gpa-active-call-button-circle {
+
+        width: 64px;
+
+        height: 64px;
+
+        font-size: 25px;
+
+    }
+
+}
+
+</style>
+
+
+<!-- =====================================================
+     TOP INFORMATION
+===================================================== -->
+
+<div class="gpa-active-call-top">
+
+    <div
+        class="gpa-active-call-name"
+    >
+
+        ${selectedContact?.name || "Connected"}
+
+    </div>
+
+
+    <div
+        class="gpa-active-call-status"
+        id="gpaCallerCallStatus"
+    >
+
+        Calling...
+
+    </div>
+
+
+    <div
+        class="gpa-active-call-duration"
+        id="gpaCallerCallDuration"
+    >
+
+        00:00
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     PROFILE
+===================================================== -->
+
+<div
+    class="gpa-active-call-avatar"
+>
+
+    ${(
+    selectedContact?.name ||
+    "User"
+)
+    .trim()
+    .slice(0, 2)
+    .toUpperCase()}
+
+</div>
+
+
+<!-- =====================================================
+     THREE CONTROLS ONLY
+===================================================== -->
+
+<div
+    class="gpa-active-call-controls"
+>
+
+
+    <!-- SPEAKER -->
+
+    <button
+        id="gpaSpeakerCall"
+        class="gpa-active-call-button"
+        type="button"
+        onclick="toggleVoiceSpeaker()"
+    >
+
+        <div
+            class="gpa-active-call-button-circle"
+        >
+
+            <i
+                class="fa-solid fa-volume-high"
+            ></i>
+
+        </div>
+
+
+        <div
+            class="gpa-active-call-button-label"
+        >
+
+            Speaker
+
+        </div>
+
+    </button>
+
+
+    <!-- MUTE -->
+
+    <button
+        id="gpaCallerMuteCall"
+        class="gpa-active-call-button"
+        type="button"
+        onclick="toggleVoiceMute()"
+    >
+
+        <div
+            class="gpa-active-call-button-circle"
+        >
+
+            <i
+                class="fa-solid fa-microphone"
+            ></i>
+
+        </div>
+
+
+        <div
+            class="gpa-active-call-button-label"
+        >
+
+            Mute
+
+        </div>
+
+    </button>
+
+
+    <!-- END -->
+
+    <button
+        id="gpaCallerEndCall"
+        class="gpa-active-call-button"
+        type="button"
+        onclick="endCurrentVoiceCall()"
+    >
+
+        <div
+            class="
+                gpa-active-call-button-circle
+                gpa-active-end-circle
+            "
+        >
+
+            <i
+                class="fa-solid fa-phone-slash"
+            ></i>
+
+        </div>
+
+
+        <div
+            class="gpa-active-call-button-label"
+        >
+
+            End
+
+        </div>
+
+    </button>
+
+
+</div>
+
+`;
+
+
+        document.body.appendChild(
+            activeCall
+        );
 
 
     // =================================================
