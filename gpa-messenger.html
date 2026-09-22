@@ -2134,55 +2134,47 @@ socket.on(
 
                 `;
                  // -------------------------------------------------
-                // END CALL BUTTON
-                // -------------------------------------------------
+// CHANGE DECLINE BUTTON TO END CALL
+// -------------------------------------------------
 
-                const endCallButton =
-                    document.createElement("button");
+const endCallButton =
+    document.getElementById(
+        "gpaDeclineCall"
+    );
 
-                endCallButton.type = "button";
+if (endCallButton) {
 
-                endCallButton.innerHTML = `
-                    <div
-                        class="gpa-call-action-circle"
-                        style="
-                            background:#ef233c;
-                            margin:auto;
-                        "
-                    >
-                        <i class="fa-solid fa-phone-slash"></i>
-                    </div>
+    // Change button action
+    endCallButton.onclick =
+        endCurrentVoiceCall;
 
-                    <div
-                        class="gpa-call-action-label"
-                        style="
-                            color:white;
-                            margin-top:10px;
-                        "
-                    >
-                        End Call
-                    </div>
-                `;
+    // Change icon
+    const icon =
+        endCallButton.querySelector(
+            "i"
+        );
 
-                endCallButton.style.cssText = `
-                    position:absolute;
-                    left:50%;
-                    bottom:45px;
-                    transform:translateX(-50%);
-                    border:none;
-                    background:transparent;
-                    color:white;
-                    cursor:pointer;
-                    z-index:999999;
-                    text-align:center;
-                `;
+    if (icon) {
 
-                endCallButton.onclick =
-                    endCurrentVoiceCall;
+        icon.className =
+            "fa-solid fa-phone-slash";
 
-                callBox.appendChild(
-                    endCallButton
-                );
+    }
+
+    // Change label
+    const label =
+        endCallButton.querySelector(
+            ".gpa-call-action-label"
+        );
+
+    if (label) {
+
+        label.innerText =
+            "End Call";
+
+    }
+
+}
 
             };
 
