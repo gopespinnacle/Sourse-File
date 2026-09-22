@@ -1988,6 +1988,64 @@ voicePeerConnection.onconnectionstatechange =
             "connected"
         ) {
 
+            // =================================================
+// START CALL TIMER
+// =================================================
+
+voiceCallStartTime = Date.now();
+
+clearInterval(
+    voiceCallTimer
+);
+
+voiceCallTimer =
+    setInterval(
+        () => {
+
+            const elapsed =
+                Math.floor(
+                    (
+                        Date.now() -
+                        voiceCallStartTime
+                    ) / 1000
+                );
+
+            const minutes =
+                Math.floor(
+                    elapsed / 60
+                )
+                .toString()
+                .padStart(
+                    2,
+                    "0"
+                );
+
+            const seconds =
+                (
+                    elapsed % 60
+                )
+                .toString()
+                .padStart(
+                    2,
+                    "0"
+                );
+
+            const durationText =
+                document.getElementById(
+                    "gpaCallDuration"
+                );
+
+            if (durationText) {
+
+                durationText.innerText =
+                    `${minutes}:${seconds}`;
+
+            }
+
+        },
+        1000
+    );
+
             const callBox =
                 document.getElementById(
                     "gpaIncomingCall"
