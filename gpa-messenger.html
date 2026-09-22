@@ -2133,6 +2133,56 @@ socket.on(
                     </div>
 
                 `;
+                 // -------------------------------------------------
+                // END CALL BUTTON
+                // -------------------------------------------------
+
+                const endCallButton =
+                    document.createElement("button");
+
+                endCallButton.type = "button";
+
+                endCallButton.innerHTML = `
+                    <div
+                        class="gpa-call-action-circle"
+                        style="
+                            background:#ef233c;
+                            margin:auto;
+                        "
+                    >
+                        <i class="fa-solid fa-phone-slash"></i>
+                    </div>
+
+                    <div
+                        class="gpa-call-action-label"
+                        style="
+                            color:white;
+                            margin-top:10px;
+                        "
+                    >
+                        End Call
+                    </div>
+                `;
+
+                endCallButton.style.cssText = `
+                    position:absolute;
+                    left:50%;
+                    bottom:45px;
+                    transform:translateX(-50%);
+                    border:none;
+                    background:transparent;
+                    color:white;
+                    cursor:pointer;
+                    z-index:999999;
+                    text-align:center;
+                `;
+
+                endCallButton.onclick =
+                    endCurrentVoiceCall;
+
+                callBox.appendChild(
+                    endCallButton
+                );
 
             };
 
@@ -2165,6 +2215,151 @@ socket.on(
 
     }
 );
+
+// =========================================================
+// END CURRENT VOICE CALL
+// =========================================================
+
+function endCurrentVoiceCall() {
+
+    console.log(
+        "Ending current voice call..."
+    );
+
+    if (
+        !socket ||
+        !window.gpaActiveCall
+    ) {
+
+        console.log(
+            "No active voice call found."
+        );
+
+        return;
+
+    }
+
+    const conversationId =
+        window.gpaActiveCall
+            .conversationId;
+
+    const otherUserId =
+        window.gpaActiveCall
+            .receiverId ||
+        window.gpaActiveCall
+            .callerId;
+
+
+    // -------------------------------------------------
+    // TELL THE OTHER USER TO END THE CALL
+    // -------------------------------------------------
+
+    socket.emit(
+        "endVoiceCall",
+        {
+
+            conversationId:
+                String(
+                    conversationId
+                ),
+
+            receiverId:
+                String(
+                    otherUserId
+                )
+
+        }
+    );
+
+    console.log(
+        "endVoiceCall emitted."
+    );
+
+
+    // -------------------------------------------------
+    // ALSO CLEAN UP THIS SIDE IMMEDIATELY
+    // -------------------------------------------------
+
+    clearInterval(
+        voiceCallTimer
+    );
+
+    voiceCallTimer =
+        null;
+
+    voiceCallStartTime =
+        null;
+
+
+    // Stop microphone
+
+    if (voiceLocalStream) {
+
+        voiceLocalStream
+            .getTracks()
+            .forEach(
+                track => {
+
+                    track.stop();
+
+                }
+            );
+
+        voiceLocalStream =
+            null;
+
+    }
+
+
+    // Close WebRTC
+
+    if (voicePeerConnection) {
+
+        voicePeerConnection.close();
+
+        voicePeerConnection =
+            null;
+
+    }
+
+
+    // Remove remote audio
+
+    const audio =
+        document.getElementById(
+            "gpaRemoteVoiceAudio"
+        );
+
+    if (audio) {
+
+        audio.srcObject =
+            null;
+
+        audio.remove();
+
+    }
+
+
+    // Remove call screen
+
+    const callBox =
+        document.getElementById(
+            "gpaIncomingCall"
+        );
+
+    if (callBox) {
+
+        callBox.remove();
+
+    }
+
+
+    // Clear active call
+
+    window.gpaActiveCall =
+        null;
+
+}
 
 // =========================================================
 // VOICE CALL ENDED
