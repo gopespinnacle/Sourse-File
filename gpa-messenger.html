@@ -2140,6 +2140,43 @@ voicePeerConnection.onicecandidate = event => {
                 "Remote offer set successfully."
             );
 
+            // -------------------------------------------------
+// ADD ICE CANDIDATES THAT ARRIVED EARLY
+// -------------------------------------------------
+
+for (
+    const pendingCandidate
+    of pendingVoiceIceCandidates
+) {
+
+    try {
+
+        await voicePeerConnection
+            .addIceCandidate(
+                new RTCIceCandidate(
+                    pendingCandidate
+                )
+            );
+
+        console.log(
+            "Pending remote ICE candidate added successfully."
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "PENDING ICE CANDIDATE ERROR:",
+            error
+        );
+
+    }
+
+}
+
+// Clear processed candidates
+pendingVoiceIceCandidates = [];
+
             // ---------------------------------------------
 // CREATE WEBRTC ANSWER
 // ---------------------------------------------
@@ -2311,24 +2348,44 @@ socket.on(
 
             if (!voicePeerConnection) {
 
-                console.error(
-                    "WebRTC connection not found for ICE candidate."
-                );
+    console.error(
+        "WebRTC connection not found for ICE candidate."
+    );
 
-                return;
+    return;
 
-            }
+}
 
-            await voicePeerConnection
-                .addIceCandidate(
-                    new RTCIceCandidate(
-                        candidate
-                    )
-                );
+// -------------------------------------------------
+// ICE CANDIDATE MAY ARRIVE BEFORE REMOTE DESCRIPTION
+// -------------------------------------------------
 
-            console.log(
-                "Remote ICE candidate added successfully."
-            );
+if (
+    !voicePeerConnection.remoteDescription
+) {
+
+    console.log(
+        "Remote description not ready. Storing ICE candidate."
+    );
+
+    pendingVoiceIceCandidates.push(
+        candidate
+    );
+
+    return;
+
+}
+
+await voicePeerConnection
+    .addIceCandidate(
+        new RTCIceCandidate(
+            candidate
+        )
+    );
+
+console.log(
+    "Remote ICE candidate added successfully."
+);
 
         }
         catch (error) {
