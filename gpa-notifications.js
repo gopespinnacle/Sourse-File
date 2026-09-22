@@ -274,32 +274,90 @@ if (!window.firebase) {
         // Foreground notification
         // ------------------------------------------
 
-        messaging.onMessage(function(payload) {
+        messaging.onMessage(async function(payload) {
 
-            console.log(
-                "GPA foreground notification:",
-                payload
+    console.log(
+        "GPA foreground notification:",
+        payload
+    );
+
+    const title =
+        payload.notification?.title ||
+        "GPA Messenger";
+
+    const body =
+        payload.notification?.body ||
+        "You have a new message.";
+
+    try {
+
+        if (
+            Notification.permission !==
+            "granted"
+        ) {
+
+            console.warn(
+                "GPA notification permission is not granted."
             );
 
-            const title =
-                payload.notification?.title ||
-                "GPA Messenger";
+            return;
 
-            const body =
-                payload.notification?.body ||
-                "You have a new message.";
+        }
 
-            // Browser notification while website is open
-            if (Notification.permission === "granted") {
 
-                new Notification(title, {
-                    body: body,
-                    icon: "/favicon.ico"
-                });
+        // ------------------------------------------
+        // SHOW NOTIFICATION THROUGH SERVICE WORKER
+        // ------------------------------------------
 
+        const registration =
+            await navigator.serviceWorker.ready;
+
+
+        await registration.showNotification(
+            title,
+            {
+                body: body,
+
+                icon:
+                    "/favicon.ico",
+
+                badge:
+                    "/favicon.ico",
+
+                tag:
+                    "gpa-messenger",
+
+                renotify:
+                    true,
+
+                data: {
+                    url:
+                        payload.data?.url ||
+                        "https://www.gopespinnacle.com/gpa-messenger.html",
+
+                    conversationId:
+                        payload.data?.conversationId ||
+                        ""
+                }
             }
+        );
 
-        });
+
+        console.log(
+            "✅ GPA FOREGROUND NOTIFICATION DISPLAYED"
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "❌ GPA FOREGROUND NOTIFICATION ERROR:",
+            error
+        );
+
+    }
+
+});
 
 
         // Start registration
