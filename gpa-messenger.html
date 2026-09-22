@@ -2181,6 +2181,46 @@ if (endCallButton) {
     }
 );
 
+// -------------------------------------------------
+// CHANGE ACCEPT BUTTON TO MUTE
+// -------------------------------------------------
+
+const muteButton =
+    document.getElementById(
+        "gpaAcceptCall"
+    );
+
+if (muteButton) {
+
+    muteButton.onclick =
+        toggleVoiceMute;
+
+    const icon =
+        muteButton.querySelector(
+            "i"
+        );
+
+    if (icon) {
+
+        icon.className =
+            "fa-solid fa-microphone";
+
+    }
+
+    const label =
+        muteButton.querySelector(
+            ".gpa-call-action-label"
+        );
+
+    if (label) {
+
+        label.innerText =
+            "Mute";
+
+    }
+
+}
+
 // =========================================================
 // VOICE CALL ACCEPTED
 // =========================================================
@@ -2350,6 +2390,124 @@ function endCurrentVoiceCall() {
 
     window.gpaActiveCall =
         null;
+
+}
+
+// =========================================================
+// MUTE / UNMUTE VOICE CALL
+// =========================================================
+
+function toggleVoiceMute() {
+
+    if (!voiceLocalStream) {
+
+        console.log(
+            "Microphone stream not available."
+        );
+
+        return;
+
+    }
+
+    const audioTracks =
+        voiceLocalStream.getAudioTracks();
+
+    if (!audioTracks.length) {
+
+        console.log(
+            "No microphone track found."
+        );
+
+        return;
+
+    }
+
+    // Check current mute state
+    const isCurrentlyMuted =
+        audioTracks.every(
+            track => !track.enabled
+        );
+
+    // Toggle microphone
+    audioTracks.forEach(
+        track => {
+
+            track.enabled =
+                isCurrentlyMuted;
+
+        }
+    );
+
+    const muteButton =
+        document.getElementById(
+            "gpaAcceptCall"
+        );
+
+    if (!muteButton) {
+        return;
+    }
+
+    const icon =
+        muteButton.querySelector(
+            "i"
+        );
+
+    const label =
+        muteButton.querySelector(
+            ".gpa-call-action-label"
+        );
+
+    if (isCurrentlyMuted) {
+
+        // UNMUTED
+
+        if (icon) {
+
+            icon.className =
+                "fa-solid fa-microphone";
+
+        }
+
+        if (label) {
+
+            label.innerText =
+                "Mute";
+
+        }
+
+        muteButton.style.background =
+            "#20c86b";
+
+        console.log(
+            "Microphone unmuted."
+        );
+
+    } else {
+
+        // MUTED
+
+        if (icon) {
+
+            icon.className =
+                "fa-solid fa-microphone-slash";
+
+        }
+
+        if (label) {
+
+            label.innerText =
+                "Unmute";
+
+        }
+
+        muteButton.style.background =
+            "#ef233c";
+
+        console.log(
+            "Microphone muted."
+        );
+
+    }
 
 }
 
