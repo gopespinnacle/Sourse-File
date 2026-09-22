@@ -1813,7 +1813,7 @@ socket.on(
                 data.acceptedBy
         };
 
-        
+        startCallerVoiceConnection();
 
     }
 );
@@ -6185,7 +6185,7 @@ function founderVoiceCall() {
 // START CALL + PREPARE CALLER WEBRTC
 // =================================================
 
-startCallerVoiceConnection();
+
 
 socket.emit(
     "startVoiceCall",
