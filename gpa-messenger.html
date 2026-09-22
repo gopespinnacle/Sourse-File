@@ -1388,6 +1388,75 @@ let voiceCallStartTime = null;
 
 let pendingVoiceIceCandidates = [];
 
+// =========================================================
+// GPA VOICE CALL RINGTONE
+// =========================================================
+
+const gpaCallRingtone =
+    new Audio("/gpa-ringtone.mp3");
+
+gpaCallRingtone.loop = true;
+gpaCallRingtone.volume = 0.8;
+gpaCallRingtone.preload = "auto";
+
+
+function startGpaCallRingtone() {
+
+    try {
+
+        gpaCallRingtone.currentTime = 0;
+
+        const playPromise =
+            gpaCallRingtone.play();
+
+        if (playPromise) {
+
+            playPromise.catch(
+                error => {
+
+                    console.log(
+                        "GPA ringtone playback waiting for user interaction:",
+                        error
+                    );
+
+                }
+            );
+
+        }
+
+    }
+    catch (error) {
+
+        console.error(
+            "GPA RINGTONE ERROR:",
+            error
+        );
+
+    }
+
+}
+
+
+function stopGpaCallRingtone() {
+
+    try {
+
+        gpaCallRingtone.pause();
+
+        gpaCallRingtone.currentTime = 0;
+
+    }
+    catch (error) {
+
+        console.error(
+            "GPA RINGTONE STOP ERROR:",
+            error
+        );
+
+    }
+
+}
+
 
 /* =========================================================
    INITIALIZE
@@ -2001,6 +2070,12 @@ socket.on(
         document.body.appendChild(
             callBox
         );
+
+        // -------------------------------------------------
+// START INCOMING CALL RINGTONE
+// -------------------------------------------------
+
+startGpaCallRingtone();
 
 
         // -----------------------------
