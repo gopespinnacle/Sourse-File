@@ -2424,6 +2424,9 @@ if (callerCallBox) {
 
 }
 
+// Clear old ICE candidates
+pendingVoiceIceCandidates = [];
+
 
     // Clear active call
 
@@ -2843,6 +2846,9 @@ if (callerCallBox) {
     callerCallBox.remove();
 
 }
+
+// Clear old ICE candidates
+pendingVoiceIceCandidates = [];
 
         // Clear active call
         window.gpaActiveCall =
