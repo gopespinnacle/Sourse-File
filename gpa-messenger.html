@@ -2182,6 +2182,49 @@ if (endCallButton) {
 );
 
 // -------------------------------------------------
+// CHANGE DECLINE BUTTON TO END CALL
+// -------------------------------------------------
+
+const endCallButton =
+    document.getElementById(
+        "gpaDeclineCall"
+    );
+
+if (endCallButton) {
+
+    // Change button action
+    endCallButton.onclick =
+        endCurrentVoiceCall;
+
+    // Change icon
+    const icon =
+        endCallButton.querySelector(
+            "i"
+        );
+
+    if (icon) {
+
+        icon.className =
+            "fa-solid fa-phone-slash";
+
+    }
+
+    // Change label
+    const label =
+        endCallButton.querySelector(
+            ".gpa-call-action-label"
+        );
+
+    if (label) {
+
+        label.innerText =
+            "End Call";
+
+    }
+
+}
+
+// -------------------------------------------------
 // CHANGE ACCEPT BUTTON TO MUTE
 // -------------------------------------------------
 
@@ -2220,6 +2263,7 @@ if (muteButton) {
     }
 
 }
+
 
 // =========================================================
 // VOICE CALL ACCEPTED
