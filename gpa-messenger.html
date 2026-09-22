@@ -2418,7 +2418,17 @@ function endCurrentVoiceCall() {
 // MUTE / UNMUTE VOICE CALL
 // =========================================================
 
+// =========================================================
+// MUTE / UNMUTE VOICE CALL
+// =========================================================
+
 function toggleVoiceMute() {
+
+    console.log("Mute button pressed.");
+
+    // -------------------------------------------------
+    // CHECK MICROPHONE STREAM
+    // -------------------------------------------------
 
     if (!voiceLocalStream) {
 
@@ -2430,8 +2440,14 @@ function toggleVoiceMute() {
 
     }
 
+
+    // -------------------------------------------------
+    // GET MICROPHONE TRACKS
+    // -------------------------------------------------
+
     const audioTracks =
         voiceLocalStream.getAudioTracks();
+
 
     if (!audioTracks.length) {
 
@@ -2443,69 +2459,94 @@ function toggleVoiceMute() {
 
     }
 
-    // Check current mute state
-    const isCurrentlyMuted =
+
+    // -------------------------------------------------
+    // CHECK CURRENT MUTE STATE
+    // -------------------------------------------------
+
+    const currentlyMuted =
         audioTracks.every(
             track => !track.enabled
         );
 
-    // Toggle microphone
+
+    // -------------------------------------------------
+    // TOGGLE MICROPHONE
+    // -------------------------------------------------
+
+    const newMutedState =
+        !currentlyMuted;
+
+
     audioTracks.forEach(
         track => {
 
             track.enabled =
-                isCurrentlyMuted;
+                !newMutedState;
 
         }
     );
 
-   const muteButton =
-    document.getElementById(
-        "gpaCallerMuteCall"
+
+    console.log(
+        "Microphone track enabled:",
+        !newMutedState
     );
 
+
+    // -------------------------------------------------
+    // FIND CALLER OR RECEIVER MUTE BUTTON
+    // -------------------------------------------------
+
+    const muteButton =
+        document.getElementById(
+            "gpaCallerMuteCall"
+        ) ||
+        document.getElementById(
+            "gpaAcceptCall"
+        );
+
+
     if (!muteButton) {
+
+        console.log(
+            "Mute button not found."
+        );
+
         return;
+
     }
+
+
+    // -------------------------------------------------
+    // FIND ICON
+    // -------------------------------------------------
 
     const icon =
         muteButton.querySelector(
             "i"
         );
 
+
+    // -------------------------------------------------
+    // FIND LABEL
+    // Supports both caller and receiver UI
+    // -------------------------------------------------
+
     const label =
+        muteButton.querySelector(
+            ".gpa-active-call-button-label"
+        ) ||
         muteButton.querySelector(
             ".gpa-call-action-label"
         );
 
-    if (isCurrentlyMuted) {
 
-        // UNMUTED
+    // -------------------------------------------------
+    // MUTED
+    // -------------------------------------------------
 
-        if (icon) {
-
-            icon.className =
-                "fa-solid fa-microphone";
-
-        }
-
-        if (label) {
-
-            label.innerText =
-                "Mute";
-
-        }
-
-        muteButton.style.background =
-            "#20c86b";
-
-        console.log(
-            "Microphone unmuted."
-        );
-
-    } else {
-
-        // MUTED
+    if (newMutedState) {
 
         if (icon) {
 
@@ -2514,6 +2555,7 @@ function toggleVoiceMute() {
 
         }
 
+
         if (label) {
 
             label.innerText =
@@ -2521,17 +2563,53 @@ function toggleVoiceMute() {
 
         }
 
-        muteButton.style.background =
-            "#ef233c";
+
+        muteButton.classList.add(
+            "muted"
+        );
+
 
         console.log(
-            "Microphone muted."
+            "Microphone MUTED."
+        );
+
+    }
+
+
+    // -------------------------------------------------
+    // UNMUTED
+    // -------------------------------------------------
+
+    else {
+
+        if (icon) {
+
+            icon.className =
+                "fa-solid fa-microphone";
+
+        }
+
+
+        if (label) {
+
+            label.innerText =
+                "Mute";
+
+        }
+
+
+        muteButton.classList.remove(
+            "muted"
+        );
+
+
+        console.log(
+            "Microphone UNMUTED."
         );
 
     }
 
 }
-
 // =========================================================
 // SPEAKER ON / OFF
 // =========================================================
