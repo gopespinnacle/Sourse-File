@@ -1806,12 +1806,12 @@ socket.on(
 
         // Store accepted call information
         window.gpaActiveCall = {
-            conversationId:
-                data.conversationId,
+    conversationId:
+        data.conversationId,
 
-            otherUserId:
-                data.acceptedBy
-        };
+    receiverId:
+        data.acceptedBy
+};
 
         startCallerVoiceConnection();
 
