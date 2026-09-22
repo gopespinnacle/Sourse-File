@@ -1,6 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <style>
+    /* GPA INTRO SCREEN */
+    #gpaIntroScreen {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        background: #000;
+        z-index: 999999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    #gpaIntroVideo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    #gpaIntroScreen.hide {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+
+    body.gpa-intro-active {
+        overflow: hidden;
+    }
+</style>
     
 <meta name="theme-color" content="#0d1b2a">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1006,6 +1039,16 @@ transform:translateY(-3px);
 </head>
 
 <body>
+    <!-- GPA APP INTRO VIDEO -->
+<div id="gpaIntroScreen">
+    <video id="gpaIntroVideo"
+           autoplay
+           muted
+           playsinline
+           preload="auto">
+        <source src="gpa-intro.mp4" type="video/mp4">
+    </video>
+</div>
 <div class="menu-overlay" onclick="toggleMenu()"></div>
 <header class="header">
     <div class="header-container">
@@ -1453,5 +1496,28 @@ if ("serviceWorker" in navigator) {
 <script src="main.js"></script>
 
 <script src="install.js"></script>
+
+<script>
+    document.body.classList.add("gpa-intro-active");
+
+    const gpaIntroScreen = document.getElementById("gpaIntroScreen");
+    const gpaIntroVideo = document.getElementById("gpaIntroVideo");
+
+    function finishGPAIntro() {
+        gpaIntroScreen.classList.add("hide");
+        document.body.classList.remove("gpa-intro-active");
+
+        setTimeout(() => {
+            gpaIntroScreen.remove();
+        }, 350);
+    }
+
+    gpaIntroVideo.addEventListener("ended", finishGPAIntro);
+
+    // If the browser blocks autoplay, try playing again.
+    gpaIntroVideo.play().catch(() => {
+        console.log("GPA intro autoplay was blocked.");
+    });
+</script>
 </body>
 </html>
