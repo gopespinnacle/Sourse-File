@@ -2273,7 +2273,7 @@ socket.on(
 // END CURRENT VOICE CALL
 // =========================================================
 
-function endCurrentVoiceCall() {
+window.endCurrentVoiceCall = function() {
 
     console.log(
         "Ending current voice call..."
@@ -2440,7 +2440,7 @@ if (callerCallBox) {
 // MUTE / UNMUTE VOICE CALL
 // =========================================================
 
-function toggleVoiceMute() {
+window.toggleVoiceMute = function() {
 
     console.log("Mute button pressed.");
 
@@ -2634,7 +2634,7 @@ function toggleVoiceMute() {
 
 let gpaSpeakerEnabled = false;
 
-function toggleVoiceSpeaker() {
+window.toggleVoiceSpeaker = function() {
 
     const audio =
         document.getElementById(
@@ -8259,18 +8259,7 @@ function scrollMessages() {
 
 }
 
-// =========================================================
-// EXPOSE VOICE CALL FUNCTIONS TO HTML BUTTONS
-// =========================================================
 
-window.endCurrentVoiceCall =
-    endCurrentVoiceCall;
-
-window.toggleVoiceMute =
-    toggleVoiceMute;
-
-window.toggleVoiceSpeaker =
-    toggleVoiceSpeaker;
 
 </script>
 
