@@ -13,35 +13,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const messaging = firebase.messaging();
-
-messaging.onBackgroundMessage(function(payload) {
-
-    console.log(
-        "[firebase-messaging-sw.js] Background message:",
-        payload
-    );
-
-    const notificationTitle =
-        payload.notification?.title || "GPA Messenger";
-
-    const notificationOptions = {
-        body:
-            payload.notification?.body ||
-            "You have a new message.",
-        icon: "/favicon.ico",
-        data: {
-            url:
-                payload.fcmOptions?.link ||
-                "https://www.gopespinnacle.com/gpa-messenger.html"
-        }
-    };
-
-    self.registration.showNotification(
-        notificationTitle,
-        notificationOptions
-    );
-});
-
 self.addEventListener("notificationclick", function(event) {
 
     event.notification.close();
