@@ -109,10 +109,55 @@ cursor:pointer;
 
 <script>
 
-const token = sessionStorage.getItem("token");
+let token =
+    sessionStorage.getItem("token");
 
-if(!token){
-window.location.href = "teacher-login.html";
+if (!token) {
+
+    if (
+        window.GPAAndroid &&
+        typeof window.GPAAndroid.getToken === "function"
+    ) {
+
+        token =
+            window.GPAAndroid.getToken();
+
+        const teacherId =
+            window.GPAAndroid.getUserId();
+
+        const teacherName =
+            window.GPAAndroid.getUserName();
+
+        if (token) {
+
+            sessionStorage.setItem(
+                "token",
+                token
+            );
+
+            if (teacherId) {
+
+                sessionStorage.setItem(
+                    "teacherId",
+                    teacherId
+                );
+            }
+
+            if (teacherName) {
+
+                sessionStorage.setItem(
+                    "teacherName",
+                    teacherName
+                );
+            }
+        }
+    }
+}
+
+if (!token) {
+
+    window.location.href =
+        "teacher-login.html";
 }
 
 /* ================= LOAD TIMETABLE ================= */
