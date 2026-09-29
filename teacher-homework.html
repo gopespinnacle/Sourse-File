@@ -266,9 +266,16 @@
 
     </div>
 
-    <button onclick="
-    window.location.href='teacher-dashboard.html'
-    "
+   <button onclick="
+if (
+    window.GPAAndroid &&
+    typeof window.GPAAndroid.goBack === 'function'
+) {
+    window.GPAAndroid.goBack();
+} else {
+    window.location.href='teacher-dashboard.html';
+}
+"
     style="
     background:#1e3a5f;
     color:white;
