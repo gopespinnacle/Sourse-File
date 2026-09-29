@@ -21,29 +21,117 @@
         font-size: 14px;
     }
 
-    /* PAGE HEADER */
+
+    /* =================================================
+       MOBILE HEADER
+       ================================================= */
+
     h2 {
-        box-sizing: border-box;
         width: 100%;
+        margin: 0 !important;
+        padding: 14px 14px 12px !important;
+        box-sizing: border-box;
+        background: #f1f5f9;
     }
 
-    /* FILTER SECTION */
+    /* Title + Create Homework */
+    h2 > div:first-child {
+        width: 100%;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+        box-sizing: border-box;
+    }
+
+    h2 > div:first-child span {
+        display: block;
+        font-size: 22px !important;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.2;
+    }
+
+    #createHomeworkBtn {
+        width: 100% !important;
+        box-sizing: border-box;
+        padding: 13px 15px !important;
+        font-size: 16px !important;
+        border-radius: 12px !important;
+    }
+
+    /* Back button */
+    h2 > button {
+        display: block;
+        width: 120px !important;
+        margin: 10px 0 0 0 !important;
+        padding: 11px 16px !important;
+        font-size: 15px !important;
+        border-radius: 10px !important;
+        box-sizing: border-box;
+    }
+
+
+    /* =================================================
+       FILTER SECTION
+       ================================================= */
+
+    h2 + div {
+        width: calc(100% - 24px) !important;
+        margin: 0 12px 16px 12px !important;
+        padding: 16px !important;
+        box-sizing: border-box;
+
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 14px !important;
+
+        background: white;
+        border-radius: 14px !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    h2 + div > div {
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    h2 + div label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 15px;
+        color: #0f172a;
+    }
+
     #filterDate,
     #filterSubject,
     #filterStatus {
         width: 100% !important;
         min-width: 0 !important;
         box-sizing: border-box;
-        padding: 11px !important;
-        font-size: 14px;
+
+        padding: 12px !important;
+        margin-top: 0 !important;
+
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+
+        font-size: 15px;
+        background: white;
     }
 
-    /* CREATE HOMEWORK PANEL */
+
+    /* =================================================
+       CREATE HOMEWORK PANEL
+       ================================================= */
+
     #createHomeworkPanel {
+        width: calc(100% - 24px) !important;
         margin: 12px !important;
         padding: 15px !important;
         box-sizing: border-box;
-        width: calc(100% - 24px);
+        border-radius: 14px !important;
     }
 
     #homeworkForm > div {
@@ -62,12 +150,17 @@
         padding: 11px !important;
     }
 
-    /* TOPIC CARDS */
+
+    /* =================================================
+       TOPIC CARDS
+       ================================================= */
+
     #topicContainer > div {
         width: 100%;
         box-sizing: border-box;
         padding: 14px !important;
         margin-bottom: 14px !important;
+        border-radius: 12px !important;
     }
 
     #topicContainer input,
@@ -83,42 +176,48 @@
         box-sizing: border-box;
     }
 
-    /* BUTTONS */
-    #createHomeworkBtn,
-    #addTopicBtn {
-        max-width: 100%;
-        box-sizing: border-box;
-    }
 
-    /* HOMEWORK TABLE */
+    /* =================================================
+       HOMEWORK TABLE
+       ================================================= */
+
     table {
         display: block;
         width: calc(100% - 24px) !important;
         margin: 12px !important;
+
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+
         box-sizing: border-box;
+        background: white;
     }
 
     table th,
     table td {
-        white-space: normal;
-        vertical-align: top;
-        font-size: 12px;
         padding: 9px !important;
+        font-size: 12px;
+        vertical-align: top;
     }
 
     table th {
         white-space: nowrap;
     }
 
-    /* STUDENT ROW */
+    table td {
+        white-space: normal;
+    }
+
     table td[colspan="13"] {
         min-width: 280px;
         font-size: 15px !important;
     }
 
-    /* VIEWER */
+
+    /* =================================================
+       VIEWER
+       ================================================= */
+
     #viewerModal > div {
         width: 96% !important;
         height: 92% !important;
