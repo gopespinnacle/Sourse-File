@@ -1,3 +1,134 @@
+    <style>
+
+/* =====================================================
+   GPA MOBILE APP UI
+   TEACHER HOMEWORK PAGE
+   ===================================================== */
+
+@media (max-width: 600px) {
+
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background: #f1f5f9;
+        font-size: 14px;
+    }
+
+    /* PAGE HEADER */
+    h2 {
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    /* FILTER SECTION */
+    #filterDate,
+    #filterSubject,
+    #filterStatus {
+        width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+        padding: 11px !important;
+        font-size: 14px;
+    }
+
+    /* CREATE HOMEWORK PANEL */
+    #createHomeworkPanel {
+        margin: 12px !important;
+        padding: 15px !important;
+        box-sizing: border-box;
+        width: calc(100% - 24px);
+    }
+
+    #homeworkForm > div {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        box-sizing: border-box;
+    }
+
+    #hwDate,
+    #hwTeacher,
+    #hwClass,
+    #hwSubject {
+        width: 100% !important;
+        box-sizing: border-box;
+        padding: 11px !important;
+    }
+
+    /* TOPIC CARDS */
+    #topicContainer > div {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 14px !important;
+        margin-bottom: 14px !important;
+    }
+
+    #topicContainer input,
+    #topicContainer textarea {
+        width: 100% !important;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    #topicContainer input[type="file"] {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* BUTTONS */
+    #createHomeworkBtn,
+    #addTopicBtn {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* HOMEWORK TABLE */
+    table {
+        display: block;
+        width: calc(100% - 24px) !important;
+        margin: 12px !important;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        box-sizing: border-box;
+    }
+
+    table th,
+    table td {
+        white-space: normal;
+        vertical-align: top;
+        font-size: 12px;
+        padding: 9px !important;
+    }
+
+    table th {
+        white-space: nowrap;
+    }
+
+    /* STUDENT ROW */
+    table td[colspan="13"] {
+        min-width: 280px;
+        font-size: 15px !important;
+    }
+
+    /* VIEWER */
+    #viewerModal > div {
+        width: 96% !important;
+        height: 92% !important;
+        margin: 4% auto !important;
+    }
+
+}
+
+</style>
+    
     <div style="
     display:flex;
     align-items:center;
