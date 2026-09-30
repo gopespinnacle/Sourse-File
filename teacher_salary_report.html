@@ -1,0 +1,1931 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Teacher Salary Report</title>
+
+    <!-- Existing academy stylesheet -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #222;
+        }
+
+        .salary-page {
+            padding: 30px;
+            max-width: 1500px;
+            margin: auto;
+        }
+
+        /* ================= HEADER ================= */
+
+        .page-header {
+            background: white;
+            padding: 22px 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .page-header h1 {
+            margin: 0;
+            color: #12395f;
+            font-size: 25px;
+        }
+
+        .page-header p {
+            margin: 6px 0 0;
+            color: #777;
+            font-size: 14px;
+        }
+
+        /* ================= FILTER ================= */
+
+        .filter-box {
+            background: white;
+            padding: 18px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .filter-box label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        .filter-box select {
+            padding: 9px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: white;
+            min-width: 180px;
+            font-size: 14px;
+        }
+
+        /* ================= SUMMARY ================= */
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .summary-title {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .summary-value {
+            color: #12395f;
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        /* ================= TABLE ================= */
+
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+
+            overflow-x: auto;
+
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1050px;
+        }
+
+        th {
+            background: #12395f;
+            color: white;
+            padding: 13px 10px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e5e5e5;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        tfoot td {
+            background: #f1f4f7;
+            font-weight: bold;
+            color: #12395f;
+            border-top: 2px solid #12395f;
+        }
+
+        /* ================= STUDENT LIST ================= */
+
+        .student-list {
+            text-align: left;
+        }
+
+        .student-item {
+            padding: 7px 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            background: #f6f8fa;
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: #12395f;
+        }
+
+        .student-id {
+            font-size: 12px;
+            color: #777;
+            margin-top: 2px;
+        }
+
+        /* ================= SALARY ================= */
+
+        .salary-value {
+            font-weight: bold;
+            color: #12395f;
+            white-space: nowrap;
+        }
+
+        /* ================= BUTTON ================= */
+
+        .download-btn {
+            border: none;
+            background: #12395f;
+            color: white;
+
+            padding: 9px 13px;
+
+            border-radius: 5px;
+
+            cursor: pointer;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            white-space: nowrap;
+        }
+
+        .download-btn:hover {
+            background: #0d2d4d;
+        }
+
+        /* ================= STATUS ================= */
+
+        .loading {
+            text-align: center;
+            padding: 35px !important;
+            color: #777;
+        }
+
+        .error {
+            text-align: center;
+            padding: 35px !important;
+            color: #b00020;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 35px !important;
+            color: #777;
+        }
+
+        /* ================= MOBILE ================= */
+
+        @media(max-width: 700px) {
+
+            .salary-page {
+                padding: 15px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="salary-page">
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="page-header">
+
+        <div>
+
+            <h1>
+                Teacher Salary Report
+            </h1>
+
+            <p>
+                Monthly teacher payment report
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         FILTER
+    ====================================================== -->
+
+    <div class="filter-box">
+
+        <label>
+            Salary Month:
+        </label>
+
+        <select id="salaryMonth">
+        </select>
+
+
+        <label>
+            Teacher:
+        </label>
+
+        <select id="teacherFilter">
+
+            <option value="">
+                All Teachers
+            </option>
+
+        </select>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         SUMMARY
+    ====================================================== -->
+
+    <div class="summary-grid">
+
+
+        <div class="summary-card">
+
+            <div class="summary-title">
+                Teachers
+            </div>
+
+            <div
+                class="summary-value"
+                id="teacherCount"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-title">
+                Total Salary
+            </div>
+
+            <div
+                class="summary-value"
+                id="totalSalary"
+            >
+                ₹ 0
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         TABLE
+    ====================================================== -->
+
+    <div class="table-container">
+
+
+        <table>
+
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Teacher ID
+                    </th>
+
+                    <th>
+                        Teacher Name
+                    </th>
+
+                    <th>
+                        Student Name &amp; ID
+                    </th>
+
+                    <th>
+                        Fee from Student
+                    </th>
+
+                    <th>
+                        Total Salary
+                    </th>
+
+                    <th>
+                        Action
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="salaryTableBody">
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="loading"
+                    >
+                        Loading...
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+
+            <tfoot>
+
+                <tr>
+
+                    <td colspan="4">
+                        TOTAL
+                    </td>
+
+                    <td
+                        id="tableTotalSalary"
+                        class="salary-value"
+                    >
+                        ₹ 0
+                    </td>
+
+                    <td>
+                        -
+                    </td>
+
+                </tr>
+
+            </tfoot>
+
+
+        </table>
+
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* =========================================================
+   EXISTING BACKEND
+========================================================= */
+
+const API_BASE =
+    "https://academy-backend-eatl.onrender.com";
+
+
+
+/* =========================================================
+   MONTH NAMES
+========================================================= */
+
+const monthNames = [
+
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+
+];
+
+
+
+/* =========================================================
+   DATA
+========================================================= */
+
+let salaryRows = [];
+
+
+
+/* =========================================================
+   FORMAT MONEY
+========================================================= */
+
+function formatCurrency(value) {
+
+    return "₹ " +
+        Number(value || 0)
+            .toLocaleString("en-IN");
+
+}
+
+
+
+/* =========================================================
+   HTML SAFETY
+========================================================= */
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+
+/* =========================================================
+   MONTH DROPDOWN
+========================================================= */
+
+function populateMonthDropdown() {
+
+    const select =
+        document.getElementById("salaryMonth");
+
+    select.innerHTML = "";
+
+    const currentYear =
+        new Date().getFullYear();
+
+    for (
+        let year = currentYear;
+        year >= currentYear - 2;
+        year--
+    ) {
+
+        for (
+            let month = 11;
+            month >= 0;
+            month--
+        ) {
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                `${month + 1}-${year}`;
+
+            option.textContent =
+                `${monthNames[month]} ${year}`;
+
+            select.appendChild(option);
+
+        }
+
+    }
+
+
+    const currentMonth =
+        new Date().getMonth() + 1;
+
+
+    select.value =
+        `${currentMonth}-${currentYear}`;
+
+}
+
+
+
+/* =========================================================
+   LOAD MONTHLY FEE DATA
+========================================================= */
+
+async function loadSalaryReport() {
+
+    const select =
+        document.getElementById("salaryMonth");
+
+
+    const [month, year] =
+        select.value
+            .split("-")
+            .map(Number);
+
+
+    const token =
+        localStorage.getItem("token");
+
+
+    const tbody =
+        document.getElementById(
+            "salaryTableBody"
+        );
+
+
+    tbody.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="6"
+                class="loading"
+            >
+
+                Loading teacher salary data...
+
+            </td>
+
+        </tr>
+
+    `;
+
+
+    try {
+
+
+        const response =
+            await fetch(
+
+                `${API_BASE}/api/founder/fee-report?month=${month}&year=${year}`,
+
+                {
+
+                    method: "GET",
+
+                    headers: {
+
+                        "Authorization":
+                            "Bearer " + token
+
+                    }
+
+                }
+
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "Failed to load fee report"
+            );
+
+        }
+
+
+        /*
+         * Existing founder-fees.html
+         * receives the monthly records as:
+         *
+         * data.report
+         */
+
+        buildTeacherReport(
+            data.report || []
+        );
+
+
+        renderTeacherReport();
+
+
+    }
+
+    catch (error) {
+
+
+        console.error(
+            "TEACHER SALARY ERROR:",
+            error
+        );
+
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="error"
+                >
+
+                    Error loading teacher salary data.
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        document.getElementById(
+            "teacherCount"
+        ).innerText = "0";
+
+
+        document.getElementById(
+            "totalSalary"
+        ).innerText = "₹ 0";
+
+
+        document.getElementById(
+            "tableTotalSalary"
+        ).innerText = "₹ 0";
+
+    }
+
+}
+
+
+
+/* =========================================================
+   BUILD TEACHER REPORT
+========================================================= */
+
+function buildTeacherReport(report) {
+
+
+    /*
+     * We are NOT changing the MongoDB data.
+     *
+     * We simply read:
+     *
+     * studentName
+     * studentId
+     * teacherFees[]
+     *
+     * from MonthlyFee.
+     */
+
+
+    const teacherMap =
+        new Map();
+
+
+    report.forEach(student => {
+
+
+        const teacherFees =
+            Array.isArray(
+                student.teacherFees
+            )
+                ? student.teacherFees
+                : [];
+
+
+        teacherFees.forEach(teacherFee => {
+
+
+            /*
+             * Existing stored teacher ID
+             */
+            const teacherId =
+                teacherFee.teacherId ||
+                teacherFee.teacher ||
+                "-";
+
+
+            const teacherName =
+                teacherFee.teacherName ||
+                "Teacher";
+
+
+            const mapKey =
+                String(teacherId);
+
+
+            if (!teacherMap.has(mapKey)) {
+
+
+                teacherMap.set(
+                    mapKey,
+                    {
+
+                        teacherId:
+                            teacherId,
+
+                        teacherName:
+                            teacherName,
+
+                        students: [],
+
+                        totalSalary: 0
+
+                    }
+                );
+
+            }
+
+
+            const teacher =
+                teacherMap.get(mapKey);
+
+
+            const amount =
+                Number(
+                    teacherFee.amount || 0
+                );
+
+
+            teacher.students.push({
+
+                studentId:
+                    student.studentId || "-",
+
+                studentName:
+                    student.studentName || "-",
+
+                amount:
+                    amount
+
+            });
+
+
+            teacher.totalSalary +=
+                amount;
+
+
+        });
+
+    });
+
+
+    salaryRows =
+        Array.from(
+            teacherMap.values()
+        );
+
+
+    /*
+     * Sort teacher IDs
+     */
+
+    salaryRows.sort(
+        (a, b) =>
+            String(a.teacherId)
+                .localeCompare(
+                    String(b.teacherId),
+                    undefined,
+                    {
+                        numeric: true
+                    }
+                )
+    );
+
+}
+
+
+
+/* =========================================================
+   RENDER TABLE
+========================================================= */
+
+function renderTeacherReport() {
+
+
+    const selectedTeacher =
+        document.getElementById(
+            "teacherFilter"
+        ).value;
+
+
+    let rows =
+        salaryRows;
+
+
+    if (selectedTeacher) {
+
+        rows =
+            salaryRows.filter(
+                row =>
+                    String(
+                        row.teacherId
+                    ) ===
+                    String(selectedTeacher)
+            );
+
+    }
+
+
+    const tbody =
+        document.getElementById(
+            "salaryTableBody"
+        );
+
+
+    tbody.innerHTML = "";
+
+
+    let grandTotal = 0;
+
+
+    rows.forEach(row => {
+
+
+        grandTotal +=
+            Number(
+                row.totalSalary || 0
+            );
+
+
+        const studentHtml =
+            row.students.map(
+                student => `
+
+                    <div class="student-item">
+
+                        <div class="student-name">
+
+                            ${escapeHtml(
+                                student.studentName
+                            )}
+
+                        </div>
+
+                        <div class="student-id">
+
+                            ${escapeHtml(
+                                student.studentId
+                            )}
+
+                        </div>
+
+                    </div>
+
+                `
+            ).join("");
+
+
+        const studentTotal =
+            row.students.reduce(
+                (sum, student) =>
+                    sum +
+                    Number(
+                        student.amount || 0
+                    ),
+                0
+            );
+
+
+        const tr =
+            document.createElement("tr");
+
+
+        tr.innerHTML = `
+
+            <td>
+
+                ${escapeHtml(
+                    row.teacherId
+                )}
+
+            </td>
+
+
+            <td>
+
+                <strong>
+
+                    ${escapeHtml(
+                        row.teacherName
+                    )}
+
+                </strong>
+
+            </td>
+
+
+            <td>
+
+                <div class="student-list">
+
+                    ${studentHtml}
+
+                </div>
+
+            </td>
+
+
+            <td class="salary-value">
+
+                ${formatCurrency(
+                    studentTotal
+                )}
+
+            </td>
+
+
+            <td class="salary-value">
+
+                ${formatCurrency(
+                    row.totalSalary
+                )}
+
+            </td>
+
+
+            <td>
+
+                <button
+                    class="download-btn"
+                    onclick="downloadPayslip(
+                        '${String(row.teacherId)
+                            .replace(/'/g, "\\'")}'
+                    )"
+                >
+
+                    Download Pay Slip
+
+                </button>
+
+            </td>
+
+        `;
+
+
+        tbody.appendChild(tr);
+
+    });
+
+
+    if (rows.length === 0) {
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="empty"
+                >
+
+                    No teacher salary data
+                    found for this month.
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+
+    document.getElementById(
+        "teacherCount"
+    ).innerText =
+        rows.length;
+
+
+    document.getElementById(
+        "totalSalary"
+    ).innerText =
+        formatCurrency(
+            grandTotal
+        );
+
+
+    document.getElementById(
+        "tableTotalSalary"
+    ).innerText =
+        formatCurrency(
+            grandTotal
+        );
+
+}
+
+
+
+/* =========================================================
+   CREATE TEACHER FILTER
+========================================================= */
+
+function buildTeacherFilter() {
+
+
+    const select =
+        document.getElementById(
+            "teacherFilter"
+        );
+
+
+    select.innerHTML = `
+
+        <option value="">
+            All Teachers
+        </option>
+
+    `;
+
+
+    salaryRows.forEach(row => {
+
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+
+        option.value =
+            row.teacherId;
+
+
+        option.textContent =
+            `${row.teacherId} - ${row.teacherName}`;
+
+
+        select.appendChild(
+            option
+        );
+
+    });
+
+}
+
+
+
+/* =========================================================
+   CURRENT MONTH TEXT
+========================================================= */
+
+function getSelectedMonthText() {
+
+
+    const value =
+        document.getElementById(
+            "salaryMonth"
+        ).value;
+
+
+    const [month, year] =
+        value
+            .split("-")
+            .map(Number);
+
+
+    return `${monthNames[month - 1]} ${year}`;
+
+}
+
+
+
+/* =========================================================
+   LOAD IMAGE FOR PDF
+========================================================= */
+
+function loadImageAsDataURL(src) {
+
+
+    return new Promise(
+        (resolve, reject) => {
+
+
+            const img =
+                new Image();
+
+
+            img.onload = function() {
+
+
+                const canvas =
+                    document.createElement(
+                        "canvas"
+                    );
+
+
+                canvas.width =
+                    img.naturalWidth ||
+                    img.width;
+
+
+                canvas.height =
+                    img.naturalHeight ||
+                    img.height;
+
+
+                const ctx =
+                    canvas.getContext(
+                        "2d"
+                    );
+
+
+                ctx.drawImage(
+                    img,
+                    0,
+                    0
+                );
+
+
+                resolve(
+                    canvas.toDataURL(
+                        "image/png"
+                    )
+                );
+
+            };
+
+
+            img.onerror =
+                function() {
+
+                    reject(
+                        new Error(
+                            "Logo could not be loaded"
+                        )
+                    );
+
+                };
+
+
+            img.src =
+                src;
+
+        }
+    );
+
+}
+
+
+
+/* =========================================================
+   DOWNLOAD PAY SLIP
+========================================================= */
+
+async function downloadPayslip(
+    teacherId
+) {
+
+
+    const teacher =
+        salaryRows.find(
+            row =>
+                String(
+                    row.teacherId
+                ) ===
+                String(teacherId)
+        );
+
+
+    if (!teacher) {
+
+        alert(
+            "Teacher salary record not found."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+
+        const {
+            jsPDF
+        } =
+            window.jspdf;
+
+
+        const doc =
+            new jsPDF(
+                "p",
+                "mm",
+                "a4"
+            );
+
+
+        /*
+         * =================================================
+         * LOGO 1
+         *
+         * CHANGE ONLY THESE PATHS IF YOUR ACTUAL
+         * LOGO FILE NAMES ARE DIFFERENT.
+         * =================================================
+         */
+
+        const logo1 =
+            "assets/images/academy-logo.png";
+
+
+        /*
+         * Logo 2 watermark
+         */
+
+        const logo2 =
+            "assets/images/academy-logo.png";
+
+
+        /* =================================================
+           LOGO 1 - LEFT TOP
+        ================================================= */
+
+        try {
+
+            const logo1Data =
+                await loadImageAsDataURL(
+                    logo1
+                );
+
+
+            doc.addImage(
+                logo1Data,
+                "PNG",
+                15,
+                10,
+                35,
+                25
+            );
+
+        }
+
+        catch(error) {
+
+            console.log(
+                "Logo 1 not loaded:",
+                error
+            );
+
+        }
+
+
+
+        /* =================================================
+           LOGO 2 - CENTER WATERMARK
+        ================================================= */
+
+        try {
+
+            const logo2Data =
+                await loadImageAsDataURL(
+                    logo2
+                );
+
+
+            /*
+             * 40% opacity
+             */
+
+            if (doc.GState) {
+
+                doc.saveGraphicsState();
+
+
+                doc.setGState(
+                    new doc.GState({
+                        opacity: 0.40
+                    })
+                );
+
+
+                doc.addImage(
+                    logo2Data,
+                    "PNG",
+                    55,
+                    105,
+                    100,
+                    100
+                );
+
+
+                doc.restoreGraphicsState();
+
+            }
+
+            else {
+
+                doc.addImage(
+                    logo2Data,
+                    "PNG",
+                    55,
+                    105,
+                    100,
+                    100
+                );
+
+            }
+
+        }
+
+        catch(error) {
+
+            console.log(
+                "Watermark not loaded:",
+                error
+            );
+
+        }
+
+
+
+        /* =================================================
+           HEADER
+        ================================================= */
+
+        doc.setTextColor(
+            18,
+            57,
+            95
+        );
+
+
+        doc.setFont(
+            "helvetica",
+            "bold"
+        );
+
+
+        doc.setFontSize(
+            19
+        );
+
+
+        doc.text(
+            "GOPES PINNACLE ACADEMY",
+            105,
+            25,
+            {
+                align: "center"
+            }
+        );
+
+
+        doc.setFontSize(
+            14
+        );
+
+
+        doc.text(
+            "TEACHER SALARY PAY SLIP",
+            105,
+            35,
+            {
+                align: "center"
+            }
+        );
+
+
+        doc.setDrawColor(
+            18,
+            57,
+            95
+        );
+
+
+        doc.line(
+            15,
+            42,
+            195,
+            42
+        );
+
+
+
+        /* =================================================
+           TEACHER DETAILS
+        ================================================= */
+
+        doc.setTextColor(
+            30,
+            30,
+            30
+        );
+
+
+        doc.setFontSize(
+            11
+        );
+
+
+        doc.setFont(
+            "helvetica",
+            "bold"
+        );
+
+
+        doc.text(
+            "Teacher ID",
+            20,
+            57
+        );
+
+
+        doc.text(
+            "Teacher Name",
+            20,
+            68
+        );
+
+
+        doc.text(
+            "Salary Month",
+            20,
+            79
+        );
+
+
+        doc.setFont(
+            "helvetica",
+            "normal"
+        );
+
+
+        doc.text(
+            ": " + teacher.teacherId,
+            65,
+            57
+        );
+
+
+        doc.text(
+            ": " + teacher.teacherName,
+            65,
+            68
+        );
+
+
+        doc.text(
+            ": " + getSelectedMonthText(),
+            65,
+            79
+        );
+
+
+
+        /* =================================================
+           STUDENT DETAILS
+        ================================================= */
+
+        doc.setFont(
+            "helvetica",
+            "bold"
+        );
+
+
+        doc.setFontSize(
+            12
+        );
+
+
+        doc.text(
+            "Student-wise Salary Details",
+            20,
+            96
+        );
+
+
+        let y =
+            105;
+
+
+        doc.setFontSize(
+            10
+        );
+
+
+        /*
+         * Table header
+         */
+
+        doc.setFillColor(
+            18,
+            57,
+            95
+        );
+
+
+        doc.setTextColor(
+            255,
+            255,
+            255
+        );
+
+
+        doc.rect(
+            20,
+            y,
+            170,
+            9,
+            "F"
+        );
+
+
+        doc.text(
+            "Student ID",
+            25,
+            y + 6
+        );
+
+
+        doc.text(
+            "Student Name",
+            75,
+            y + 6
+        );
+
+
+        doc.text(
+            "Fee from Student",
+            150,
+            y + 6
+        );
+
+
+        y += 9;
+
+
+        doc.setTextColor(
+            30,
+            30,
+            30
+        );
+
+
+        doc.setFont(
+            "helvetica",
+            "normal"
+        );
+
+
+        teacher.students.forEach(
+            (student, index) => {
+
+
+                if (y > 260) {
+
+                    doc.addPage();
+
+                    y = 20;
+
+                }
+
+
+                if (
+                    index % 2 === 0
+                ) {
+
+                    doc.setFillColor(
+                        245,
+                        247,
+                        250
+                    );
+
+
+                    doc.rect(
+                        20,
+                        y,
+                        170,
+                        9,
+                        "F"
+                    );
+
+                }
+
+
+                doc.text(
+                    String(
+                        student.studentId
+                    ),
+                    25,
+                    y + 6
+                );
+
+
+                doc.text(
+                    String(
+                        student.studentName
+                    ).substring(
+                        0,
+                        30
+                    ),
+                    75,
+                    y + 6
+                );
+
+
+                doc.text(
+                    formatCurrency(
+                        student.amount
+                    ),
+                    185,
+                    y + 6,
+                    {
+                        align: "right"
+                    }
+                );
+
+
+                y += 9;
+
+            }
+        );
+
+
+
+        /* =================================================
+           TOTAL SALARY
+        ================================================= */
+
+        y += 12;
+
+
+        doc.setDrawColor(
+            18,
+            57,
+            95
+        );
+
+
+        doc.line(
+            20,
+            y,
+            190,
+            y
+        );
+
+
+        y += 12;
+
+
+        doc.setFont(
+            "helvetica",
+            "bold"
+        );
+
+
+        doc.setFontSize(
+            13
+        );
+
+
+        doc.text(
+            "Total Salary",
+            20,
+            y
+        );
+
+
+        doc.text(
+            formatCurrency(
+                teacher.totalSalary
+            ),
+            190,
+            y,
+            {
+                align: "right"
+            }
+        );
+
+
+
+        /* =================================================
+           FREELANCER PAYMENT NOTE
+        ================================================= */
+
+        y += 16;
+
+
+        doc.setFont(
+            "helvetica",
+            "normal"
+        );
+
+
+        doc.setFontSize(
+            10
+        );
+
+
+        doc.setTextColor(
+            80,
+            80,
+            80
+        );
+
+
+        doc.text(
+            "This document records the salary payable",
+            20,
+            y
+        );
+
+
+        doc.text(
+            "to the above freelancer for the month stated above.",
+            20,
+            y + 6
+        );
+
+
+
+        /* =================================================
+           SIGNATURE
+        ================================================= */
+
+        y += 28;
+
+
+        doc.setTextColor(
+            30,
+            30,
+            30
+        );
+
+
+        doc.line(
+            140,
+            y,
+            190,
+            y
+        );
+
+
+        doc.text(
+            "Authorised Signature",
+            140,
+            y + 7
+        );
+
+
+
+        /* =================================================
+           DOWNLOAD
+        ================================================= */
+
+        const safeTeacherId =
+            String(
+                teacher.teacherId
+            )
+            .replace(
+                /[^a-zA-Z0-9_-]/g,
+                "_"
+            );
+
+
+        const safeMonth =
+            getSelectedMonthText()
+                .replace(
+                    /\s+/g,
+                    "_"
+                );
+
+
+        doc.save(
+            `${safeTeacherId}_Salary_${safeMonth}.pdf`
+        );
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "PAY SLIP ERROR:",
+            error
+        );
+
+
+        alert(
+            "Unable to create the pay slip."
+        );
+
+    }
+
+}
+
+
+
+/* =========================================================
+   EVENTS
+========================================================= */
+
+document
+    .getElementById(
+        "salaryMonth"
+    )
+    .addEventListener(
+        "change",
+        loadSalaryReport
+    );
+
+
+document
+    .getElementById(
+        "teacherFilter"
+    )
+    .addEventListener(
+        "change",
+        renderTeacherReport
+    );
+
+
+
+/* =========================================================
+   INITIAL LOAD
+========================================================= */
+
+populateMonthDropdown();
+
+
+loadSalaryReport();
+
+</script>
+
+
+</body>
+
+</html>
