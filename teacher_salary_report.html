@@ -1436,65 +1436,55 @@ async function downloadPayslip(
 
         try {
 
-            const logo2Data =
-                await loadImageAsDataURL(
-                    logo2
-                );
+    const logo2Data =
+        await loadImageAsDataURL(
+            logo2
+        );
 
+    /*
+     * Small centered watermark.
+     * It must stay behind the document content.
+     */
 
-            /*
-             * 40% opacity
-             */
+    if (doc.GState) {
 
-            if (doc.GState) {
+        doc.saveGraphicsState();
 
-                doc.saveGraphicsState();
+        doc.setGState(
+            new doc.GState({
+                opacity: 0.12
+            })
+        );
 
+        /*
+         * Center of A4 page = 105mm
+         *
+         * Watermark size:
+         * 65mm × 65mm
+         */
 
-                doc.setGState(
-                    new doc.GState({
-                        opacity: 0.40
-                    })
-                );
+        doc.addImage(
+            logo2Data,
+            "PNG",
+            72.5,
+            115,
+            65,
+            65
+        );
 
+        doc.restoreGraphicsState();
 
-                doc.addImage(
-                    logo2Data,
-                    "PNG",
-                    55,
-                    105,
-                    100,
-                    100
-                );
+    }
 
+}
+catch(error) {
 
-                doc.restoreGraphicsState();
+    console.log(
+        "Watermark not loaded:",
+        error
+    );
 
-            }
-
-            else {
-
-                doc.addImage(
-                    logo2Data,
-                    "PNG",
-                    55,
-                    105,
-                    100,
-                    100
-                );
-
-            }
-
-        }
-
-        catch(error) {
-
-            console.log(
-                "Watermark not loaded:",
-                error
-            );
-
-        }
+}
 
 
 
