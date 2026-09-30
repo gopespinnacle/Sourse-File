@@ -997,20 +997,7 @@ function renderStudentFeeReport(
                 : [];
 
 
-        /*
-         * Skip students who have
-         * absolutely no fee information.
-         */
-
-        if (
-            feePaid === 0 &&
-            academyFee === 0 &&
-            teacherFees.length === 0
-        ) {
-
-            return;
-
-        }
+        
 
 
         studentCount++;
