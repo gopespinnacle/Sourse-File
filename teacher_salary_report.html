@@ -951,15 +951,24 @@ function renderTeacherReport() {
             ).join("");
 
 
-        const studentTotal =
-            row.students.reduce(
-                (sum, student) =>
-                    sum +
-                    Number(
-                        student.amount || 0
-                    ),
-                0
-            );
+        const studentFeeHtml =
+    row.students.map(
+        student => `
+
+            <div class="student-item">
+
+                <div class="salary-value">
+
+                    ${formatCurrency(
+                        student.amount
+                    )}
+
+                </div>
+
+            </div>
+
+        `
+    ).join("");
 
 
         const tr =
@@ -1001,13 +1010,15 @@ function renderTeacherReport() {
             </td>
 
 
-            <td class="salary-value">
+            <td>
 
-                ${formatCurrency(
-                    studentTotal
-                )}
+    <div class="student-list">
 
-            </td>
+        ${studentFeeHtml}
+
+    </div>
+
+</td>
 
 
             <td class="salary-value">
