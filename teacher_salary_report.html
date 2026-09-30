@@ -731,7 +731,65 @@ async function loadSalaryReport() {
 
 }
 
+let teacherIdMap = new Map();
 
+async function loadTeacherIds() {
+
+    const token =
+        localStorage.getItem("token");
+
+    const response =
+        await fetch(
+            `${API_BASE}/api/founder/teachers`,
+            {
+                headers: {
+                    "Authorization":
+                        "Bearer " + token
+                }
+            }
+        );
+
+    const data =
+        await response.json();
+
+    if (!response.ok) {
+
+        throw new Error(
+            data.message ||
+            "Failed to load teachers"
+        );
+
+    }
+
+    const teacherList =
+        data.teachers ||
+        data.data ||
+        data;
+
+    teacherIdMap.clear();
+
+    teacherList.forEach(teacher => {
+
+        const mongoId =
+            String(
+                teacher._id ||
+                teacher.id ||
+                ""
+            );
+
+        if (mongoId) {
+
+            teacherIdMap.set(
+                mongoId,
+                teacher.teacherId ||
+                "-"
+            );
+
+        }
+
+    });
+
+}
 
 /* =========================================================
    BUILD TEACHER REPORT
@@ -770,15 +828,25 @@ function buildTeacherReport(report) {
 
         teacherFees.forEach(teacherFee => {
 
+    /*
+     * MongoDB teacher _id
+     */
+    const teacherMongoId =
+        String(
+            teacherFee.teacher ||
+            ""
+        );
 
-            /*
-             * Existing stored teacher ID
-             */
-            const teacherId =
-                teacherFee.teacherId ||
-                teacherFee.teacher ||
-                "-";
-
+    /*
+     * Actual Academy Teacher ID
+     * Example: GPA-T1
+     */
+    const teacherId =
+        teacherIdMap.get(
+            teacherMongoId
+        ) ||
+        teacherFee.teacherId ||
+        "-";
 
             const teacherName =
                 teacherFee.teacherName ||
@@ -1931,8 +1999,24 @@ document
 
 populateMonthDropdown();
 
+(async function () {
 
-loadSalaryReport();
+    try {
+
+        await loadTeacherIds();
+
+        await loadSalaryReport();
+
+    } catch (error) {
+
+        console.error(
+            "Teacher loading error:",
+            error
+        );
+
+    }
+
+})();
 
 </script>
 
