@@ -1875,27 +1875,63 @@ catch(error) {
 
         y += 28;
 
+doc.setTextColor(
+    30,
+    30,
+    30
+);
 
-        doc.setTextColor(
-            30,
-            30,
-            30
+/* =================================================
+   FOUNDER SIGNATURE
+================================================= */
+
+try {
+
+    const founderSign =
+        await loadImageAsDataURL(
+            "images/founder_sign.png"
         );
 
+    /*
+     * Founder signature above the signature line
+     */
 
-        doc.line(
-            140,
-            y,
-            190,
-            y
-        );
+    doc.addImage(
+        founderSign,
+        "PNG",
+        145,
+        y - 18,
+        35,
+        14
+    );
+
+}
+catch(error) {
+
+    console.log(
+        "Founder signature could not be loaded:",
+        error
+    );
+
+}
 
 
-        doc.text(
-            "Authorised Signature",
-            140,
-            y + 7
-        );
+/* =================================================
+   SIGNATURE LINE
+================================================= */
+
+doc.line(
+    140,
+    y,
+    190,
+    y
+);
+
+doc.text(
+    "Authorised Signature",
+    140,
+    y + 7
+);
 
 
 
