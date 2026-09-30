@@ -602,6 +602,67 @@ const monthNames = [
 
 let currentFeeReport = [];
 
+let teacherIdMap = new Map();
+
+
+async function loadTeacherIds() {
+
+    const token =
+        localStorage.getItem("token");
+
+    const response =
+        await fetch(
+            `${API_BASE}/api/founder/teachers`,
+            {
+                headers: {
+                    "Authorization":
+                        "Bearer " + token
+                }
+            }
+        );
+
+    const data =
+        await response.json();
+
+    if (!response.ok) {
+
+        throw new Error(
+            data.message ||
+            "Failed to load teachers"
+        );
+
+    }
+
+    const teacherList =
+        data.teachers ||
+        data.data ||
+        data;
+
+    teacherIdMap.clear();
+
+    teacherList.forEach(teacher => {
+
+        const mongoId =
+            String(
+                teacher._id ||
+                teacher.id ||
+                ""
+            );
+
+        if (mongoId) {
+
+            teacherIdMap.set(
+                mongoId,
+                teacher.teacherId ||
+                "-"
+            );
+
+        }
+
+    });
+
+}
+
 
 /* =================================================
    FORMAT CURRENCY
@@ -968,10 +1029,18 @@ function renderStudentFeeReport(
                     .map(
                         teacher => {
 
-                            const teacherId =
-                                teacher.teacherId ||
-                                teacher.teacher ||
-                                "-";
+                            const teacherMongoId =
+    String(
+        teacher.teacher ||
+        ""
+    );
+
+const teacherId =
+    teacherIdMap.get(
+        teacherMongoId
+    ) ||
+    teacher.teacherId ||
+    "-";
 
 
                             const teacherName =
@@ -1258,7 +1327,27 @@ function downloadFeeReceipt(
 
 populateMonthDropdown();
 
-loadFeeReport();
+(async function () {
+
+    try {
+
+        await loadTeacherIds();
+
+        await loadFeeReport();
+
+    }
+    catch (error) {
+
+        console.error(
+            "Teacher ID loading error:",
+            error
+        );
+
+        await loadFeeReport();
+
+    }
+
+})();
 
 
 </script>
