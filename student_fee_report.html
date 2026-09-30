@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Student Fee Report</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+
+            margin: 0;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f4f6f9;
+
+            color: #173f67;
+
+        }
+
+        .page {
+
+            width: 100%;
+
+            padding: 28px;
+
+        }
+
+        .header {
+
+            background: white;
+
+            border-radius: 10px;
+
+            padding: 20px 24px;
+
+            margin-bottom: 18px;
+
+            box-shadow:
+                0 2px 10px
+                rgba(0,0,0,0.08);
+
+        }
+
+        .header h1 {
+
+            margin: 0;
+
+            font-size: 24px;
+
+        }
+
+        .header p {
+
+            margin: 6px 0 0;
+
+            color: #666;
+
+            font-size: 13px;
+
+        }
+
+        .filters {
+
+            background: white;
+
+            border-radius: 10px;
+
+            padding: 18px 24px;
+
+            margin-bottom: 18px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            box-shadow:
+                0 2px 10px
+                rgba(0,0,0,0.08);
+
+        }
+
+        .filters label {
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+        }
+
+        .filters select {
+
+            padding: 9px 12px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 5px;
+
+            min-width: 170px;
+
+        }
+
+        .summary {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 18px;
+
+        }
+
+        .card {
+
+            background: white;
+
+            border-radius: 10px;
+
+            padding: 18px;
+
+            box-shadow:
+                0 2px 10px
+                rgba(0,0,0,0.08);
+
+        }
+
+        .card-title {
+
+            font-size: 13px;
+
+            color: #666;
+
+            margin-bottom: 7px;
+
+        }
+
+        .card-value {
+
+            font-size: 21px;
+
+            font-weight: 700;
+
+            color: #174a7a;
+
+        }
+
+        .table-wrapper {
+
+            background: white;
+
+            border-radius: 10px;
+
+            padding: 12px;
+
+            overflow-x: auto;
+
+            box-shadow:
+                0 2px 10px
+                rgba(0,0,0,0.08);
+
+        }
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 850px;
+
+        }
+
+        th {
+
+            background: #173f67;
+
+            color: white;
+
+            padding: 12px 10px;
+
+            font-size: 13px;
+
+            text-align: left;
+
+        }
+
+        td {
+
+            padding: 11px 10px;
+
+            border-bottom:
+                1px solid #e5e5e5;
+
+            font-size: 13px;
+
+            vertical-align: middle;
+
+        }
+
+        tbody tr:hover {
+
+            background: #f8fafc;
+
+        }
+
+        .student-id {
+
+            font-weight: 600;
+
+            color: #173f67;
+
+        }
+
+        .student-name {
+
+            font-weight: 600;
+
+            color: #222;
+
+        }
+
+        .teacher-list {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 5px;
+
+        }
+
+        .teacher-item {
+
+            background: #f1f4f8;
+
+            border-radius: 5px;
+
+            padding: 6px 8px;
+
+        }
+
+        .teacher-name {
+
+            font-weight: 600;
+
+            color: #173f67;
+
+        }
+
+        .teacher-id {
+
+            font-size: 11px;
+
+            color: #777;
+
+            margin-top: 2px;
+
+        }
+
+        .amount {
+
+            font-weight: 600;
+
+            white-space: nowrap;
+
+        }
+
+        .academy-fee {
+
+            font-weight: 700;
+
+            color: #176b43;
+
+        }
+
+        .total-fee {
+
+            font-weight: 700;
+
+            color: #173f67;
+
+        }
+
+        .download-btn {
+
+            border: none;
+
+            background: #173f67;
+
+            color: white;
+
+            padding: 9px 13px;
+
+            border-radius: 5px;
+
+            cursor: pointer;
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+        }
+
+        .download-btn:hover {
+
+            background: #0f3152;
+
+        }
+
+        tfoot td {
+
+            background: #f1f3f5;
+
+            font-weight: 700;
+
+        }
+
+        .loading,
+        .error {
+
+            text-align: center;
+
+            padding: 30px;
+
+            color: #666;
+
+        }
+
+        .error {
+
+            color: #b00020;
+
+        }
+
+        @media (max-width: 800px) {
+
+            .summary {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .filters {
+
+                flex-wrap: wrap;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>
+            Student Fee Report
+        </h1>
+
+        <p>
+            Monthly student fee payment report
+        </p>
+
+    </div>
+
+
+    <!-- FILTER -->
+
+    <div class="filters">
+
+        <label>
+            Fee Month:
+        </label>
+
+        <select
+            id="feeMonth"
+            onchange="loadFeeReport()"
+        ></select>
+
+    </div>
+
+
+    <!-- SUMMARY -->
+
+    <div class="summary">
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Students
+            </div>
+
+            <div
+                class="card-value"
+                id="studentCount"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Total Fee Paid
+            </div>
+
+            <div
+                class="card-value"
+                id="totalFeePaid"
+            >
+                ₹ 0
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Total Academy Fee
+            </div>
+
+            <div
+                class="card-value"
+                id="totalAcademyFee"
+            >
+                ₹ 0
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- TABLE -->
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Student ID
+                    </th>
+
+                    <th>
+                        Student Name
+                    </th>
+
+                    <th>
+                        Teacher Name & ID
+                    </th>
+
+                    <th>
+                        Academy Fee
+                    </th>
+
+                    <th>
+                        Total Fee
+                    </th>
+
+                    <th>
+                        Action
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody
+                id="studentFeeTableBody"
+            >
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="loading"
+                    >
+                        Loading...
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+
+            <tfoot>
+
+                <tr>
+
+                    <td
+                        colspan="3"
+                        style="text-align:right;"
+                    >
+                        TOTAL
+                    </td>
+
+                    <td
+                        id="tableTotalAcademy"
+                    >
+                        ₹ 0
+                    </td>
+
+                    <td
+                        id="tableTotalFee"
+                    >
+                        ₹ 0
+                    </td>
+
+                    <td>
+                        -
+                    </td>
+
+                </tr>
+
+            </tfoot>
+
+        </table>
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* =================================================
+   EXISTING BACKEND
+================================================= */
+
+const API_BASE =
+    "https://academy-backend-eatl.onrender.com";
+
+
+/* =================================================
+   MONTH NAMES
+================================================= */
+
+const monthNames = [
+
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+
+];
+
+
+/* =================================================
+   DATA
+================================================= */
+
+let currentFeeReport = [];
+
+
+/* =================================================
+   FORMAT CURRENCY
+================================================= */
+
+function formatCurrency(value) {
+
+    return "₹ " +
+        Number(value || 0)
+            .toLocaleString("en-IN");
+
+}
+
+
+/* =================================================
+   HTML SAFETY
+================================================= */
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =================================================
+   MONTH DROPDOWN
+================================================= */
+
+function populateMonthDropdown() {
+
+    const select =
+        document.getElementById(
+            "feeMonth"
+        );
+
+    select.innerHTML = "";
+
+    const currentYear =
+        new Date().getFullYear();
+
+
+    for (
+        let year = currentYear;
+        year >= currentYear - 2;
+        year--
+    ) {
+
+        for (
+            let month = 11;
+            month >= 0;
+            month--
+        ) {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                `${month + 1}-${year}`;
+
+            option.textContent =
+                `${monthNames[month]} ${year}`;
+
+            select.appendChild(
+                option
+            );
+
+        }
+
+    }
+
+
+    const currentMonth =
+        new Date().getMonth() + 1;
+
+
+    select.value =
+        `${currentMonth}-${currentYear}`;
+
+}
+
+
+/* =================================================
+   LOAD FEE REPORT
+================================================= */
+
+async function loadFeeReport() {
+
+
+    const select =
+        document.getElementById(
+            "feeMonth"
+        );
+
+
+    const [
+        month,
+        year
+    ] =
+        select.value
+            .split("-")
+            .map(Number);
+
+
+    const token =
+        localStorage.getItem(
+            "token"
+        );
+
+
+    const tbody =
+        document.getElementById(
+            "studentFeeTableBody"
+        );
+
+
+    tbody.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="6"
+                class="loading"
+            >
+
+                Loading student fee data...
+
+            </td>
+
+        </tr>
+
+    `;
+
+
+    try {
+
+
+        const response =
+            await fetch(
+
+                `${API_BASE}/api/founder/fee-report?month=${month}&year=${year}`,
+
+                {
+
+                    method: "GET",
+
+                    headers: {
+
+                        "Authorization":
+                            "Bearer " + token
+
+                    }
+
+                }
+
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+
+                data.message ||
+                "Failed to load fee report"
+
+            );
+
+        }
+
+
+        currentFeeReport =
+            data.report || [];
+
+
+        renderStudentFeeReport(
+            currentFeeReport
+        );
+
+
+    }
+
+    catch (error) {
+
+
+        console.error(
+            "STUDENT FEE REPORT ERROR:",
+            error
+        );
+
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="error"
+                >
+
+                    Error loading student fee data.
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        document.getElementById(
+            "studentCount"
+        ).innerText = "0";
+
+
+        document.getElementById(
+            "totalFeePaid"
+        ).innerText = "₹ 0";
+
+
+        document.getElementById(
+            "totalAcademyFee"
+        ).innerText = "₹ 0";
+
+
+        document.getElementById(
+            "tableTotalAcademy"
+        ).innerText = "₹ 0";
+
+
+        document.getElementById(
+            "tableTotalFee"
+        ).innerText = "₹ 0";
+
+    }
+
+}
+
+
+/* =================================================
+   RENDER REPORT
+================================================= */
+
+function renderStudentFeeReport(
+    report
+) {
+
+
+    const tbody =
+        document.getElementById(
+            "studentFeeTableBody"
+        );
+
+
+    tbody.innerHTML = "";
+
+
+    let totalFeePaid = 0;
+
+    let totalAcademyFee = 0;
+
+    let studentCount = 0;
+
+
+    report.forEach(student => {
+
+
+        /*
+         * Only students with a payment
+         * or teacher fee record are useful
+         * for this report.
+         */
+
+        const feePaid =
+            Number(
+                student.feePaid || 0
+            );
+
+
+        const academyFee =
+            Number(
+                student.academyFee || 0
+            );
+
+
+        const teacherFees =
+            Array.isArray(
+                student.teacherFees
+            )
+                ? student.teacherFees
+                : [];
+
+
+        /*
+         * Skip students who have
+         * absolutely no fee information.
+         */
+
+        if (
+            feePaid === 0 &&
+            academyFee === 0 &&
+            teacherFees.length === 0
+        ) {
+
+            return;
+
+        }
+
+
+        studentCount++;
+
+
+        totalFeePaid +=
+            feePaid;
+
+
+        totalAcademyFee +=
+            academyFee;
+
+
+        /*
+         * Teacher list
+         */
+
+        let teacherHtml = "";
+
+
+        if (
+            teacherFees.length > 0
+        ) {
+
+
+            teacherHtml =
+                teacherFees
+                    .map(
+                        teacher => {
+
+                            const teacherId =
+                                teacher.teacherId ||
+                                teacher.teacher ||
+                                "-";
+
+
+                            const teacherName =
+                                teacher.teacherName ||
+                                "Teacher";
+
+
+                            return `
+
+                                <div
+                                    class="teacher-item"
+                                >
+
+                                    <div
+                                        class="teacher-name"
+                                    >
+                                        ${escapeHtml(
+                                            teacherName
+                                        )}
+                                    </div>
+
+                                    <div
+                                        class="teacher-id"
+                                    >
+                                        ${escapeHtml(
+                                            teacherId
+                                        )}
+                                    </div>
+
+                                </div>
+
+                            `;
+
+                        }
+                    )
+                    .join("");
+
+        }
+
+        else {
+
+            teacherHtml = `
+
+                <div
+                    class="teacher-item"
+                >
+
+                    <div
+                        class="teacher-name"
+                    >
+                        No teacher mapped
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
+
+        const row =
+            document.createElement(
+                "tr"
+            );
+
+
+        row.innerHTML = `
+
+            <td>
+
+                <span
+                    class="student-id"
+                >
+                    ${escapeHtml(
+                        student.studentId ||
+                        "-"
+                    )}
+                </span>
+
+            </td>
+
+
+            <td>
+
+                <span
+                    class="student-name"
+                >
+                    ${escapeHtml(
+                        student.studentName ||
+                        "-"
+                    )}
+                </span>
+
+            </td>
+
+
+            <td>
+
+                <div
+                    class="teacher-list"
+                >
+
+                    ${teacherHtml}
+
+                </div>
+
+            </td>
+
+
+            <td>
+
+                <span
+                    class="amount academy-fee"
+                >
+                    ${formatCurrency(
+                        academyFee
+                    )}
+                </span>
+
+            </td>
+
+
+            <td>
+
+                <span
+                    class="amount total-fee"
+                >
+                    ${formatCurrency(
+                        feePaid
+                    )}
+                </span>
+
+            </td>
+
+
+            <td>
+
+                <button
+                    class="download-btn"
+                    onclick="downloadFeeReceipt(
+                        '${escapeHtml(
+                            student.studentId ||
+                            ""
+                        )}'
+                    )"
+                >
+
+                    Download Fee Receipt
+
+                </button>
+
+            </td>
+
+        `;
+
+
+        tbody.appendChild(
+            row
+        );
+
+    });
+
+
+    /*
+     * Summary
+     */
+
+    document.getElementById(
+        "studentCount"
+    ).innerText =
+        studentCount;
+
+
+    document.getElementById(
+        "totalFeePaid"
+    ).innerText =
+        formatCurrency(
+            totalFeePaid
+        );
+
+
+    document.getElementById(
+        "totalAcademyFee"
+    ).innerText =
+        formatCurrency(
+            totalAcademyFee
+        );
+
+
+    /*
+     * Footer
+     */
+
+    document.getElementById(
+        "tableTotalAcademy"
+    ).innerText =
+        formatCurrency(
+            totalAcademyFee
+        );
+
+
+    document.getElementById(
+        "tableTotalFee"
+    ).innerText =
+        formatCurrency(
+            totalFeePaid
+        );
+
+
+    if (
+        studentCount === 0
+    ) {
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="loading"
+                >
+
+                    No fee records found
+                    for this month.
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+/* =================================================
+   PDF PLACEHOLDER
+================================================= */
+
+function downloadFeeReceipt(
+    studentId
+) {
+
+    const student =
+        currentFeeReport.find(
+            item =>
+                String(
+                    item.studentId
+                ) ===
+                String(
+                    studentId
+                )
+        );
+
+
+    if (!student) {
+
+        alert(
+            "Student fee record not found."
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * PDF will be developed
+     * after the data display
+     * is confirmed.
+     */
+
+    alert(
+        "Student Fee Receipt PDF will be added next."
+    );
+
+}
+
+
+/* =================================================
+   START
+================================================= */
+
+populateMonthDropdown();
+
+loadFeeReport();
+
+
+</script>
+
+
+</body>
+
+</html>
