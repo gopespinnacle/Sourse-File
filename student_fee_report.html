@@ -117,6 +117,13 @@
 
         }
 
+        .filters input {
+    padding: 9px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    min-width: 160px;
+}
+
         .summary {
 
             display: grid;
@@ -410,16 +417,48 @@
 
     <div class="filters">
 
-        <label>
-            Fee Month:
-        </label>
+    <label>
+        Fee Month:
+    </label>
 
-        <select
-            id="feeMonth"
-            onchange="loadFeeReport()"
-        ></select>
+    <select
+        id="feeMonth"
+        onchange="loadFeeReport()"
+    ></select>
 
-    </div>
+
+    <label>
+        Student ID:
+    </label>
+
+    <input
+        type="text"
+        id="studentIdFilter"
+        placeholder="Enter Student ID"
+    >
+
+
+    <label>
+        Payment Status:
+    </label>
+
+    <select
+        id="paymentStatusFilter"
+    >
+        <option value="all">
+            All
+        </option>
+
+        <option value="paid">
+            Paid
+        </option>
+
+        <option value="unpaid">
+            Not Paid
+        </option>
+    </select>
+
+</div>
 
 
     <!-- SUMMARY -->
@@ -921,13 +960,13 @@ async function loadFeeReport() {
 
 
         document.getElementById(
-            "totalFeePaid"
-        ).innerText = "₹ 0";
+    "totalStudentsPaid"
+).innerText = "0";
 
 
-        document.getElementById(
-            "totalAcademyFee"
-        ).innerText = "₹ 0";
+document.getElementById(
+    "totalStudentsNotPaid"
+).innerText = "0";
 
 
         document.getElementById(
@@ -943,7 +982,89 @@ async function loadFeeReport() {
 
 }
 
+/* =================================================
+   APPLY STUDENT FILTERS
+================================================= */
 
+function applyStudentFilters() {
+
+    const studentId =
+        document.getElementById(
+            "studentIdFilter"
+        ).value
+        .trim()
+        .toLowerCase();
+
+
+    const paymentStatus =
+        document.getElementById(
+            "paymentStatusFilter"
+        ).value;
+
+
+    const filteredReport =
+        currentFeeReport.filter(
+            student => {
+
+                const currentStudentId =
+                    String(
+                        student.studentId || ""
+                    ).toLowerCase();
+
+
+                const feePaid =
+                    Number(
+                        student.feePaid || 0
+                    );
+
+
+                const matchesStudentId =
+                    !studentId ||
+                    currentStudentId.includes(
+                        studentId
+                    );
+
+
+                let matchesPaymentStatus =
+                    true;
+
+
+                if (
+                    paymentStatus ===
+                    "paid"
+                ) {
+
+                    matchesPaymentStatus =
+                        feePaid > 0;
+
+                }
+
+
+                if (
+                    paymentStatus ===
+                    "unpaid"
+                ) {
+
+                    matchesPaymentStatus =
+                        feePaid === 0;
+
+                }
+
+
+                return (
+                    matchesStudentId &&
+                    matchesPaymentStatus
+                );
+
+            }
+        );
+
+
+    renderStudentFeeReport(
+        filteredReport
+    );
+
+}
 /* =================================================
    RENDER REPORT
 ================================================= */
@@ -962,11 +1083,15 @@ function renderStudentFeeReport(
     tbody.innerHTML = "";
 
 
-    let totalFeePaid = 0;
-
-    let totalAcademyFee = 0;
-
     let studentCount = 0;
+
+let totalStudentsPaid = 0;
+
+let totalStudentsNotPaid = 0;
+
+let totalFeePaid = 0;
+
+let totalAcademyFee = 0;
 
 
     report.forEach(student => {
@@ -1004,8 +1129,19 @@ function renderStudentFeeReport(
         studentCount++;
 
 
-        totalFeePaid +=
-            feePaid;
+if (feePaid > 0) {
+
+    totalStudentsPaid++;
+
+} else {
+
+    totalStudentsNotPaid++;
+
+}
+
+
+totalFeePaid +=
+    feePaid;
 
 
         totalAcademyFee +=
@@ -1218,19 +1354,15 @@ const teacherId =
 
 
     document.getElementById(
-        "totalFeePaid"
-    ).innerText =
-        formatCurrency(
-            totalFeePaid
-        );
+    "totalStudentsPaid"
+).innerText =
+    totalStudentsPaid;
 
 
-    document.getElementById(
-        "totalAcademyFee"
-    ).innerText =
-        formatCurrency(
-            totalAcademyFee
-        );
+document.getElementById(
+    "totalStudentsNotPaid"
+).innerText =
+    totalStudentsNotPaid;
 
 
     /*
@@ -1999,7 +2131,20 @@ async function downloadFeeReceipt(studentId) {
     );
 
 }
+document.getElementById(
+    "studentIdFilter"
+).addEventListener(
+    "input",
+    applyStudentFilters
+);
 
+
+document.getElementById(
+    "paymentStatusFilter"
+).addEventListener(
+    "change",
+    applyStudentFilters
+);
 
 /* =================================================
    START
