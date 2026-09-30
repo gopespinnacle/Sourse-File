@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Academy Income Report</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            padding: 20px;
+
+            background: #f3f6fa;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            color: #222;
+
+        }
+
+
+        .container {
+
+            width: 100%;
+
+            max-width: 1400px;
+
+            margin: 0 auto;
+
+        }
+
+
+        /* ================= HEADER ================= */
+
+        .header {
+
+            background: white;
+
+            border-radius: 8px;
+
+            padding: 22px;
+
+            margin-bottom: 14px;
+
+            box-shadow:
+                0 2px 8px
+                rgba(0, 0, 0, 0.06);
+
+        }
+
+
+        .header h1 {
+
+            margin: 0;
+
+            color: #163f67;
+
+            font-size: 25px;
+
+        }
+
+
+        .header p {
+
+            margin:
+                6px 0 0;
+
+            color: #777;
+
+            font-size: 13px;
+
+        }
+
+
+        /* ================= FILTER ================= */
+
+        .filters {
+
+            background: white;
+
+            border-radius: 8px;
+
+            padding: 16px 20px;
+
+            margin-bottom: 14px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            box-shadow:
+                0 2px 8px
+                rgba(0, 0, 0, 0.06);
+
+        }
+
+
+        .filters label {
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            color: #163f67;
+
+        }
+
+
+        .filters select {
+
+            padding:
+                8px 12px;
+
+            border:
+                1px solid #ccc;
+
+            border-radius: 5px;
+
+            min-width: 160px;
+
+            background: white;
+
+        }
+
+
+        /* ================= SUMMARY ================= */
+
+        .summary {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 12px;
+
+            margin-bottom: 14px;
+
+        }
+
+
+        .card {
+
+            background: white;
+
+            border-radius: 8px;
+
+            padding: 16px;
+
+            box-shadow:
+                0 2px 8px
+                rgba(0, 0, 0, 0.06);
+
+        }
+
+
+        .card-title {
+
+            font-size: 12px;
+
+            color: #666;
+
+            margin-bottom: 5px;
+
+        }
+
+
+        .card-value {
+
+            font-size: 20px;
+
+            font-weight: 700;
+
+            color: #163f67;
+
+        }
+
+
+        /* ================= TABLE ================= */
+
+        .table-container {
+
+            background: white;
+
+            border-radius: 8px;
+
+            padding: 12px;
+
+            box-shadow:
+                0 2px 8px
+                rgba(0, 0, 0, 0.06);
+
+            overflow-x: auto;
+
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse:
+                collapse;
+
+            min-width: 900px;
+
+        }
+
+
+        thead th {
+
+            background: #163f67;
+
+            color: white;
+
+            padding:
+                10px 12px;
+
+            font-size: 12px;
+
+            text-align: center;
+
+        }
+
+
+        tbody td {
+
+            padding:
+                11px 12px;
+
+            border-bottom:
+                1px solid #ddd;
+
+            font-size: 12px;
+
+        }
+
+
+        tbody tr:nth-child(even) {
+
+            background: #f7f9fb;
+
+        }
+
+
+        tbody td:first-child {
+
+            color: #163f67;
+
+            font-weight: 600;
+
+        }
+
+
+        .number {
+
+            text-align: right;
+
+        }
+
+
+        .student-name {
+
+            font-weight: 500;
+
+        }
+
+
+        /* ================= TOTAL ROW ================= */
+
+        tfoot td {
+
+            background: #eef1f4;
+
+            padding:
+                11px 12px;
+
+            font-weight: 700;
+
+            font-size: 12px;
+
+            border-top:
+                1px solid #ddd;
+
+        }
+
+
+        /* ================= EMPTY ================= */
+
+        .empty {
+
+            text-align: center;
+
+            padding: 30px;
+
+            color: #777;
+
+            font-size: 13px;
+
+        }
+
+
+        /* ================= ERROR ================= */
+
+        .error {
+
+            background: #ffecec;
+
+            color: #a40000;
+
+            padding: 12px;
+
+            border-radius: 6px;
+
+            margin-bottom: 14px;
+
+            display: none;
+
+        }
+
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (
+            max-width: 900px
+        ) {
+
+            .summary {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+        }
+
+
+        @media (
+            max-width: 600px
+        ) {
+
+            body {
+
+                padding: 10px;
+
+            }
+
+
+            .summary {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .filters {
+
+                flex-wrap: wrap;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="header">
+
+        <h1>
+            Academy Income Report
+        </h1>
+
+        <p>
+            Monthly academy income and fee allocation report
+        </p>
+
+    </div>
+
+
+
+    <!-- ================= FILTER ================= -->
+
+    <div class="filters">
+
+        <label>
+            Month:
+        </label>
+
+        <select
+            id="feeMonth"
+            onchange="loadIncomeReport()"
+        ></select>
+
+    </div>
+
+
+
+    <!-- ================= ERROR ================= -->
+
+    <div
+        id="errorMessage"
+        class="error"
+    ></div>
+
+
+
+    <!-- ================= SUMMARY ================= -->
+
+    <div class="summary">
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Total Actual Fee
+            </div>
+
+            <div
+                class="card-value"
+                id="totalActualFee"
+            >
+                ₹ 0
+            </div>
+
+        </div>
+
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Total Fee Paid
+            </div>
+
+            <div
+                class="card-value"
+                id="totalFeePaid"
+            >
+                ₹ 0
+            </div>
+
+        </div>
+
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Total Teacher Fee
+            </div>
+
+            <div
+                class="card-value"
+                id="totalTeacherFee"
+            >
+                ₹ 0
+            </div>
+
+        </div>
+
+
+
+        <div class="card">
+
+            <div class="card-title">
+                Total Academy Fee
+            </div>
+
+            <div
+                class="card-value"
+                id="totalAcademyFee"
+            >
+                ₹ 0
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- ================= REPORT TABLE ================= -->
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Student ID
+                    </th>
+
+                    <th>
+                        Student Name
+                    </th>
+
+                    <th>
+                        Actual Fee
+                    </th>
+
+                    <th>
+                        Fee Paid
+                    </th>
+
+                    <th>
+                        Fee to Teacher
+                    </th>
+
+                    <th>
+                        Fee to Academy
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody
+                id="incomeReportBody"
+            >
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="empty"
+                    >
+                        Loading report...
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+
+            <tfoot>
+
+                <tr>
+
+                    <td
+                        colspan="2"
+                        style="text-align:right;"
+                    >
+                        TOTAL
+                    </td>
+
+                    <td
+                        class="number"
+                        id="footerActualFee"
+                    >
+                        ₹ 0
+                    </td>
+
+                    <td
+                        class="number"
+                        id="footerFeePaid"
+                    >
+                        ₹ 0
+                    </td>
+
+                    <td
+                        class="number"
+                        id="footerTeacherFee"
+                    >
+                        ₹ 0
+                    </td>
+
+                    <td
+                        class="number"
+                        id="footerAcademyFee"
+                    >
+                        ₹ 0
+                    </td>
+
+                </tr>
+
+            </tfoot>
+
+        </table>
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* =================================================
+   API
+================================================= */
+
+const API_BASE =
+    "https://academy-backend-eatl.onrender.com";
+
+
+/* =================================================
+   MONTH NAMES
+================================================= */
+
+const monthNames = [
+
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+
+];
+
+
+/* =================================================
+   FORMAT CURRENCY
+================================================= */
+
+function formatCurrency(
+    amount
+) {
+
+    return (
+        "₹ " +
+        Number(
+            amount || 0
+        ).toLocaleString(
+            "en-IN"
+        )
+    );
+
+}
+
+
+/* =================================================
+   POPULATE MONTH DROPDOWN
+================================================= */
+
+function populateMonthDropdown() {
+
+    const select =
+        document.getElementById(
+            "feeMonth"
+        );
+
+
+    const now =
+        new Date();
+
+
+    const currentMonth =
+        now.getMonth() + 1;
+
+
+    const currentYear =
+        now.getFullYear();
+
+
+    select.innerHTML = "";
+
+
+    /*
+     * Show the current month
+     * and previous 11 months.
+     */
+
+    for (
+        let i = 0;
+        i < 12;
+        i++
+    ) {
+
+        let month =
+            currentMonth - i;
+
+        let year =
+            currentYear;
+
+
+        if (
+            month <= 0
+        ) {
+
+            month += 12;
+
+            year--;
+
+        }
+
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+
+        option.value =
+            `${month}-${year}`;
+
+
+        option.textContent =
+            `${monthNames[month - 1]} ${year}`;
+
+
+        if (
+            i === 0
+        ) {
+
+            option.selected =
+                true;
+
+        }
+
+
+        select.appendChild(
+            option
+        );
+
+    }
+
+}
+
+
+/* =================================================
+   LOAD REPORT
+================================================= */
+
+async function loadIncomeReport() {
+
+    const errorBox =
+        document.getElementById(
+            "errorMessage"
+        );
+
+
+    errorBox.style.display =
+        "none";
+
+
+    const selectedMonth =
+        document.getElementById(
+            "feeMonth"
+        ).value;
+
+
+    const [
+        month,
+        year
+    ] =
+        selectedMonth
+            .split("-")
+            .map(Number);
+
+
+    const token =
+        localStorage.getItem(
+            "token"
+        );
+
+
+    try {
+
+
+        const response =
+            await fetch(
+
+                `${API_BASE}/api/founder/fee-report?month=${month}&year=${year}`,
+
+                {
+
+                    headers: {
+
+                        "Authorization":
+                            "Bearer " +
+                            token
+
+                    }
+
+                }
+
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok
+        ) {
+
+            throw new Error(
+                data.message ||
+                "Failed to load income report"
+            );
+
+        }
+
+
+        renderIncomeReport(
+            data
+        );
+
+
+    }
+    catch (error) {
+
+        console.error(
+            "Income report error:",
+            error
+        );
+
+
+        errorBox.innerText =
+            error.message ||
+            "Unable to load income report";
+
+
+        errorBox.style.display =
+            "block";
+
+
+        document.getElementById(
+            "incomeReportBody"
+        ).innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="empty"
+                >
+                    Unable to load report.
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+/* =================================================
+   RENDER REPORT
+================================================= */
+
+function renderIncomeReport(
+    data
+) {
+
+
+    const report =
+        Array.isArray(
+            data.report
+        )
+            ? data.report
+            : [];
+
+
+    const totals =
+        data.totals || {};
+
+
+    /* ================= SUMMARY ================= */
+
+    const totalActualFee =
+        Number(
+            totals.actualFee || 0
+        );
+
+
+    const totalFeePaid =
+        Number(
+            totals.feePaid || 0
+        );
+
+
+    const totalTeacherFee =
+        Number(
+            totals.teacherFee || 0
+        );
+
+
+    const totalAcademyFee =
+        Number(
+            totals.academyFee || 0
+        );
+
+
+    document.getElementById(
+        "totalActualFee"
+    ).innerText =
+        formatCurrency(
+            totalActualFee
+        );
+
+
+    document.getElementById(
+        "totalFeePaid"
+    ).innerText =
+        formatCurrency(
+            totalFeePaid
+        );
+
+
+    document.getElementById(
+        "totalTeacherFee"
+    ).innerText =
+        formatCurrency(
+            totalTeacherFee
+        );
+
+
+    document.getElementById(
+        "totalAcademyFee"
+    ).innerText =
+        formatCurrency(
+            totalAcademyFee
+        );
+
+
+    /* ================= FOOTER ================= */
+
+    document.getElementById(
+        "footerActualFee"
+    ).innerText =
+        formatCurrency(
+            totalActualFee
+        );
+
+
+    document.getElementById(
+        "footerFeePaid"
+    ).innerText =
+        formatCurrency(
+            totalFeePaid
+        );
+
+
+    document.getElementById(
+        "footerTeacherFee"
+    ).innerText =
+        formatCurrency(
+            totalTeacherFee
+        );
+
+
+    document.getElementById(
+        "footerAcademyFee"
+    ).innerText =
+        formatCurrency(
+            totalAcademyFee
+        );
+
+
+    /* ================= TABLE ================= */
+
+    const tbody =
+        document.getElementById(
+            "incomeReportBody"
+        );
+
+
+    tbody.innerHTML = "";
+
+
+    if (
+        report.length === 0
+    ) {
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="empty"
+                >
+                    No income data found
+                    for this month.
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    report.forEach(
+        student => {
+
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${escapeHtml(
+                        student.studentId ||
+                        "-"
+                    )}
+                </td>
+
+
+                <td class="student-name">
+                    ${escapeHtml(
+                        student.studentName ||
+                        "-"
+                    )}
+                </td>
+
+
+                <td class="number">
+                    ${formatCurrency(
+                        student.actualFee ||
+                        0
+                    )}
+                </td>
+
+
+                <td class="number">
+                    ${formatCurrency(
+                        student.feePaid ||
+                        0
+                    )}
+                </td>
+
+
+                <td class="number">
+                    ${formatCurrency(
+                        student.teacherFee ||
+                        0
+                    )}
+                </td>
+
+
+                <td class="number">
+                    ${formatCurrency(
+                        student.academyFee ||
+                        0
+                    )}
+                </td>
+
+            `;
+
+
+            tbody.appendChild(
+                row
+            );
+
+        }
+    );
+
+}
+
+
+/* =================================================
+   ESCAPE HTML
+================================================= */
+
+function escapeHtml(
+    value
+) {
+
+    return String(
+        value
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =================================================
+   INITIAL LOAD
+================================================= */
+
+populateMonthDropdown();
+
+loadIncomeReport();
+
+
+</script>
+
+
+</body>
+
+</html>
