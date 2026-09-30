@@ -1750,15 +1750,16 @@ async function downloadFeeReceipt(studentId) {
     );
 
     doc.text(
-        formatCurrency(
-            student.feePaid || 0
-        ),
-        182,
-        y + 20,
-        {
-            align: "right"
-        }
-    );
+    "Rs " +
+    Number(
+        student.feePaid || 0
+    ).toLocaleString("en-IN"),
+    182,
+    y + 20,
+    {
+        align: "right"
+    }
+);
 
 
     /* =================================================
@@ -1808,15 +1809,16 @@ async function downloadFeeReceipt(studentId) {
 
 
     doc.text(
-        formatCurrency(
-            student.feePaid || 0
-        ),
-        190,
-        y,
-        {
-            align: "right"
-        }
-    );
+    "Rs " +
+    Number(
+        student.feePaid || 0
+    ).toLocaleString("en-IN"),
+    190,
+    y,
+    {
+        align: "right"
+    }
+);
 
 
     /* =================================================
@@ -1922,8 +1924,8 @@ async function downloadFeeReceipt(studentId) {
             "PNG",
             145,
             signatureY - 17,
-            35,
-            14
+            55,
+            34
         );
 
     }
