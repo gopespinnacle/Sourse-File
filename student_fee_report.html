@@ -370,6 +370,8 @@
 
     </style>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 </head>
 
 
@@ -1281,21 +1283,14 @@ const teacherId =
    PDF PLACEHOLDER
 ================================================= */
 
-function downloadFeeReceipt(
-    studentId
-) {
+async function downloadFeeReceipt(studentId) {
 
     const student =
         currentFeeReport.find(
             item =>
-                String(
-                    item.studentId
-                ) ===
-                String(
-                    studentId
-                )
+                String(item.studentId) ===
+                String(studentId)
         );
-
 
     if (!student) {
 
@@ -1308,14 +1303,696 @@ function downloadFeeReceipt(
     }
 
 
-    /*
-     * PDF will be developed
-     * after the data display
-     * is confirmed.
-     */
+    const selectedMonth =
+        document.getElementById(
+            "feeMonth"
+        ).value;
 
-    alert(
-        "Student Fee Receipt PDF will be added next."
+    const [
+        month,
+        year
+    ] =
+        selectedMonth
+            .split("-")
+            .map(Number);
+
+
+    const monthName =
+        monthNames[month - 1];
+
+
+    const {
+        jsPDF
+    } = window.jspdf;
+
+
+    const doc =
+        new jsPDF(
+            "p",
+            "mm",
+            "a4"
+        );
+
+
+    /* =================================================
+       IMAGE LOADER
+    ================================================= */
+
+    function loadImageAsDataURL(src) {
+
+        return new Promise(
+            (resolve, reject) => {
+
+                const img =
+                    new Image();
+
+                img.onload =
+                    function () {
+
+                        const canvas =
+                            document.createElement(
+                                "canvas"
+                            );
+
+                        canvas.width =
+                            img.naturalWidth;
+
+                        canvas.height =
+                            img.naturalHeight;
+
+                        const ctx =
+                            canvas.getContext(
+                                "2d"
+                            );
+
+                        ctx.drawImage(
+                            img,
+                            0,
+                            0
+                        );
+
+                        resolve(
+                            canvas.toDataURL(
+                                "image/png"
+                            )
+                        );
+
+                    };
+
+                img.onerror =
+                    function () {
+
+                        reject(
+                            new Error(
+                                "Image could not be loaded: " +
+                                src
+                            )
+                        );
+
+                    };
+
+                img.src = src;
+
+            }
+        );
+
+    }
+
+
+    /* =================================================
+       LOGO - TOP LEFT
+    ================================================= */
+
+    try {
+
+        const logoData =
+            await loadImageAsDataURL(
+                "images/logo.png"
+            );
+
+        doc.addImage(
+            logoData,
+            "PNG",
+            15,
+            10,
+            39,
+            11
+        );
+
+    }
+    catch (error) {
+
+        console.log(
+            "Logo not loaded:",
+            error
+        );
+
+    }
+
+
+    /* =================================================
+       CENTER WATERMARK
+    ================================================= */
+
+    try {
+
+        const watermarkData =
+            await loadImageAsDataURL(
+                "images/logo.png"
+            );
+
+        if (doc.GState) {
+
+            doc.saveGraphicsState();
+
+            doc.setGState(
+                new doc.GState({
+                    opacity: 0.12
+                })
+            );
+
+            doc.addImage(
+                watermarkData,
+                "PNG",
+                72.5,
+                115,
+                65,
+                65
+            );
+
+            doc.restoreGraphicsState();
+
+        }
+
+    }
+    catch (error) {
+
+        console.log(
+            "Watermark not loaded:",
+            error
+        );
+
+    }
+
+
+    /* =================================================
+       HEADER
+    ================================================= */
+
+    doc.setTextColor(
+        23,
+        63,
+        103
+    );
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.setFontSize(
+        18
+    );
+
+    doc.text(
+        "GOPES PINNACLE ACADEMY",
+        105,
+        18,
+        {
+            align: "center"
+        }
+    );
+
+
+    doc.setFontSize(
+        13
+    );
+
+    doc.text(
+        "FEE RECEIPT",
+        105,
+        26,
+        {
+            align: "center"
+        }
+    );
+
+
+    /* =================================================
+       HEADER LINE
+    ================================================= */
+
+    doc.setDrawColor(
+        23,
+        63,
+        103
+    );
+
+    doc.line(
+        15,
+        32,
+        195,
+        32
+    );
+
+
+    /* =================================================
+       STUDENT DETAILS
+    ================================================= */
+
+    let y = 45;
+
+
+    doc.setTextColor(
+        30,
+        30,
+        30
+    );
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.setFontSize(
+        11
+    );
+
+    doc.text(
+        "Student ID",
+        20,
+        y
+    );
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+    doc.text(
+        ": " +
+        String(
+            student.studentId || "-"
+        ),
+        65,
+        y
+    );
+
+
+    y += 9;
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.text(
+        "Student Name",
+        20,
+        y
+    );
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+    doc.text(
+        ": " +
+        String(
+            student.studentName || "-"
+        ),
+        65,
+        y
+    );
+
+
+    y += 9;
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.text(
+        "Fee Month",
+        20,
+        y
+    );
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+    doc.text(
+        ": " +
+        monthName +
+        " " +
+        year,
+        65,
+        y
+    );
+
+
+    y += 9;
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.text(
+        "Payment Date",
+        20,
+        y
+    );
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+    const paymentDate =
+        student.paymentDate
+            ? new Date(
+                student.paymentDate
+              ).toLocaleDateString(
+                "en-IN"
+              )
+            : new Date()
+                .toLocaleDateString(
+                    "en-IN"
+                );
+
+    doc.text(
+        ": " +
+        paymentDate,
+        65,
+        y
+    );
+
+
+    /* =================================================
+       FEE DETAILS BOX
+    ================================================= */
+
+    y += 18;
+
+
+    doc.setFillColor(
+        245,
+        247,
+        250
+    );
+
+    doc.roundedRect(
+        20,
+        y,
+        170,
+        32,
+        2,
+        2,
+        "F"
+    );
+
+
+    doc.setTextColor(
+        23,
+        63,
+        103
+    );
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.setFontSize(
+        12
+    );
+
+    doc.text(
+        "Fee Details",
+        28,
+        y + 9
+    );
+
+
+    doc.setFontSize(
+        11
+    );
+
+    doc.setTextColor(
+        40,
+        40,
+        40
+    );
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+    doc.text(
+        "Academic Fee",
+        28,
+        y + 20
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.text(
+        formatCurrency(
+            student.feePaid || 0
+        ),
+        182,
+        y + 20,
+        {
+            align: "right"
+        }
+    );
+
+
+    /* =================================================
+       TOTAL
+    ================================================= */
+
+    y += 45;
+
+
+    doc.setDrawColor(
+        23,
+        63,
+        103
+    );
+
+    doc.line(
+        20,
+        y,
+        190,
+        y
+    );
+
+
+    y += 11;
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.setFontSize(
+        13
+    );
+
+    doc.setTextColor(
+        23,
+        63,
+        103
+    );
+
+    doc.text(
+        "TOTAL AMOUNT PAID",
+        20,
+        y
+    );
+
+
+    doc.text(
+        formatCurrency(
+            student.feePaid || 0
+        ),
+        190,
+        y,
+        {
+            align: "right"
+        }
+    );
+
+
+    /* =================================================
+       PAYMENT STATUS
+    ================================================= */
+
+    y += 16;
+
+
+    doc.setFontSize(
+        11
+    );
+
+    doc.setTextColor(
+        30,
+        30,
+        30
+    );
+
+    doc.text(
+        "Payment Status",
+        20,
+        y
+    );
+
+
+    doc.setTextColor(
+        23,
+        107,
+        67
+    );
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.text(
+        "PAID",
+        65,
+        y
+    );
+
+
+    /* =================================================
+       GENERAL PAYMENT NOTE
+    ================================================= */
+
+    y += 20;
+
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+    doc.setFontSize(
+        9
+    );
+
+    doc.setTextColor(
+        90,
+        90,
+        90
+    );
+
+    doc.text(
+        "This receipt acknowledges the payment",
+        20,
+        y
+    );
+
+    doc.text(
+        "received towards the student's academic",
+        20,
+        y + 5
+    );
+
+    doc.text(
+        "fees for the month stated above.",
+        20,
+        y + 10
+    );
+
+
+    /* =================================================
+       FOUNDER SIGNATURE
+    ================================================= */
+
+    const signatureY =
+        255;
+
+
+    try {
+
+        const founderSign =
+            await loadImageAsDataURL(
+                "images/Founder_sign.png"
+            );
+
+        doc.addImage(
+            founderSign,
+            "PNG",
+            145,
+            signatureY - 17,
+            35,
+            14
+        );
+
+    }
+    catch (error) {
+
+        console.log(
+            "Founder signature not loaded:",
+            error
+        );
+
+    }
+
+
+    /* =================================================
+       SIGNATURE LINE
+    ================================================= */
+
+    doc.setDrawColor(
+        30,
+        30,
+        30
+    );
+
+    doc.line(
+        140,
+        signatureY,
+        190,
+        signatureY
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+    doc.setFontSize(
+        9
+    );
+
+    doc.setTextColor(
+        30,
+        30,
+        30
+    );
+
+    doc.text(
+        "Authorised Signature",
+        140,
+        signatureY + 7
+    );
+
+
+    /* =================================================
+       DOWNLOAD
+    ================================================= */
+
+    const safeStudentId =
+        String(
+            student.studentId ||
+            "Student"
+        ).replace(
+            /[^a-zA-Z0-9_-]/g,
+            "_"
+        );
+
+
+    doc.save(
+        `${safeStudentId}_Fee_Receipt_${monthName}_${year}.pdf`
     );
 
 }
