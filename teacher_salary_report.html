@@ -1396,22 +1396,28 @@ async function downloadPayslip(
 
         try {
 
-            const logo1Data =
-                await loadImageAsDataURL(
-                    logo1
-                );
+    const logo1Data =
+        await loadImageAsDataURL(
+            logo1
+        );
 
+    /*
+     * Keep the original logo proportion.
+     * Small logo at the top-left.
+     */
+    const logo1Width = 28;
+    const logo1Height = 18;
 
-            doc.addImage(
-                logo1Data,
-                "PNG",
-                15,
-                10,
-                35,
-                25
-            );
+    doc.addImage(
+        logo1Data,
+        "PNG",
+        15,
+        10,
+        logo1Width,
+        logo1Height
+    );
 
-        }
+}
 
         catch(error) {
 
