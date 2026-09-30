@@ -893,9 +893,15 @@ async function loadIncomeReport() {
         }
 
 
-        renderIncomeReport(
-            data
-        );
+        currentFeeReport =
+    Array.isArray(data.report)
+        ? data.report
+        : [];
+
+
+renderIncomeReport(
+    data
+);
 
 
     }
@@ -936,7 +942,296 @@ async function loadIncomeReport() {
     }
 
 }
+/* =================================================
+   APPLY FILTERS
+================================================= */
 
+function applyIncomeFilters() {
+
+    const studentId =
+        document.getElementById(
+            "studentIdFilter"
+        ).value
+        .trim()
+        .toLowerCase();
+
+
+    const paymentStatus =
+        document.getElementById(
+            "paymentStatusFilter"
+        ).value;
+
+
+    const filteredReport =
+        currentFeeReport.filter(
+            student => {
+
+                const currentStudentId =
+                    String(
+                        student.studentId || ""
+                    ).toLowerCase();
+
+
+                const feePaid =
+                    Number(
+                        student.feePaid || 0
+                    );
+
+
+                const matchesStudentId =
+                    !studentId ||
+                    currentStudentId.includes(
+                        studentId
+                    );
+
+
+                let matchesPayment =
+                    true;
+
+
+                if (
+                    paymentStatus === "paid"
+                ) {
+
+                    matchesPayment =
+                        feePaid > 0;
+
+                }
+
+
+                if (
+                    paymentStatus === "unpaid"
+                ) {
+
+                    matchesPayment =
+                        feePaid === 0;
+
+                }
+
+
+                return (
+                    matchesStudentId &&
+                    matchesPayment
+                );
+
+            }
+        );
+
+
+    renderFilteredIncomeReport(
+        filteredReport
+    );
+
+}
+
+/* =================================================
+   RENDER FILTERED REPORT
+================================================= */
+
+function renderFilteredIncomeReport(
+    report
+) {
+
+    const tbody =
+        document.getElementById(
+            "incomeReportBody"
+        );
+
+
+    tbody.innerHTML = "";
+
+
+    let totalActualFee = 0;
+
+    let totalFeePaid = 0;
+
+    let totalTeacherFee = 0;
+
+    let totalAcademyFee = 0;
+
+
+    report.forEach(
+        student => {
+
+            const actualFee =
+                Number(
+                    student.actualFee || 0
+                );
+
+            const feePaid =
+                Number(
+                    student.feePaid || 0
+                );
+
+            const teacherFee =
+                Number(
+                    student.teacherFee || 0
+                );
+
+            const academyFee =
+                Number(
+                    student.academyFee || 0
+                );
+
+
+            totalActualFee +=
+                actualFee;
+
+            totalFeePaid +=
+                feePaid;
+
+            totalTeacherFee +=
+                teacherFee;
+
+            totalAcademyFee +=
+                academyFee;
+
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${escapeHtml(
+                        student.studentId || "-"
+                    )}
+                </td>
+
+                <td class="student-name">
+                    ${escapeHtml(
+                        student.studentName || "-"
+                    )}
+                </td>
+
+                <td class="number">
+                    ${formatCurrency(
+                        actualFee
+                    )}
+                </td>
+
+                <td class="number">
+                    ${formatCurrency(
+                        feePaid
+                    )}
+                </td>
+
+                <td class="number">
+                    ${formatCurrency(
+                        teacherFee
+                    )}
+                </td>
+
+                <td class="number">
+                    ${formatCurrency(
+                        academyFee
+                    )}
+                </td>
+
+            `;
+
+
+            tbody.appendChild(
+                row
+            );
+
+        }
+    );
+
+
+    if (
+        report.length === 0
+    ) {
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="empty"
+                >
+                    No students found.
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+
+    /* ================= SUMMARY ================= */
+
+    document.getElementById(
+        "totalActualFee"
+    ).innerText =
+        formatCurrency(
+            totalActualFee
+        );
+
+
+    document.getElementById(
+        "totalFeePaid"
+    ).innerText =
+        formatCurrency(
+            totalFeePaid
+        );
+
+
+    document.getElementById(
+        "totalTeacherFee"
+    ).innerText =
+        formatCurrency(
+            totalTeacherFee
+        );
+
+
+    document.getElementById(
+        "totalAcademyFee"
+    ).innerText =
+        formatCurrency(
+            totalAcademyFee
+        );
+
+
+    /* ================= FOOTER ================= */
+
+    document.getElementById(
+        "footerActualFee"
+    ).innerText =
+        formatCurrency(
+            totalActualFee
+        );
+
+
+    document.getElementById(
+        "footerFeePaid"
+    ).innerText =
+        formatCurrency(
+            totalFeePaid
+        );
+
+
+    document.getElementById(
+        "footerTeacherFee"
+    ).innerText =
+        formatCurrency(
+            totalTeacherFee
+        );
+
+
+    document.getElementById(
+        "footerAcademyFee"
+    ).innerText =
+        formatCurrency(
+            totalAcademyFee
+        );
+
+}
 
 /* =================================================
    RENDER REPORT
@@ -1199,6 +1494,23 @@ function escapeHtml(
 ================================================= */
 
 populateMonthDropdown();
+
+
+document.getElementById(
+    "studentIdFilter"
+).addEventListener(
+    "input",
+    applyIncomeFilters
+);
+
+
+document.getElementById(
+    "paymentStatusFilter"
+).addEventListener(
+    "change",
+    applyIncomeFilters
+);
+
 
 loadIncomeReport();
 
