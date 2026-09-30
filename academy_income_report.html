@@ -143,6 +143,22 @@
 
         }
 
+        .filters input {
+
+    padding:
+        8px 12px;
+
+    border:
+        1px solid #ccc;
+
+    border-radius:
+        5px;
+
+    min-width:
+        160px;
+
+}
+
 
         /* ================= SUMMARY ================= */
 
@@ -383,6 +399,10 @@
 
         }
 
+        .academy-income-value {
+    color: #0c0052;
+}
+
     </style>
 
 </head>
@@ -414,16 +434,50 @@
 
     <div class="filters">
 
-        <label>
-            Month:
-        </label>
+    <label>
+        Month:
+    </label>
 
-        <select
-            id="feeMonth"
-            onchange="loadIncomeReport()"
-        ></select>
+    <select
+        id="feeMonth"
+        onchange="loadIncomeReport()"
+    ></select>
 
-    </div>
+
+    <label>
+        Student ID:
+    </label>
+
+    <input
+        type="text"
+        id="studentIdFilter"
+        placeholder="Enter Student ID"
+    >
+
+
+    <label>
+        Payment Status:
+    </label>
+
+    <select
+        id="paymentStatusFilter"
+    >
+
+        <option value="all">
+            All
+        </option>
+
+        <option value="paid">
+            Paid
+        </option>
+
+        <option value="unpaid">
+            Not Paid
+        </option>
+
+    </select>
+
+</div>
 
 
 
@@ -499,11 +553,11 @@
             </div>
 
             <div
-                class="card-value"
-                id="totalAcademyFee"
-            >
-                ₹ 0
-            </div>
+    class="card-value academy-income-value"
+    id="totalAcademyFee"
+>
+    ₹ 0
+</div>
 
         </div>
 
