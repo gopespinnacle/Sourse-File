@@ -752,23 +752,30 @@ async function loadRegister() {
     `;
 
 
-    
+    /* ================= FILTER VALUES ================= */
+
+    const month =
+        document.getElementById(
+            "registerMonth"
+        ).value;
+
+
     const teacher =
         document.getElementById(
             "teacherFilter"
         ).value;
 
-        const student =
-    document.getElementById(
-        "studentFilter"
-    ).value;
 
+    const student =
+        document.getElementById(
+            "studentFilter"
+        ).value;
+
+
+    /* ================= API PARAMETERS ================= */
 
     const params =
         new URLSearchParams();
-
-
-   
 
 
     if (teacher) {
@@ -809,16 +816,123 @@ async function loadRegister() {
         }
 
 
+        let registers =
+            data.data || [];
+
+
+        /* =================================================
+           FILTER BY MONTH
+        ================================================= */
+
+        if (month) {
+
+            const [
+                selectedYear,
+                selectedMonth
+            ] =
+                month
+                    .split("-")
+                    .map(Number);
+
+
+            registers =
+                registers.filter(
+                    register => {
+
+                        if (!register.date) {
+
+                            return false;
+
+                        }
+
+
+                        const registerDate =
+                            new Date(
+                                register.date
+                            );
+
+
+                        return (
+
+                            registerDate.getFullYear()
+                            ===
+                            selectedYear
+
+                            &&
+
+                            registerDate.getMonth() + 1
+                            ===
+                            selectedMonth
+
+                        );
+
+                    }
+                );
+
+        }
+
+
+        /* =================================================
+           FILTER BY STUDENT
+        ================================================= */
+
+        if (student) {
+
+            registers =
+                registers.filter(
+                    register => {
+
+                        const students =
+                            Array.isArray(
+                                register.students
+                            )
+                                ? register.students
+                                : [];
+
+
+                        return students.some(
+                            item =>
+
+                                String(
+                                    item.studentId ||
+                                    item.student ||
+                                    ""
+                                )
+                                ===
+                                String(student)
+
+                        );
+
+                    }
+                );
+
+        }
+
+
+        /* =================================================
+           SAVE CURRENT FILTERED DATA
+        ================================================= */
+
         currentRegisters =
-    data.data || [];
+            registers;
 
-populateStudentFilter(
-    currentRegisters
-);
 
-renderRegister(
-    currentRegisters
-);
+        /* =================================================
+           UPDATE STUDENT DROPDOWN
+        ================================================= */
+
+        populateStudentFilter(
+            registers
+        );
+
+
+        /* =================================================
+           RENDER
+        ================================================= */
+
+        renderRegister(
+            registers
+        );
 
 
     } catch (error) {
@@ -849,7 +963,6 @@ renderRegister(
     }
 
 }
-
 /* =================================================
    BUILD STUDENT FILTER
 ================================================= */
