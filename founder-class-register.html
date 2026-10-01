@@ -872,42 +872,85 @@ async function loadRegister() {
         }
 
 
-        /* =================================================
-           FILTER BY STUDENT
-        ================================================= */
+       
 
-        if (student) {
+        /* =========================================
+   APPLY STUDENT FILTER
+   FILTER STUDENTS INSIDE EACH CLASS
+========================================= */
 
-            registers =
-                registers.filter(
-                    register => {
+if (student) {
 
-                        const students =
-                            Array.isArray(
-                                register.students
-                            )
-                                ? register.students
-                                : [];
+    filteredRegisters =
+        filteredRegisters
+            .map(register => {
+
+                const students =
+                    Array.isArray(
+                        register.students
+                    )
+                        ? register.students
+                        : [];
 
 
-                        return students.some(
-                            item =>
+                const matchingStudents =
+                    students.filter(
+                        item => {
 
+                            const studentId =
                                 String(
                                     item.studentId ||
+                                    ""
+                                );
+
+
+                            const mongoStudentId =
+                                String(
                                     item.student ||
                                     ""
-                                )
+                                );
+
+
+                            return (
+                                studentId
                                 ===
                                 String(student)
+                            )
+                            ||
+                            (
+                                mongoStudentId
+                                ===
+                                String(student)
+                            );
 
-                        );
+                        }
+                    );
 
-                    }
-                );
 
-        }
+                if (
+                    matchingStudents.length === 0
+                ) {
 
+                    return null;
+
+                }
+
+
+                return {
+
+                    ...register,
+
+                    students:
+                        matchingStudents
+
+                };
+
+            })
+            .filter(
+                register => register !== null
+            );
+
+}
 
         /* =================================================
            SAVE CURRENT FILTERED DATA
