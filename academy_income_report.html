@@ -594,12 +594,20 @@
                     </th>
 
                     <th>
-                        Fee Paid
-                    </th>
+    Fee Paid
+</th>
 
-                    <th>
-                        Fee to Teacher
-                    </th>
+<th>
+    Remaining Fee
+</th>
+
+<th>
+    Advance Fee
+</th>
+
+<th>
+    Fee to Teacher
+</th>
 
                     <th>
                         Fee to Academy
@@ -1064,14 +1072,17 @@ function renderFilteredIncomeReport(
                 );
 
             const feePaid =
-                Number(
-                    student.feePaid || 0
-                );
+    Number(
+        student.feePaid || 0
+    );
 
-            const teacherFee =
-                Number(
-                    student.teacherFee || 0
-                );
+const feeDifference =
+    actualFee - feePaid;
+
+const teacherFee =
+    Number(
+        student.teacherFee || 0
+    );
 
             const academyFee =
                 Number(
@@ -1119,16 +1130,36 @@ function renderFilteredIncomeReport(
                 </td>
 
                 <td class="number">
-                    ${formatCurrency(
-                        feePaid
-                    )}
-                </td>
+    ${formatCurrency(
+        feePaid
+    )}
+</td>
 
-                <td class="number">
-                    ${formatCurrency(
-                        teacherFee
-                    )}
-                </td>
+<td class="number">
+    ${
+        feeDifference > 0
+            ? formatCurrency(
+                feeDifference
+            )
+            : "—"
+    }
+</td>
+
+<td class="number">
+    ${
+        feeDifference < 0
+            ? formatCurrency(
+                Math.abs(feeDifference)
+            )
+            : "—"
+    }
+</td>
+
+<td class="number">
+    ${formatCurrency(
+        teacherFee
+    )}
+</td>
 
                 <td class="number">
                     ${formatCurrency(
@@ -1424,19 +1455,42 @@ function renderIncomeReport(
 
 
                 <td class="number">
-                    ${formatCurrency(
-                        student.feePaid ||
-                        0
-                    )}
-                </td>
+    ${formatCurrency(
+        student.feePaid ||
+        0
+    )}
+</td>
 
+<td class="number">
+    ${
+        Number(student.actualFee || 0) -
+        Number(student.feePaid || 0) > 0
+            ? formatCurrency(
+                Number(student.actualFee || 0) -
+                Number(student.feePaid || 0)
+            )
+            : "—"
+    }
+</td>
 
-                <td class="number">
-                    ${formatCurrency(
-                        student.teacherFee ||
-                        0
-                    )}
-                </td>
+<td class="number">
+    ${
+        Number(student.feePaid || 0) -
+        Number(student.actualFee || 0) > 0
+            ? formatCurrency(
+                Number(student.feePaid || 0) -
+                Number(student.actualFee || 0)
+            )
+            : "—"
+    }
+</td>
+
+<td class="number">
+    ${formatCurrency(
+        student.teacherFee ||
+        0
+    )}
+</td>
 
 
                 <td class="number">
