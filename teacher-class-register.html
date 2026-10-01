@@ -857,6 +857,8 @@ function loadSelectedClass(){
 
 
 
+
+
 /* =====================================================
    CHECK APPROVED TEACHER LEAVE
    ===================================================== */
@@ -886,6 +888,24 @@ async function checkApprovedLeave(){
     const statusInput =
         document.getElementById(
             "teacherStatus"
+        );
+
+
+    const topicInput =
+        document.getElementById(
+            "topicCovered"
+        );
+
+
+    const studentList =
+        document.getElementById(
+            "studentList"
+        );
+
+
+    const attendanceSection =
+        document.querySelector(
+            ".attendance-section"
         );
 
 
@@ -924,6 +944,8 @@ async function checkApprovedLeave(){
         }
 
 
+        /* ================= APPROVED LEAVE ================= */
+
         if(result.hasApprovedLeave){
 
             statusInput.value =
@@ -935,7 +957,46 @@ async function checkApprovedLeave(){
             statusInput.style.fontWeight =
                 "700";
 
+
+            /* ================= TOPIC ================= */
+
+            topicInput.value = "";
+
+            topicInput.disabled = true;
+
+            topicInput.placeholder =
+                "Topic not required - teacher absent";
+
+
+            /* ================= STUDENTS ================= */
+
+            studentList.innerHTML = `
+
+                <div
+                    style="
+                        color:#b91c1c;
+                        font-weight:600;
+                        padding:15px;
+                        border:1px solid #fecaca;
+                        background:#fff1f2;
+                        border-radius:8px;
+                    "
+                >
+                    Class not conducted - teacher absent.
+                </div>
+
+            `;
+
+
+            /* ================= ATTENDANCE ================= */
+
+            attendanceSection.style.display =
+                "none";
+
+
         }else{
+
+            /* ================= PRESENT ================= */
 
             statusInput.value =
                 "Present";
@@ -945,6 +1006,27 @@ async function checkApprovedLeave(){
 
             statusInput.style.fontWeight =
                 "700";
+
+
+            /* ================= TOPIC ================= */
+
+            topicInput.disabled = false;
+
+            topicInput.placeholder =
+                "Enter the topic covered in today's class";
+
+
+            /* ================= STUDENTS ================= */
+
+            renderStudents(
+                selectedClass.students || []
+            );
+
+
+            /* ================= ATTENDANCE ================= */
+
+            attendanceSection.style.display =
+                "block";
 
         }
 
@@ -960,9 +1042,32 @@ async function checkApprovedLeave(){
         statusInput.value =
             "Present";
 
+        statusInput.style.color =
+            "#166534";
+
+        statusInput.style.fontWeight =
+            "700";
+
+
+        topicInput.disabled =
+            false;
+
+        topicInput.placeholder =
+            "Enter the topic covered in today's class";
+
+
+        renderStudents(
+            selectedClass.students || []
+        );
+
+
+        attendanceSection.style.display =
+            "block";
+
     }
 
 }
+
 /* =====================================================
    RENDER STUDENTS
    ===================================================== */
