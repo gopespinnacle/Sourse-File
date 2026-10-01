@@ -952,14 +952,7 @@ function markAllStudents(status){
 
 async function saveClassRegister(){
 
-    /*
-       BACKEND SAVE WILL BE CONNECTED
-       IN THE NEXT STEP.
-
-       For now we validate all required
-       information before connecting the API.
-    */
-
+    /* ================= CLASS VALIDATION ================= */
 
     if(!selectedClass){
 
@@ -972,6 +965,8 @@ async function saveClassRegister(){
 
     }
 
+
+    /* ================= GET VALUES ================= */
 
     const date =
         document.getElementById(
@@ -997,8 +992,7 @@ async function saveClassRegister(){
         ).value.trim();
 
 
-    
-
+    /* ================= BASIC VALIDATION ================= */
 
     if(!date){
 
@@ -1012,10 +1006,34 @@ async function saveClassRegister(){
     }
 
 
-    if(!startTime || !endTime){
+    if(!startTime){
 
         showMessage(
-            "Please enter the start and end time.",
+            "Please select the start time.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(!endTime){
+
+        showMessage(
+            "Please select the end time.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(startTime >= endTime){
+
+        showMessage(
+            "End time must be later than start time.",
             "error"
         );
 
@@ -1036,29 +1054,16 @@ async function saveClassRegister(){
     }
 
 
+    /* ================= STUDENTS ================= */
+
     const students =
-    selectedClass.students || [];
+        selectedClass.students || [];
 
 
-const studentAttendance = [];
-
-
-for(
-    let index = 0;
-    index < students.length;
-    index++
-){
-
-    const selected =
-        document.querySelector(
-            `input[name="attendance-${index}"]:checked`
-        );
-
-
-    if(!selected){
+    if(!students.length){
 
         showMessage(
-            `Please select attendance for ${students[index].name || "student"}.`,
+            "No students are assigned to this class.",
             "error"
         );
 
@@ -1067,32 +1072,201 @@ for(
     }
 
 
-    studentAttendance.push({
+    const studentAttendance = [];
 
-        studentId:
-            students[index].studentId ||
-            students[index]._id ||
-            "",
 
-        studentName:
-            students[index].name ||
-            "",
+    for(
+        let index = 0;
+        index < students.length;
+        index++
+    ){
 
-        attendance:
-            selected.value
+        const selected =
+            document.querySelector(
+                `input[name="attendance-${index}"]:checked`
+            );
 
-    });
+
+        if(!selected){
+
+            showMessage(
+                `Please select attendance for ${
+                    students[index].name ||
+                    "student"
+                }.`,
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        studentAttendance.push({
+
+            student:
+                students[index]._id ||
+                "",
+
+            studentId:
+                students[index].studentId ||
+                students[index]._id ||
+                "",
+
+            studentName:
+                students[index].name ||
+                "",
+
+            attendance:
+                selected.value
+
+        });
+
+    }
+
+
+    /* ================= BUTTON ================= */
+
+    const saveButton =
+        document.getElementById(
+            "saveBtn"
+        );
+
+
+    saveButton.disabled = true;
+
+    saveButton.innerHTML = `
+        <i class="fa fa-spinner fa-spin"></i>
+        Saving...
+    `;
+
+
+    try{
+
+        /* ================= API ================= */
+
+        const response =
+            await fetch(
+                `${API_BASE}/api/teacher/daily-class-register`,
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " + token
+                    },
+
+                    body:JSON.stringify({
+
+                        periodAssignmentId:
+                            selectedClass.periodId,
+
+                        date:
+
+                            date,
+
+                        className:
+                            selectedClass.className,
+
+                        subject:
+                            selectedClass.subject,
+
+                        scheduledStartTime:
+                            selectedClass.startTime,
+
+                        scheduledEndTime:
+                            selectedClass.endTime,
+
+                        actualStartTime:
+                            startTime,
+
+                        actualEndTime:
+                            endTime,
+
+                        teacherStatus:
+                            "Present",
+
+                        topicCovered:
+                            topic,
+
+                        students:
+                            studentAttendance
+
+                    })
+
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        /* ================= ERROR ================= */
+
+        if(!response.ok){
+
+            throw new Error(
+                result.message ||
+                "Unable to save class register."
+            );
+
+        }
+
+
+        /* ================= SUCCESS ================= */
+
+        showMessage(
+            "Class register saved successfully.",
+            "info"
+        );
+
+
+        /* ================= RESET TOPIC ================= */
+
+        document.getElementById(
+            "topicCovered"
+        ).value = "";
+
+
+        /* ================= DISABLE AGAIN ================= */
+
+        saveButton.disabled = false;
+
+        saveButton.innerHTML = `
+            <i class="fa fa-save"></i>
+            Save Class
+        `;
+
+
+    }catch(error){
+
+        console.error(
+            "Daily Class Register Save Error:",
+            error
+        );
+
+
+        showMessage(
+            error.message ||
+            "Unable to save class register.",
+            "error"
+        );
+
+
+        saveButton.disabled = false;
+
+        saveButton.innerHTML = `
+            <i class="fa fa-save"></i>
+            Save Class
+        `;
+
+    }
 
 }
-
-
-    showMessage(
-        "Class details are ready. Database saving will be connected in the next step.",
-        "info"
-    );
-
-}
-
 
 /* =====================================================
    MESSAGE
