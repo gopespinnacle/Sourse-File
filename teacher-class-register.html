@@ -158,22 +158,59 @@ body{
     margin-top:25px;
 }
 
-.attendance-options{
-    display:flex;
-    gap:15px;
-    margin-top:10px;
+.attendance-section h3{
+    margin-bottom:15px;
+    color:#173b67;
 }
 
-.attendance-option{
+.attendance-tools{
+    display:flex;
+    gap:10px;
+    margin-bottom:15px;
+}
+
+.attendance-all-btn{
+    border:1px solid #173b67;
+    background:white;
+    color:#173b67;
+    padding:8px 15px;
+    border-radius:7px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.attendance-all-btn:hover{
+    background:#173b67;
+    color:white;
+}
+
+.student-item{
+    position:relative;
+}
+
+.student-attendance{
+    margin-top:12px;
+    display:flex;
+    gap:10px;
+}
+
+.student-attendance label{
     border:1px solid #d6dbe3;
-    padding:12px 22px;
-    border-radius:8px;
+    padding:7px 12px;
+    border-radius:7px;
     cursor:pointer;
     background:white;
+    font-size:14px;
 }
 
-.attendance-option input{
-    margin-right:7px;
+.student-attendance input{
+    margin-right:5px;
+}
+
+.student-attendance label:has(input:checked){
+    border-color:#173b67;
+    background:#eef5ff;
+    color:#173b67;
 }
 
 /* ================= BUTTON ================= */
@@ -488,45 +525,36 @@ body{
 
 
         <!-- =================================================
-             ATTENDANCE
-             ================================================= -->
+     STUDENT ATTENDANCE
+     ================================================= -->
 
-        <div class="attendance-section">
+<div class="attendance-section">
 
-            <h3>
-                Attendance
-            </h3>
+    <h3>
+        Student Attendance
+    </h3>
 
-            <div class="attendance-options">
+    <div class="attendance-tools">
 
-                <label class="attendance-option">
+        <button
+            type="button"
+            class="attendance-all-btn"
+            onclick="markAllStudents('Present')"
+        >
+            Mark All Present
+        </button>
 
-                    <input
-                        type="radio"
-                        name="attendance"
-                        value="Present"
-                    >
+        <button
+            type="button"
+            class="attendance-all-btn"
+            onclick="markAllStudents('Absent')"
+        >
+            Mark All Absent
+        </button>
 
-                    Present
+    </div>
 
-                </label>
-
-
-                <label class="attendance-option">
-
-                    <input
-                        type="radio"
-                        name="attendance"
-                        value="Absent"
-                    >
-
-                    Absent
-
-                </label>
-
-            </div>
-
-        </div>
+</div>
 
 
         <button
@@ -836,7 +864,7 @@ function renderStudents(students){
 
     container.innerHTML =
         students.map(
-            student => `
+            (student, index) => `
 
                 <div class="student-item">
 
@@ -856,6 +884,37 @@ function renderStudents(students){
                         )}
                     </div>
 
+
+                    <div class="student-attendance">
+
+                        <label>
+
+                            <input
+                                type="radio"
+                                name="attendance-${index}"
+                                value="Present"
+                                checked
+                            >
+
+                            Present
+
+                        </label>
+
+
+                        <label>
+
+                            <input
+                                type="radio"
+                                name="attendance-${index}"
+                                value="Absent"
+                            >
+
+                            Absent
+
+                        </label>
+
+                    </div>
+
                 </div>
 
             `
@@ -863,6 +922,29 @@ function renderStudents(students){
 
 }
 
+function markAllStudents(status){
+
+    const radios =
+        document.querySelectorAll(
+            'input[type="radio"][name^="attendance-"]'
+        );
+
+
+    radios.forEach(
+        radio => {
+
+            if(
+                radio.value === status
+            ){
+
+                radio.checked = true;
+
+            }
+
+        }
+    );
+
+}
 
 /* =====================================================
    SAVE
@@ -915,10 +997,7 @@ async function saveClassRegister(){
         ).value.trim();
 
 
-    const attendance =
-        document.querySelector(
-            'input[name="attendance"]:checked'
-        );
+    
 
 
     if(!date){
@@ -957,16 +1036,54 @@ async function saveClassRegister(){
     }
 
 
-    if(!attendance){
+    const students =
+    selectedClass.students || [];
+
+
+const studentAttendance = [];
+
+
+for(
+    let index = 0;
+    index < students.length;
+    index++
+){
+
+    const selected =
+        document.querySelector(
+            `input[name="attendance-${index}"]:checked`
+        );
+
+
+    if(!selected){
 
         showMessage(
-            "Please select attendance.",
+            `Please select attendance for ${students[index].name || "student"}.`,
             "error"
         );
 
         return;
 
     }
+
+
+    studentAttendance.push({
+
+        studentId:
+            students[index].studentId ||
+            students[index]._id ||
+            "",
+
+        studentName:
+            students[index].name ||
+            "",
+
+        attendance:
+            selected.value
+
+    });
+
+}
 
 
     showMessage(
