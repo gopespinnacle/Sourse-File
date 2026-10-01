@@ -167,7 +167,7 @@
             display: grid;
 
             grid-template-columns:
-                repeat(4, 1fr);
+                repeat(6, 1fr);
 
             gap: 12px;
 
@@ -480,6 +480,14 @@
             Not Paid
         </option>
 
+        <option value="remaining">
+    Fee Remaining
+</option>
+
+<option value="advance">
+    Fee Advance
+</option>
+
     </select>
 
 </div>
@@ -531,6 +539,37 @@
             </div>
 
         </div>
+
+        <div class="card">
+
+    <div class="card-title">
+        Total Fee Pending
+    </div>
+
+    <div
+        class="card-value"
+        id="totalRemainingFee"
+    >
+        ₹ 0
+    </div>
+
+</div>
+
+
+<div class="card">
+
+    <div class="card-title">
+        Total Fee Advance
+    </div>
+
+    <div
+        class="card-value"
+        id="totalAdvanceFee"
+    >
+        ₹ 0
+    </div>
+
+</div>
 
 
 
@@ -1035,6 +1074,35 @@ function applyIncomeFilters() {
 
                 }
 
+                if (
+    paymentStatus === "remaining"
+) {
+
+    const actualFee =
+        Number(
+            student.actualFee || 0
+        );
+
+    matchesPayment =
+        actualFee - feePaid > 0;
+
+}
+
+
+if (
+    paymentStatus === "advance"
+) {
+
+    const actualFee =
+        Number(
+            student.actualFee || 0
+        );
+
+    matchesPayment =
+        feePaid - actualFee > 0;
+
+}
+
 
                 return (
                     matchesStudentId &&
@@ -1251,6 +1319,21 @@ totalAcademyFee +=
             totalFeePaid
         );
 
+        document.getElementById(
+    "totalRemainingFee"
+).innerText =
+    formatCurrency(
+        totalRemainingFee
+    );
+
+
+document.getElementById(
+    "totalAdvanceFee"
+).innerText =
+    formatCurrency(
+        totalAdvanceFee
+    );
+
 
     document.getElementById(
         "totalTeacherFee"
@@ -1422,6 +1505,21 @@ report.forEach(
         formatCurrency(
             totalFeePaid
         );
+
+        document.getElementById(
+    "totalRemainingFee"
+).innerText =
+    formatCurrency(
+        totalRemainingFee
+    );
+
+
+document.getElementById(
+    "totalAdvanceFee"
+).innerText =
+    formatCurrency(
+        totalAdvanceFee
+    );
 
 
     document.getElementById(
