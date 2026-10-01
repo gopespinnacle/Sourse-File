@@ -638,46 +638,60 @@
 
             <tfoot>
 
-                <tr>
+    <tr>
 
-                    <td
-                        colspan="2"
-                        style="text-align:right;"
-                    >
-                        TOTAL
-                    </td>
+        <td
+            colspan="2"
+            style="text-align:right;"
+        >
+            TOTAL
+        </td>
 
-                    <td
-                        class="number"
-                        id="footerActualFee"
-                    >
-                        ₹ 0
-                    </td>
+        <td
+            class="number"
+            id="footerActualFee"
+        >
+            ₹ 0
+        </td>
 
-                    <td
-                        class="number"
-                        id="footerFeePaid"
-                    >
-                        ₹ 0
-                    </td>
+        <td
+            class="number"
+            id="footerFeePaid"
+        >
+            ₹ 0
+        </td>
 
-                    <td
-                        class="number"
-                        id="footerTeacherFee"
-                    >
-                        ₹ 0
-                    </td>
+        <td
+            class="number"
+            id="footerRemainingFee"
+        >
+            ₹ 0
+        </td>
 
-                    <td
-                        class="number"
-                        id="footerAcademyFee"
-                    >
-                        ₹ 0
-                    </td>
+        <td
+            class="number"
+            id="footerAdvanceFee"
+        >
+            ₹ 0
+        </td>
 
-                </tr>
+        <td
+            class="number"
+            id="footerTeacherFee"
+        >
+            ₹ 0
+        </td>
 
-            </tfoot>
+        <td
+            class="number"
+            id="footerAcademyFee"
+        >
+            ₹ 0
+        </td>
+
+    </tr>
+
+</tfoot>
 
         </table>
 
@@ -1056,11 +1070,15 @@ function renderFilteredIncomeReport(
 
     let totalActualFee = 0;
 
-    let totalFeePaid = 0;
+let totalFeePaid = 0;
 
-    let totalTeacherFee = 0;
+let totalRemainingFee = 0;
 
-    let totalAcademyFee = 0;
+let totalAdvanceFee = 0;
+
+let totalTeacherFee = 0;
+
+let totalAcademyFee = 0;
 
 
     report.forEach(
@@ -1091,16 +1109,32 @@ const teacherFee =
 
 
             totalActualFee +=
-                actualFee;
+    actualFee;
 
-            totalFeePaid +=
-                feePaid;
+totalFeePaid +=
+    feePaid;
 
-            totalTeacherFee +=
-                teacherFee;
+if (feeDifference > 0) {
 
-            totalAcademyFee +=
-                academyFee;
+    totalRemainingFee +=
+        feeDifference;
+
+}
+
+if (feeDifference < 0) {
+
+    totalAdvanceFee +=
+        Math.abs(
+            feeDifference
+        );
+
+}
+
+totalTeacherFee +=
+    teacherFee;
+
+totalAcademyFee +=
+    academyFee;
 
 
             const row =
@@ -1245,19 +1279,35 @@ const teacherFee =
 
 
     document.getElementById(
-        "footerFeePaid"
-    ).innerText =
-        formatCurrency(
-            totalFeePaid
-        );
+    "footerFeePaid"
+).innerText =
+    formatCurrency(
+        totalFeePaid
+    );
 
 
-    document.getElementById(
-        "footerTeacherFee"
-    ).innerText =
-        formatCurrency(
-            totalTeacherFee
-        );
+document.getElementById(
+    "footerRemainingFee"
+).innerText =
+    formatCurrency(
+        totalRemainingFee
+    );
+
+
+document.getElementById(
+    "footerAdvanceFee"
+).innerText =
+    formatCurrency(
+        totalAdvanceFee
+    );
+
+
+document.getElementById(
+    "footerTeacherFee"
+).innerText =
+    formatCurrency(
+        totalTeacherFee
+    );
 
 
     document.getElementById(
@@ -1315,6 +1365,48 @@ function renderIncomeReport(
             totals.academyFee || 0
         );
 
+        let totalRemainingFee = 0;
+
+let totalAdvanceFee = 0;
+
+
+report.forEach(
+    student => {
+
+        const actualFee =
+            Number(
+                student.actualFee || 0
+            );
+
+        const feePaid =
+            Number(
+                student.feePaid || 0
+            );
+
+        const difference =
+            actualFee - feePaid;
+
+
+        if (difference > 0) {
+
+            totalRemainingFee +=
+                difference;
+
+        }
+
+
+        if (difference < 0) {
+
+            totalAdvanceFee +=
+                Math.abs(
+                    difference
+                );
+
+        }
+
+    }
+);
+
 
     document.getElementById(
         "totalActualFee"
@@ -1359,20 +1451,35 @@ function renderIncomeReport(
 
 
     document.getElementById(
-        "footerFeePaid"
-    ).innerText =
-        formatCurrency(
-            totalFeePaid
-        );
+    "footerFeePaid"
+).innerText =
+    formatCurrency(
+        totalFeePaid
+    );
 
 
-    document.getElementById(
-        "footerTeacherFee"
-    ).innerText =
-        formatCurrency(
-            totalTeacherFee
-        );
+document.getElementById(
+    "footerRemainingFee"
+).innerText =
+    formatCurrency(
+        totalRemainingFee
+    );
 
+
+document.getElementById(
+    "footerAdvanceFee"
+).innerText =
+    formatCurrency(
+        totalAdvanceFee
+    );
+
+
+document.getElementById(
+    "footerTeacherFee"
+).innerText =
+    formatCurrency(
+        totalTeacherFee
+    );
 
     document.getElementById(
         "footerAcademyFee"
