@@ -6783,38 +6783,36 @@ voiceNoAnswerTimer = null;
     ========================================================= */
 
     function handleIncomingMessage(
-        message
+    message
+) {
+
+    // Current conversation
+    if (
+        selectedConversation &&
+        String(
+            message.conversationId
+        ) ===
+        String(
+            selectedConversation._id
+        )
     ) {
 
-        // Current conversation
-        if (
-            selectedConversation &&
-            String(
-                message.conversation
-            ) ===
+        appendMessage(
+            message
+        );
+
+        socket.emit(
+            "markMessengerConversationRead",
             String(
                 selectedConversation._id
             )
-        ) {
-
-            appendMessage(
-                message
-            );
-
-
-            socket.emit(
-                "markMessengerConversationRead",
-                String(
-                    selectedConversation._id
-                )
-            );
-
-        }
-
-
-        loadConversations();
+        );
 
     }
+
+    loadConversations();
+
+}
 
 
     /* =========================================================
