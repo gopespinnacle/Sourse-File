@@ -647,6 +647,12 @@ async function loadTeachers() {
             "teacherFilter"
         );
 
+        select.innerHTML = `
+    <option value="">
+        All Teachers
+    </option>
+`;
+
     try {
 
         const response =
