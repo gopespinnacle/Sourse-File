@@ -384,9 +384,10 @@ body{
                 </label>
 
                 <input
-                    type="date"
-                    id="classDate"
-                >
+    type="date"
+    id="classDate"
+    onchange="checkApprovedLeave()"
+>
 
             </div>
 
@@ -495,6 +496,23 @@ body{
                 ></textarea>
 
             </div>
+
+            <!-- TEACHER STATUS -->
+
+<div class="form-group">
+
+    <label>
+        Teacher Status
+    </label>
+
+    <input
+        type="text"
+        id="teacherStatus"
+        value="Present"
+        readonly
+    >
+
+</div>
 
 
         </div>
@@ -833,10 +851,118 @@ function loadSelectedClass(){
     renderStudents(
         selectedClass.students || []
     );
+    checkApprovedLeave();
 
 }
 
 
+
+/* =====================================================
+   CHECK APPROVED TEACHER LEAVE
+   ===================================================== */
+
+async function checkApprovedLeave(){
+
+    if(!selectedClass){
+
+        return;
+
+    }
+
+
+    const date =
+        document.getElementById(
+            "classDate"
+        ).value;
+
+
+    if(!date){
+
+        return;
+
+    }
+
+
+    const statusInput =
+        document.getElementById(
+            "teacherStatus"
+        );
+
+
+    try{
+
+        const response =
+            await fetch(
+
+                `${API_BASE}/api/teacher/daily-class-register/check-leave` +
+                `?periodAssignmentId=${encodeURIComponent(
+                    selectedClass.periodId
+                )}` +
+                `&date=${encodeURIComponent(date)}`,
+
+                {
+                    headers:{
+                        "Authorization":
+                            "Bearer " + token
+                    }
+                }
+
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if(!response.ok){
+
+            throw new Error(
+                result.message ||
+                "Unable to check teacher leave."
+            );
+
+        }
+
+
+        if(result.hasApprovedLeave){
+
+            statusInput.value =
+                "Absent";
+
+            statusInput.style.color =
+                "#b91c1c";
+
+            statusInput.style.fontWeight =
+                "700";
+
+        }else{
+
+            statusInput.value =
+                "Present";
+
+            statusInput.style.color =
+                "#166534";
+
+            statusInput.style.fontWeight =
+                "700";
+
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "Approved leave check error:",
+            error
+        );
+
+
+        statusInput.value =
+            "Present";
+
+    }
+
+}
 /* =====================================================
    RENDER STUDENTS
    ===================================================== */
