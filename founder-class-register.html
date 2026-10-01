@@ -1501,10 +1501,657 @@ function escapeHtml(
    EXPORT PDF
 ================================================= */
 
-function exportRegisterPDF(){
+function exportRegisterPDF() {
 
-    alert(
-        "PDF export will be connected in the next step."
+    /* =========================================
+       CHECK DATA
+    ========================================= */
+
+    if (
+        !Array.isArray(currentRegisters) ||
+        currentRegisters.length === 0
+    ) {
+
+        alert(
+            "There are no class register records to export."
+        );
+
+        return;
+
+    }
+
+
+    /* =========================================
+       CREATE PDF
+    ========================================= */
+
+    const {
+        jsPDF
+    } = window.jspdf;
+
+
+    const doc =
+        new jsPDF({
+            orientation: "landscape",
+            unit: "mm",
+            format: "a4"
+        });
+
+
+    /* =========================================
+       SELECTED FILTERS
+    ========================================= */
+
+    const month =
+        document.getElementById(
+            "registerMonth"
+        ).value;
+
+
+    const studentSelect =
+        document.getElementById(
+            "studentFilter"
+        );
+
+
+    const teacherSelect =
+        document.getElementById(
+            "teacherFilter"
+        );
+
+
+    const studentText =
+        studentSelect.options[
+            studentSelect.selectedIndex
+        ]?.text ||
+        "All Students";
+
+
+    const teacherText =
+        teacherSelect.options[
+            teacherSelect.selectedIndex
+        ]?.text ||
+        "All Teachers";
+
+
+    let monthText =
+        "All Months";
+
+
+    if (month) {
+
+        const [
+            year,
+            monthNumber
+        ] =
+            month.split("-");
+
+
+        const date =
+            new Date(
+                Number(year),
+                Number(monthNumber) - 1,
+                1
+            );
+
+
+        monthText =
+            date.toLocaleDateString(
+                "en-IN",
+                {
+                    month: "long",
+                    year: "numeric"
+                }
+            );
+
+    }
+
+
+    /* =========================================
+       ACADEMY HEADER
+    ========================================= */
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.setFontSize(18);
+
+
+    doc.text(
+        "GOPES PINNACLE ACADEMY",
+        148.5,
+        15,
+        {
+            align: "center"
+        }
+    );
+
+
+    doc.setFontSize(13);
+
+
+    doc.text(
+        "DAILY CLASS REGISTER",
+        148.5,
+        23,
+        {
+            align: "center"
+        }
+    );
+
+
+    /* =========================================
+       FILTER INFORMATION
+    ========================================= */
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+
+    doc.setFontSize(9);
+
+
+    doc.text(
+        `Month: ${monthText}`,
+        14,
+        32
+    );
+
+
+    doc.text(
+        `Student: ${studentText}`,
+        14,
+        38
+    );
+
+
+    doc.text(
+        `Teacher: ${teacherText}`,
+        14,
+        44
+    );
+
+
+    /* =========================================
+       SUMMARY
+    ========================================= */
+
+    let conducted =
+        0;
+
+    let teacherLeave =
+        0;
+
+
+    currentRegisters.forEach(
+        register => {
+
+            if (
+                register.teacherStatus ===
+                "Absent"
+            ) {
+
+                teacherLeave++;
+
+            } else {
+
+                conducted++;
+
+            }
+
+        }
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.text(
+        `Class Sessions: ${currentRegisters.length}`,
+        175,
+        32
+    );
+
+
+    doc.text(
+        `Conducted Classes: ${conducted}`,
+        175,
+        38
+    );
+
+
+    doc.text(
+        `Teacher Leave: ${teacherLeave}`,
+        175,
+        44
+    );
+
+
+    /* =========================================
+       BUILD TABLE ROWS
+    ========================================= */
+
+    const rows = [];
+
+
+    currentRegisters.forEach(
+        register => {
+
+            const date =
+                formatDate(
+                    register.date
+                );
+
+
+            const time =
+                `${register.scheduledStartTime || "-"}`
+                +
+                ` - `
+                +
+                `${register.scheduledEndTime || "-"}`;
+
+
+            const teacher =
+                register.teacher ||
+                {};
+
+
+            const teacherName =
+                teacher.name ||
+                "Teacher";
+
+
+            const teacherId =
+                teacher.teacherId ||
+                "-";
+
+
+            const grade =
+                register.className ||
+                "-";
+
+
+            const subject =
+                register.subject ||
+                "-";
+
+
+            const topic =
+                register.topicCovered ||
+                "-";
+
+
+            /* =================================
+               TEACHER ABSENT
+            ================================= */
+
+            if (
+                register.teacherStatus ===
+                "Absent"
+            ) {
+
+                rows.push([
+
+                    date,
+
+                    time,
+
+                    teacherName,
+
+                    teacherId,
+
+                    grade,
+
+                    subject,
+
+                    "-",
+
+                    "-",
+
+                    "-",
+
+                    "-",
+
+                    "Absent / Leave"
+
+                ]);
+
+
+                return;
+
+            }
+
+
+            /* =================================
+               STUDENTS
+            ================================= */
+
+            const students =
+                Array.isArray(
+                    register.students
+                )
+                    ? register.students
+                    : [];
+
+
+            if (
+                students.length === 0
+            ) {
+
+                rows.push([
+
+                    date,
+
+                    time,
+
+                    teacherName,
+
+                    teacherId,
+
+                    grade,
+
+                    subject,
+
+                    "-",
+
+                    "-",
+
+                    "-",
+
+                    topic,
+
+                    "Present"
+
+                ]);
+
+
+                return;
+
+            }
+
+
+            students.forEach(
+                student => {
+
+                    rows.push([
+
+                        date,
+
+                        time,
+
+                        teacherName,
+
+                        teacherId,
+
+                        grade,
+
+                        subject,
+
+                        student.studentName ||
+                            "-",
+
+                        student.studentId ||
+                            "-",
+
+                        student.attendance ||
+                            "-",
+
+                        topic,
+
+                        "Present"
+
+                    ]);
+
+                }
+            );
+
+        }
+    );
+
+
+    /* =========================================
+       PDF TABLE
+    ========================================= */
+
+    doc.autoTable({
+
+        startY: 50,
+
+        head: [[
+
+            "Date",
+
+            "Time",
+
+            "Teacher",
+
+            "Teacher ID",
+
+            "Grade",
+
+            "Subject",
+
+            "Student",
+
+            "Student ID",
+
+            "Attendance",
+
+            "Topic Covered",
+
+            "Status"
+
+        ]],
+
+        body: rows,
+
+        theme: "grid",
+
+        styles: {
+
+            font: "helvetica",
+
+            fontSize: 7,
+
+            cellPadding: 2,
+
+            valign: "middle"
+
+        },
+
+        headStyles: {
+
+            fontStyle: "bold",
+
+            halign: "center"
+
+        },
+
+        columnStyles: {
+
+            0: {
+                cellWidth: 20
+            },
+
+            1: {
+                cellWidth: 23
+            },
+
+            2: {
+                cellWidth: 28
+            },
+
+            3: {
+                cellWidth: 20
+            },
+
+            4: {
+                cellWidth: 17
+            },
+
+            5: {
+                cellWidth: 20
+            },
+
+            6: {
+                cellWidth: 27
+            },
+
+            7: {
+                cellWidth: 20
+            },
+
+            8: {
+                cellWidth: 22
+            },
+
+            9: {
+                cellWidth: 32
+            },
+
+            10: {
+                cellWidth: 25
+            }
+
+        },
+
+        didParseCell:
+            function(data) {
+
+                if (
+                    data.section ===
+                    "body"
+                ) {
+
+                    const status =
+                        data.row.raw[10];
+
+
+                    const attendance =
+                        data.row.raw[8];
+
+
+                    if (
+                        status ===
+                        "Absent / Leave"
+                    ) {
+
+                        data.cell.styles
+                            .fontStyle =
+                            "bold";
+
+                    }
+
+
+                    if (
+                        attendance ===
+                        "Absent"
+                    ) {
+
+                        data.cell.styles
+                            .fontStyle =
+                            "bold";
+
+                    }
+
+                }
+
+            },
+
+        margin: {
+
+            left: 8,
+
+            right: 8
+
+        }
+
+    });
+
+
+    /* =========================================
+       FOOTER
+    ========================================= */
+
+    const pageCount =
+        doc.internal
+            .getNumberOfPages();
+
+
+    for (
+        let page = 1;
+        page <= pageCount;
+        page++
+    ) {
+
+        doc.setPage(
+            page
+        );
+
+
+        doc.setFontSize(
+            8
+        );
+
+
+        doc.setFont(
+            "helvetica",
+            "normal"
+        );
+
+
+        doc.text(
+            `Gopes Pinnacle Academy | Daily Class Register | Page ${page} of ${pageCount}`,
+            148.5,
+            202,
+            {
+                align: "center"
+            }
+        );
+
+    }
+
+
+    /* =========================================
+       FILE NAME
+    ========================================= */
+
+    const safeMonth =
+        month
+            ? month
+            : "all";
+
+
+    const safeStudent =
+        studentText
+            .replace(
+                /[^a-z0-9]+/gi,
+                "-"
+            )
+            .replace(
+                /^-+|-+$/g,
+                ""
+            );
+
+
+    const fileName =
+        `Daily-Class-Register-${safeMonth}-${safeStudent || "All-Students"}.pdf`;
+
+
+    /* =========================================
+       DOWNLOAD
+    ========================================= */
+
+    doc.save(
+        fileName
     );
 
 }
