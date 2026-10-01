@@ -878,8 +878,10 @@ async function loadRegister() {
    APPLY STUDENT FILTER
    FILTER STUDENTS INSIDE EACH CLASS
 ========================================= */
-
+let filteredRegisters = registers;
 if (student) {
+
+    
 
     filteredRegisters =
         filteredRegisters
@@ -952,30 +954,16 @@ if (student) {
 
 }
 
-        /* =================================================
-           SAVE CURRENT FILTERED DATA
-        ================================================= */
-
         currentRegisters =
-            registers;
+    filteredRegisters;
 
+populateStudentFilter(
+    registers
+);
 
-        /* =================================================
-           UPDATE STUDENT DROPDOWN
-        ================================================= */
-
-        populateStudentFilter(
-            registers
-        );
-
-
-        /* =================================================
-           RENDER
-        ================================================= */
-
-        renderRegister(
-            registers
-        );
+renderRegister(
+    filteredRegisters
+);
 
 
     } catch (error) {
