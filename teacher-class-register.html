@@ -1183,7 +1183,7 @@ function markAllStudents(status){
 
 async function saveClassRegister(){
 
-    /* ================= CLASS VALIDATION ================= */
+    /* ================= CLASS ================= */
 
     if(!selectedClass){
 
@@ -1197,7 +1197,7 @@ async function saveClassRegister(){
     }
 
 
-    /* ================= GET VALUES ================= */
+    /* ================= VALUES ================= */
 
     const date =
         document.getElementById(
@@ -1223,7 +1223,13 @@ async function saveClassRegister(){
         ).value.trim();
 
 
-    /* ================= BASIC VALIDATION ================= */
+    const teacherStatus =
+        document.getElementById(
+            "teacherStatus"
+        ).value;
+
+
+    /* ================= DATE ================= */
 
     if(!date){
 
@@ -1237,10 +1243,149 @@ async function saveClassRegister(){
     }
 
 
+    /* =================================================
+       TEACHER ABSENT
+       ================================================= */
+
+    if(teacherStatus === "Absent"){
+
+        const saveButton =
+            document.getElementById(
+                "saveBtn"
+            );
+
+
+        saveButton.disabled = true;
+
+        saveButton.innerHTML = `
+            <i class="fa fa-spinner fa-spin"></i>
+            Saving...
+        `;
+
+
+        try{
+
+            const response =
+                await fetch(
+                    `${API_BASE}/api/teacher/daily-class-register`,
+                    {
+                        method:"POST",
+
+                        headers:{
+                            "Content-Type":
+                                "application/json",
+
+                            "Authorization":
+                                "Bearer " + token
+                        },
+
+                        body:JSON.stringify({
+
+                            periodAssignmentId:
+                                selectedClass.periodId,
+
+                            date:
+                                date,
+
+                            className:
+                                selectedClass.className,
+
+                            subject:
+                                selectedClass.subject,
+
+                            scheduledStartTime:
+                                selectedClass.startTime,
+
+                            scheduledEndTime:
+                                selectedClass.endTime,
+
+                            actualStartTime:
+                                "",
+
+                            actualEndTime:
+                                "",
+
+                            teacherStatus:
+                                "Absent",
+
+                            topicCovered:
+                                "",
+
+                            students:
+                                []
+
+                        })
+
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if(!response.ok){
+
+                throw new Error(
+                    result.message ||
+                    "Unable to save teacher absence."
+                );
+
+            }
+
+
+            showMessage(
+                "Teacher absence recorded successfully.",
+                "info"
+            );
+
+
+            saveButton.disabled = false;
+
+            saveButton.innerHTML = `
+                <i class="fa fa-save"></i>
+                Save Class
+            `;
+
+
+        }catch(error){
+
+            console.error(
+                "Teacher absence save error:",
+                error
+            );
+
+
+            showMessage(
+                error.message ||
+                "Unable to save teacher absence.",
+                "error"
+            );
+
+
+            saveButton.disabled = false;
+
+            saveButton.innerHTML = `
+                <i class="fa fa-save"></i>
+                Save Class
+            `;
+
+        }
+
+
+        return;
+
+    }
+
+
+    /* =================================================
+       TEACHER PRESENT
+       ================================================= */
+
     if(!startTime){
 
         showMessage(
-            "Please select the start time.",
+            "Please enter the start time.",
             "error"
         );
 
@@ -1252,7 +1397,7 @@ async function saveClassRegister(){
     if(!endTime){
 
         showMessage(
-            "Please select the end time.",
+            "Please enter the end time.",
             "error"
         );
 
@@ -1356,7 +1501,7 @@ async function saveClassRegister(){
     }
 
 
-    /* ================= BUTTON ================= */
+    /* ================= SAVE BUTTON ================= */
 
     const saveButton =
         document.getElementById(
@@ -1373,8 +1518,6 @@ async function saveClassRegister(){
 
 
     try{
-
-        /* ================= API ================= */
 
         const response =
             await fetch(
@@ -1396,7 +1539,6 @@ async function saveClassRegister(){
                             selectedClass.periodId,
 
                         date:
-
                             date,
 
                         className:
@@ -1436,8 +1578,6 @@ async function saveClassRegister(){
             await response.json();
 
 
-        /* ================= ERROR ================= */
-
         if(!response.ok){
 
             throw new Error(
@@ -1448,22 +1588,11 @@ async function saveClassRegister(){
         }
 
 
-        /* ================= SUCCESS ================= */
-
         showMessage(
             "Class register saved successfully.",
             "info"
         );
 
-
-        /* ================= RESET TOPIC ================= */
-
-        document.getElementById(
-            "topicCovered"
-        ).value = "";
-
-
-        /* ================= DISABLE AGAIN ================= */
 
         saveButton.disabled = false;
 
@@ -1498,7 +1627,6 @@ async function saveClassRegister(){
     }
 
 }
-
 /* =====================================================
    MESSAGE
    ===================================================== */
