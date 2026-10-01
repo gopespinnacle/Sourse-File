@@ -392,56 +392,91 @@ fetch("sidebar.html")
     <div class="filters">
 
 
-        <div class="filter-group">
+    <!-- MONTH -->
 
-            <label for="registerDate">
+    <div class="filter-group">
 
-                Date
+        <label for="registerMonth">
+            Month
+        </label>
 
-            </label>
-
-            <input
-                type="date"
-                id="registerDate"
-            >
-
-        </div>
-
-
-        <div class="filter-group">
-
-            <label for="teacherFilter">
-
-                Teacher
-
-            </label>
-
-            <select id="teacherFilter">
-
-                <option value="">
-
-                    All Teachers
-
-                </option>
-
-            </select>
-
-        </div>
-
-
-        <button
-            class="filter-button"
-            onclick="loadRegister()"
+        <input
+            type="month"
+            id="registerMonth"
         >
 
-            <i class="fa fa-search"></i>
+    </div>
 
-            View Register
 
-        </button>
+    <!-- STUDENT -->
 
+    <div class="filter-group">
+
+        <label for="studentFilter">
+            Student
+        </label>
+
+        <select id="studentFilter">
+
+            <option value="">
+                All Students
+            </option>
+
+        </select>
 
     </div>
+
+
+    <!-- TEACHER -->
+
+    <div class="filter-group">
+
+        <label for="teacherFilter">
+            Teacher
+        </label>
+
+        <select id="teacherFilter">
+
+            <option value="">
+                All Teachers
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- VIEW -->
+
+    <button
+        class="filter-button"
+        onclick="loadRegister()"
+    >
+
+        <i class="fa fa-search"></i>
+
+        View Register
+
+    </button>
+
+
+    <!-- PDF -->
+
+    <button
+        type="button"
+        class="filter-button"
+        onclick="exportRegisterPDF()"
+        style="background:#8b5e34;"
+    >
+
+        <i class="fa fa-file-pdf"></i>
+
+        Export PDF
+
+    </button>
+
+
+</div>
 
 
     <!-- SUMMARY -->
@@ -586,6 +621,8 @@ const API_BASE =
 const token =
     localStorage.getItem("token");
 
+    let currentRegisters = [];
+
 
 /* =================================================
    AUTHENTICATION
@@ -715,30 +752,23 @@ async function loadRegister() {
     `;
 
 
-    const date =
-        document.getElementById(
-            "registerDate"
-        ).value;
-
-
+    
     const teacher =
         document.getElementById(
             "teacherFilter"
         ).value;
+
+        const student =
+    document.getElementById(
+        "studentFilter"
+    ).value;
 
 
     const params =
         new URLSearchParams();
 
 
-    if (date) {
-
-        params.append(
-            "date",
-            date
-        );
-
-    }
+   
 
 
     if (teacher) {
@@ -779,9 +809,16 @@ async function loadRegister() {
         }
 
 
-        renderRegister(
-            data.data || []
-        );
+        currentRegisters =
+    data.data || [];
+
+populateStudentFilter(
+    currentRegisters
+);
+
+renderRegister(
+    currentRegisters
+);
 
 
     } catch (error) {
@@ -813,6 +850,132 @@ async function loadRegister() {
 
 }
 
+/* =================================================
+   BUILD STUDENT FILTER
+================================================= */
+
+function populateStudentFilter(
+    registers
+) {
+
+    const select =
+        document.getElementById(
+            "studentFilter"
+        );
+
+
+    const currentValue =
+        select.value;
+
+
+    const students =
+        new Map();
+
+
+    registers.forEach(
+        register => {
+
+            const list =
+                Array.isArray(
+                    register.students
+                )
+                    ? register.students
+                    : [];
+
+
+            list.forEach(
+                student => {
+
+                    const id =
+                        student.studentId ||
+                        student.student ||
+                        "";
+
+
+                    if(!id){
+
+                        return;
+
+                    }
+
+
+                    students.set(
+                        String(id),
+                        {
+                            id:
+                                id,
+
+                            name:
+                                student.studentName ||
+                                "Student"
+                        }
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+    select.innerHTML = `
+
+        <option value="">
+
+            All Students
+
+        </option>
+
+    `;
+
+
+    Array.from(
+        students.values()
+    )
+    .sort(
+        (a,b) =>
+            a.name.localeCompare(
+                b.name
+            )
+    )
+    .forEach(
+        student => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                student.id;
+
+
+            option.textContent =
+                `${student.name} (${student.id})`;
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    if(
+        currentValue &&
+        students.has(
+            String(currentValue)
+        )
+    ){
+
+        select.value =
+            currentValue;
+
+    }
+
+}
 
 /* =================================================
    RENDER REGISTER
@@ -1179,6 +1342,31 @@ function escapeHtml(
         );
 
 }
+
+/* =================================================
+   EXPORT PDF
+================================================= */
+
+function exportRegisterPDF(){
+
+    alert(
+        "PDF export will be connected in the next step."
+    );
+
+}
+
+
+/* =================================================
+   INITIAL LOAD
+================================================= */
+
+(async function () {
+
+    await loadTeachers();
+
+    await loadRegister();
+
+})();
 
 
 /* =================================================
