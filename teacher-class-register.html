@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Daily Class Register</title>
+
+<link
+    rel="stylesheet"
+    href="dashboard.css"
+>
+
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#f5f7fb;
+    color:#1f2937;
+}
+
+/* ================= MAIN ================= */
+
+.main{
+    margin-left:250px;
+    padding:30px;
+}
+
+.topbar{
+    background:white;
+    padding:18px 24px;
+    border-radius:12px;
+    margin-bottom:25px;
+    box-shadow:0 3px 12px rgba(0,0,0,0.06);
+}
+
+.topbar h2{
+    margin:0;
+    color:#173b67;
+}
+
+/* ================= REGISTER BOX ================= */
+
+.register-card{
+    background:white;
+    border-radius:15px;
+    padding:28px;
+    max-width:900px;
+    box-shadow:0 4px 18px rgba(0,0,0,0.07);
+}
+
+.register-title{
+    font-size:22px;
+    font-weight:700;
+    color:#173b67;
+    margin-bottom:22px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+}
+
+.form-group.full{
+    grid-column:1 / -1;
+}
+
+.form-group label{
+    font-weight:600;
+    margin-bottom:8px;
+    color:#374151;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea{
+    width:100%;
+    padding:12px 14px;
+    border:1px solid #d6dbe3;
+    border-radius:8px;
+    font-size:15px;
+    outline:none;
+    background:white;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{
+    border-color:#173b67;
+}
+
+.form-group textarea{
+    min-height:100px;
+    resize:vertical;
+}
+
+/* ================= STUDENT ================= */
+
+.student-section{
+    margin-top:25px;
+    border-top:1px solid #e5e7eb;
+    padding-top:22px;
+}
+
+.student-section h3{
+    margin:0 0 15px;
+    color:#173b67;
+}
+
+.student-list{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:12px;
+}
+
+.student-item{
+    border:1px solid #e1e5eb;
+    border-radius:9px;
+    padding:12px 15px;
+    background:#fafbfc;
+}
+
+.student-name{
+    font-weight:600;
+}
+
+.student-id{
+    font-size:13px;
+    color:#6b7280;
+    margin-top:4px;
+}
+
+/* ================= ATTENDANCE ================= */
+
+.attendance-section{
+    margin-top:25px;
+}
+
+.attendance-options{
+    display:flex;
+    gap:15px;
+    margin-top:10px;
+}
+
+.attendance-option{
+    border:1px solid #d6dbe3;
+    padding:12px 22px;
+    border-radius:8px;
+    cursor:pointer;
+    background:white;
+}
+
+.attendance-option input{
+    margin-right:7px;
+}
+
+/* ================= BUTTON ================= */
+
+.save-btn{
+    margin-top:28px;
+    background:#173b67;
+    color:white;
+    border:none;
+    padding:13px 28px;
+    border-radius:8px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.save-btn:hover{
+    background:#0f2c50;
+}
+
+.save-btn:disabled{
+    background:#9ca3af;
+    cursor:not-allowed;
+}
+
+/* ================= MESSAGE ================= */
+
+.message{
+    margin-top:18px;
+    padding:12px 15px;
+    border-radius:8px;
+    display:none;
+}
+
+.message.info{
+    display:block;
+    background:#eef5ff;
+    color:#173b67;
+}
+
+.message.error{
+    display:block;
+    background:#fff1f2;
+    color:#b91c1c;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:768px){
+
+    .main{
+        margin-left:0;
+        padding:15px;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .form-group.full{
+        grid-column:auto;
+    }
+
+    .register-card{
+        padding:20px;
+    }
+
+    .attendance-options{
+        flex-direction:column;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     SIDEBAR
+     ===================================================== -->
+
+<div class="sidebar">
+
+    <h2>Academy ERP</h2>
+
+    <ul>
+
+        <li onclick="location.href='teacher-dashboard.html'">
+            <i class="fa fa-chart-line"></i>
+            Dashboard
+        </li>
+
+        <li onclick="location.href='teacher-periods.html'">
+            <i class="fa fa-book"></i>
+            My Classes
+        </li>
+
+        <li class="active">
+            <i class="fa fa-clipboard-list"></i>
+            Daily Class Register
+        </li>
+
+        <li onclick="location.href='teacher-homework-classes.html'">
+            <i class="fa fa-tasks"></i>
+            Homework
+        </li>
+
+        <li onclick="location.href='teacher-materials.html'">
+            <i class="fa fa-book-open"></i>
+            Materials
+        </li>
+
+        <li onclick="location.href='teacher-calendar.html'">
+            <i class="fa fa-calendar-alt"></i>
+            Calendar
+        </li>
+
+        <li onclick="location.href='gpa-messenger.html'">
+            <i class="fa fa-comments"></i>
+            GPA Messenger
+        </li>
+
+        <li onclick="logout()">
+            <i class="fa fa-sign-out-alt"></i>
+            Logout
+        </li>
+
+    </ul>
+
+</div>
+
+
+<!-- =====================================================
+     MAIN
+     ===================================================== -->
+
+<div class="main">
+
+
+    <div class="topbar">
+
+        <h2>
+            <i class="fa fa-clipboard-list"></i>
+            Daily Class Register
+        </h2>
+
+    </div>
+
+
+    <div class="register-card">
+
+
+        <div class="register-title">
+            Class Details
+        </div>
+
+
+        <div class="form-grid">
+
+
+            <!-- DATE -->
+
+            <div class="form-group">
+
+                <label>
+                    Date
+                </label>
+
+                <input
+                    type="date"
+                    id="classDate"
+                >
+
+            </div>
+
+
+            <!-- CLASS -->
+
+            <div class="form-group">
+
+                <label>
+                    Select Class
+                </label>
+
+                <select
+                    id="classSelect"
+                    onchange="loadSelectedClass()"
+                >
+
+                    <option value="">
+                        Select Class
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- SUBJECT -->
+
+            <div class="form-group">
+
+                <label>
+                    Subject
+                </label>
+
+                <input
+                    type="text"
+                    id="subject"
+                    readonly
+                    placeholder="Select a class"
+                >
+
+            </div>
+
+
+            <!-- GRADE -->
+
+            <div class="form-group">
+
+                <label>
+                    Grade / Class
+                </label>
+
+                <input
+                    type="text"
+                    id="grade"
+                    readonly
+                    placeholder="Select a class"
+                >
+
+            </div>
+
+
+            <!-- START TIME -->
+
+            <div class="form-group">
+
+                <label>
+                    Start Time
+                </label>
+
+                <input
+                    type="time"
+                    id="startTime"
+                >
+
+            </div>
+
+
+            <!-- END TIME -->
+
+            <div class="form-group">
+
+                <label>
+                    End Time
+                </label>
+
+                <input
+                    type="time"
+                    id="endTime"
+                >
+
+            </div>
+
+
+            <!-- TOPIC -->
+
+            <div class="form-group full">
+
+                <label>
+                    Topic Covered
+                </label>
+
+                <textarea
+                    id="topicCovered"
+                    placeholder="Enter the topic covered in today's class"
+                ></textarea>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             STUDENTS
+             ================================================= -->
+
+        <div class="student-section">
+
+            <h3>
+                Assigned Students
+            </h3>
+
+            <div
+                id="studentList"
+                class="student-list"
+            >
+
+                <div style="color:#6b7280;">
+                    Select a class to view students.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             ATTENDANCE
+             ================================================= -->
+
+        <div class="attendance-section">
+
+            <h3>
+                Attendance
+            </h3>
+
+            <div class="attendance-options">
+
+                <label class="attendance-option">
+
+                    <input
+                        type="radio"
+                        name="attendance"
+                        value="Present"
+                    >
+
+                    Present
+
+                </label>
+
+
+                <label class="attendance-option">
+
+                    <input
+                        type="radio"
+                        name="attendance"
+                        value="Absent"
+                    >
+
+                    Absent
+
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="save-btn"
+            id="saveBtn"
+            onclick="saveClassRegister()"
+        >
+
+            <i class="fa fa-save"></i>
+            Save Class
+
+        </button>
+
+
+        <div
+            id="message"
+            class="message"
+        ></div>
+
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+/* =====================================================
+   CONFIG
+   ===================================================== */
+
+const API_BASE =
+    "https://academy-backend-eatl.onrender.com";
+
+
+const token =
+    localStorage.getItem("token");
+
+
+if(!token){
+
+    window.location.href =
+        "teacher-login.html";
+
+}
+
+
+/* =====================================================
+   VARIABLES
+   ===================================================== */
+
+let classData = [];
+
+let selectedClass = null;
+
+
+/* =====================================================
+   TODAY DATE
+   ===================================================== */
+
+function setToday(){
+
+    const today =
+        new Date();
+
+    const year =
+        today.getFullYear();
+
+    const month =
+        String(
+            today.getMonth() + 1
+        ).padStart(2,"0");
+
+    const day =
+        String(
+            today.getDate()
+        ).padStart(2,"0");
+
+    document.getElementById(
+        "classDate"
+    ).value =
+        `${year}-${month}-${day}`;
+
+}
+
+
+/* =====================================================
+   LOAD TEACHER CLASSES
+   ===================================================== */
+
+async function loadClasses(){
+
+    try{
+
+        const response =
+            await fetch(
+                `${API_BASE}/api/teacher/all-period-assignments`,
+                {
+                    headers:{
+                        "Authorization":
+                            "Bearer " + token
+                    }
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if(!response.ok){
+
+            throw new Error(
+                result.message ||
+                "Unable to load classes"
+            );
+
+        }
+
+
+        classData =
+            result.data || [];
+
+
+        const select =
+            document.getElementById(
+                "classSelect"
+            );
+
+
+        select.innerHTML = `
+            <option value="">
+                Select Class
+            </option>
+        `;
+
+
+        classData.forEach(
+            (item,index)=>{
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    index;
+
+
+                option.textContent =
+                    `${item.className || "-"} | ${item.subject || "-"}`;
+
+
+                select.appendChild(
+                    option
+                );
+
+            }
+        );
+
+
+        if(classData.length === 0){
+
+            showMessage(
+                "No assigned classes found.",
+                "info"
+            );
+
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "Class loading error:",
+            error
+        );
+
+
+        showMessage(
+            "Unable to load your assigned classes.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   LOAD SELECTED CLASS
+   ===================================================== */
+
+function loadSelectedClass(){
+
+    const index =
+        document.getElementById(
+            "classSelect"
+        ).value;
+
+
+    if(index === ""){
+
+        selectedClass =
+            null;
+
+
+        document.getElementById(
+            "subject"
+        ).value = "";
+
+
+        document.getElementById(
+            "grade"
+        ).value = "";
+
+
+        document.getElementById(
+            "startTime"
+        ).value = "";
+
+
+        document.getElementById(
+            "endTime"
+        ).value = "";
+
+
+        document.getElementById(
+            "studentList"
+        ).innerHTML = `
+            <div style="color:#6b7280;">
+                Select a class to view students.
+            </div>
+        `;
+
+
+        return;
+
+    }
+
+
+    selectedClass =
+        classData[
+            Number(index)
+        ];
+
+
+    document.getElementById(
+        "subject"
+    ).value =
+        selectedClass.subject || "";
+
+
+    document.getElementById(
+        "grade"
+    ).value =
+        selectedClass.className || "";
+
+
+    document.getElementById(
+        "startTime"
+    ).value =
+        selectedClass.startTime || "";
+
+
+    document.getElementById(
+        "endTime"
+    ).value =
+        selectedClass.endTime || "";
+
+
+    renderStudents(
+        selectedClass.students || []
+    );
+
+}
+
+
+/* =====================================================
+   RENDER STUDENTS
+   ===================================================== */
+
+function renderStudents(students){
+
+    const container =
+        document.getElementById(
+            "studentList"
+        );
+
+
+    if(!students.length){
+
+        container.innerHTML = `
+            <div style="color:#6b7280;">
+                No students assigned to this class.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        students.map(
+            student => `
+
+                <div class="student-item">
+
+                    <div class="student-name">
+                        ${escapeHtml(
+                            student.name ||
+                            "-"
+                        )}
+                    </div>
+
+                    <div class="student-id">
+                        Student ID:
+                        ${escapeHtml(
+                            student.studentId ||
+                            student._id ||
+                            "-"
+                        )}
+                    </div>
+
+                </div>
+
+            `
+        ).join("");
+
+}
+
+
+/* =====================================================
+   SAVE
+   ===================================================== */
+
+async function saveClassRegister(){
+
+    /*
+       BACKEND SAVE WILL BE CONNECTED
+       IN THE NEXT STEP.
+
+       For now we validate all required
+       information before connecting the API.
+    */
+
+
+    if(!selectedClass){
+
+        showMessage(
+            "Please select a class.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const date =
+        document.getElementById(
+            "classDate"
+        ).value;
+
+
+    const startTime =
+        document.getElementById(
+            "startTime"
+        ).value;
+
+
+    const endTime =
+        document.getElementById(
+            "endTime"
+        ).value;
+
+
+    const topic =
+        document.getElementById(
+            "topicCovered"
+        ).value.trim();
+
+
+    const attendance =
+        document.querySelector(
+            'input[name="attendance"]:checked'
+        );
+
+
+    if(!date){
+
+        showMessage(
+            "Please select the class date.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(!startTime || !endTime){
+
+        showMessage(
+            "Please enter the start and end time.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(!topic){
+
+        showMessage(
+            "Please enter the topic covered.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(!attendance){
+
+        showMessage(
+            "Please select attendance.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    showMessage(
+        "Class details are ready. Database saving will be connected in the next step.",
+        "info"
+    );
+
+}
+
+
+/* =====================================================
+   MESSAGE
+   ===================================================== */
+
+function showMessage(
+    text,
+    type
+){
+
+    const box =
+        document.getElementById(
+            "message"
+        );
+
+
+    box.textContent =
+        text;
+
+
+    box.className =
+        "message " + type;
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+   ===================================================== */
+
+function escapeHtml(value){
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =====================================================
+   LOGOUT
+   ===================================================== */
+
+function logout(){
+
+    localStorage.removeItem(
+        "token"
+    );
+
+    window.location.href =
+        "teacher-login.html";
+
+}
+
+
+/* =====================================================
+   START
+   ===================================================== */
+
+setToday();
+
+loadClasses();
+
+
+</script>
+
+</body>
+
+</html>
