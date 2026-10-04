@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Founder - Teacher Details</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#172b4d}
+#sidebar-container{position:fixed;left:0;top:0;width:200px;height:100vh;z-index:10}
+.main-content{margin-left:200px;padding:25px;min-height:100vh;box-sizing:border-box}
+.page-head{background:white;border-radius:12px;padding:20px 24px;margin-bottom:18px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.page-head h1{margin:0;color:#174f9c;font-size:24px}
+.page-head p{margin:7px 0 0;color:#667085;font-size:13px}
+.back-btn{display:inline-block;margin-bottom:15px;padding:9px 14px;background:#174f9c;color:#fff;text-decoration:none;border-radius:7px;font-size:13px}
+.card{background:white;border-radius:12px;padding:20px;margin-bottom:18px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.card h2{margin:0 0 15px;color:#174f9c;font-size:18px;border-bottom:1px solid #e7ebf0;padding-bottom:10px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.item{border:1px solid #e5e7eb;border-radius:8px;padding:12px;background:#fafbfc}
+.label{font-size:11px;color:#667085;text-transform:uppercase;margin-bottom:5px}
+.value{font-size:14px;font-weight:600;color:#1d2939;word-break:break-word}
+.tags{display:flex;flex-wrap:wrap;gap:7px}
+.tag{background:#eef4ff;color:#174f9c;border-radius:20px;padding:5px 10px;font-size:12px}
+.loading,.error{padding:30px;text-align:center;color:#667085}
+.error{color:#b42318}
+.call-btn{display:inline-block;margin-right:8px;margin-top:5px;padding:7px 10px;border-radius:6px;text-decoration:none;background:#087f5b;color:white;font-size:12px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){#sidebar-container{position:relative;width:100%;height:auto}.main-content{margin-left:0}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="sidebar-container"></div>
+<script>
+fetch("sidebar.html").then(r=>r.text()).then(data=>{
+  document.getElementById("sidebar-container").innerHTML=data;
+  if(typeof highlightMenu==="function") highlightMenu();
+});
+</script>
+
+<main class="main-content">
+<a class="back-btn" href="founder-student-homework-tracking.html"><i class="fa fa-arrow-left"></i> Back to Homework Tracking</a>
+<div class="page-head">
+<h1><i class="fa fa-chalkboard-teacher"></i> Teacher Details</h1>
+<p>Read-only teacher information from the existing Founder teacher data.</p>
+</div>
+<div id="content" class="loading">Loading teacher details...</div>
+</main>
+
+<script>
+const API = "https://academy-backend-eatl.onrender.com/api";
+const token = localStorage.getItem("token");
+const id = new URLSearchParams(window.location.search).get("teacherId");
+
+function esc(v) {
+  return String(v ?? "-").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+}
+function arr(v) { return Array.isArray(v) ? v : (v ? [v] : []); }
+function tags(v) {
+  const a=arr(v);
+  return a.length ? '<div class="tags">'+a.map(x=>'<span class="tag">'+esc(x)+'</span>').join("")+'</div>' : '<span class="value">-</span>';
+}
+function item(label,value) {
+  return '<div class="item"><div class="label">'+label+'</div><div class="value">'+value+'</div></div>';
+}
+function callButtons(mobile,whatsapp) {
+  let h="";
+  if(mobile) h+='<a class="call-btn" href="tel:'+encodeURIComponent(mobile)+'"><i class="fa fa-phone"></i> Call</a>';
+  if(whatsapp) h+='<a class="call-btn" href="https://wa.me/'+String(whatsapp).replace(/[^0-9]/g,"")+'" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>';
+  return h || '<span class="value">-</span>';
+}
+
+async function load() {
+  if(!id) throw new Error("Teacher ID is missing.");
+  const res=await fetch(API+"/founder/teacher/"+encodeURIComponent(id),{headers: token ? {"Authorization":"Bearer "+token} : {}});
+  if(!res.ok) throw new Error("Unable to load teacher data (HTTP "+res.status+").");
+  const data=await res.json();
+  const t=data.teacher;
+  if(!t) throw new Error("Teacher not found.");
+  document.getElementById("content").innerHTML=
+    '<section class="card"><h2>Basic Information</h2><div class="grid">'+
+    item("Teacher ID",esc(t._id))+
+    item("Name",esc(t.name))+
+    item("Email",esc(t.email || t.loginEmail))+
+    item("Mobile / Contact",callButtons(t.mobile,t.whatsapp))+
+    item("Experience",t.experience ? esc(t.experience)+" yrs" : "-")+
+    item("Attendance Days",esc(t.attendanceDays ?? 0))+
+    '</div></section>'+
+    '<section class="card"><h2>Teaching Information</h2><div class="grid">'+
+    item("Subjects",tags(t.subject))+
+    item("ECA",tags(t.eca))+
+    item("Language",tags(t.language))+
+    item("Assigned Classes",t.assignedClasses?.length ?? 0)+
+    item("Assigned Students",t.assignedStudents?.length ?? 0)+
+    '</div></section>'+
+    '<section class="card"><h2>Compensation Information</h2><div class="grid">'+
+    item("Salary / Month",t.salaryMonth != null ? "₹ "+esc(t.salaryMonth) : "-")+
+    item("Sessions / Week",esc(t.sessionsWeek ?? "-"))+
+    item("Salary / Session",t.salarySession != null ? "₹ "+esc(t.salarySession) : "-")+
+    '</div></section>'+
+    '<section class="card"><h2>Account Information</h2><div class="grid">'+
+    item("Login Email",esc(t.loginEmail || t.email))+
+    item("Created",t.createdAt ? esc(new Date(t.createdAt).toLocaleString("en-IN")) : "-")+
+    item("Last Updated",t.updatedAt ? esc(new Date(t.updatedAt).toLocaleString("en-IN")) : "-")+
+    '</div></section>';
+}
+load().catch(e=>document.getElementById("content").innerHTML='<div class="error">'+esc(e.message)+'</div>');
+</script>
+</body>
+</html>
