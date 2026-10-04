@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>GPA Messenger</title>
+
+</head>
+
+
+<body>
+
+    <!-- =====================================================
+         GPA MESSENGER
+         Main Messenger Entry Page
+         ===================================================== -->
+
+    <div id="messengerApp">
+
+        <h1>GPA Messenger</h1>
+
+        <p id="messengerStatus">
+            Starting Messenger...
+        </p>
+
+    </div>
+
+
+    <!-- =====================================================
+         SOCKET.IO CLIENT
+         ===================================================== -->
+
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
+
+    <!-- =====================================================
+         GPA MESSENGER SOCKET CLIENT
+         Must load BEFORE messengerCore.js
+         ===================================================== -->
+
+    <script src="messengerSocketClient.js"></script>
+
+
+    <!-- =====================================================
+         GPA MESSENGER CORE / HEART
+         ===================================================== -->
+
+    <script src="messengerCore.js"></script>
+
+
+    <!-- =====================================================
+         START GPA MESSENGER
+         ===================================================== -->
+
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                console.log(
+                    "GPA Messenger page loaded."
+                );
+
+
+                // ------------------------------------------------
+                // Start Messenger Core
+                // ------------------------------------------------
+
+                if (
+                    typeof GPAMessengerCore !== "undefined"
+                ) {
+
+                    GPAMessengerCore.initialize();
+
+
+                    const status =
+                        document.getElementById(
+                            "messengerStatus"
+                        );
+
+
+                    if (
+                        GPAMessengerCore.isInitialized()
+                    ) {
+
+                        status.textContent =
+                            "Messenger Core initialized.";
+
+                    }
+
+                } else {
+
+                    console.error(
+                        "GPA Messenger Core not found."
+                    );
+
+                }
+
+            }
+        );
+
+    </script>
+
+
+</body>
+
+</html>
