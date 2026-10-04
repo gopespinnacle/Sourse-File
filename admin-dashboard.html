@@ -410,34 +410,7 @@
     <div class="admin-cards">
 
 
-        <!-- GPA MESSENGER -->
-
-        <div
-            class="admin-card"
-            onclick="openMessenger()"
-        >
-
-            <div class="admin-card-icon">
-
-                <i class="fa-solid fa-comments"></i>
-
-            </div>
-
-
-            <h2>
-                GPA Messenger
-            </h2>
-
-
-            <p>
-                Chat with Teachers and Students
-                and use voice calling.
-            </p>
-
-        </div>
-
-
-
+        
         <!-- MY PROFILE -->
 
         <div
@@ -493,86 +466,6 @@ if(!token || role !== "admin"){
 }
 
 
-/* =========================================================
-   LOAD ADMIN INFORMATION
-========================================================= */
-
-async function loadAdminProfile(){
-
-    try{
-
-        const response =
-            await fetch(
-                "https://academy-backend-eatl.onrender.com/api/messenger/me",
-                {
-                    headers:{
-                        "Authorization":
-                            "Bearer " + token
-                    }
-                }
-            );
-
-
-        if(!response.ok){
-
-            return;
-
-        }
-
-
-        const data =
-            await response.json();
-
-
-        console.log(
-            "ADMIN PROFILE:",
-            data
-        );
-
-
-        /*
-         * The Messenger /me response contains
-         * the authenticated user information.
-         *
-         * We only use the name here.
-         */
-
-        if(data.user){
-
-            document.getElementById(
-                "adminName"
-            ).innerText =
-                data.user.name ||
-                "Admin";
-
-        }
-
-    }
-    catch(error){
-
-        console.log(
-            "ADMIN PROFILE ERROR:",
-            error
-        );
-
-    }
-
-}
-
-
-loadAdminProfile();
-
-
-/* =========================================================
-   GPA MESSENGER
-========================================================= */
-
-function openMessenger(){
-
-    window.location.href =
-        "gpa-messenger.html";
-
-}
 
 
 /* =========================================================

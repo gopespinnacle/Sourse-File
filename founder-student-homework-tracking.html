@@ -1,0 +1,2650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Student Homework Tracking</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+/* =========================================================
+   FOUNDER STUDENT HOMEWORK TRACKING
+   READ ONLY
+   DOES NOT CHANGE EXISTING HOMEWORK FLOW
+========================================================= */
+
+.tracking-page{
+    padding:25px;
+}
+
+.page-title{
+    margin:0 0 5px;
+    color:#123a7a;
+}
+
+.page-subtitle{
+    margin:0 0 20px;
+    color:#666;
+}
+
+/* ================= FILTERS ================= */
+
+.filters-card{
+    background:#fff;
+    border-radius:12px;
+    padding:18px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    margin-bottom:18px;
+}
+
+.filter-grid{
+    display:grid;
+    grid-template-columns:
+        repeat(auto-fit,minmax(160px,1fr));
+    gap:12px;
+    align-items:end;
+}
+
+.filter-item label{
+    display:block;
+    font-weight:700;
+    font-size:13px;
+    margin-bottom:6px;
+}
+
+.filter-item input,
+.filter-item select{
+    width:100%;
+    box-sizing:border-box;
+    padding:9px 10px;
+    border:1px solid #ccc;
+    border-radius:7px;
+    background:#fff;
+}
+
+.filter-actions{
+    display:flex;
+    gap:8px;
+}
+
+.filter-btn{
+    border:0;
+    border-radius:7px;
+    padding:10px 14px;
+    cursor:pointer;
+    font-weight:700;
+}
+
+.apply-btn{
+    background:#174ea6;
+    color:#fff;
+}
+
+.clear-btn{
+    background:#eee;
+    color:#333;
+}
+
+/* ================= SUMMARY ================= */
+
+.summary-grid{
+    display:grid;
+    grid-template-columns:
+        repeat(5,minmax(120px,1fr));
+
+    gap:12px;
+    margin-bottom:18px;
+}
+
+.summary-card{
+    background:#fff;
+    border-radius:10px;
+    padding:14px;
+    box-shadow:0 2px 8px rgba(0,0,0,.07);
+}
+
+.summary-card .number{
+    font-size:25px;
+    font-weight:800;
+    color:#174ea6;
+}
+
+.summary-card .label{
+    font-size:12px;
+    color:#666;
+    margin-top:3px;
+}
+
+/* ================= TABLE ================= */
+
+.table-card{
+    background:#fff;
+    border-radius:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    overflow:hidden;
+}
+
+.table-scroll{
+    overflow-x:auto;
+}
+
+#trackingTable{
+    width:100%;
+    border-collapse:collapse;
+    min-width:1500px;
+}
+
+#trackingTable th{
+    background:#174ea6;
+    color:#fff;
+    padding:11px 9px;
+    font-size:12px;
+    text-align:left;
+    white-space:nowrap;
+}
+
+#trackingTable td{
+    padding:10px 9px;
+    border-bottom:1px solid #e8e8e8;
+    font-size:13px;
+    vertical-align:top;
+}
+
+#trackingTable tbody tr:hover{
+    background:#f7faff;
+}
+
+/* ================= PERSON LINKS ================= */
+
+.person-link{
+    color:#174ea6;
+    font-weight:700;
+    cursor:pointer;
+    text-decoration:none;
+}
+
+.person-link:hover{
+    text-decoration:underline;
+}
+
+/* ================= SMALL TEXT ================= */
+
+.meta{
+    font-size:11px;
+    color:#777;
+    margin-top:3px;
+}
+
+.time-box{
+    font-size:11px;
+    line-height:1.5;
+}
+
+/* ================= STATUS ================= */
+
+.status-pill{
+    display:inline-block;
+    padding:4px 8px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:800;
+    white-space:nowrap;
+}
+
+.pending{
+    background:#fff3cd;
+    color:#856404;
+}
+
+.submitted{
+    background:#dbeafe;
+    color:#1d4ed8;
+}
+
+.reviewed{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.not-yet{
+    background:#f1f1f1;
+    color:#666;
+}
+
+.available{
+    background:#e0e7ff;
+    color:#3730a3;
+}
+
+/* ================= DOCUMENT ================= */
+
+.doc-link{
+    display:inline-block;
+    margin:2px 0;
+    padding:4px 7px;
+    border-radius:6px;
+    background:#f0f5ff;
+    color:#174ea6;
+    text-decoration:none;
+    font-size:11px;
+    font-weight:700;
+}
+
+.doc-link:hover{
+    background:#dce8ff;
+}
+
+/* ================= CONTACT ================= */
+
+.call-btn{
+    display:inline-block;
+    margin:2px 0;
+    padding:5px 8px;
+    border-radius:6px;
+    background:#198754;
+    color:#fff;
+    text-decoration:none;
+    font-size:11px;
+    font-weight:700;
+}
+
+/* ================= STATES ================= */
+
+.empty-state{
+    text-align:center;
+    padding:40px 15px;
+    color:#777;
+}
+
+.loading{
+    text-align:center;
+    padding:45px;
+    font-weight:700;
+    color:#174ea6;
+}
+
+.error-box{
+    margin:15px;
+    padding:14px;
+    border-radius:8px;
+    background:#fff0f0;
+    color:#a40000;
+}
+
+/* ================= TOP ================= */
+
+.top-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+    margin-bottom:10px;
+}
+
+.refresh-btn{
+    border:0;
+    background:#174ea6;
+    color:#fff;
+    border-radius:7px;
+    padding:9px 14px;
+    cursor:pointer;
+    font-weight:700;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:800px){
+
+    .tracking-page{
+        padding:14px;
+    }
+
+    .summary-grid{
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+
+}
+
+</style>
+
+</head>
+
+<body class="dashboard-page">
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<div id="sidebar-container"></div>
+
+<script>
+
+fetch("sidebar.html")
+
+.then(res => res.text())
+
+.then(data => {
+
+    document.getElementById(
+        "sidebar-container"
+    ).innerHTML = data;
+
+})
+
+.catch(err => {
+
+    console.log(
+        "Sidebar load error:",
+        err
+    );
+
+});
+
+</script>
+
+
+<!-- =====================================================
+     MAIN CONTENT
+===================================================== -->
+
+<div class="main-content">
+
+<div class="tracking-page">
+
+
+<!-- =====================================================
+     TITLE
+===================================================== -->
+
+<div class="top-bar">
+
+<div>
+
+<h2 class="page-title">
+Student Homework Tracking
+</h2>
+
+<p class="page-subtitle">
+
+Founder read-only view of homework
+assignment, submission and teacher
+review progress.
+
+</p>
+
+</div>
+
+
+<button
+    class="refresh-btn"
+    onclick="loadTracking()"
+>
+
+↻ Refresh
+
+</button>
+
+</div>
+
+
+<!-- =====================================================
+     FILTERS
+===================================================== -->
+
+<div class="filters-card">
+
+<div class="filter-grid">
+
+
+<!-- FROM DATE -->
+
+<div class="filter-item">
+
+<label>
+From Date
+</label>
+
+<input
+    type="date"
+    id="fromDate"
+>
+
+</div>
+
+
+<!-- TO DATE -->
+
+<div class="filter-item">
+
+<label>
+To Date
+</label>
+
+<input
+    type="date"
+    id="toDate"
+>
+
+</div>
+
+
+<!-- TEACHER -->
+
+<div class="filter-item">
+
+<label>
+Teacher
+</label>
+
+<select id="teacherFilter">
+
+<option value="">
+All Teachers
+</option>
+
+</select>
+
+</div>
+
+
+<!-- STUDENT -->
+
+<div class="filter-item">
+
+<label>
+Student
+</label>
+
+<select id="studentFilter">
+
+<option value="">
+All Students
+</option>
+
+</select>
+
+</div>
+
+
+<!-- SUBJECT -->
+
+<div class="filter-item">
+
+<label>
+Subject
+</label>
+
+<select id="subjectFilter">
+
+<option value="">
+All Subjects
+</option>
+
+</select>
+
+</div>
+
+
+<!-- STATUS -->
+
+<div class="filter-item">
+
+<label>
+Status
+</label>
+
+<select id="statusFilter">
+
+<option value="">
+All Status
+</option>
+
+<option value="Pending">
+Pending
+</option>
+
+<option value="Submitted">
+Submitted
+</option>
+
+<option value="Reviewed">
+Reviewed
+</option>
+
+</select>
+
+</div>
+
+
+<!-- SEARCH -->
+
+<div class="filter-item">
+
+<label>
+Search
+</label>
+
+<input
+    type="text"
+    id="searchFilter"
+    placeholder="Student / Teacher / Topic"
+>
+
+</div>
+
+
+<!-- BUTTONS -->
+
+<div class="filter-actions">
+
+<button
+    class="filter-btn apply-btn"
+    onclick="applyFilters()"
+>
+
+Apply
+
+</button>
+
+
+<button
+    class="filter-btn clear-btn"
+    onclick="clearFilters()"
+>
+
+Clear
+
+</button>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     SUMMARY CARDS
+===================================================== -->
+
+<div class="summary-grid">
+
+
+<div class="summary-card">
+
+<div
+    class="number"
+    id="totalCount"
+>
+0
+</div>
+
+<div class="label">
+Total Homework
+</div>
+
+</div>
+
+
+<div class="summary-card">
+
+<div
+    class="number"
+    id="pendingCount"
+>
+0
+</div>
+
+<div class="label">
+Pending
+</div>
+
+</div>
+
+
+<div class="summary-card">
+
+<div
+    class="number"
+    id="submittedCount"
+>
+0
+</div>
+
+<div class="label">
+Submitted
+</div>
+
+</div>
+
+
+<div class="summary-card">
+
+<div
+    class="number"
+    id="reviewedCount"
+>
+0
+</div>
+
+<div class="label">
+Reviewed
+</div>
+
+</div>
+
+
+<div class="summary-card">
+
+<div
+    class="number"
+    id="reviewAvailableCount"
+>
+0
+</div>
+
+<div class="label">
+Review Available
+</div>
+
+</div>
+
+
+</div>
+
+
+<!-- =====================================================
+     TABLE
+===================================================== -->
+
+<div class="table-card">
+
+
+<div
+    id="loadingBox"
+    class="loading"
+>
+
+Loading homework tracking...
+
+</div>
+
+
+<div
+    id="errorBox"
+    class="error-box"
+    style="display:none;"
+>
+</div>
+
+
+<div class="table-scroll">
+
+
+<table
+    id="trackingTable"
+    style="display:none;"
+>
+
+
+<thead>
+
+<tr>
+
+<th>Date</th>
+
+<th>Teacher</th>
+
+<th>Student</th>
+
+<th>Subject</th>
+
+<th>Topic / Homework</th>
+
+<th>Homework Document</th>
+
+<th>Student Received</th>
+
+<th>Student Submitted</th>
+
+<th>Teacher Reviewed</th>
+
+<th>Student Received Review</th>
+
+<th>Contact</th>
+
+</tr>
+
+</thead>
+
+
+<tbody
+    id="trackingBody"
+>
+</tbody>
+
+
+</table>
+
+
+</div>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+const API =
+    "https://academy-backend-eatl.onrender.com/api";
+
+
+let allRows = [];
+
+let students = [];
+
+let teachers = [];
+
+
+/* =====================================================
+   SECURITY
+===================================================== */
+
+function escapeHtml(value){
+
+    return String(value ?? "")
+
+        .replace(/&/g,"&amp;")
+
+        .replace(/</g,"&lt;")
+
+        .replace(/>/g,"&gt;")
+
+        .replace(/"/g,"&quot;")
+
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =====================================================
+   DATE
+===================================================== */
+
+function formatDateTime(value){
+
+    if(!value){
+
+        return "-";
+
+    }
+
+    const d =
+        new Date(value);
+
+    if(
+        Number.isNaN(
+            d.getTime()
+        )
+    ){
+
+        return value;
+
+    }
+
+    return d.toLocaleString(
+        "en-IN",
+        {
+            day:"2-digit",
+            month:"short",
+            year:"numeric",
+            hour:"2-digit",
+            minute:"2-digit"
+        }
+    );
+
+}
+
+
+function normaliseDate(value){
+
+    if(!value){
+
+        return "";
+
+    }
+
+    const d =
+        new Date(value);
+
+    if(
+        Number.isNaN(
+            d.getTime()
+        )
+    ){
+
+        return String(value)
+            .slice(0,10);
+
+    }
+
+    return d
+        .toISOString()
+        .slice(0,10);
+
+}
+
+
+/* =====================================================
+   FIND TEACHER
+===================================================== */
+
+function findTeacherByName(name){
+
+    return teachers.find(
+
+        t =>
+
+        String(
+            t.name || ""
+        )
+        .trim()
+        .toLowerCase()
+
+        ===
+
+        String(
+            name || ""
+        )
+        .trim()
+        .toLowerCase()
+
+    );
+
+}
+
+
+/* =====================================================
+   FETCH API
+===================================================== */
+
+async function fetchJson(url){
+
+    const token =
+        localStorage.getItem(
+            "token"
+        );
+
+    const headers = {};
+
+
+    if(token){
+
+        headers[
+            "Authorization"
+        ] =
+            "Bearer " + token;
+
+    }
+
+
+    const res =
+        await fetch(
+            url,
+            {
+                headers
+            }
+        );
+
+
+    if(!res.ok){
+
+        throw new Error(
+            "HTTP " + res.status
+        );
+
+    }
+
+
+    return await res.json();
+
+}
+
+
+/* =====================================================
+   LOAD STUDENTS + TEACHERS
+===================================================== */
+
+async function loadPeople(){
+
+    const [
+
+        studentResult,
+
+        teacherResult
+
+    ] = await Promise.all([
+
+        fetchJson(
+            API +
+            "/founder/students"
+        ),
+
+        fetchJson(
+            API +
+            "/founder/teachers"
+        )
+
+    ]);
+
+
+    students =
+        studentResult.students || [];
+
+
+    teachers =
+        teacherResult.teachers || [];
+
+
+    /* STUDENT FILTER */
+
+    const studentSelect =
+        document.getElementById(
+            "studentFilter"
+        );
+
+
+    studentSelect.innerHTML =
+        '<option value="">All Students</option>';
+
+
+    [...students]
+
+        .sort(
+            (a,b) =>
+
+            String(
+                a.name || ""
+            )
+            .localeCompare(
+                String(
+                    b.name || ""
+                )
+            )
+        )
+
+        .forEach(student => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                student._id;
+
+
+            option.textContent =
+
+                (
+                    student.studentId
+
+                    ? student.studentId +
+                      " - "
+
+                    : ""
+                )
+
+                +
+
+                (
+                    student.name ||
+                    "Unnamed Student"
+                );
+
+
+            studentSelect.appendChild(
+                option
+            );
+
+        });
+
+
+    /* TEACHER FILTER */
+
+    const teacherSelect =
+        document.getElementById(
+            "teacherFilter"
+        );
+
+
+    teacherSelect.innerHTML =
+        '<option value="">All Teachers</option>';
+
+
+    [...teachers]
+
+        .sort(
+            (a,b) =>
+
+            String(
+                a.name || ""
+            )
+            .localeCompare(
+                String(
+                    b.name || ""
+                )
+            )
+        )
+
+        .forEach(teacher => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                teacher._id;
+
+
+            option.textContent =
+                teacher.name ||
+                "Unnamed Teacher";
+
+
+            teacherSelect.appendChild(
+                option
+            );
+
+        });
+
+}
+
+
+/* =====================================================
+   GET HOMEWORK FOR ONE STUDENT
+
+   IMPORTANT:
+   Existing API is being used.
+
+   NO existing homework flow is modified.
+===================================================== */
+
+async function fetchStudentHomework(student){
+
+    try{
+
+        const result =
+
+            await fetchJson(
+
+                API +
+
+                "/student-homework/" +
+
+                encodeURIComponent(
+                    student._id
+                )
+
+            );
+
+
+        if(!result.success){
+
+            return [];
+
+        }
+
+
+        return (
+
+            result.data || []
+
+        ).map(hw => {
+
+
+            const plan =
+                hw.lessonPlan || {};
+
+
+            const lesson =
+
+                (
+                    plan.lessons || []
+                )
+
+                .find(
+
+                    item =>
+
+                    String(
+                        item.topicId
+                    )
+
+                    ===
+
+                    String(
+                        hw.topicId
+                    )
+
+                );
+
+
+            return {
+
+                homeworkId:
+                    hw._id,
+
+
+                studentId:
+                    student._id,
+
+
+                studentName:
+                    student.name ||
+                    "-",
+
+
+                studentCode:
+                    student.studentId ||
+                    "-",
+
+
+                studentMobile:
+                    student.mobile ||
+                    "",
+
+
+                teacherId:
+                    plan.teacherId ||
+                    "",
+
+
+                teacherName:
+                    plan.teacherName ||
+                    "-",
+
+
+                date:
+                    plan.date ||
+                    normaliseDate(
+                        hw.createdAt
+                    ),
+
+
+                subject:
+                    plan.subject ||
+                    "-",
+
+
+                className:
+                    plan.className ||
+                    "-",
+
+
+                topic:
+                    lesson?.topic ||
+                    "-",
+
+
+                homeworkText:
+                    lesson?.homework ||
+                    "-",
+
+
+                homeworkDocuments:
+                    lesson?.homeworkDocuments ||
+                    [],
+
+
+                submittedFiles:
+                    hw.submittedFiles ||
+                    [],
+
+
+                reviewFiles:
+                    hw.reviewFiles ||
+                    [],
+
+
+                status:
+                    hw.status ||
+                    "Pending",
+
+
+                submittedAt:
+                    hw.submittedAt ||
+                    null,
+
+
+                reviewedAt:
+                    hw.reviewedAt ||
+                    null,
+
+
+                /*
+                  There is currently no separate field
+                  for "student opened/read review".
+
+                  Therefore we only show whether review
+                  files are available.
+                */
+
+                reviewAvailable:
+
+                    Array.isArray(
+                        hw.reviewFiles
+                    )
+
+                    &&
+
+                    hw.reviewFiles.length > 0
+
+            };
+
+        });
+
+
+    }
+
+    catch(err){
+
+        console.log(
+            "Homework load failed for:",
+            student.name,
+            err
+        );
+
+
+        return [];
+
+    }
+
+}
+
+
+/* =====================================================
+   LOAD EVERYTHING
+===================================================== */
+
+async function loadTracking(){
+
+    const loading =
+        document.getElementById(
+            "loadingBox"
+        );
+
+
+    const error =
+        document.getElementById(
+            "errorBox"
+        );
+
+
+    const table =
+        document.getElementById(
+            "trackingTable"
+        );
+
+
+    loading.style.display =
+        "block";
+
+
+    table.style.display =
+        "none";
+
+
+    error.style.display =
+        "none";
+
+
+    try{
+
+
+        await loadPeople();
+
+
+        allRows = [];
+
+
+        /*
+          Only 6 students are requested at
+          one time to avoid overloading
+          the existing backend.
+        */
+
+        const batchSize = 6;
+
+
+        for(
+
+            let i = 0;
+
+            i < students.length;
+
+            i += batchSize
+
+        ){
+
+            const batch =
+                students.slice(
+                    i,
+                    i + batchSize
+                );
+
+
+            const results =
+
+                await Promise.all(
+
+                    batch.map(
+                        fetchStudentHomework
+                    )
+
+                );
+
+
+            results.forEach(
+                rows => {
+
+                    allRows.push(
+                        ...rows
+                    );
+
+                }
+            );
+
+        }
+
+
+        buildSubjectFilter();
+
+
+        renderRows();
+
+
+        loading.style.display =
+            "none";
+
+
+        table.style.display =
+            "table";
+
+
+    }
+
+    catch(err){
+
+        console.error(
+            "STUDENT HOMEWORK TRACKING ERROR:",
+            err
+        );
+
+
+        loading.style.display =
+            "none";
+
+
+        error.style.display =
+            "block";
+
+
+        error.innerText =
+
+            "Unable to load homework tracking. Please check the Founder login/session and try again.";
+
+    }
+
+}
+
+
+/* =====================================================
+   SUBJECT FILTER
+===================================================== */
+
+function buildSubjectFilter(){
+
+    const select =
+        document.getElementById(
+            "subjectFilter"
+        );
+
+
+    const current =
+        select.value;
+
+
+    const subjects =
+
+        [
+
+            ...new Set(
+
+                allRows
+
+                    .map(
+                        row =>
+                        row.subject
+                    )
+
+                    .filter(Boolean)
+
+            )
+
+        ]
+
+        .sort(
+            (a,b) =>
+
+            String(a)
+                .localeCompare(
+                    String(b)
+                )
+        );
+
+
+    select.innerHTML =
+        '<option value="">All Subjects</option>';
+
+
+    subjects.forEach(
+        subject => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                subject;
+
+
+            option.textContent =
+                subject;
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    select.value =
+        current;
+
+}
+
+
+/* =====================================================
+   FILTER
+===================================================== */
+
+function getFilteredRows(){
+
+    const fromDate =
+        document.getElementById(
+            "fromDate"
+        ).value;
+
+
+    const toDate =
+        document.getElementById(
+            "toDate"
+        ).value;
+
+
+    const teacherId =
+        document.getElementById(
+            "teacherFilter"
+        ).value;
+
+
+    const studentId =
+        document.getElementById(
+            "studentFilter"
+        ).value;
+
+
+    const subject =
+        document.getElementById(
+            "subjectFilter"
+        ).value;
+
+
+    const status =
+        document.getElementById(
+            "statusFilter"
+        ).value;
+
+
+    const search =
+
+        document.getElementById(
+            "searchFilter"
+        )
+
+        .value
+        .trim()
+        .toLowerCase();
+
+
+    return allRows.filter(row => {
+
+
+        const rowDate =
+            normaliseDate(
+                row.date
+            );
+
+
+        if(
+            fromDate &&
+            rowDate < fromDate
+        ){
+
+            return false;
+
+        }
+
+
+        if(
+            toDate &&
+            rowDate > toDate
+        ){
+
+            return false;
+
+        }
+
+
+        /* TEACHER */
+
+        if(
+
+            teacherId &&
+
+            String(
+                row.teacherId
+            )
+
+            !==
+
+            String(
+                teacherId
+            )
+
+        ){
+
+            const selectedTeacher =
+
+                teachers.find(
+
+                    t =>
+
+                    String(t._id)
+                    ===
+                    String(teacherId)
+
+                );
+
+
+            if(
+
+                !selectedTeacher ||
+
+                String(
+                    row.teacherName
+                )
+                .trim()
+                .toLowerCase()
+
+                !==
+
+                String(
+                    selectedTeacher.name
+                )
+                .trim()
+                .toLowerCase()
+
+            ){
+
+                return false;
+
+            }
+
+        }
+
+
+        /* STUDENT */
+
+        if(
+
+            studentId &&
+
+            String(
+                row.studentId
+            )
+
+            !==
+
+            String(
+                studentId
+            )
+
+        ){
+
+            return false;
+
+        }
+
+
+        /* SUBJECT */
+
+        if(
+
+            subject &&
+
+            row.subject !==
+            subject
+
+        ){
+
+            return false;
+
+        }
+
+
+        /* STATUS */
+
+        if(
+
+            status &&
+
+            row.status !==
+            status
+
+        ){
+
+            return false;
+
+        }
+
+
+        /* SEARCH */
+
+        if(search){
+
+            const haystack = [
+
+                row.studentName,
+
+                row.studentCode,
+
+                row.teacherName,
+
+                row.subject,
+
+                row.topic,
+
+                row.homeworkText,
+
+                row.className
+
+            ]
+
+            .join(" ")
+
+            .toLowerCase();
+
+
+            if(
+                !haystack.includes(
+                    search
+                )
+            ){
+
+                return false;
+
+            }
+
+        }
+
+
+        return true;
+
+    });
+
+}
+
+
+/* =====================================================
+   HOMEWORK DOCUMENTS
+===================================================== */
+
+function renderDocuments(files){
+
+    if(
+
+        !Array.isArray(files) ||
+
+        !files.length
+
+    ){
+
+        return "-";
+
+    }
+
+
+    return files
+
+        .map(file => {
+
+
+            if(
+                !file ||
+                !file.s3Url
+            ){
+
+                return "";
+
+            }
+
+
+            return `
+
+                <a
+
+                    class="doc-link"
+
+                    href="${escapeHtml(
+                        file.s3Url
+                    )}"
+
+                    target="_blank"
+
+                    rel="noopener"
+
+                >
+
+                    📄
+
+                    ${escapeHtml(
+                        file.fileName ||
+                        "View"
+                    )}
+
+                </a>
+
+            `;
+
+        })
+
+        .join("<br>");
+
+}
+
+
+/* =====================================================
+   SUBMISSION STATUS
+===================================================== */
+
+function renderSubmitted(row){
+
+    if(
+
+        !row.submittedAt &&
+
+        !row.submittedFiles.length
+
+    ){
+
+        return `
+
+            <span class="status-pill not-yet">
+
+                Not Submitted
+
+            </span>
+
+        `;
+
+    }
+
+
+    return `
+
+        <span class="status-pill submitted">
+
+            Submitted
+
+        </span>
+
+
+        <div class="time-box">
+
+            ${formatDateTime(
+                row.submittedAt
+            )}
+
+        </div>
+
+
+        ${
+            row.submittedFiles.length
+
+            ?
+
+            `<div class="meta">
+
+                ${
+                    row.submittedFiles.length
+                }
+
+                file(s)
+
+            </div>`
+
+            :
+
+            ""
+
+        }
+
+    `;
+
+}
+
+
+/* =====================================================
+   REVIEW STATUS
+===================================================== */
+
+function renderReviewed(row){
+
+    if(
+
+        row.reviewedAt ||
+
+        row.reviewFiles.length
+
+    ){
+
+        return `
+
+            <span class="status-pill reviewed">
+
+                Reviewed
+
+            </span>
+
+
+            <div class="time-box">
+
+                ${formatDateTime(
+                    row.reviewedAt
+                )}
+
+            </div>
+
+
+            ${
+                row.reviewFiles.length
+
+                ?
+
+                `<div class="meta">
+
+                    ${
+                        row.reviewFiles.length
+                    }
+
+                    review file(s)
+
+                </div>`
+
+                :
+
+                ""
+
+            }
+
+        `;
+
+    }
+
+
+    return `
+
+        <span class="status-pill not-yet">
+
+            Not Reviewed
+
+        </span>
+
+    `;
+
+}
+
+
+/* =====================================================
+   REVIEW AVAILABLE
+===================================================== */
+
+function renderReviewReceived(row){
+
+    if(
+        row.reviewAvailable
+    ){
+
+        return `
+
+            <span class="status-pill available">
+
+                Review Available
+
+            </span>
+
+
+            <div class="meta">
+
+                Student can access
+                reviewed file(s)
+
+            </div>
+
+        `;
+
+    }
+
+
+    return `
+
+        <span class="status-pill not-yet">
+
+            Not Available
+
+        </span>
+
+    `;
+
+}
+
+
+/* =====================================================
+   CONTACT
+===================================================== */
+
+function renderContact(row){
+
+    let html = "";
+
+
+    /* STUDENT */
+
+    if(
+        row.studentMobile
+    ){
+
+        html += `
+
+            <a
+
+                class="call-btn"
+
+                href="tel:${escapeHtml(
+                    row.studentMobile
+                )}"
+
+            >
+
+                📞 Student
+
+            </a>
+
+        `;
+
+    }
+
+
+    /* TEACHER */
+
+    const teacher =
+        findTeacherByName(
+            row.teacherName
+        );
+
+
+    if(
+        teacher &&
+        teacher.mobile
+    ){
+
+        html += `
+
+            <a
+
+                class="call-btn"
+
+                href="tel:${escapeHtml(
+                    teacher.mobile
+                )}"
+
+            >
+
+                📞 Teacher
+
+            </a>
+
+        `;
+
+    }
+
+
+    return html || "-";
+
+}
+
+
+/* =====================================================
+   RENDER TABLE
+===================================================== */
+
+function renderRows(){
+
+    const body =
+        document.getElementById(
+            "trackingBody"
+        );
+
+
+    const rows =
+        getFilteredRows();
+
+
+    updateSummary(
+        rows
+    );
+
+
+    if(!rows.length){
+
+        body.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="11"
+                    class="empty-state"
+                >
+
+                    No homework records found
+                    for the selected filters.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    /* NEWEST FIRST */
+
+    rows.sort(
+
+        (a,b) => {
+
+            const dateCompare =
+
+                String(
+                    b.date || ""
+                )
+
+                .localeCompare(
+
+                    String(
+                        a.date || ""
+                    )
+
+                );
+
+
+            if(
+                dateCompare !== 0
+            ){
+
+                return dateCompare;
+
+            }
+
+
+            return String(
+                a.studentName || ""
+            )
+
+            .localeCompare(
+
+                String(
+                    b.studentName || ""
+                )
+
+            );
+
+        }
+
+    );
+
+
+    body.innerHTML =
+
+        rows.map(row => {
+
+
+            const topicText =
+
+                row.topic &&
+                row.topic !== "-"
+
+                ?
+
+                `<b>
+
+                    ${escapeHtml(
+                        row.topic
+                    )}
+
+                </b>`
+
+                :
+
+                "-";
+
+
+            const homeworkText =
+
+                row.homeworkText &&
+
+                row.homeworkText !== "-"
+
+                ?
+
+                `<div class="meta">
+
+                    ${escapeHtml(
+                        row.homeworkText
+                    )}
+
+                </div>`
+
+                :
+
+                "";
+
+
+            return `
+
+                <tr>
+
+
+                    <!-- DATE -->
+
+                    <td>
+
+                        <b>
+
+                            ${escapeHtml(
+                                row.date || "-"
+                            )}
+
+                        </b>
+
+                    </td>
+
+
+                    <!-- TEACHER -->
+
+                    <td>
+
+                        <a
+
+                            class="person-link"
+
+                            onclick="openTeacher(
+                                '${escapeHtml(
+                                    row.teacherId
+                                )}',
+                                '${escapeHtml(
+                                    row.teacherName
+                                )}'
+                            )"
+
+                        >
+
+                            ${escapeHtml(
+                                row.teacherName
+                            )}
+
+                        </a>
+
+
+                        <div class="meta">
+
+                            ${escapeHtml(
+                                row.className
+                            )}
+
+                        </div>
+
+                    </td>
+
+
+                    <!-- STUDENT -->
+
+                    <td>
+
+                        <a
+
+                            class="person-link"
+
+                            onclick="openStudent(
+                                '${escapeHtml(
+                                    row.studentId
+                                )}'
+                            )"
+
+                        >
+
+                            ${escapeHtml(
+                                row.studentName
+                            )}
+
+                        </a>
+
+
+                        <div class="meta">
+
+                            ${escapeHtml(
+                                row.studentCode
+                            )}
+
+                        </div>
+
+                    </td>
+
+
+                    <!-- SUBJECT -->
+
+                    <td>
+
+                        ${escapeHtml(
+                            row.subject
+                        )}
+
+                    </td>
+
+
+                    <!-- TOPIC -->
+
+                    <td>
+
+                        ${topicText}
+
+                        ${homeworkText}
+
+                    </td>
+
+
+                    <!-- DOCUMENT -->
+
+                    <td>
+
+                        ${renderDocuments(
+                            row.homeworkDocuments
+                        )}
+
+                    </td>
+
+
+                    <!-- RECEIVED -->
+
+                    <td>
+
+                        <span
+                            class="status-pill available"
+                        >
+
+                            Received
+
+                        </span>
+
+
+                        <div class="meta">
+
+                            Homework record created
+
+                        </div>
+
+                    </td>
+
+
+                    <!-- SUBMITTED -->
+
+                    <td>
+
+                        ${renderSubmitted(
+                            row
+                        )}
+
+                    </td>
+
+
+                    <!-- REVIEWED -->
+
+                    <td>
+
+                        ${renderReviewed(
+                            row
+                        )}
+
+                    </td>
+
+
+                    <!-- REVIEW AVAILABLE -->
+
+                    <td>
+
+                        ${renderReviewReceived(
+                            row
+                        )}
+
+                    </td>
+
+
+                    <!-- CONTACT -->
+
+                    <td>
+
+                        ${renderContact(
+                            row
+                        )}
+
+                    </td>
+
+
+                </tr>
+
+            `;
+
+        })
+
+        .join("");
+
+}
+
+
+/* =====================================================
+   SUMMARY
+===================================================== */
+
+function updateSummary(rows){
+
+    document.getElementById(
+        "totalCount"
+    ).innerText =
+        rows.length;
+
+
+    document.getElementById(
+        "pendingCount"
+    ).innerText =
+
+        rows.filter(
+
+            r =>
+                r.status === "Pending"
+
+        ).length;
+
+
+    document.getElementById(
+        "submittedCount"
+    ).innerText =
+
+        rows.filter(
+
+            r =>
+
+                r.status === "Submitted" ||
+
+                r.status === "Reviewed" ||
+
+                r.submittedAt ||
+
+                r.submittedFiles.length
+
+        ).length;
+
+
+    document.getElementById(
+        "reviewedCount"
+    ).innerText =
+
+        rows.filter(
+
+            r =>
+
+                r.status === "Reviewed" ||
+
+                r.reviewedAt ||
+
+                r.reviewFiles.length
+
+        ).length;
+
+
+    document.getElementById(
+        "reviewAvailableCount"
+    ).innerText =
+
+        rows.filter(
+
+            r =>
+                r.reviewAvailable
+
+        ).length;
+
+}
+
+
+/* =====================================================
+   APPLY FILTERS
+===================================================== */
+
+function applyFilters(){
+
+    renderRows();
+
+}
+
+
+/* =====================================================
+   CLEAR FILTERS
+===================================================== */
+
+function clearFilters(){
+
+    document.getElementById(
+        "fromDate"
+    ).value = "";
+
+
+    document.getElementById(
+        "toDate"
+    ).value = "";
+
+
+    document.getElementById(
+        "teacherFilter"
+    ).value = "";
+
+
+    document.getElementById(
+        "studentFilter"
+    ).value = "";
+
+
+    document.getElementById(
+        "subjectFilter"
+    ).value = "";
+
+
+    document.getElementById(
+        "statusFilter"
+    ).value = "";
+
+
+    document.getElementById(
+        "searchFilter"
+    ).value = "";
+
+
+    renderRows();
+
+}
+
+
+/* =====================================================
+   OPEN STUDENT
+===================================================== */
+
+function openStudent(studentId){
+
+    if(!studentId){
+
+        return;
+
+    }
+
+
+    /*
+      We will connect this to the actual
+      Founder student page after checking
+      your existing project filenames.
+    */
+
+    window.location.href =
+
+        "founder-student-details.html?studentId=" +
+
+        encodeURIComponent(
+            studentId
+        );
+
+}
+
+
+/* =====================================================
+   OPEN TEACHER
+===================================================== */
+
+function openTeacher(
+    teacherId,
+    teacherName
+){
+
+    if(teacherId){
+
+        /*
+          We will connect this to the actual
+          Founder teacher page after checking
+          your existing project filenames.
+        */
+
+        window.location.href =
+
+            "founder-teacher-details.html?teacherId=" +
+
+            encodeURIComponent(
+                teacherId
+            );
+
+        return;
+
+    }
+
+
+    alert(
+
+        "Teacher: " +
+
+        (
+            teacherName ||
+            "Unknown"
+        )
+
+    );
+
+}
+
+
+/* =====================================================
+   ENTER KEY SEARCH
+===================================================== */
+
+document
+
+.getElementById(
+    "searchFilter"
+)
+
+.addEventListener(
+    "keydown",
+    function(event){
+
+        if(
+            event.key === "Enter"
+        ){
+
+            applyFilters();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   START
+===================================================== */
+
+loadTracking();
+
+</script>
+
+</body>
+</html>
