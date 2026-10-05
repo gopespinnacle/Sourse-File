@@ -8,7 +8,7 @@
 // - Starts the Messenger Socket Client
 // ============================================================
 
-const GPAMessengerChatWindow =
+const gpaMessengerChatWindowModule =
     typeof window !== "undefined"
         ? window.GPAMessengerChatWindow
         : null;
@@ -271,8 +271,8 @@ if (
 // ====================================================
 
 if (
-    GPAMessengerChatWindow &&
-    typeof GPAMessengerChatWindow.initialize === "function"
+    gpaMessengerChatWindowModule &&
+    typeof gpaMessengerChatWindowModule.initialize === "function"
 ) {
 
     console.log(
@@ -280,15 +280,15 @@ if (
     );
 
 
-    GPAMessengerChatWindow.initialize(
-        "gpaMessengerChatWindow"
-    );
+    gpaMessengerChatWindowModule.initialize(
+    "gpaMessengerChatWindow"
+);
 
 
     this.registerModule(
-        "chatWindow",
-        GPAMessengerChatWindow
-    );
+    "chatWindow",
+    gpaMessengerChatWindowModule
+);
 
 
     console.log(
