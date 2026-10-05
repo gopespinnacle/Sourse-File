@@ -23,10 +23,15 @@
 // ============================================================
 
 
-const gpaMessengerChatMessagesModule =
-    typeof window !== "undefined"
-        ? window.GPAMessengerChatMessages
-        : null;
+// Chat Messages module is retrieved when needed.
+// Do not permanently capture it during script loading.
+function getGPAMessengerChatMessagesModule() {
+    if (typeof window === "undefined") {
+        return null;
+    }
+
+    return window.GPAMessengerChatMessages || null;
+}
 
 
 const GPAMessengerChatWindow = {
@@ -235,6 +240,9 @@ if (
 // INITIALIZE MESSAGE CONTAINER FOR SELECTED USER
 // ====================================================
 
+const gpaMessengerChatMessagesModule =
+    getGPAMessengerChatMessagesModule();
+
 if (
     gpaMessengerChatMessagesModule &&
     typeof gpaMessengerChatMessagesModule.initialize === "function"
@@ -430,10 +438,15 @@ if (
 
 renderMessages(messages = []) {
 
+    
+
+    const gpaMessengerChatMessagesModule =
+        getGPAMessengerChatMessagesModule();
+
     if (
-    !gpaMessengerChatMessagesModule ||
-    typeof gpaMessengerChatMessagesModule.renderMessages !== "function"
-) {
+        !gpaMessengerChatMessagesModule ||
+        typeof gpaMessengerChatMessagesModule.renderMessages !== "function"
+    ) {
 
         console.warn(
             "[GPA CHAT WINDOW] Chat Messages module is not available."
