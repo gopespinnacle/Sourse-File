@@ -267,6 +267,13 @@ authenticationListenerBound: false,
 
 
         // ----------------------------------------------------
+// Refresh authenticated Messenger user
+// ----------------------------------------------------
+
+this.resolveCurrentUser();
+
+
+        // ----------------------------------------------------
         // Clear existing messages
         // ----------------------------------------------------
 
@@ -399,7 +406,7 @@ authenticationListenerBound: false,
 
 
         wrapper.className =
-            "gpa-messenger-message";
+    "gpa-messenger-chat-message";
 
 
         // ----------------------------------------------------
@@ -442,14 +449,18 @@ if (
 }
 
         // ----------------------------------------------------
-        // Message alignment
-        // ----------------------------------------------------
+// Message alignment
+// ----------------------------------------------------
 
-        wrapper.classList.add(
-            isSent
-                ? "sent"
-                : "received"
-        );
+if (isSent) {
+
+    wrapper.classList.add("mine");
+
+} else {
+
+    wrapper.classList.add("theirs");
+
+}
 
 
         // ----------------------------------------------------
@@ -461,7 +472,7 @@ if (
 
 
         bubble.className =
-            "gpa-messenger-message-bubble";
+    "gpa-messenger-chat-bubble";
 
 
         // ----------------------------------------------------
@@ -473,7 +484,7 @@ if (
 
 
         text.className =
-            "gpa-messenger-message-text";
+    "gpa-messenger-chat-message-text";
 
 
         text.textContent =
@@ -494,7 +505,7 @@ if (
 
 
         time.className =
-            "gpa-messenger-message-time";
+    "gpa-messenger-chat-message-time";
 
 
         time.textContent =
@@ -702,9 +713,9 @@ if (
         }
 
 
-        return this.container.querySelectorAll(
-            ".gpa-messenger-message"
-        ).length;
+       return this.container.querySelectorAll(
+    ".gpa-messenger-chat-message"
+).length;
 
     }
 

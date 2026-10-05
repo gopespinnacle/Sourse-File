@@ -117,15 +117,135 @@
 
 
 /* ============================================================
-   PLACEHOLDER MESSAGE AREA
+   CHAT MESSAGE AREA
    ============================================================ */
 
 .gpa-messenger-chat-messages {
     flex: 1;
 
+    display: flex;
+    flex-direction: column;
+
     padding: 20px;
 
     overflow-y: auto;
+
+    min-height: 0;
+
+    box-sizing: border-box;
+}
+
+
+/* ============================================================
+   INDIVIDUAL MESSAGE
+   ============================================================ */
+
+.gpa-messenger-chat-message {
+    display: flex;
+
+    width: 100%;
+
+    margin-bottom: 10px;
+}
+
+
+/* ============================================================
+   MY MESSAGE
+   ============================================================ */
+
+.gpa-messenger-chat-message.mine {
+    justify-content: flex-end;
+}
+
+
+/* ============================================================
+   OTHER USER MESSAGE
+   ============================================================ */
+
+.gpa-messenger-chat-message.theirs {
+    justify-content: flex-start;
+}
+
+
+/* ============================================================
+   MESSAGE BUBBLE
+   ============================================================ */
+
+.gpa-messenger-chat-bubble {
+    max-width: 70%;
+
+    padding: 9px 12px;
+
+    border-radius: 12px;
+
+    font-size: 14px;
+
+    line-height: 1.4;
+
+    word-wrap: break-word;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* ============================================================
+   MY MESSAGE BUBBLE
+   ============================================================ */
+
+.gpa-messenger-chat-message.mine
+.gpa-messenger-chat-bubble {
+    background: #2563eb;
+
+    color: #ffffff;
+
+    border-bottom-right-radius: 4px;
+}
+
+
+/* ============================================================
+   OTHER USER MESSAGE BUBBLE
+   ============================================================ */
+
+.gpa-messenger-chat-message.theirs
+.gpa-messenger-chat-bubble {
+    background: #f1f5f9;
+
+    color: #111827;
+
+    border-bottom-left-radius: 4px;
+}
+
+
+/* ============================================================
+   MESSAGE TIME
+   ============================================================ */
+
+.gpa-messenger-chat-message-time {
+    margin-top: 3px;
+
+    font-size: 10px;
+
+    color: #9ca3af;
+}
+
+
+/* ============================================================
+   MY MESSAGE TIME
+   ============================================================ */
+
+.gpa-messenger-chat-message.mine
+.gpa-messenger-chat-message-time {
+    text-align: right;
+}
+
+
+/* ============================================================
+   OTHER MESSAGE TIME
+   ============================================================ */
+
+.gpa-messenger-chat-message.theirs
+.gpa-messenger-chat-message-time {
+    text-align: left;
 }
 
 
