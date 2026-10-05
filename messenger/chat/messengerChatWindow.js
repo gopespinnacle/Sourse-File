@@ -172,6 +172,47 @@ openUser(user) {
     this.renderUserHeader(user);
 
     // ====================================================
+// INITIALIZE CHAT COMPOSER
+// ====================================================
+//
+// The Chat Window creates the input area first.
+// Only after the input area exists do we initialize
+// the Chat Composer.
+//
+// Message input and sending remain inside:
+// chat/messengerChatComposer.js
+//
+// ====================================================
+
+const chatComposerModule =
+    typeof window !== "undefined"
+        ? window.GPAMessengerChatComposer
+        : null;
+
+if (
+    chatComposerModule &&
+    typeof chatComposerModule.initialize === "function"
+) {
+
+    console.log(
+        "[GPA CHAT WINDOW] Initializing Chat Composer..."
+    );
+
+    chatComposerModule.initialize();
+
+    console.log(
+        "[GPA CHAT WINDOW] Chat Composer initialized."
+    );
+
+} else {
+
+    console.warn(
+        "[GPA CHAT WINDOW] Chat Composer module not available."
+    );
+
+}
+
+    // ====================================================
 // INITIALIZE MESSAGE CONTAINER FOR SELECTED USER
 // ====================================================
 
