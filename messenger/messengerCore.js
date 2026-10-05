@@ -8,7 +8,10 @@
 // - Starts the Messenger Socket Client
 // ============================================================
 
-
+const GPAMessengerChatWindow =
+    typeof window !== "undefined"
+        ? window.GPAMessengerChatWindow
+        : null;
 
 const GPAMessengerCore = {
 
@@ -17,6 +20,7 @@ const GPAMessengerCore = {
     modules: {},
 
     options: {},
+
 
 
     // ========================================================
@@ -247,10 +251,58 @@ if (
 
     }
 
+    } else {
+
+        console.warn(
+            "GPA Messenger Core: User List module not found."
+        );
+
+    }
+
+
+// ====================================================
+// CHAT WINDOW
+// ====================================================
+// The Core only coordinates the Chat Window.
+//
+// Chat Window display and selected-user state remain inside:
+//
+// chat/messengerChatWindow.js
+// ====================================================
+
+if (
+    GPAMessengerChatWindow &&
+    typeof GPAMessengerChatWindow.initialize === "function"
+) {
+
+    console.log(
+        "GPA Messenger Core: Initializing Chat Window..."
+    );
+
+
+    GPAMessengerChatWindow.initialize(
+        "gpaMessengerChatWindow"
+    );
+
+
+    this.registerModule(
+        "chatWindow",
+        GPAMessengerChatWindow
+    );
+
+
+    console.log(
+        "GPA Messenger Chat Window initialized."
+    );
+
 } else {
 
     console.warn(
-        "GPA Messenger Core: User List module not found."
+        "GPA Messenger Core: Chat Window module not found."
+    );
+
+    console.warn(
+        "Make sure messengerChatWindow.js is loaded before messengerCore.js."
     );
 
 }
