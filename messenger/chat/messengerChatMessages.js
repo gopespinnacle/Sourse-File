@@ -26,7 +26,7 @@
 // ============================================================
 
 
-const GPAMessengerChatMessages = {
+window.GPAMessengerChatMessages = {
 
     // ========================================================
     // STATE
@@ -641,12 +641,7 @@ const GPAMessengerChatMessages = {
 };
 
 
-// ============================================================
-// GLOBAL ACCESS
-// ============================================================
 
-window.GPAMessengerChatMessages =
-    GPAMessengerChatMessages;
 
 
 // ============================================================
