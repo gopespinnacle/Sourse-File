@@ -13,7 +13,7 @@ const gpaMessengerChatWindowModule =
         ? window.GPAMessengerChatWindow
         : null;
 
-        const GPAMessengerChatComposer =
+        const gpaMessengerChatComposerModule =
     typeof window !== "undefined"
         ? window.GPAMessengerChatComposer
         : null;
@@ -312,6 +312,7 @@ if (
 
 }
 
+
 // ====================================================
 // CHAT COMPOSER
 // ====================================================
@@ -323,8 +324,8 @@ if (
 // ====================================================
 
 if (
-    GPAMessengerChatComposer &&
-    typeof GPAMessengerChatComposer.initialize === "function"
+    gpaMessengerChatComposerModule &&
+    typeof gpaMessengerChatComposerModule.initialize === "function"
 ) {
 
     console.log(
@@ -332,12 +333,12 @@ if (
     );
 
 
-    GPAMessengerChatComposer.initialize();
+    gpaMessengerChatComposerModule.initialize();
 
 
     this.registerModule(
         "chatComposer",
-        GPAMessengerChatComposer
+        gpaMessengerChatComposerModule
     );
 
 
@@ -356,6 +357,8 @@ if (
     );
 
 }
+
+   
 
 
 // ====================================================
