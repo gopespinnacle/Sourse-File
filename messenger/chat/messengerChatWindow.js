@@ -127,7 +127,11 @@ const GPAMessengerChatWindow = {
     // OPEN USER
     // ========================================================
 
-    openUser(user) {
+    // ========================================================
+// OPEN USER
+// ========================================================
+
+openUser(user) {
 
     if (!user || !user._id) {
 
@@ -149,45 +153,84 @@ const GPAMessengerChatWindow = {
     );
 
 
+    // ----------------------------------------------------
+    // Render the selected user's header
+    // ----------------------------------------------------
+
     this.renderUserHeader(user);
 
 
-    // ========================================================
+    // ====================================================
     // LOAD MESSAGE HISTORY
-    // ========================================================
+    // ====================================================
 
-    const chatHistory = window.GPAMessengerChatHistory;
+    if (
+        GPAMessengerChatHistory &&
+        typeof GPAMessengerChatHistory.loadConversation === "function"
+    ) {
 
-if (
-    chatHistory &&
-    typeof chatHistory.loadConversation === "function"
-) {
+        GPAMessengerChatHistory
+            .loadConversation(user._id)
 
-    chatHistory.loadConversation(
-        user._id
-    )
-        .then(() => {
+            .then(() => {
 
-            console.log(
-                "[GPA CHAT WINDOW] Conversation history loaded for:",
-                user.name
-            );
+                console.log(
+                    "[GPA CHAT WINDOW] Conversation history loaded for:",
+                    user.name
+                );
 
-        })
-        .catch((error) => {
 
-            console.error(
-                "[GPA CHAT WINDOW] Failed to load conversation history:",
-                error
-            );
+                // ====================================================
+                // GET LOADED MESSAGES
+                // ====================================================
 
-        });
+                let messages = [];
+
+
+                if (
+                    typeof GPAMessengerChatHistory.getMessages === "function"
+                ) {
+
+                    messages =
+                        GPAMessengerChatHistory.getMessages();
+
+                }
+
+
+                console.log(
+                    "[GPA CHAT WINDOW] Messages received:",
+                    messages
+                );
+
+
+                // ====================================================
+                // RENDER MESSAGES
+                // ====================================================
+
+                this.renderMessages(messages);
+
+            })
+
+            .catch((error) => {
+
+                console.error(
+                    "[GPA CHAT WINDOW] Failed to load conversation history:",
+                    error
+                );
+
+
+                this.renderMessages([]);
+
+            });
 
     } else {
 
         console.warn(
             "[GPA CHAT WINDOW] Chat History module not found."
         );
+
+
+        this.renderMessages([]);
 
     }
 
@@ -272,6 +315,119 @@ if (
         `;
 
     },
+
+    // ========================================================
+// RENDER MESSAGE HISTORY
+// ========================================================
+
+renderMessages(messages = []) {
+
+    if (!this.container) {
+
+        console.warn(
+            "[GPA CHAT WINDOW] Container not available."
+        );
+
+        return;
+
+    }
+
+
+    const messageContainer =
+        this.container.querySelector(
+            ".gpa-messenger-chat-messages"
+        );
+
+
+    if (!messageContainer) {
+
+        console.warn(
+            "[GPA CHAT WINDOW] Message container not found."
+        );
+
+        return;
+
+    }
+
+
+    // ----------------------------------------------------
+    // No messages
+    // ----------------------------------------------------
+
+    if (
+        !Array.isArray(messages) ||
+        messages.length === 0
+    ) {
+
+        messageContainer.innerHTML = `
+            <div class="gpa-messenger-chat-empty">
+                No messages yet. Start the conversation.
+            </div>
+        `;
+
+        console.log(
+            "[GPA CHAT WINDOW] No messages in conversation."
+        );
+
+        return;
+
+    }
+
+
+    // ----------------------------------------------------
+    // Render messages
+    // ----------------------------------------------------
+
+    messageContainer.innerHTML =
+        messages
+            .map((message) => {
+
+                const messageText =
+                    this.escapeHTML(
+                        message.message || ""
+                    );
+
+
+                const createdAt =
+                    message.createdAt
+                        ? new Date(
+                            message.createdAt
+                        ).toLocaleString()
+                        : "";
+
+
+                return `
+                    <div class="gpa-messenger-message">
+
+                        <div class="gpa-messenger-message-text">
+                            ${messageText}
+                        </div>
+
+                        <div class="gpa-messenger-message-time">
+                            ${this.escapeHTML(createdAt)}
+                        </div>
+
+                    </div>
+                `;
+
+            })
+            .join("");
+
+
+    // ----------------------------------------------------
+    // Scroll to latest message
+    // ----------------------------------------------------
+
+    messageContainer.scrollTop =
+        messageContainer.scrollHeight;
+
+
+    console.log(
+        "[GPA CHAT WINDOW] Messages rendered:",
+        messages.length
+    );
+
+},
 
 
     // ========================================================
