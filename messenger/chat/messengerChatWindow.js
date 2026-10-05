@@ -1,8 +1,5 @@
 
-const GPAMessengerChatHistory =
-    typeof window !== "undefined"
-        ? window.GPAMessengerChatHistory
-        : null;
+
 // ============================================================
 // GPA MESSENGER - CHAT WINDOW
 // ============================================================
@@ -159,14 +156,16 @@ const GPAMessengerChatWindow = {
     // LOAD MESSAGE HISTORY
     // ========================================================
 
-    if (
-        GPAMessengerChatHistory &&
-        typeof GPAMessengerChatHistory.loadConversation === "function"
-    ) {
+    const chatHistory = window.GPAMessengerChatHistory;
 
-        GPAMessengerChatHistory.loadConversation(
-            user._id
-        )
+if (
+    chatHistory &&
+    typeof chatHistory.loadConversation === "function"
+) {
+
+    chatHistory.loadConversation(
+        user._id
+    )
         .then(() => {
 
             console.log(
