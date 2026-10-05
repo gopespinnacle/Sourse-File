@@ -34,9 +34,11 @@ window.GPAMessengerChatMessages = {
 
     initialized: false,
 
-    container: null,
+container: null,
 
-    currentUserId: null,
+currentUserId: null,
+
+authenticationListenerBound: false,
 
 
     // ========================================================
@@ -103,56 +105,116 @@ window.GPAMessengerChatMessages = {
 
     resolveCurrentUser() {
 
-        this.currentUserId = null;
+    // ========================================================
+    // RESET CURRENT USER
+    // ========================================================
+
+    this.currentUserId = null;
 
 
-        // ----------------------------------------------------
-        // Try Messenger Socket Client
-        // ----------------------------------------------------
+    // ========================================================
+    // GET MESSENGER SOCKET CLIENT
+    // ========================================================
 
-        try {
-
-            const socketClient =
-                window.GPAMessengerSocketClient;
+    const socketClient =
+        window.GPAMessengerSocketClient;
 
 
-            if (
-                socketClient &&
-                socketClient.user &&
-                socketClient.user._id
-            ) {
+    if (!socketClient) {
 
-                this.currentUserId =
-                    String(socketClient.user._id);
+        console.warn(
+            "[GPA CHAT MESSAGES] Messenger Socket Client not available yet."
+        );
+
+        return;
+
+    }
+
+
+    // ========================================================
+    // CHECK WHETHER AUTHENTICATION ALREADY COMPLETED
+    // ========================================================
+
+    if (
+        socketClient.user &&
+        socketClient.user._id
+    ) {
+
+        this.setCurrentUser(
+            socketClient.user._id
+        );
+
+        return;
+
+    }
+
+
+    // ========================================================
+    // WAIT FOR SOCKET AUTHENTICATION
+    // ========================================================
+    //
+    // The Messenger Socket connects first.
+    //
+    // Authentication completes slightly later.
+    //
+    // Therefore we listen for:
+    //
+    // messenger:socket:authenticated
+    //
+    // No polling.
+    // No second authentication system.
+    // ========================================================
+
+    if (
+        !this.authenticationListenerBound &&
+        socketClient.socket &&
+        typeof socketClient.socket.on === "function"
+    ) {
+
+        this.authenticationListenerBound = true;
+
+
+        socketClient.socket.on(
+            "messenger:socket:authenticated",
+            (data) => {
+
+                console.log(
+                    "[GPA CHAT MESSAGES] Messenger authentication received."
+                );
+
+
+                const user =
+                    data?.user;
+
+
+                if (
+                    user &&
+                    user._id
+                ) {
+
+                    this.setCurrentUser(
+                        user._id
+                    );
+
+                } else {
+
+                    console.warn(
+                        "[GPA CHAT MESSAGES] Authentication event did not contain a user ID."
+                    );
+
+                }
 
             }
-
-        } catch (error) {
-
-            console.warn(
-                "[GPA CHAT MESSAGES] Unable to resolve current user:",
-                error
-            );
-
-        }
+        );
 
 
-        if (this.currentUserId) {
+        console.log(
+            "[GPA CHAT MESSAGES] Waiting for Messenger authentication..."
+        );
 
-            console.log(
-                "[GPA CHAT MESSAGES] Current user:",
-                this.currentUserId
-            );
+    }
 
-        } else {
-
-            console.warn(
-                "[GPA CHAT MESSAGES] Current user ID not available yet."
-            );
-
-        }
-
-    },
+},
 
 
     // ========================================================
