@@ -8,6 +8,11 @@
 // - Starts the Messenger Socket Client
 // ============================================================
 
+const GPAMessengerChatSocket =
+    typeof window !== "undefined"
+        ? window.GPAMessengerChatSocket
+        : null;
+
 const GPAMessengerCore = {
 
     initialized: false,
@@ -59,21 +64,23 @@ const GPAMessengerCore = {
 
         this.modules = {
 
-            chat: null,
+    chat: null,
 
-            call: null,
+    call: null,
 
-            notification: null,
+    notification: null,
 
-            permissions: null,
+    permissions: null,
 
-            monitoring: null,
+    monitoring: null,
 
-            retention: null,
+    retention: null,
 
-            socketClient: null
+    socketClient: null,
 
-        };
+    chatSocket: null
+
+};
 
 
         // ====================================================
@@ -105,7 +112,7 @@ const GPAMessengerCore = {
             );
 
 
-        } else {
+                } else {
 
             console.warn(
                 "GPA Messenger Core: Socket Client module not found."
@@ -113,6 +120,54 @@ const GPAMessengerCore = {
 
             console.warn(
                 "Make sure messengerSocketClient.js is loaded before messengerCore.js."
+            );
+
+        }
+
+
+        // ====================================================
+        // CHAT SOCKET
+        // ====================================================
+        // The Chat Socket is a separate module.
+        //
+        // The Core only starts it.
+        // Realtime chat logic remains inside:
+        //
+        // messenger/chat/messengerChatSocket.js
+        // ====================================================
+
+        if (
+            GPAMessengerChatSocket &&
+            typeof GPAMessengerChatSocket.initialize === "function"
+        ) {
+
+            console.log(
+                "GPA Messenger Core: Initializing Chat Socket..."
+            );
+
+
+            GPAMessengerChatSocket.initialize();
+
+
+            this.registerModule(
+                "chatSocket",
+                GPAMessengerChatSocket
+            );
+
+
+            console.log(
+                "GPA Messenger Chat Socket initialized."
+            );
+
+
+        } else {
+
+            console.warn(
+                "GPA Messenger Core: Chat Socket module not found."
+            );
+
+            console.warn(
+                "Make sure messengerChatSocket.js is loaded before messengerCore.js."
             );
 
         }
