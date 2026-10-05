@@ -80,49 +80,6 @@ const GPAMessengerChatWindow = {
         this.renderEmptyState();
 
 
-// ----------------------------------------------------
-// INITIALIZE CHAT MESSAGES MODULE
-// ----------------------------------------------------
-
-if (
-    gpaMessengerChatMessagesModule &&
-    typeof gpaMessengerChatMessagesModule.initialize === "function"
-) {
-
-    console.log(
-        "[GPA CHAT WINDOW] Initializing Chat Messages module..."
-    );
-
-    const messageContainer =
-        this.container.querySelector(
-            ".gpa-messenger-chat-messages"
-        );
-
-    if (messageContainer) {
-
-        gpaMessengerChatMessagesModule.initialize(
-    messageContainer
-);
-
-        console.log(
-            "[GPA CHAT WINDOW] Chat Messages module initialized."
-        );
-
-    } else {
-
-        console.warn(
-            "[GPA CHAT WINDOW] Message container not found during initialization."
-        );
-
-    }
-
-} else {
-
-    console.warn(
-        "[GPA CHAT WINDOW] Chat Messages module not found."
-    );
-
-}
 
 
 // ----------------------------------------------------
