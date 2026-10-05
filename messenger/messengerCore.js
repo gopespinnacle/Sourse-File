@@ -321,11 +321,16 @@ if (
 // ====================================================
 // CHAT COMPOSER
 // ====================================================
-// The Core only coordinates the Chat Composer.
 //
-// Message input and sending remain inside:
+// The Core only registers the Chat Composer.
 //
-// chat/messengerChatComposer.js
+// IMPORTANT:
+// The Core does NOT initialize the Composer here.
+//
+// The message input belongs to the selected conversation.
+// Chat Window will initialize/render the Composer after
+// a user is selected and the input container exists.
+//
 // ====================================================
 
 if (
@@ -333,22 +338,13 @@ if (
     typeof gpaMessengerChatComposerModule.initialize === "function"
 ) {
 
-    console.log(
-        "GPA Messenger Core: Initializing Chat Composer..."
-    );
-
-
-    gpaMessengerChatComposerModule.initialize();
-
-
     this.registerModule(
         "chatComposer",
         gpaMessengerChatComposerModule
     );
 
-
     console.log(
-        "GPA Messenger Chat Composer initialized."
+        "GPA Messenger Chat Composer module registered."
     );
 
 } else {
@@ -362,7 +358,6 @@ if (
     );
 
 }
-
    
 // ====================================================
 // CHAT MESSAGES
