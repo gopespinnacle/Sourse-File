@@ -1,0 +1,172 @@
+/* ============================================================
+   GPA MESSENGER - CHAT WINDOW
+   ============================================================ */
+
+.gpa-messenger-chat-window {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    height: 100%;
+
+    min-height: 500px;
+
+    background: #ffffff;
+}
+
+
+/* ============================================================
+   CHAT HEADER
+   ============================================================ */
+
+.gpa-messenger-chat-header {
+    display: flex;
+    align-items: center;
+
+    min-height: 64px;
+
+    padding: 10px 16px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    box-sizing: border-box;
+}
+
+
+.gpa-messenger-chat-header-avatar {
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #2563eb;
+    color: #ffffff;
+
+    font-size: 15px;
+    font-weight: 700;
+}
+
+
+.gpa-messenger-chat-header-info {
+    margin-left: 12px;
+
+    min-width: 0;
+}
+
+
+.gpa-messenger-chat-header-name {
+    font-size: 16px;
+    font-weight: 700;
+
+    color: #111827;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.gpa-messenger-chat-header-role {
+    margin-top: 3px;
+
+    font-size: 12px;
+
+    color: #6b7280;
+}
+
+
+/* ============================================================
+   CHAT EMPTY STATE
+   ============================================================ */
+
+.gpa-messenger-chat-empty {
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px;
+
+    text-align: center;
+
+    color: #6b7280;
+
+    font-size: 14px;
+}
+
+
+/* ============================================================
+   CHAT CONTENT
+   ============================================================ */
+
+.gpa-messenger-chat-content {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+
+    min-height: 0;
+}
+
+
+/* ============================================================
+   PLACEHOLDER MESSAGE AREA
+   ============================================================ */
+
+.gpa-messenger-chat-messages {
+    flex: 1;
+
+    padding: 20px;
+
+    overflow-y: auto;
+}
+
+
+/* ============================================================
+   PLACEHOLDER INPUT AREA
+   ============================================================ */
+
+.gpa-messenger-chat-input-area {
+    display: flex;
+    align-items: center;
+
+    padding: 12px;
+
+    border-top: 1px solid #e5e7eb;
+
+    background: #ffffff;
+}
+
+
+.gpa-messenger-chat-input-placeholder {
+    flex: 1;
+
+    padding: 11px 13px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    color: #9ca3af;
+
+    font-size: 14px;
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 800px) {
+
+    .gpa-messenger-chat-window {
+        min-height: 400px;
+    }
+
+}
