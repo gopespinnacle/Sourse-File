@@ -1,26 +1,28 @@
 // ============================================================
 // GPA MESSENGER - CHAT MESSAGES
 // ============================================================
+//
 // Purpose:
 // - Render chat messages
-// - Display sent and received messages
-// - Append new messages
-// - Clear messages
-// - Scroll to latest message
+// - Display sender / receiver messages
+// - Display message text
+// - Display timestamps
+// - Handle empty conversation state
+// - Handle scrolling
 //
 // IMPORTANT:
-// - No API calls
-// - No Socket.IO
-// - No message sending
-// - No conversation loading
-// - No permission logic
-// - No read-status logic
 //
-// Other modules handle:
-// - History       -> messengerChatHistory.js
-// - Sending       -> messengerChatComposer.js
-// - Realtime      -> messengerChatSocket.js
-// - Window        -> messengerChatWindow.js
+// This module does NOT:
+//
+// - Load messages from API
+// - Send messages
+// - Handle Socket.IO
+// - Handle permissions
+// - Handle user selection
+// - Handle chat window layout
+//
+// Those responsibilities belong to other Messenger modules.
+//
 // ============================================================
 
 
@@ -41,43 +43,40 @@ const GPAMessengerChatMessages = {
     // INITIALIZE
     // ========================================================
 
-    initialize(
-        container = null
-    ) {
+    initialize(container = null) {
 
-        if (this.initialized) {
+        // ----------------------------------------------------
+        // Prevent invalid initialization
+        // ----------------------------------------------------
 
-            console.log(
-                "[GPA CHAT MESSAGES] Already initialized."
-            );
-
-            return this;
-
-        }
-
-
-        if (typeof container === "string") {
-
-            this.container =
-                document.getElementById(container);
-
-        } else {
-
-            this.container = container;
-
-        }
-
-
-        if (!this.container) {
+        if (!container) {
 
             console.warn(
-                "[GPA CHAT MESSAGES] Message container not available yet."
+                "[GPA CHAT MESSAGES] Message container not provided."
             );
 
             return this;
 
         }
 
+
+        // ----------------------------------------------------
+        // Store container
+        // ----------------------------------------------------
+
+        this.container = container;
+
+
+        // ----------------------------------------------------
+        // Try to identify current Messenger user
+        // ----------------------------------------------------
+
+        this.resolveCurrentUser();
+
+
+        // ----------------------------------------------------
+        // Mark initialized
+        // ----------------------------------------------------
 
         this.initialized = true;
 
@@ -93,13 +92,91 @@ const GPAMessengerChatMessages = {
 
 
     // ========================================================
+    // RESOLVE CURRENT USER
+    // ========================================================
+    //
+    // We use the already authenticated Messenger user.
+    //
+    // No new authentication system is created.
+    //
+    // ========================================================
+
+    resolveCurrentUser() {
+
+        this.currentUserId = null;
+
+
+        // ----------------------------------------------------
+        // Try Messenger Socket Client
+        // ----------------------------------------------------
+
+        try {
+
+            const socketClient =
+                window.GPAMessengerSocketClient;
+
+
+            if (
+                socketClient &&
+                socketClient.user &&
+                socketClient.user._id
+            ) {
+
+                this.currentUserId =
+                    String(socketClient.user._id);
+
+            }
+
+        } catch (error) {
+
+            console.warn(
+                "[GPA CHAT MESSAGES] Unable to resolve current user:",
+                error
+            );
+
+        }
+
+
+        if (this.currentUserId) {
+
+            console.log(
+                "[GPA CHAT MESSAGES] Current user:",
+                this.currentUserId
+            );
+
+        } else {
+
+            console.warn(
+                "[GPA CHAT MESSAGES] Current user ID not available yet."
+            );
+
+        }
+
+    },
+
+
+    // ========================================================
     // SET CURRENT USER
+    // ========================================================
+    //
+    // Future modules can explicitly provide the authenticated
+    // user ID if required.
+    //
     // ========================================================
 
     setCurrentUser(userId) {
 
+        if (!userId) {
+
+            this.currentUserId = null;
+
+            return;
+
+        }
+
+
         this.currentUserId =
-            userId ? String(userId) : null;
+            String(userId);
 
 
         console.log(
@@ -111,45 +188,15 @@ const GPAMessengerChatMessages = {
 
 
     // ========================================================
-    // SET CONTAINER
+    // RENDER MESSAGES
     // ========================================================
 
-    setContainer(container) {
-
-        if (typeof container === "string") {
-
-            this.container =
-                document.getElementById(container);
-
-        } else {
-
-            this.container = container;
-
-        }
-
-
-        if (this.container) {
-
-            this.initialized = true;
-
-        }
-
-
-        return this.container;
-
-    },
-
-
-    // ========================================================
-    // CLEAR MESSAGES
-    // ========================================================
-
-    clear() {
+    renderMessages(messages = []) {
 
         if (!this.container) {
 
             console.warn(
-                "[GPA CHAT MESSAGES] Cannot clear. Container not available."
+                "[GPA CHAT MESSAGES] Container is not initialized."
             );
 
             return;
@@ -157,56 +204,33 @@ const GPAMessengerChatMessages = {
         }
 
 
-        this.container.innerHTML = "";
+        // ----------------------------------------------------
+        // Clear existing messages
+        // ----------------------------------------------------
+
+        this.clear();
 
 
-        console.log(
-            "[GPA CHAT MESSAGES] Messages cleared."
-        );
-
-    },
-
-
-    // ========================================================
-    // RENDER MESSAGE LIST
-    // ========================================================
-
-    renderMessages(
-        messages = [],
-        currentUserId = null
-    ) {
-
-        if (!this.container) {
-
-            console.warn(
-                "[GPA CHAT MESSAGES] Cannot render. Container not available."
-            );
-
-            return;
-
-        }
-
+        // ----------------------------------------------------
+        // Validate message array
+        // ----------------------------------------------------
 
         if (!Array.isArray(messages)) {
 
             console.warn(
-                "[GPA CHAT MESSAGES] Invalid messages list."
+                "[GPA CHAT MESSAGES] Invalid messages data."
             );
+
+            this.renderEmptyState();
 
             return;
 
         }
 
 
-        if (currentUserId) {
-
-            this.setCurrentUser(currentUserId);
-
-        }
-
-
-        this.container.innerHTML = "";
-
+        // ----------------------------------------------------
+        // Empty conversation
+        // ----------------------------------------------------
 
         if (messages.length === 0) {
 
@@ -216,6 +240,10 @@ const GPAMessengerChatMessages = {
 
         }
 
+
+        // ----------------------------------------------------
+        // Render every message
+        // ----------------------------------------------------
 
         messages.forEach(
             (message) => {
@@ -228,6 +256,10 @@ const GPAMessengerChatMessages = {
             }
         );
 
+
+        // ----------------------------------------------------
+        // Scroll to latest message
+        // ----------------------------------------------------
 
         this.scrollToBottom();
 
@@ -252,38 +284,36 @@ const GPAMessengerChatMessages = {
         if (!this.container) {
 
             console.warn(
-                "[GPA CHAT MESSAGES] Cannot append. Container not available."
+                "[GPA CHAT MESSAGES] Container is not initialized."
             );
 
-            return null;
+            return;
 
         }
 
 
         if (!message) {
 
-            console.warn(
-                "[GPA CHAT MESSAGES] Empty message received."
-            );
-
-            return null;
+            return;
 
         }
 
 
-        const messageElement =
-            this.createMessageElement(message);
+        const element =
+            this.createMessageElement(
+                message
+            );
 
 
-        if (!messageElement) {
+        if (!element) {
 
-            return null;
+            return;
 
         }
 
 
         this.container.appendChild(
-            messageElement
+            element
         );
 
 
@@ -292,15 +322,6 @@ const GPAMessengerChatMessages = {
             this.scrollToBottom();
 
         }
-
-
-        console.log(
-            "[GPA CHAT MESSAGES] Message appended:",
-            message._id || message.id || "unknown"
-        );
-
-
-        return messageElement;
 
     },
 
@@ -311,29 +332,59 @@ const GPAMessengerChatMessages = {
 
     createMessageElement(message) {
 
-        const senderId =
-            message.sender?._id ||
-            message.sender?.id ||
-            message.sender ||
-            null;
-
-
-        const isMine =
-            this.currentUserId &&
-            senderId &&
-            String(senderId) ===
-            String(this.currentUserId);
-
-
         const wrapper =
             document.createElement("div");
 
 
         wrapper.className =
-            isMine
-                ? "gpa-messenger-message gpa-messenger-message-sent"
-                : "gpa-messenger-message gpa-messenger-message-received";
+            "gpa-messenger-message";
 
+
+        // ----------------------------------------------------
+        // Determine sender
+        // ----------------------------------------------------
+
+        const senderId =
+            this.getUserId(
+                message.sender
+            );
+
+
+        const receiverId =
+            this.getUserId(
+                message.receiver
+            );
+
+
+        let isSent = false;
+
+
+        if (
+            this.currentUserId &&
+            senderId
+        ) {
+
+            isSent =
+                String(senderId) ===
+                String(this.currentUserId);
+
+        }
+
+
+        // ----------------------------------------------------
+        // Message alignment
+        // ----------------------------------------------------
+
+        wrapper.classList.add(
+            isSent
+                ? "sent"
+                : "received"
+        );
+
+
+        // ----------------------------------------------------
+        // Message bubble
+        // ----------------------------------------------------
 
         const bubble =
             document.createElement("div");
@@ -343,22 +394,30 @@ const GPAMessengerChatMessages = {
             "gpa-messenger-message-bubble";
 
 
-        const messageText =
+        // ----------------------------------------------------
+        // Message text
+        // ----------------------------------------------------
+
+        const text =
             document.createElement("div");
 
 
-        messageText.className =
+        text.className =
             "gpa-messenger-message-text";
 
 
-        messageText.textContent =
+        text.textContent =
             message.message || "";
 
 
         bubble.appendChild(
-            messageText
+            text
         );
 
+
+        // ----------------------------------------------------
+        // Timestamp
+        // ----------------------------------------------------
 
         const time =
             document.createElement("div");
@@ -379,12 +438,114 @@ const GPAMessengerChatMessages = {
         );
 
 
+        // ----------------------------------------------------
+        // Read status
+        // ----------------------------------------------------
+
+        if (isSent) {
+
+            const status =
+                document.createElement("span");
+
+
+            status.className =
+                "gpa-messenger-message-status";
+
+
+            status.textContent =
+                message.read
+                    ? "✓✓"
+                    : "✓";
+
+
+            bubble.appendChild(
+                status
+            );
+
+        }
+
+
         wrapper.appendChild(
             bubble
         );
 
 
         return wrapper;
+
+    },
+
+
+    // ========================================================
+    // GET USER ID
+    // ========================================================
+
+    getUserId(user) {
+
+        if (!user) {
+
+            return null;
+
+        }
+
+
+        if (
+            typeof user === "string"
+        ) {
+
+            return user;
+
+        }
+
+
+        if (user._id) {
+
+            return String(
+                user._id
+            );
+
+        }
+
+
+        return null;
+
+    },
+
+
+    // ========================================================
+    // FORMAT TIME
+    // ========================================================
+
+    formatTime(value) {
+
+        if (!value) {
+
+            return "";
+
+        }
+
+
+        const date =
+            new Date(value);
+
+
+        if (
+            Number.isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return "";
+
+        }
+
+
+        return date.toLocaleTimeString(
+            [],
+            {
+                hour: "2-digit",
+                minute: "2-digit"
+            }
+        );
 
     },
 
@@ -422,38 +583,19 @@ const GPAMessengerChatMessages = {
 
 
     // ========================================================
-    // FORMAT TIME
+    // CLEAR
     // ========================================================
 
-    formatTime(value) {
+    clear() {
 
-        if (!value) {
+        if (!this.container) {
 
-            return "";
-
-        }
-
-
-        const date =
-            new Date(value);
-
-
-        if (Number.isNaN(
-            date.getTime()
-        )) {
-
-            return "";
+            return;
 
         }
 
 
-        return date.toLocaleTimeString(
-            [],
-            {
-                hour: "2-digit",
-                minute: "2-digit"
-            }
-        );
+        this.container.innerHTML = "";
 
     },
 
