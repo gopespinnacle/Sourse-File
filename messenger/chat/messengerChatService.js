@@ -1,60 +1,57 @@
-/**
- * ============================================================
- * GPA MESSENGER - WEB CHAT SERVICE
- * ============================================================
- *
- * Responsibility:
- * - Communicate with GPA Messenger Chat REST API
- * - Send messages
- * - Load conversations
- * - Mark messages as read
- * - Get unread counts
- *
- * This file does NOT:
- * - Create UI
- * - Handle Socket.IO
- * - Handle calls
- * - Handle WebRTC
- * - Handle notifications
- *
- * ============================================================
- */
+// ============================================================
+// GPA MESSENGER - CHAT SERVICE
+// ============================================================
+// Purpose:
+// - Communicate with Messenger Chat REST APIs
+// - Handle authentication token
+// - Send and retrieve messages
+// - Handle read/unread operations
+//
+// IMPORTANT:
+// - No UI code
+// - No Socket.IO code
+// - No chat rendering
+// - No permission logic
+//
+// The backend remains responsible for:
+// - Authentication
+// - Permission validation
+// - User mapping
+// - Message storage
+// ============================================================
+
 
 const GPAMessengerChatService = {
 
-    /**
-     * --------------------------------------------------------
-     * BACKEND URL
-     * --------------------------------------------------------
-     */
+    // ========================================================
+    // BACKEND URL
+    // ========================================================
+
     backendURL:
         "https://academy-backend-eatl.onrender.com",
 
 
-    /**
-     * --------------------------------------------------------
-     * GET AUTHENTICATION TOKEN
-     * --------------------------------------------------------
-     */
+    // ========================================================
+    // GET AUTHENTICATION TOKEN
+    // ========================================================
+
     getToken() {
 
         return (
             localStorage.getItem("token") ||
             sessionStorage.getItem("token")
         );
+
     },
 
 
-    /**
-     * --------------------------------------------------------
-     * BUILD AUTHORIZATION HEADERS
-     * --------------------------------------------------------
-     */
+    // ========================================================
+    // GET REQUEST HEADERS
+    // ========================================================
+
     getHeaders() {
 
-        const token =
-            this.getToken();
-
+        const token = this.getToken();
 
         const headers = {
             "Content-Type": "application/json"
@@ -65,414 +62,362 @@ const GPAMessengerChatService = {
 
             headers.Authorization =
                 `Bearer ${token}`;
+
         }
 
 
         return headers;
+
     },
 
 
-    /**
-     * --------------------------------------------------------
-     * SEND MESSAGE
-     * --------------------------------------------------------
-     *
-     * POST
-     * /api/messenger/chat/message
-     */
-    async sendMessage(
-        receiverId,
-        message
-    ) {
+    // ========================================================
+    // SEND MESSAGE
+    // ========================================================
 
-        if (!receiverId) {
+    async sendMessage(receiverId, message) {
 
-            throw new Error(
-                "Receiver ID is required."
-            );
-        }
+        try {
+
+            if (!receiverId) {
+
+                throw new Error(
+                    "Receiver ID is required."
+                );
+
+            }
 
 
-        if (
-            typeof message !== "string" ||
-            !message.trim()
-        ) {
+            if (
+                typeof message !== "string" ||
+                !message.trim()
+            ) {
 
-            throw new Error(
-                "Message cannot be empty."
-            );
-        }
+                throw new Error(
+                    "Message cannot be empty."
+                );
+
+            }
 
 
-        const response =
-            await fetch(
+            const response = await fetch(
                 `${this.backendURL}/api/messenger/chat/message`,
                 {
                     method: "POST",
 
-                    headers:
-                        this.getHeaders(),
+                    headers: this.getHeaders(),
 
                     body: JSON.stringify({
-                        receiverId,
-                        message:
-                            message.trim()
+                        receiverId: receiverId,
+                        message: message.trim()
                     })
                 }
             );
 
 
-        const data =
-            await this.parseResponse(
-                response
+            return await this.parseResponse(response);
+
+        } catch (error) {
+
+            console.error(
+                "[GPA CHAT SERVICE] Send message failed:",
+                error
             );
 
+            throw error;
 
-        if (!response.ok) {
-
-            throw new Error(
-                data.message ||
-                "Failed to send message."
-            );
         }
 
-
-        return data;
     },
 
 
-    /**
-     * --------------------------------------------------------
-     * GET CONVERSATION
-     * --------------------------------------------------------
-     *
-     * GET
-     * /api/messenger/chat/conversation/:userId
-     *
-     * Optional:
-     * before
-     * limit
-     */
-    async getConversation(
-        userId,
-        options = {}
-    ) {
+    // ========================================================
+    // GET CONVERSATION
+    // ========================================================
 
-        if (!userId) {
+    async getConversation(userId, options = {}) {
 
-            throw new Error(
-                "User ID is required."
-            );
-        }
+        try {
+
+            if (!userId) {
+
+                throw new Error(
+                    "User ID is required."
+                );
+
+            }
 
 
-        const params =
-            new URLSearchParams();
+            const params =
+                new URLSearchParams();
 
 
-        if (options.before) {
+            if (options.limit) {
 
-            params.set(
-                "before",
-                options.before
-            );
-        }
+                params.set(
+                    "limit",
+                    options.limit
+                );
 
-
-        if (options.limit) {
-
-            params.set(
-                "limit",
-                options.limit
-            );
-        }
+            }
 
 
-        const queryString =
-            params.toString();
+            if (options.before) {
+
+                params.set(
+                    "before",
+                    options.before
+                );
+
+            }
 
 
-        const url =
-            `${this.backendURL}` +
-            `/api/messenger/chat/conversation/${encodeURIComponent(userId)}` +
-            (
-                queryString
+            const queryString =
+                params.toString();
+
+
+            const url =
+                `${this.backendURL}/api/messenger/chat/conversation/${encodeURIComponent(userId)}` +
+                (queryString
                     ? `?${queryString}`
-                    : ""
-            );
+                    : "");
 
 
-        const response =
-            await fetch(
+            const response = await fetch(
                 url,
                 {
                     method: "GET",
-
-                    headers:
-                        this.getHeaders()
+                    headers: this.getHeaders()
                 }
             );
 
 
-        const data =
-            await this.parseResponse(
-                response
+            return await this.parseResponse(response);
+
+        } catch (error) {
+
+            console.error(
+                "[GPA CHAT SERVICE] Get conversation failed:",
+                error
             );
 
+            throw error;
 
-        if (!response.ok) {
-
-            throw new Error(
-                data.message ||
-                "Failed to load conversation."
-            );
         }
 
-
-        return data;
     },
 
 
-    /**
-     * --------------------------------------------------------
-     * MARK SINGLE MESSAGE AS READ
-     * --------------------------------------------------------
-     *
-     * PATCH
-     * /api/messenger/chat/message/:messageId/read
-     */
-    async markMessageAsRead(
-        messageId
-    ) {
+    // ========================================================
+    // MARK ONE MESSAGE AS READ
+    // ========================================================
 
-        if (!messageId) {
+    async markMessageAsRead(messageId) {
 
-            throw new Error(
-                "Message ID is required."
-            );
-        }
+        try {
+
+            if (!messageId) {
+
+                throw new Error(
+                    "Message ID is required."
+                );
+
+            }
 
 
-        const response =
-            await fetch(
-                `${this.backendURL}` +
-                `/api/messenger/chat/message/${encodeURIComponent(messageId)}/read`,
+            const response = await fetch(
+                `${this.backendURL}/api/messenger/chat/message/${encodeURIComponent(messageId)}/read`,
                 {
                     method: "PATCH",
 
-                    headers:
-                        this.getHeaders()
+                    headers: this.getHeaders()
                 }
             );
 
 
-        const data =
-            await this.parseResponse(
-                response
+            return await this.parseResponse(response);
+
+        } catch (error) {
+
+            console.error(
+                "[GPA CHAT SERVICE] Mark message as read failed:",
+                error
             );
 
+            throw error;
 
-        if (!response.ok) {
-
-            throw new Error(
-                data.message ||
-                "Failed to mark message as read."
-            );
         }
 
-
-        return data;
     },
 
 
-    /**
-     * --------------------------------------------------------
-     * MARK CONVERSATION AS READ
-     * --------------------------------------------------------
-     *
-     * PATCH
-     * /api/messenger/chat/conversation/:userId/read
-     */
-    async markConversationAsRead(
-        userId
-    ) {
+    // ========================================================
+    // MARK CONVERSATION AS READ
+    // ========================================================
 
-        if (!userId) {
+    async markConversationAsRead(userId) {
 
-            throw new Error(
-                "User ID is required."
-            );
-        }
+        try {
+
+            if (!userId) {
+
+                throw new Error(
+                    "User ID is required."
+                );
+
+            }
 
 
-        const response =
-            await fetch(
-                `${this.backendURL}` +
-                `/api/messenger/chat/conversation/${encodeURIComponent(userId)}/read`,
+            const response = await fetch(
+                `${this.backendURL}/api/messenger/chat/conversation/${encodeURIComponent(userId)}/read`,
                 {
                     method: "PATCH",
 
-                    headers:
-                        this.getHeaders()
+                    headers: this.getHeaders()
                 }
             );
 
 
-        const data =
-            await this.parseResponse(
-                response
+            return await this.parseResponse(response);
+
+        } catch (error) {
+
+            console.error(
+                "[GPA CHAT SERVICE] Mark conversation as read failed:",
+                error
             );
 
+            throw error;
 
-        if (!response.ok) {
-
-            throw new Error(
-                data.message ||
-                "Failed to mark conversation as read."
-            );
         }
 
-
-        return data;
     },
 
 
-    /**
-     * --------------------------------------------------------
-     * GET TOTAL UNREAD COUNT
-     * --------------------------------------------------------
-     *
-     * GET
-     * /api/messenger/chat/unread
-     */
+    // ========================================================
+    // GET TOTAL UNREAD COUNT
+    // ========================================================
+
     async getUnreadCount() {
 
-        const response =
-            await fetch(
+        try {
+
+            const response = await fetch(
                 `${this.backendURL}/api/messenger/chat/unread`,
                 {
                     method: "GET",
 
-                    headers:
-                        this.getHeaders()
+                    headers: this.getHeaders()
                 }
             );
 
 
-        const data =
-            await this.parseResponse(
-                response
+            return await this.parseResponse(response);
+
+        } catch (error) {
+
+            console.error(
+                "[GPA CHAT SERVICE] Get unread count failed:",
+                error
             );
 
+            throw error;
 
-        if (!response.ok) {
-
-            throw new Error(
-                data.message ||
-                "Failed to load unread count."
-            );
         }
 
-
-        return data;
     },
 
 
-    /**
-     * --------------------------------------------------------
-     * GET CONVERSATION UNREAD COUNT
-     * --------------------------------------------------------
-     *
-     * GET
-     * /api/messenger/chat/conversation/:userId/unread
-     */
-    async getConversationUnreadCount(
-        userId
-    ) {
+    // ========================================================
+    // GET CONVERSATION UNREAD COUNT
+    // ========================================================
 
-        if (!userId) {
+    async getConversationUnreadCount(userId) {
 
-            throw new Error(
-                "User ID is required."
-            );
-        }
+        try {
+
+            if (!userId) {
+
+                throw new Error(
+                    "User ID is required."
+                );
+
+            }
 
 
-        const response =
-            await fetch(
-                `${this.backendURL}` +
-                `/api/messenger/chat/conversation/${encodeURIComponent(userId)}/unread`,
+            const response = await fetch(
+                `${this.backendURL}/api/messenger/chat/conversation/${encodeURIComponent(userId)}/unread`,
                 {
                     method: "GET",
 
-                    headers:
-                        this.getHeaders()
+                    headers: this.getHeaders()
                 }
             );
 
 
-        const data =
-            await this.parseResponse(
-                response
+            return await this.parseResponse(response);
+
+        } catch (error) {
+
+            console.error(
+                "[GPA CHAT SERVICE] Get conversation unread count failed:",
+                error
             );
+
+            throw error;
+
+        }
+
+    },
+
+
+    // ========================================================
+    // COMMON RESPONSE HANDLER
+    // ========================================================
+
+    async parseResponse(response) {
+
+        let data = null;
+
+
+        try {
+
+            data = await response.json();
+
+        } catch (error) {
+
+            data = null;
+
+        }
 
 
         if (!response.ok) {
 
-            throw new Error(
-                data.message ||
-                "Failed to load conversation unread count."
-            );
+            const message =
+                data?.message ||
+                `Request failed with status ${response.status}`;
+
+
+            throw new Error(message);
+
         }
 
 
         return data;
-    },
 
-
-    /**
-     * --------------------------------------------------------
-     * PARSE RESPONSE
-     * --------------------------------------------------------
-     */
-    async parseResponse(
-        response
-    ) {
-
-        const contentType =
-            response.headers.get(
-                "content-type"
-            );
-
-
-        if (
-            contentType &&
-            contentType.includes(
-                "application/json"
-            )
-        ) {
-
-            return await response.json();
-        }
-
-
-        const text =
-            await response.text();
-
-
-        return {
-            message:
-                text ||
-                "Unexpected server response."
-        };
     }
+
 };
 
 
-/**
- * ------------------------------------------------------------
- * GLOBAL WEB MESSENGER CHAT SERVICE
- * ------------------------------------------------------------
- */
+// ============================================================
+// GLOBAL ACCESS
+// ============================================================
+
 window.GPAMessengerChatService =
     GPAMessengerChatService;
+
+
+// ============================================================
+// END GPA MESSENGER CHAT SERVICE
+// ============================================================
