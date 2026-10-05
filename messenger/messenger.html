@@ -10,6 +10,11 @@
         content="width=device-width, initial-scale=1.0"
     >
 
+    <link
+    rel="stylesheet"
+    href="users/messengerUserListUI.css"
+>
+
     <title>GPA Messenger</title>
 
 </head>
@@ -30,6 +35,8 @@
             Starting Messenger...
         </p>
 
+        <div id="gpaMessengerUserList"></div>
+
     </div>
 
 
@@ -39,28 +46,19 @@
 
     <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 
+<script src="messengerSocketClient.js"></script>
 
-    <!-- =====================================================
-         GPA MESSENGER SOCKET CLIENT
-         Must load BEFORE messengerCore.js
-         ===================================================== -->
+<script src="chat/messengerChatService.js"></script>
 
-    <script src="messengerSocketClient.js"></script>
+<script src="users/messengerUserService.js"></script>
 
-    <script src="chat/messengerChatService.js"></script>
+<script src="users/messengerUserList.js"></script>
 
-    <script src="users/messengerUserList.js"></script>
+<script src="users/messengerUserListUI.js"></script>
 
-    <script src="users/messengerUserService.js"></script>
+<script src="chat/messengerChatSocket.js"></script>
 
-    <script src="chat/messengerChatSocket.js"></script>
-
-
-    <!-- =====================================================
-         GPA MESSENGER CORE / HEART
-         ===================================================== -->
-
-    <script src="messengerCore.js"></script>
+<script src="messengerCore.js"></script>
 
 
     <!-- =====================================================

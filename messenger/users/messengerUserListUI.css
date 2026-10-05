@@ -1,0 +1,173 @@
+/* ============================================================
+   GPA MESSENGER - USER LIST UI
+   ============================================================ */
+
+.gpa-messenger-user-list {
+    width: 100%;
+    max-width: 420px;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.gpa-messenger-user-list-header {
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.gpa-messenger-user-list-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+
+/* ============================================================
+   SEARCH
+   ============================================================ */
+
+.gpa-messenger-user-search {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 12px;
+    padding: 10px 12px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    font-size: 14px;
+    outline: none;
+}
+
+.gpa-messenger-user-search:focus {
+    border-color: #2563eb;
+}
+
+
+/* ============================================================
+   USER GROUP
+   ============================================================ */
+
+.gpa-messenger-user-group {
+    margin-top: 8px;
+}
+
+.gpa-messenger-user-group-title {
+    padding: 10px 16px;
+
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+
+    color: #6b7280;
+}
+
+
+/* ============================================================
+   USER ITEM
+   ============================================================ */
+
+.gpa-messenger-user-item {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 11px 16px;
+
+    border: none;
+    background: transparent;
+
+    cursor: pointer;
+    text-align: left;
+}
+
+.gpa-messenger-user-item:hover {
+    background: #f3f4f6;
+}
+
+
+/* ============================================================
+   AVATAR
+   ============================================================ */
+
+.gpa-messenger-user-avatar {
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #2563eb;
+    color: #ffffff;
+
+    font-size: 16px;
+    font-weight: 700;
+}
+
+
+/* ============================================================
+   USER INFORMATION
+   ============================================================ */
+
+.gpa-messenger-user-info {
+    min-width: 0;
+    margin-left: 12px;
+}
+
+.gpa-messenger-user-name {
+    font-size: 15px;
+    font-weight: 600;
+
+    color: #111827;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.gpa-messenger-user-role {
+    margin-top: 3px;
+
+    font-size: 12px;
+    color: #6b7280;
+}
+
+
+/* ============================================================
+   EMPTY / LOADING / ERROR
+   ============================================================ */
+
+.gpa-messenger-user-status {
+    padding: 20px 16px;
+
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.gpa-messenger-user-error {
+    color: #b91c1c;
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 600px) {
+
+    .gpa-messenger-user-list {
+        max-width: 100%;
+    }
+
+}
