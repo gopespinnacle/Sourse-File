@@ -23,9 +23,9 @@
 // ============================================================
 
 
-const gpaMessengerChatMessagesModuleModule =
+const gpaMessengerChatMessagesModule =
     typeof window !== "undefined"
-        ? window.gpaMessengerChatMessagesModule
+        ? window.GPAMessengerChatMessages
         : null;
 
 
@@ -85,8 +85,8 @@ const GPAMessengerChatWindow = {
 // ----------------------------------------------------
 
 if (
-    gpaMessengerChatMessagesModule &&
-    typeof gpaMessengerChatMessagesModule.initialize === "function"
+    GPAMessengerChatMessages &&
+    typeof GPAMessengerChatMessages.initialize === "function"
 ) {
 
     console.log(
@@ -100,7 +100,7 @@ if (
 
     if (messageContainer) {
 
-        gpaMessengerChatMessagesModule.initialize(
+        GPAMessengerChatMessages.initialize(
             messageContainer
         );
 
@@ -219,8 +219,8 @@ openUser(user) {
 // ====================================================
 
 if (
-    gpaMessengerChatMessagesModule &&
-    typeof gpaMessengerChatMessagesModule.initialize === "function"
+    GPAMessengerChatMessages &&
+    typeof GPAMessengerChatMessages.initialize === "function"
 ) {
 
     const messageContainer =
@@ -230,7 +230,7 @@ if (
 
     if (messageContainer) {
 
-        gpaMessengerChatMessagesModule.initialize(
+        GPAMessengerChatMessages.initialize(
             messageContainer
         );
 
@@ -416,8 +416,8 @@ if (
 renderMessages(messages = []) {
 
     if (
-        !gpaMessengerChatMessagesModule ||
-        typeof gpaMessengerChatMessagesModule.renderMessages !== "function"
+        !GPAMessengerChatMessages ||
+        typeof GPAMessengerChatMessages.renderMessages !== "function"
     ) {
 
         console.warn(
@@ -435,7 +435,7 @@ renderMessages(messages = []) {
     );
 
 
-    gpaMessengerChatMessagesModule.renderMessages(
+    GPAMessengerChatMessages.renderMessages(
         Array.isArray(messages)
             ? messages
             : []
