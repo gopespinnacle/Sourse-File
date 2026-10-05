@@ -215,23 +215,69 @@ const GPAMessengerChatSocket = {
          *
          * messenger:chat:message
          */
-        this.socket.on(
-            "messenger:chat:message",
-            (message) => {
+        // ============================================================
+// REALTIME MESSAGE RECEIVED
+// ============================================================
+//
+// Backend sends:
+// messenger:chat:message
+//
+// This module receives the realtime message.
+//
+// It then passes the message to:
+// GPAMessengerChatMessages
+//
+// This keeps Socket.IO logic separate from
+// message rendering logic.
+// ============================================================
 
-                console.log(
-                    "[GPA WEB CHAT SOCKET] " +
-                    "Message received:",
-                    message
-                );
+this.socket.on(
+    "messenger:chat:message",
+    (message) => {
 
-
-                this.emitLocalEvent(
-                    "message",
-                    message
-                );
-            }
+        console.log(
+            "[GPA WEB CHAT SOCKET] Realtime message received:",
+            message
         );
+
+
+        // ----------------------------------------------------
+        // Make sure Chat Messages module exists
+        // ----------------------------------------------------
+
+        const chatMessages =
+            window.GPAMessengerChatMessages;
+
+
+        if (
+            !chatMessages ||
+            typeof chatMessages.appendMessage !== "function"
+        ) {
+
+            console.warn(
+                "[GPA WEB CHAT SOCKET] Chat Messages module is not available yet."
+            );
+
+            return;
+        }
+
+
+        // ----------------------------------------------------
+        // Pass realtime message to Chat Messages module
+        // ----------------------------------------------------
+
+        chatMessages.appendMessage(
+            message,
+            true
+        );
+
+
+        console.log(
+            "[GPA WEB CHAT SOCKET] Realtime message passed to Chat Messages module."
+        );
+
+    }
+);
 
 
         /*
