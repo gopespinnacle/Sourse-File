@@ -85,8 +85,8 @@ const GPAMessengerChatWindow = {
 // ----------------------------------------------------
 
 if (
-    GPAMessengerChatMessages &&
-    typeof GPAMessengerChatMessages.initialize === "function"
+    gpaMessengerChatMessagesModule &&
+    typeof gpaMessengerChatMessagesModule.initialize === "function"
 ) {
 
     console.log(
@@ -100,9 +100,9 @@ if (
 
     if (messageContainer) {
 
-        GPAMessengerChatMessages.initialize(
-            messageContainer
-        );
+        gpaMessengerChatMessagesModule.initialize(
+    messageContainer
+);
 
         console.log(
             "[GPA CHAT WINDOW] Chat Messages module initialized."
@@ -219,8 +219,8 @@ openUser(user) {
 // ====================================================
 
 if (
-    GPAMessengerChatMessages &&
-    typeof GPAMessengerChatMessages.initialize === "function"
+    gpaMessengerChatMessagesModule &&
+    typeof gpaMessengerChatMessagesModule.initialize === "function"
 ) {
 
     const messageContainer =
@@ -230,9 +230,9 @@ if (
 
     if (messageContainer) {
 
-        GPAMessengerChatMessages.initialize(
-            messageContainer
-        );
+        gpaMessengerChatMessagesModule.initialize(
+    messageContainer
+);
 
         console.log(
             "[GPA CHAT WINDOW] Message container ready for:",
@@ -416,9 +416,9 @@ if (
 renderMessages(messages = []) {
 
     if (
-        !GPAMessengerChatMessages ||
-        typeof GPAMessengerChatMessages.renderMessages !== "function"
-    ) {
+    !gpaMessengerChatMessagesModule ||
+    typeof gpaMessengerChatMessagesModule.renderMessages !== "function"
+) {
 
         console.warn(
             "[GPA CHAT WINDOW] Chat Messages module is not available."
@@ -435,11 +435,11 @@ renderMessages(messages = []) {
     );
 
 
-    GPAMessengerChatMessages.renderMessages(
-        Array.isArray(messages)
-            ? messages
-            : []
-    );
+    gpaMessengerChatMessagesModule.renderMessages(
+    Array.isArray(messages)
+        ? messages
+        : []
+);
 
 },
 
