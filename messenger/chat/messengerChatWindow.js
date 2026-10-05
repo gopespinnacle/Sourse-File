@@ -184,25 +184,44 @@ openUser(user) {
 //
 // ====================================================
 
+
+
 const chatComposerModule =
     typeof window !== "undefined"
         ? window.GPAMessengerChatComposer
         : null;
+
+const chatComposerContainer =
+    this.container.querySelector(
+        "#gpaMessengerChatComposer"
+    );
 
 if (
     chatComposerModule &&
     typeof chatComposerModule.initialize === "function"
 ) {
 
-    console.log(
-        "[GPA CHAT WINDOW] Initializing Chat Composer..."
-    );
+    if (chatComposerContainer) {
 
-    chatComposerModule.initialize();
+        console.log(
+            "[GPA CHAT WINDOW] Initializing Chat Composer..."
+        );
 
-    console.log(
-        "[GPA CHAT WINDOW] Chat Composer initialized."
-    );
+        chatComposerModule.initialize(
+            chatComposerContainer
+        );
+
+        console.log(
+            "[GPA CHAT WINDOW] Chat Composer initialized."
+        );
+
+    } else {
+
+        console.warn(
+            "[GPA CHAT WINDOW] Chat Composer container not found."
+        );
+
+    }
 
 } else {
 
@@ -383,13 +402,11 @@ if (
 
                     </div>
 
-                    <div class="gpa-messenger-chat-input-area">
-
-                        <div class="gpa-messenger-chat-input-placeholder">
-                            Message input will be added in the next module.
-                        </div>
-
-                    </div>
+                    <div
+    class="gpa-messenger-chat-input-area"
+    id="gpaMessengerChatComposer"
+>
+</div>
 
                 </div>
 
