@@ -1,3 +1,8 @@
+
+const GPAMessengerChatHistory =
+    typeof window !== "undefined"
+        ? window.GPAMessengerChatHistory
+        : null;
 // ============================================================
 // GPA MESSENGER - CHAT WINDOW
 // ============================================================
@@ -127,32 +132,67 @@ const GPAMessengerChatWindow = {
 
     openUser(user) {
 
-        if (!user || !user._id) {
+    if (!user || !user._id) {
 
-            console.warn(
-                "[GPA CHAT WINDOW] Invalid user selected."
-            );
-
-            return;
-
-        }
-
-
-        this.selectedUser = user;
-
-
-        console.log(
-            "[GPA CHAT WINDOW] Opening conversation with:",
-            user.name
+        console.warn(
+            "[GPA CHAT WINDOW] Invalid user selected."
         );
 
+        return;
 
-        this.renderUserHeader(user);
+    }
 
 
-        this.renderConversationPlaceholder(user);
+    this.selectedUser = user;
 
-    },
+
+    console.log(
+        "[GPA CHAT WINDOW] Opening conversation with:",
+        user.name
+    );
+
+
+    this.renderUserHeader(user);
+
+
+    // ========================================================
+    // LOAD MESSAGE HISTORY
+    // ========================================================
+
+    if (
+        GPAMessengerChatHistory &&
+        typeof GPAMessengerChatHistory.loadConversation === "function"
+    ) {
+
+        GPAMessengerChatHistory.loadConversation(
+            user._id
+        )
+        .then(() => {
+
+            console.log(
+                "[GPA CHAT WINDOW] Conversation history loaded for:",
+                user.name
+            );
+
+        })
+        .catch((error) => {
+
+            console.error(
+                "[GPA CHAT WINDOW] Failed to load conversation history:",
+                error
+            );
+
+        });
+
+    } else {
+
+        console.warn(
+            "[GPA CHAT WINDOW] Chat History module not found."
+        );
+
+    }
+
+},
 
 
     // ========================================================
