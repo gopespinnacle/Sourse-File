@@ -23,7 +23,7 @@ const GPAMessengerCore = {
     // INITIALIZE MESSENGER
     // ========================================================
 
-    initialize(options = {}) {
+    async initialize(options = {}) {
 
         if (this.initialized) {
 
@@ -154,9 +154,111 @@ if (
 }
 
 
-        // ====================================================
-        // CORE READY
-        // ====================================================
+// ====================================================
+// USER LIST
+// ====================================================
+// The Core only coordinates the User List modules.
+//
+// User data remains inside:
+// users/messengerUserService.js
+//
+// User organization remains inside:
+// users/messengerUserList.js
+//
+// User display remains inside:
+// users/messengerUserListUI.js
+// ====================================================
+
+const userList =
+    window.GPAMessengerUserList;
+
+const userListUI =
+    window.GPAMessengerUserListUI;
+
+
+if (
+    userList &&
+    typeof userList.initialize === "function"
+) {
+
+    console.log(
+        "GPA Messenger Core: Initializing User List..."
+    );
+
+
+    try {
+
+        await userList.initialize();
+
+
+        this.registerModule(
+            "userList",
+            userList
+        );
+
+
+        console.log(
+            "GPA Messenger User List initialized."
+        );
+
+
+        if (
+            userListUI &&
+            typeof userListUI.initialize === "function"
+        ) {
+
+            console.log(
+                "GPA Messenger Core: Initializing User List UI..."
+            );
+
+
+            userListUI.initialize();
+
+
+            this.registerModule(
+                "userListUI",
+                userListUI
+            );
+
+
+            userListUI.renderUsers(
+                userList.getAllUsers()
+            );
+
+
+            console.log(
+                "GPA Messenger User List UI initialized."
+            );
+
+        } else {
+
+            console.warn(
+                "GPA Messenger Core: User List UI module not found."
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "GPA Messenger Core: User List initialization failed:",
+            error
+        );
+
+    }
+
+} else {
+
+    console.warn(
+        "GPA Messenger Core: User List module not found."
+    );
+
+}
+
+
+// ====================================================
+// CORE READY
+// ====================================================
 
         this.initialized = true;
 
