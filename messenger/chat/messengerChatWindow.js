@@ -208,19 +208,40 @@ if (
 
     if (chatComposerContainer) {
 
-        console.log(
-            "[GPA CHAT WINDOW] Initializing Chat Composer..."
-        );
+    console.log(
+        "[GPA CHAT WINDOW] Initializing Chat Composer..."
+    );
 
-        chatComposerModule.initialize(
-            chatComposerContainer
-        );
+    chatComposerModule.initialize(
+        chatComposerContainer
+    );
 
-        console.log(
-            "[GPA CHAT WINDOW] Chat Composer initialized."
-        );
+    // ====================================================
+    // IMPORTANT:
+    // The Composer may already be initialized by Core.
+    // Therefore explicitly give it the selected user
+    // and render the input area now.
+    // ====================================================
 
-    } else {
+    chatComposerModule.selectedUser = user;
+
+    if (
+        typeof chatComposerModule.findContainer === "function"
+    ) {
+        chatComposerModule.findContainer();
+    }
+
+    if (
+        typeof chatComposerModule.render === "function"
+    ) {
+        chatComposerModule.render();
+    }
+
+    console.log(
+        "[GPA CHAT WINDOW] Chat Composer initialized and rendered."
+    );
+
+} else {
 
         console.warn(
             "[GPA CHAT WINDOW] Chat Composer container not found."
