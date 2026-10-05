@@ -367,11 +367,22 @@ if (
 // ====================================================
 // CHAT MESSAGES
 // ====================================================
-// The Core only coordinates the Chat Messages module.
 //
-// Message rendering and message state remain inside:
+// The Core only registers the Chat Messages module.
 //
-// chat/messengerChatMessages.js
+// IMPORTANT:
+// The Core must NOT initialize Chat Messages here.
+//
+// The message container does not exist yet because
+// the user has not selected a conversation.
+//
+// Chat Window will initialize Chat Messages after
+// creating the conversation message container.
+//
+// Actual initialization happens inside:
+//
+// chat/messengerChatWindow.js
+//
 // ====================================================
 
 if (
@@ -379,22 +390,13 @@ if (
     typeof GPAMessengerChatMessages.initialize === "function"
 ) {
 
-    console.log(
-        "GPA Messenger Core: Initializing Chat Messages..."
-    );
-
-
-    GPAMessengerChatMessages.initialize();
-
-
     this.registerModule(
         "chatMessages",
         GPAMessengerChatMessages
     );
 
-
     console.log(
-        "GPA Messenger Chat Messages initialized."
+        "GPA Messenger Chat Messages module registered."
     );
 
 } else {
@@ -408,7 +410,6 @@ if (
     );
 
 }
-
 
 // ====================================================
 // CORE READY
