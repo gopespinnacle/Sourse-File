@@ -406,32 +406,40 @@ authenticationListenerBound: false,
         // Determine sender
         // ----------------------------------------------------
 
-        const senderId =
-            this.getUserId(
-                message.sender
-            );
+        // ----------------------------------------------------
+// Resolve current authenticated user again
+// ----------------------------------------------------
+// Socket authentication may finish after the module
+// was initially initialized.
+//
+// Therefore we refresh the current user before deciding
+// whether this message is SENT or RECEIVED.
+// ----------------------------------------------------
+
+if (!this.currentUserId) {
+    this.resolveCurrentUser();
+}
 
 
-        const receiverId =
-            this.getUserId(
-                message.receiver
-            );
+const senderId =
+    this.getUserId(
+        message.sender
+    );
 
 
-        let isSent = false;
+let isSent = false;
 
 
-        if (
-            this.currentUserId &&
-            senderId
-        ) {
+if (
+    this.currentUserId &&
+    senderId
+) {
 
-            isSent =
-                String(senderId) ===
-                String(this.currentUserId);
+    isSent =
+        String(senderId) ===
+        String(this.currentUserId);
 
-        }
-
+}
 
         // ----------------------------------------------------
         // Message alignment
