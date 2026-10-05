@@ -23,6 +23,12 @@
 // ============================================================
 
 
+const GPAMessengerChatMessages =
+    typeof window !== "undefined"
+        ? window.GPAMessengerChatMessages
+        : null;
+
+
 const GPAMessengerChatWindow = {
 
     // ========================================================
@@ -74,7 +80,56 @@ const GPAMessengerChatWindow = {
         this.renderEmptyState();
 
 
-        this.registerUserSelectionListener();
+// ----------------------------------------------------
+// INITIALIZE CHAT MESSAGES MODULE
+// ----------------------------------------------------
+
+if (
+    GPAMessengerChatMessages &&
+    typeof GPAMessengerChatMessages.initialize === "function"
+) {
+
+    console.log(
+        "[GPA CHAT WINDOW] Initializing Chat Messages module..."
+    );
+
+    const messageContainer =
+        this.container.querySelector(
+            ".gpa-messenger-chat-messages"
+        );
+
+    if (messageContainer) {
+
+        GPAMessengerChatMessages.initialize(
+            messageContainer
+        );
+
+        console.log(
+            "[GPA CHAT WINDOW] Chat Messages module initialized."
+        );
+
+    } else {
+
+        console.warn(
+            "[GPA CHAT WINDOW] Message container not found during initialization."
+        );
+
+    }
+
+} else {
+
+    console.warn(
+        "[GPA CHAT WINDOW] Chat Messages module not found."
+    );
+
+}
+
+
+// ----------------------------------------------------
+// REGISTER USER SELECTION
+// ----------------------------------------------------
+
+this.registerUserSelectionListener();
 
 
         this.initialized = true;
@@ -158,6 +213,35 @@ openUser(user) {
     // ----------------------------------------------------
 
     this.renderUserHeader(user);
+
+    // ====================================================
+// INITIALIZE MESSAGE CONTAINER FOR SELECTED USER
+// ====================================================
+
+if (
+    GPAMessengerChatMessages &&
+    typeof GPAMessengerChatMessages.initialize === "function"
+) {
+
+    const messageContainer =
+        this.container.querySelector(
+            ".gpa-messenger-chat-messages"
+        );
+
+    if (messageContainer) {
+
+        GPAMessengerChatMessages.initialize(
+            messageContainer
+        );
+
+        console.log(
+            "[GPA CHAT WINDOW] Message container ready for:",
+            user.name
+        );
+
+    }
+
+}
 
 
     // ====================================================
@@ -320,115 +404,44 @@ openUser(user) {
 // RENDER MESSAGE HISTORY
 // ========================================================
 
+// ========================================================
+// RENDER MESSAGE HISTORY
+// ========================================================
+// The Chat Window does NOT render individual messages.
+//
+// Message rendering belongs to:
+// messengerChatMessages.js
+// ========================================================
+
 renderMessages(messages = []) {
 
-    if (!this.container) {
-
-        console.warn(
-            "[GPA CHAT WINDOW] Container not available."
-        );
-
-        return;
-
-    }
-
-
-    const messageContainer =
-        this.container.querySelector(
-            ".gpa-messenger-chat-messages"
-        );
-
-
-    if (!messageContainer) {
-
-        console.warn(
-            "[GPA CHAT WINDOW] Message container not found."
-        );
-
-        return;
-
-    }
-
-
-    // ----------------------------------------------------
-    // No messages
-    // ----------------------------------------------------
-
     if (
-        !Array.isArray(messages) ||
-        messages.length === 0
+        !GPAMessengerChatMessages ||
+        typeof GPAMessengerChatMessages.renderMessages !== "function"
     ) {
 
-        messageContainer.innerHTML = `
-            <div class="gpa-messenger-chat-empty">
-                No messages yet. Start the conversation.
-            </div>
-        `;
-
-        console.log(
-            "[GPA CHAT WINDOW] No messages in conversation."
+        console.warn(
+            "[GPA CHAT WINDOW] Chat Messages module is not available."
         );
 
         return;
 
     }
-
-
-    // ----------------------------------------------------
-    // Render messages
-    // ----------------------------------------------------
-
-    messageContainer.innerHTML =
-        messages
-            .map((message) => {
-
-                const messageText =
-                    this.escapeHTML(
-                        message.message || ""
-                    );
-
-
-                const createdAt =
-                    message.createdAt
-                        ? new Date(
-                            message.createdAt
-                        ).toLocaleString()
-                        : "";
-
-
-                return `
-                    <div class="gpa-messenger-message">
-
-                        <div class="gpa-messenger-message-text">
-                            ${messageText}
-                        </div>
-
-                        <div class="gpa-messenger-message-time">
-                            ${this.escapeHTML(createdAt)}
-                        </div>
-
-                    </div>
-                `;
-
-            })
-            .join("");
-
-
-    // ----------------------------------------------------
-    // Scroll to latest message
-    // ----------------------------------------------------
-
-    messageContainer.scrollTop =
-        messageContainer.scrollHeight;
 
 
     console.log(
-        "[GPA CHAT WINDOW] Messages rendered:",
-        messages.length
+        "[GPA CHAT WINDOW] Sending messages to Chat Messages module:",
+        messages
+    );
+
+
+    GPAMessengerChatMessages.renderMessages(
+        Array.isArray(messages)
+            ? messages
+            : []
     );
 
 },
-
 
     // ========================================================
     // RENDER CONVERSATION PLACEHOLDER
