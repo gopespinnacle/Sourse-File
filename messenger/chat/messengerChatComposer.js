@@ -64,9 +64,9 @@ const GPAMessengerChatComposer = {
 
 
         this.container =
-            document.querySelector(
-                containerSelector
-            );
+    containerSelector instanceof HTMLElement
+        ? containerSelector
+        : document.querySelector(containerSelector);
 
 
         /*
