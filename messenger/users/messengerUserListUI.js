@@ -210,61 +210,95 @@ const GPAMessengerUserListUI = {
         }
 
 
-        const admins =
-            users.filter(
-                user => user.role === "admin"
-            );
+        const founders =
+    users.filter(
+        user => user.role === "founder"
+    );
 
 
-        const teachers =
-            users.filter(
-                user => user.role === "teacher"
-            );
+const admins =
+    users.filter(
+        user => user.role === "admin"
+    );
 
 
-        const students =
-            users.filter(
-                user => user.role === "student"
-            );
+const teachers =
+    users.filter(
+        user => user.role === "teacher"
+    );
 
 
-        content.innerHTML = "";
+const students =
+    users.filter(
+        user => user.role === "student"
+    );
 
 
-        if (admins.length > 0) {
-
-            content.appendChild(
-                this.createGroup(
-                    "Admins",
-                    admins
-                )
-            );
-
-        }
+content.innerHTML = "";
 
 
-        if (teachers.length > 0) {
+// ========================================================
+// FOUNDER
+// ========================================================
 
-            content.appendChild(
-                this.createGroup(
-                    "Teachers",
-                    teachers
-                )
-            );
+if (founders.length > 0) {
 
-        }
+    content.appendChild(
+        this.createGroup(
+            "Founder",
+            founders
+        )
+    );
+
+}
 
 
-        if (students.length > 0) {
+// ========================================================
+// ADMINS
+// ========================================================
 
-            content.appendChild(
-                this.createGroup(
-                    "Students",
-                    students
-                )
-            );
+if (admins.length > 0) {
 
-        }
+    content.appendChild(
+        this.createGroup(
+            "Admins",
+            admins
+        )
+    );
+
+}
+
+
+// ========================================================
+// TEACHERS
+// ========================================================
+
+if (teachers.length > 0) {
+
+    content.appendChild(
+        this.createGroup(
+            "Teachers",
+            teachers
+        )
+    );
+
+}
+
+
+// ========================================================
+// STUDENTS
+// ========================================================
+
+if (students.length > 0) {
+
+    content.appendChild(
+        this.createGroup(
+            "Students",
+            students
+        )
+    );
+
+}
 
     },
 
