@@ -18,6 +18,11 @@ const gpaMessengerChatWindowModule =
         ? window.GPAMessengerChatComposer
         : null;
 
+        const GPAMessengerChatMessages =
+    typeof window !== "undefined"
+        ? window.GPAMessengerChatMessages
+        : null;
+
 const GPAMessengerCore = {
 
     initialized: false,
@@ -359,6 +364,50 @@ if (
 }
 
    
+// ====================================================
+// CHAT MESSAGES
+// ====================================================
+// The Core only coordinates the Chat Messages module.
+//
+// Message rendering and message state remain inside:
+//
+// chat/messengerChatMessages.js
+// ====================================================
+
+if (
+    GPAMessengerChatMessages &&
+    typeof GPAMessengerChatMessages.initialize === "function"
+) {
+
+    console.log(
+        "GPA Messenger Core: Initializing Chat Messages..."
+    );
+
+
+    GPAMessengerChatMessages.initialize();
+
+
+    this.registerModule(
+        "chatMessages",
+        GPAMessengerChatMessages
+    );
+
+
+    console.log(
+        "GPA Messenger Chat Messages initialized."
+    );
+
+} else {
+
+    console.warn(
+        "GPA Messenger Core: Chat Messages module not found."
+    );
+
+    console.warn(
+        "Make sure messengerChatMessages.js is loaded before messengerCore.js."
+    );
+
+}
 
 
 // ====================================================
