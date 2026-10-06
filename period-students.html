@@ -742,125 +742,118 @@ sessionStorage.setItem(
     )
 );
 
-/* ================= OPEN GOOGLE MEET ================= */
+/* ================= OPEN TEACHER GOOGLE MEET ================= */
 
-const room =
-`academy-${className}-${day}-${startTime.replace(":", "")}`;
+meetWindow = window.open("about:blank", "_blank");
 
-sessionStorage.setItem(
-    "room",
-    room
-);
+if(!meetWindow){
 
-const sessionResponse = await fetch(
-    "https://academy-backend-eatl.onrender.com/api/class-session/create",
-    {
-        method: "POST",
+    alert(
+        "Please allow pop-ups for this website to join the class."
+    );
 
-        headers: {
-            "Content-Type": "application/json"
-        },
+    return;
+}
 
-        body: JSON.stringify({
+try{
 
-            teacherId:
-            sessionStorage.getItem("teacherId"),
+    const token =
+        sessionStorage.getItem("token");
 
-            teacherName:
-            sessionStorage.getItem("teacherName"),
+    /* GET LOGGED-IN TEACHER MEETING LINK */
 
-            className,
+    const meetingResponse = await fetch(
 
-            subject,
+        "https://academy-backend-eatl.onrender.com/api/teacher/my-meeting-link",
 
-            day,
+        {
+            method:"GET",
 
-            date:
-            new Date().toLocaleDateString(),
+            headers:{
+                "Authorization":
+                    "Bearer " + token
+            }
+        }
 
-            periodStart:
-            startTime,
+    );
 
-            periodEnd:
-            params.get("endTime"),
+    const meetingData =
+        await meetingResponse.json();
 
-            room,
+    /* BACKEND ERROR */
 
-            students:
-            JSON.parse(
-                sessionStorage.getItem("summaryStudents")
-            )
+    if(!meetingResponse.ok){
 
-        })
+        meetWindow.close();
+
+        alert(
+            meetingData.message ||
+            "Teacher meeting link not available."
+        );
+
+        return;
+    }
+
+    /* CHECK MEETING LINK */
+
+    if(!meetingData.meetingLink){
+
+        meetWindow.close();
+
+        alert(
+            "Google Meet link is not configured for this teacher."
+        );
+
+        return;
+    }
+
+    console.log(
+        "Teacher:",
+        meetingData.teacherName
+    );
+
+    console.log(
+        "Meeting Link:",
+        meetingData.meetingLink
+    );
+
+    /* OPEN THIS TEACHER'S GOOGLE MEET */
+
+    meetWindow.location.href =
+        meetingData.meetingLink;
+
+    /* SAVE LINK */
+
+    sessionStorage.setItem(
+        "teacherMeetingLink",
+        meetingData.meetingLink
+    );
+
+    attendanceMarked = true;
+
+    document.getElementById(
+        "endClassBtn"
+    ).style.display = "block";
+
+}
+catch(err){
+
+    console.error(
+        "MEETING LINK ERROR:",
+        err
+    );
+
+    if(meetWindow && !meetWindow.closed){
+
+        meetWindow.close();
 
     }
-);
 
-const sessionData =
-await sessionResponse.json();
+    alert(
+        "Unable to open the teacher's Google Meet."
+    );
 
-sessionStorage.setItem(
-    "classSessionId",
-    sessionData.sessionId
-);
-console.log("periodId =", periodId);
-
-/* =====================================================
-   OPEN NEW VIRTUAL CLASSROOM
-   ===================================================== */
-
-const teacherName =
-    sessionStorage.getItem("teacherName");
-
-
-console.log(
-    "=========================================="
-);
-
-console.log(
-    "OPENING WHITEBOARD"
-);
-
-console.log(
-    "Teacher ID:",
-    teacherId
-);
-
-console.log(
-    "Teacher Name:",
-    teacherName
-);
-
-console.log(
-    "Room:",
-    room
-);
-
-console.log(
-    "Period ID:",
-    periodId
-);
-
-console.log(
-    "=========================================="
-);
-
-
-window.location.href =
-`whiteboard.html?room=${encodeURIComponent(room)}
-&periodId=${encodeURIComponent(periodId)}
-&role=teacher
-&userId=${encodeURIComponent(teacherId || "")}
-&name=${encodeURIComponent(teacherName || "")}
-&className=${encodeURIComponent(className)}
-&subject=${encodeURIComponent(subject)}
-&day=${encodeURIComponent(day)}
-&startTime=${encodeURIComponent(startTime)}
-&endTime=${encodeURIComponent(params.get("endTime") || "")}`;
-
-document.getElementById("endClassBtn").style.display = "block";
-
-attendanceMarked = true;
+}
 }
 async function endClass(){
 
