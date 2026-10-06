@@ -1205,18 +1205,77 @@ async function joinClass(
             }
         );
 
-        const room =
-`academy-${className}-${day}-${startTime.replace(":", "")}`;
+        /* =========================================================
+   GET TEACHER MEETING LINK FOR THIS PERIOD
+   ========================================================= */
+
+const meetingResponse = await fetch(
+
+    "https://academy-backend-eatl.onrender.com/api/student/meeting-link/" +
+    encodeURIComponent(periodId),
+
+    {
+        method: "GET",
+
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    }
+
+);
+
+const meetingData = await meetingResponse.json();
+
+
+/* =========================================================
+   CHECK MEETING LINK RESPONSE
+   ========================================================= */
+
+if(!meetingResponse.ok){
+
+    console.error(
+        "Meeting link error:",
+        meetingData
+    );
+
+    alert(
+        meetingData.message ||
+        "Unable to get teacher meeting link."
+    );
+
+    return;
+
+}
+
+
+if(!meetingData.meetingLink){
+
+    alert(
+        "Teacher Google Meet link is not configured."
+    );
+
+    return;
+
+}
+
+
+/* =========================================================
+   OPEN THE CORRECT TEACHER GOOGLE MEET
+   ========================================================= */
+
+console.log(
+    "Teacher:",
+    meetingData.teacherName
+);
+
+console.log(
+    "Teacher Meeting:",
+    meetingData.meetingLink
+);
+
 
 window.location.href =
-`whiteboard.html?room=${encodeURIComponent(room)}
-&periodId=${periodId}
-&role=student
-&className=${encodeURIComponent(className)}
-&subject=${encodeURIComponent(subject)}
-&day=${encodeURIComponent(day)}
-&startTime=${encodeURIComponent(startTime)}
-&endTime=${encodeURIComponent(endTime)}`;
+    meetingData.meetingLink;
 
     }catch(err){
 
