@@ -202,19 +202,32 @@ const status = period.status;
 const div = document.createElement("div");
 div.className = "period-card " + status;
 
-/* CLICK JOIN */
-div.onclick = () => {
 
-window.location.href =
-"student-period.html?" +
-"className=" + encodeURIComponent(s.className) +
-"&subject=" + encodeURIComponent(s.subject || "") +
-"&day=" + encodeURIComponent(s.day) +
-"&startTime=" + encodeURIComponent(s.startTime) +
-"&endTime=" + encodeURIComponent(s.endTime) +
-"&periodId=" + encodeURIComponent(s._id);
+/* ================= LIVE CLASS ONLY ================= */
 
-};
+if(status === "live"){
+
+    div.style.cursor = "pointer";
+
+    div.onclick = () => {
+
+        window.location.href =
+        "student-period.html?" +
+        "className=" + encodeURIComponent(s.className) +
+        "&subject=" + encodeURIComponent(s.subject || "") +
+        "&day=" + encodeURIComponent(s.day) +
+        "&startTime=" + encodeURIComponent(s.startTime) +
+        "&endTime=" + encodeURIComponent(s.endTime) +
+        "&periodId=" + encodeURIComponent(s._id);
+
+    };
+
+}
+else{
+
+    div.style.cursor = "default";
+
+}
 
 
 
