@@ -382,7 +382,7 @@ body{
                 <input
     type="date"
     id="classDate"
-    onchange="checkApprovedLeave()"
+    onchange="dateChanged()"
 >
 
             </div>
@@ -657,7 +657,85 @@ function setToday(){
         `${year}-${month}-${day}`;
 
 }
+/* =====================================================
+   DATE CHANGED
+   FILTER CLASSES FOR SELECTED DAY
+   ===================================================== */
 
+function dateChanged(){
+
+    const date =
+        document.getElementById(
+            "classDate"
+        ).value;
+
+
+    if(!date){
+
+        return;
+
+    }
+
+
+    const selectedDate =
+        new Date(
+            date + "T00:00:00"
+        );
+
+
+    const days = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+    ];
+
+
+    const selectedDay =
+        days[
+            selectedDate.getDay()
+        ];
+
+
+    renderClassesForDay(
+        selectedDay
+    );
+
+
+    /* If a class was already selected,
+       check its approved leave for
+       the new date. */
+
+    selectedClass = null;
+
+    document.getElementById(
+        "subject"
+    ).value = "";
+
+    document.getElementById(
+        "grade"
+    ).value = "";
+
+    document.getElementById(
+        "startTime"
+    ).value = "";
+
+    document.getElementById(
+        "endTime"
+    ).value = "";
+
+    document.getElementById(
+        "studentList"
+    ).innerHTML = `
+        <div style="color:#6b7280;">
+            Select a class to view students.
+        </div>
+    `;
+
+}
 
 /* =====================================================
    LOAD TEACHER CLASSES
@@ -697,41 +775,42 @@ async function loadClasses(){
             result.data || [];
 
 
-        const select =
-            document.getElementById(
-                "classSelect"
-            );
+        const date =
+    document.getElementById(
+        "classDate"
+    ).value;
 
 
-        select.innerHTML = `
-            <option value="">
-                Select Class
-            </option>
-        `;
+if(date){
 
-
-        classData.forEach(
-            (item,index)=>{
-
-                const option =
-                    document.createElement(
-                        "option"
-                    );
-
-                option.value =
-                    index;
-
-
-                option.textContent =
-                    `${item.className || "-"} | ${item.subject || "-"}`;
-
-
-                select.appendChild(
-                    option
-                );
-
-            }
+    const selectedDate =
+        new Date(
+            date + "T00:00:00"
         );
+
+
+    const days = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+    ];
+
+
+    const selectedDay =
+        days[
+            selectedDate.getDay()
+        ];
+
+
+    renderClassesForDay(
+        selectedDay
+    );
+
+}
 
 
         if(classData.length === 0){
@@ -761,7 +840,89 @@ async function loadClasses(){
 
 }
 
+/* =====================================================
+   SHOW CLASSES FOR SELECTED DAY
+   ===================================================== */
 
+function renderClassesForDay(
+    selectedDay
+){
+
+    const select =
+        document.getElementById(
+            "classSelect"
+        );
+
+
+    select.innerHTML = `
+        <option value="">
+            Select Class
+        </option>
+    `;
+
+
+    const classesForDay =
+        classData.filter(
+            item => {
+
+                return (
+                    String(
+                        item.day || ""
+                    ).trim().toLowerCase()
+                    ===
+                    String(
+                        selectedDay
+                    ).trim().toLowerCase()
+                );
+
+            }
+        );
+
+
+    classesForDay.forEach(
+        item => {
+
+            const originalIndex =
+                classData.indexOf(
+                    item
+                );
+
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                originalIndex;
+
+
+            option.textContent =
+                `${item.className || "-"} | ${item.subject || "-"}`;
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    if(
+        classesForDay.length === 0
+    ){
+
+        select.innerHTML = `
+            <option value="">
+                No classes scheduled for ${selectedDay}
+            </option>
+        `;
+
+    }
+
+}
 /* =====================================================
    LOAD SELECTED CLASS
    ===================================================== */
