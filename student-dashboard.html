@@ -1070,7 +1070,8 @@ function createClassCard(c, isLive) {
 function renderClassSection(
     title,
     classes,
-    icon
+    icon,
+    isLive
 ) {
 
     if (classes.length === 0) {
@@ -1105,9 +1106,9 @@ function renderClassSection(
 
     classes.forEach(c => {
 
-        html += createClassCard(c);
+    html += createClassCard(c, isLive);
 
-    });
+});
 
 
     html += `
@@ -1152,26 +1153,29 @@ else {
 
     // 1️⃣ UPCOMING FIRST
     html += renderClassSection(
-        "UPCOMING CLASSES",
-        upcomingClasses,
-        "🟡"
-    );
+    "UPCOMING CLASSES",
+    upcomingClasses,
+    "🟡",
+    false
+);
 
 
     // 2️⃣ LIVE SECOND
     html += renderClassSection(
-        "LIVE CLASSES",
-        liveClasses,
-        "🟢"
-    );
+    "LIVE CLASSES",
+    liveClasses,
+    "🟢",
+    true
+);
 
 
     // 3️⃣ COMPLETED LAST
     html += renderClassSection(
-        "CLASSES OVER",
-        completedClasses,
-        "⚪"
-    );
+    "CLASSES OVER",
+    completedClasses,
+    "⚪",
+    false
+);
 
 
     container.innerHTML = html;
