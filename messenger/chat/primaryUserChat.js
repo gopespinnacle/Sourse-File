@@ -219,6 +219,25 @@
             this.input.focus();
 
 
+
+ // ========================================================
+// MODULE 2
+// SEND MESSAGE TO BACKEND SOCKET
+// ========================================================
+
+if (
+    window.GPAPrimaryUserSocket &&
+    typeof window.GPAPrimaryUserSocket.sendMessage ===
+        "function"
+) {
+
+    window.GPAPrimaryUserSocket.sendMessage(
+        message
+    );
+
+}
+
+
             console.log(
                 "[GPA PRIMARY CHAT] " +
                 "Message displayed immediately."
