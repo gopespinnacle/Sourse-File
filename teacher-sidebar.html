@@ -10,23 +10,40 @@
 
     <ul>
 
-        <li onclick="window.location.href='teacher-dashboard.html'">
+    <li onclick="window.location.href='teacher-dashboard.html'">
 
-            <i class="fa fa-chart-line"></i>
+        <i class="fa fa-chart-line"></i>
 
-            Dashboard
+        Dashboard
 
-        </li>
+    </li>
 
-        <li onclick="logout()">
 
-            <i class="fa fa-sign-out-alt"></i>
+    <!-- ================= PDF GENERATOR ================= -->
 
-            Logout
+    <li
+        id="menu-pdf-generator"
+        onclick="window.location.href='teacher-pdf-generator.html'"
+    >
 
-        </li>
+        <i class="fa fa-file-pdf"></i>
 
-    </ul>
+        PDF Generator
+
+    </li>
+
+
+    <!-- ================= LOGOUT ================= -->
+
+    <li onclick="logout()">
+
+        <i class="fa fa-sign-out-alt"></i>
+
+        Logout
+
+    </li>
+
+</ul>
 
 </div>
 <style>
