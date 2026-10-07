@@ -231,6 +231,19 @@ const GPAMessengerChatSocket = {
 // message rendering logic.
 // ============================================================
 
+// ============================================================
+// REALTIME MESSAGE RECEIVED
+// ============================================================
+//
+// Backend event:
+// messenger:chat:message
+//
+// The receiver gets the message immediately through Socket.IO.
+//
+// We send the message to the Chat Messages module using
+// the existing local event system.
+// ============================================================
+
 this.socket.on(
     "messenger:chat:message",
     (message) => {
@@ -242,7 +255,22 @@ this.socket.on(
 
 
         // ----------------------------------------------------
-        // Make sure Chat Messages module exists
+        // Make sure message is valid
+        // ----------------------------------------------------
+
+        if (!message) {
+
+            console.warn(
+                "[GPA WEB CHAT SOCKET] Empty realtime message received."
+            );
+
+            return;
+
+        }
+
+
+        // ----------------------------------------------------
+        // Send realtime message to Chat Messages module
         // ----------------------------------------------------
 
         const chatMessages =
@@ -250,31 +278,26 @@ this.socket.on(
 
 
         if (
-            !chatMessages ||
-            typeof chatMessages.appendMessage !== "function"
+            chatMessages &&
+            typeof chatMessages.appendMessage === "function"
         ) {
 
-            console.warn(
-                "[GPA WEB CHAT SOCKET] Chat Messages module is not available yet."
+            chatMessages.appendMessage(
+                message,
+                true
             );
 
-            return;
+            console.log(
+                "[GPA WEB CHAT SOCKET] Realtime message appended immediately."
+            );
+
+        } else {
+
+            console.warn(
+                "[GPA WEB CHAT SOCKET] Chat Messages module is not ready."
+            );
+
         }
-
-
-        // ----------------------------------------------------
-        // Pass realtime message to Chat Messages module
-        // ----------------------------------------------------
-
-        chatMessages.appendMessage(
-            message,
-            true
-        );
-
-
-        console.log(
-            "[GPA WEB CHAT SOCKET] Realtime message passed to Chat Messages module."
-        );
 
     }
 );
