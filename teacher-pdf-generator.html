@@ -1401,61 +1401,14 @@ function moveImageIfNeeded(
     pageObject,
     box
 ){
-
-    const content=
-        pageObject.content;
-
-    const top=
-        parseFloat(
-            box.style.top||0
-        );
-
-    const height=
-        box.getBoundingClientRect()
-            .height;
-
-    if(
-        top+height >
-        PAGE_CONTENT_H
-    ){
-
-        const nextIndex=
-            editorPages.indexOf(
-                pageObject
-            )+1;
-
-        const next=
-            ensureEditorPage(
-                nextIndex
-            );
-
-        /*
-         * Word-like behaviour:
-         * never cut an image between pages.
-         * Move the complete image to Page 2.
-         */
-        box.remove();
-
-        box.style.top=
-            Math.max(
-                0,
-                top-
-                PAGE_CONTENT_H
-            )+"px";
-
-        next.content.appendChild(
-            box
-        );
-
-        setupImageBox(
-            box,
-            next
-        );
-
-        setActivePage(
-            nextIndex
-        );
+    /* Images are floating Word-style objects.
+       Never move them automatically when text flows. */
+    if(!box || !pageObject){
+        return;
     }
+
+    box.style.position="absolute";
+    box.style.margin="0";
 }
 
 
@@ -2252,164 +2205,58 @@ function moveOverflowFromPage(
     pageIndex
 ){
 
-    const pageObject=
-        editorPages[pageIndex];
+    const pageObject=editorPages[pageIndex];
 
     if(!pageObject){
         return false;
     }
 
-    const content=
-        pageObject.content;
-
+    const content=pageObject.content;
     let changed=false;
 
     /*
-     * Images are absolute objects.
-     * Move the complete image if it reaches
-     * the next A4 page.
+     * IMPORTANT: image-box elements are floating objects.
+     * They are deliberately excluded from pagination.
+     * If the teacher places an image on Page 1, pressing Enter
+     * and moving text to Page 2 will NOT move that image.
      */
-    const images=
-        Array.from(
-            content.querySelectorAll(
-                ":scope > .image-box"
-            )
-        );
+    const blocks=getFlowChildren(content);
 
-    for(
-        const box
-        of images
-    ){
+    for(const block of blocks){
 
-        const top=
-            parseFloat(
-                box.style.top||0
-            );
-
-        const h=
-            box.getBoundingClientRect()
-                .height;
-
-        if(
-            top+h >
-            PAGE_CONTENT_H
-        ){
-
-            const next=
-                ensureEditorPage(
-                    pageIndex+1
-                );
-
-            box.remove();
-
-            box.style.top=
-                Math.max(
-                    0,
-                    top-PAGE_CONTENT_H
-                )+"px";
-
-            next.content.appendChild(
-                box
-            );
-
-            setupImageBox(
-                box,
-                next
-            );
-
-            changed=true;
-        }
-    }
-
-    /*
-     * Text flows like a Word document:
-     * a complete block is moved to the
-     * next page when it no longer fits.
-     */
-    while(
-        content.scrollHeight >
-        content.clientHeight+2
-    ){
-
-        const blocks=
-            getFlowChildren(
-                content
-            );
-
-        if(!blocks.length){
-            break;
+        if(!block || !block.isConnected){
+            continue;
         }
 
-        const last=
-            blocks[blocks.length-1];
+        const rect=block.getBoundingClientRect();
+        const contentRect=content.getBoundingClientRect();
+        const bottom=rect.bottom-contentRect.top;
 
-        const lastRect=
-            last.getBoundingClientRect();
-
-        const contentRect=
-            content.getBoundingClientRect();
-
-        const bottom=
-            lastRect.bottom-
-            contentRect.top;
-
-        if(
-            bottom <=
-            content.clientHeight+1
-        ){
-            break;
+        if(bottom <= content.clientHeight+1){
+            continue;
         }
 
-        const next=
-            ensureEditorPage(
-                pageIndex+1
-            );
+        const next=ensureEditorPage(pageIndex+1);
 
-        /*
-         * If the block itself is bigger than
-         * one page, split the text at a safe
-         * word boundary.
-         */
+        /* Split a very long text block at a safe word boundary. */
         if(
-            last.getBoundingClientRect()
-                .height >
-            content.clientHeight
-            &&
-            last.textContent.trim()
-            &&
-            !last.querySelector(
-                "img,table"
-            )
+            block.getBoundingClientRect().height > content.clientHeight &&
+            block.textContent.trim() &&
+            !block.querySelector('img,table')
         ){
 
-            const splitBlock=
-                splitLongTextBlock(
-                    last,
-                    content
-                );
+            const splitBlock=splitLongTextBlock(block,content);
 
             if(splitBlock){
-
-                next.content.insertBefore(
-                    splitBlock,
-                    next.content.firstChild
-                );
-
+                next.content.insertBefore(splitBlock,next.content.firstChild);
                 changed=true;
                 continue;
             }
         }
 
-        /*
-         * Whole block goes to Page 2.
-         */
-        last.remove();
-
-        next.content.insertBefore(
-            last,
-            next.content.firstChild
-        );
-
+        /* Move ONLY text/content blocks. Floating images stay put. */
+        block.remove();
+        next.content.insertBefore(block,next.content.firstChild);
         changed=true;
     }
 
