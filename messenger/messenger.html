@@ -181,6 +181,37 @@
 
         }
 
+
+        /* =====================================================
+   MODULE 5
+   CONTACT ROLE SECTIONS
+   ===================================================== */
+
+.gpa-messenger-contact-section {
+    border-bottom: 1px solid #ddd;
+}
+
+
+.gpa-messenger-contact-section-title {
+
+    padding: 12px 14px;
+
+    background: #f1f4f9;
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+    color: #3155a6;
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 2;
+
+}
+
     </style>
 
 </head>
@@ -445,55 +476,113 @@
 
 
         function displayMessengerContacts(
-            contacts
+    contacts
+) {
+
+    const contactsContainer =
+        document.getElementById(
+            "gpaMessengerContacts"
+        );
+
+
+    if (!contacts || contacts.length === 0) {
+
+        contactsContainer.innerHTML = `
+
+            <div
+                class="gpa-messenger-contacts-loading"
+            >
+                No contacts found.
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    // =====================================================
+    // SEPARATE CONTACTS BY ROLE
+    // =====================================================
+
+    const students =
+        contacts.filter(
+            contact =>
+                contact.role === "student"
+        );
+
+
+    const teachers =
+        contacts.filter(
+            contact =>
+                contact.role === "teacher"
+        );
+
+
+    const admins =
+        contacts.filter(
+            contact =>
+                contact.role === "admin"
+        );
+
+
+    const parents =
+        contacts.filter(
+            contact =>
+                contact.role === "parent"
+        );
+
+
+    // =====================================================
+    // CREATE CONTACT SECTION
+    // =====================================================
+
+    function createContactSection(
+        title,
+        contactList
+    ) {
+
+        if (
+            !contactList ||
+            contactList.length === 0
         ) {
 
-            const contactsContainer =
-                document.getElementById(
-                    "gpaMessengerContacts"
-                );
+            return "";
+
+        }
 
 
-            if (!contacts || contacts.length === 0) {
+        let html = `
 
-                contactsContainer.innerHTML = `
+            <div
+                class="gpa-messenger-contact-section"
+            >
+
+                <div
+                    class="gpa-messenger-contact-section-title"
+                >
+                    ${title}
+                </div>
+
+        `;
+
+
+        contactList.forEach(
+            function (contact) {
+
+                html += `
 
                     <div
-                        class="gpa-messenger-contacts-loading"
+                        class="gpa-messenger-contact"
                     >
-                        No contacts found.
-                    </div>
-
-                `;
-
-                return;
-
-            }
-
-
-            contactsContainer.innerHTML = "";
-
-
-            contacts.forEach(
-                function (contact) {
-
-                    const contactElement =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    contactElement.className =
-                        "gpa-messenger-contact";
-
-
-                    contactElement.innerHTML = `
 
                         <div
                             class="gpa-messenger-contact-name"
                         >
                             ${escapeMessengerText(
-                                contact.name || "Unknown"
+                                contact.name ||
+                                "Unknown"
                             )}
                         </div>
 
@@ -502,32 +591,64 @@
                             class="gpa-messenger-contact-info"
                         >
                             ${escapeMessengerText(
-                                contact.email || ""
+                                contact.email ||
+                                ""
                             )}
                         </div>
 
+                    </div>
 
-                        <div
-                            class="gpa-messenger-contact-role"
-                        >
-                            ${escapeMessengerText(
-                                contact.role || ""
-                            )}
-                        </div>
+                `;
 
-                    `;
+            }
+        );
 
 
-                    contactsContainer.appendChild(
-                        contactElement
-                    );
+        html += `
 
-                }
-            );
+            </div>
 
-        }
+        `;
 
 
+        return html;
+
+    }
+
+
+    // =====================================================
+    // DISPLAY SEPARATE ROLE SECTIONS
+    // =====================================================
+
+    contactsContainer.innerHTML =
+
+        createContactSection(
+            "👨‍🎓 STUDENTS",
+            students
+        )
+
+        +
+
+        createContactSection(
+            "👨‍🏫 TEACHERS",
+            teachers
+        )
+
+        +
+
+        createContactSection(
+            "👨‍💼 ADMINS",
+            admins
+        )
+
+        +
+
+        createContactSection(
+            "👨‍👩‍👧 PARENTS",
+            parents
+        );
+
+}
         function escapeMessengerText(
             value
         ) {
