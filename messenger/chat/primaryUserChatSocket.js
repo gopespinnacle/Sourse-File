@@ -87,6 +87,20 @@
                 }
             );
 
+            // ========================================================
+// MODULE 4
+// REQUEST MESSAGE HISTORY
+// ========================================================
+
+this.socket.emit(
+    "gpa:primary:message:history"
+);
+
+console.log(
+    "[GPA PRIMARY MESSAGE HISTORY] " +
+    "History requested."
+);
+
 
             // ----------------------------------------------------
             // SERVER CONFIRMATION
@@ -104,6 +118,70 @@
 
                 }
             );
+
+            // ========================================================
+// MODULE 4
+// RECEIVE MESSAGE HISTORY
+// ========================================================
+
+this.socket.on(
+    "gpa:primary:message:history:received",
+    (messages) => {
+
+        console.log(
+            "[GPA PRIMARY MESSAGE HISTORY] " +
+            "History received:",
+            messages
+        );
+
+        if (!Array.isArray(messages)) {
+
+            console.warn(
+                "[GPA PRIMARY MESSAGE HISTORY] " +
+                "Invalid history received."
+            );
+
+            return;
+        }
+
+        if (
+            !window.GPAPrimaryUserChat ||
+            typeof window.GPAPrimaryUserChat.displayMessage !==
+                "function"
+        ) {
+
+            console.warn(
+                "[GPA PRIMARY MESSAGE HISTORY] " +
+                "Primary User Chat is not available."
+            );
+
+            return;
+        }
+
+        messages.forEach(
+            (message) => {
+
+                window.GPAPrimaryUserChat.displayMessage({
+
+                    id:
+                        message.messageId,
+
+                    text:
+                        message.text,
+
+                    sender:
+                        message.sender,
+
+                    createdAt:
+                        message.sentAt
+
+                });
+
+            }
+        );
+
+    }
+);
 
 
             // ----------------------------------------------------
