@@ -843,20 +843,38 @@ async function selectMessengerContact(
 
 
         if (
-            data.success &&
-            data.conversation
-        ) {
+    data.success &&
+    data.conversation
+) {
 
-            window.GPAMessengerConversation =
-                data.conversation;
+    window.GPAMessengerConversation =
+        data.conversation;
 
 
-            console.log(
-                "[GPA MESSENGER] Conversation ID:",
-                data.conversation._id
-            );
+    // =================================================
+    // STEP 10
+    // STORE CURRENT CONVERSATION DETAILS
+    // =================================================
 
-        } else {
+    window.GPAMessengerConversationId =
+        data.conversation._id;
+
+    window.GPAMessengerReceiverId =
+        selectedMessengerContact._id;
+
+
+    console.log(
+        "[GPA MESSENGER] Conversation ID:",
+        window.GPAMessengerConversationId
+    );
+
+    console.log(
+        "[GPA MESSENGER] Receiver ID:",
+        window.GPAMessengerReceiverId
+    );
+
+
+} else {
 
             console.error(
                 "[GPA MESSENGER] Conversation failed:",

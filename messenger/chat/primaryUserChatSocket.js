@@ -87,19 +87,21 @@
                 }
             );
 
+
             // ========================================================
-// MODULE 4
-// REQUEST MESSAGE HISTORY
-// ========================================================
+            // MODULE 4
+            // REQUEST MESSAGE HISTORY
+            // ========================================================
 
-this.socket.emit(
-    "gpa:primary:message:history"
-);
+            this.socket.emit(
+                "gpa:primary:message:history"
+            );
 
-console.log(
-    "[GPA PRIMARY MESSAGE HISTORY] " +
-    "History requested."
-);
+
+            console.log(
+                "[GPA PRIMARY MESSAGE HISTORY] " +
+                "History requested."
+            );
 
 
             // ----------------------------------------------------
@@ -119,69 +121,73 @@ console.log(
                 }
             );
 
+
             // ========================================================
-// MODULE 4
-// RECEIVE MESSAGE HISTORY
-// ========================================================
+            // MODULE 4
+            // RECEIVE MESSAGE HISTORY
+            // ========================================================
 
-this.socket.on(
-    "gpa:primary:message:history:received",
-    (messages) => {
+            this.socket.on(
+                "gpa:primary:message:history:received",
+                (messages) => {
 
-        console.log(
-            "[GPA PRIMARY MESSAGE HISTORY] " +
-            "History received:",
-            messages
-        );
+                    console.log(
+                        "[GPA PRIMARY MESSAGE HISTORY] " +
+                        "History received:",
+                        messages
+                    );
 
-        if (!Array.isArray(messages)) {
 
-            console.warn(
-                "[GPA PRIMARY MESSAGE HISTORY] " +
-                "Invalid history received."
+                    if (!Array.isArray(messages)) {
+
+                        console.warn(
+                            "[GPA PRIMARY MESSAGE HISTORY] " +
+                            "Invalid history received."
+                        );
+
+                        return;
+                    }
+
+
+                    if (
+                        !window.GPAPrimaryUserChat ||
+                        typeof window.GPAPrimaryUserChat.displayMessage !==
+                            "function"
+                    ) {
+
+                        console.warn(
+                            "[GPA PRIMARY MESSAGE HISTORY] " +
+                            "Primary User Chat is not available."
+                        );
+
+                        return;
+                    }
+
+
+                    messages.forEach(
+                        (message) => {
+
+                            window.GPAPrimaryUserChat.displayMessage({
+
+                                id:
+                                    message.messageId,
+
+                                text:
+                                    message.text,
+
+                                sender:
+                                    message.sender,
+
+                                createdAt:
+                                    message.sentAt
+
+                            });
+
+                        }
+                    );
+
+                }
             );
-
-            return;
-        }
-
-        if (
-            !window.GPAPrimaryUserChat ||
-            typeof window.GPAPrimaryUserChat.displayMessage !==
-                "function"
-        ) {
-
-            console.warn(
-                "[GPA PRIMARY MESSAGE HISTORY] " +
-                "Primary User Chat is not available."
-            );
-
-            return;
-        }
-
-        messages.forEach(
-            (message) => {
-
-                window.GPAPrimaryUserChat.displayMessage({
-
-                    id:
-                        message.messageId,
-
-                    text:
-                        message.text,
-
-                    sender:
-                        message.sender,
-
-                    createdAt:
-                        message.sentAt
-
-                });
-
-            }
-        );
-
-    }
-);
 
 
             // ----------------------------------------------------
@@ -253,21 +259,112 @@ this.socket.on(
             }
 
 
+            // ========================================================
+            // MODULE 5
+            // STEP 11
+            // SEND CONVERSATION INFORMATION
+            // ========================================================
+
+            const conversation =
+                window.GPAMessengerConversation;
+
+
+            if (
+                !conversation ||
+                !conversation._id
+            ) {
+
+                console.warn(
+                    "[GPA PRIMARY CHAT SOCKET] " +
+                    "No active conversation selected."
+                );
+
+                return;
+            }
+
+
+            const participants =
+                conversation.participants || [];
+
+
+            if (
+                !Array.isArray(participants) ||
+                participants.length < 2
+            ) {
+
+                console.warn(
+                    "[GPA PRIMARY CHAT SOCKET] " +
+                    "Conversation participants are missing."
+                );
+
+                return;
+            }
+
+
+            // --------------------------------------------------------
+            // Get login token
+            // --------------------------------------------------------
+
+            const token =
+                localStorage.getItem("token");
+
+
+            if (!token) {
+
+                console.warn(
+                    "[GPA PRIMARY CHAT SOCKET] " +
+                    "Login token is missing."
+                );
+
+                return;
+            }
+
+
+            // --------------------------------------------------------
+            // Selected contact
+            // --------------------------------------------------------
+
+            const receiverId =
+                participants[1];
+
+
+            // --------------------------------------------------------
+            // Add conversation information
+            // --------------------------------------------------------
+
+            const messageWithConversation = {
+
+                ...message,
+
+                conversationId:
+                    conversation._id,
+
+                receiverId:
+                    receiverId
+
+            };
+
+
+            // --------------------------------------------------------
+            // SEND TO BACKEND
+            // --------------------------------------------------------
+
             this.socket.emit(
                 "gpa:primary:message",
-                message
+                messageWithConversation
             );
 
 
             console.log(
                 "[GPA PRIMARY CHAT SOCKET] " +
                 "Message sent to backend:",
-                message
+                messageWithConversation
             );
 
         }
 
-    }
+
+    } // <-- CLOSE PrimaryUserChatSocket CLASS
 
 
     // ============================================================
@@ -312,5 +409,6 @@ this.socket.on(
         start();
 
     }
+
 
 })();
