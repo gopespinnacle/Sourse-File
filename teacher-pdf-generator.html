@@ -1112,7 +1112,17 @@ function buildPaginatedPreview(){
  /* Pen is stored relative to the whole editor page, so convert it to editor-content coordinates. */
  const penBounds=getPenBoundsInEditorContent();
  if(penBounds){
-   requiredPages=Math.max(requiredPages,Math.ceil(Math.max(1,penBounds.maxY)/A4_CONTENT_H));
+   let penRequiredPage=0;
+   for(const stroke of penStrokes){
+     if(!stroke || !stroke.length)continue;
+     const ys=stroke.map(p=>p.y-getEditorContentTopOffset());
+     const minY=Math.min(...ys);
+     const maxY=Math.max(...ys);
+     let pageIndex=Math.floor(Math.max(0,minY)/A4_CONTENT_H);
+     if(maxY >= (pageIndex+1)*A4_CONTENT_H) pageIndex++;
+     penRequiredPage=Math.max(penRequiredPage,pageIndex);
+   }
+   requiredPages=Math.max(requiredPages,penRequiredPage+1);
  }
 
  ensurePageCount(pages,mount,requiredPages);
@@ -1121,13 +1131,30 @@ function buildPaginatedPreview(){
  for(const box of imageBoxes){
    const left=parseFloat(box.style.left||0);
    const top=parseFloat(box.style.top||0);
-   const pageIndex=Math.max(0,Math.floor(Math.max(0,top)/A4_CONTENT_H));
+   let pageIndex=Math.max(0,Math.floor(Math.max(0,top)/A4_CONTENT_H));
+   const imageHeight=box.getBoundingClientRect().height;
+   const imageBottom=top+imageHeight;
+
+   /*
+    * WORD-LIKE PAGE BEHAVIOUR FOR IMAGES:
+    * An image is never cut between pages. If it would cross
+    * the bottom of the current A4 page, move the whole image
+    * to the next page.
+    */
+   if(imageBottom > (pageIndex+1)*A4_CONTENT_H){
+      pageIndex++;
+   }
+
+   ensurePageCount(pages,mount,pageIndex+1);
+
    const targetContent=pages[pageIndex].querySelector(".paginated-content");
    const clone=cloneCleanNode(box);
 
    clone.style.position="absolute";
    clone.style.left=Math.max(0,left)+"px";
-   clone.style.top=Math.max(0,top-(pageIndex*A4_CONTENT_H))+"px";
+   let localTop=top-(pageIndex*A4_CONTENT_H);
+   if(localTop<0) localTop=18;
+   clone.style.top=localTop+"px";
    clone.style.margin="0";
    clone.style.border="0";
    clone.style.boxShadow="none";
@@ -1174,18 +1201,45 @@ function buildPaginatedPreview(){
       for(const stroke of penStrokes){
         if(!stroke || !stroke.length)continue;
 
-        /* Keep all points belonging to this page. */
-        const pts=stroke
-          .map(p=>({x:p.x,y:p.y-contentTopOffset}))
-          .filter(p=>p.y>=pageStart && p.y<pageEnd);
+        /*
+         * WORD-LIKE PAGE BEHAVIOUR FOR PEN:
+         * Never cut one pen stroke between two A4 pages.
+         * If any part of the stroke crosses a page boundary,
+         * move the WHOLE stroke to the next page.
+         */
+        const points=stroke.map(p=>({
+          x:p.x,
+          y:p.y-contentTopOffset
+        }));
 
-        if(!pts.length)continue;
+        const strokeMinY=Math.min(...points.map(p=>p.y));
+        const strokeMaxY=Math.max(...points.map(p=>p.y));
+
+        let strokePage=Math.floor(Math.max(0,strokeMinY)/A4_CONTENT_H);
+
+        /* If the stroke touches/crosses the bottom boundary,
+           keep the entire stroke together on the next page. */
+        if(strokeMaxY >= (strokePage+1)*A4_CONTENT_H){
+          strokePage++;
+        }
+
+        if(strokePage!==pageIndex)continue;
+
+        const pageOffset=strokePage*A4_CONTENT_H;
 
         ctx.beginPath();
-        ctx.moveTo(pts[0].x,pts[0].y-pageStart);
-        for(let i=1;i<pts.length;i++){
-          ctx.lineTo(pts[i].x,pts[i].y-pageStart);
+        ctx.moveTo(
+          points[0].x,
+          points[0].y-pageOffset
+        );
+
+        for(let i=1;i<points.length;i++){
+          ctx.lineTo(
+            points[i].x,
+            points[i].y-pageOffset
+          );
         }
+
         ctx.stroke();
       }
 
