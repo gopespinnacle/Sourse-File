@@ -850,7 +850,6 @@ async function selectMessengerContact(
     window.GPAMessengerConversation =
         data.conversation;
 
-
     // =================================================
     // STEP 10
     // STORE CURRENT CONVERSATION DETAILS
@@ -861,7 +860,6 @@ async function selectMessengerContact(
 
     window.GPAMessengerReceiverId =
         selectedMessengerContact._id;
-
 
     console.log(
         "[GPA MESSENGER] Conversation ID:",
@@ -874,14 +872,45 @@ async function selectMessengerContact(
     );
 
 
-} else {
+    // =================================================
+    // STEP 11
+    // LOAD SELECTED CONVERSATION HISTORY
+    // =================================================
 
-            console.error(
-                "[GPA MESSENGER] Conversation failed:",
-                data
+    const conversationContainer =
+        document.getElementById(
+            "gpaPrimaryConversation"
+        );
+
+    if (conversationContainer) {
+
+        conversationContainer.innerHTML = "";
+
+    }
+
+    if (
+        window.GPAPrimaryUserSocket &&
+        typeof window.GPAPrimaryUserSocket
+            .loadConversationHistory ===
+            "function"
+    ) {
+
+        window.GPAPrimaryUserSocket
+            .loadConversationHistory(
+                window.GPAMessengerConversationId
             );
 
-        }
+    }
+
+
+} else {
+
+    console.error(
+        "[GPA MESSENGER] Conversation failed:",
+        data
+    );
+
+}
 
     } catch (error) {
 

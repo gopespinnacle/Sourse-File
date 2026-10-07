@@ -10,27 +10,16 @@
  * ============================================================
  */
 
-
 (function () {
 
     "use strict";
 
-
     class PrimaryUserChatSocket {
 
-
         constructor() {
-
             this.socket = null;
-
             this.connected = false;
-
         }
-
-
-        // ========================================================
-        // INITIALIZE
-        // ========================================================
 
         initialize() {
 
@@ -38,45 +27,29 @@
                 typeof io !==
                 "function"
             ) {
-
                 console.error(
                     "[GPA PRIMARY CHAT SOCKET] " +
                     "Socket.IO client is not available."
                 );
-
                 return;
             }
-
-
-            // ----------------------------------------------------
-            // CONNECT
-            // ----------------------------------------------------
 
             this.socket = io(
                 "https://academy-backend-eatl.onrender.com",
                 {
-
                     transports: [
                         "websocket",
                         "polling"
                     ],
-
                     withCredentials: true
-
                 }
             );
-
-
-            // ----------------------------------------------------
-            // CONNECTED
-            // ----------------------------------------------------
 
             this.socket.on(
                 "connect",
                 () => {
 
                     this.connected = true;
-
 
                     console.log(
                         "[GPA PRIMARY CHAT SOCKET] " +
@@ -87,26 +60,9 @@
                 }
             );
 
-
             // ========================================================
-            // MODULE 4
-            // REQUEST MESSAGE HISTORY
+            // MESSAGE CONFIRMATION
             // ========================================================
-
-            this.socket.emit(
-                "gpa:primary:message:history"
-            );
-
-
-            console.log(
-                "[GPA PRIMARY MESSAGE HISTORY] " +
-                "History requested."
-            );
-
-
-            // ----------------------------------------------------
-            // SERVER CONFIRMATION
-            // ----------------------------------------------------
 
             this.socket.on(
                 "gpa:primary:message:received",
@@ -121,10 +77,8 @@
                 }
             );
 
-
             // ========================================================
-            // MODULE 4
-            // RECEIVE MESSAGE HISTORY
+            // MESSAGE HISTORY RECEIVED
             // ========================================================
 
             this.socket.on(
@@ -137,7 +91,6 @@
                         messages
                     );
 
-
                     if (!Array.isArray(messages)) {
 
                         console.warn(
@@ -147,7 +100,6 @@
 
                         return;
                     }
-
 
                     if (
                         !window.GPAPrimaryUserChat ||
@@ -162,7 +114,6 @@
 
                         return;
                     }
-
 
                     messages.forEach(
                         (message) => {
@@ -189,17 +140,15 @@
                 }
             );
 
-
-            // ----------------------------------------------------
-            // DISCONNECTED
-            // ----------------------------------------------------
+            // ========================================================
+            // DISCONNECT
+            // ========================================================
 
             this.socket.on(
                 "disconnect",
                 (reason) => {
 
                     this.connected = false;
-
 
                     console.log(
                         "[GPA PRIMARY CHAT SOCKET] " +
@@ -210,10 +159,9 @@
                 }
             );
 
-
-            // ----------------------------------------------------
+            // ========================================================
             // CONNECTION ERROR
-            // ----------------------------------------------------
+            // ========================================================
 
             this.socket.on(
                 "connect_error",
@@ -230,6 +178,57 @@
 
         }
 
+        // ========================================================
+        // LOAD SELECTED CONVERSATION HISTORY
+        // ========================================================
+
+        loadConversationHistory(conversationId) {
+
+            if (!this.socket) {
+
+                console.warn(
+                    "[GPA PRIMARY CHAT SOCKET] " +
+                    "Socket is not initialized."
+                );
+
+                return;
+            }
+
+            if (!this.connected) {
+
+                console.warn(
+                    "[GPA PRIMARY CHAT SOCKET] " +
+                    "Socket is not connected."
+                );
+
+                return;
+            }
+
+            if (!conversationId) {
+
+                console.warn(
+                    "[GPA PRIMARY CHAT SOCKET] " +
+                    "Conversation ID is missing."
+                );
+
+                return;
+            }
+
+            console.log(
+                "[GPA PRIMARY MESSAGE HISTORY] " +
+                "Requesting history for conversation:",
+                conversationId
+            );
+
+            this.socket.emit(
+                "gpa:primary:message:history",
+                {
+                    conversationId:
+                        conversationId
+                }
+            );
+
+        }
 
         // ========================================================
         // SEND MESSAGE
@@ -247,7 +246,6 @@
                 return;
             }
 
-
             if (!this.connected) {
 
                 console.warn(
@@ -258,16 +256,12 @@
                 return;
             }
 
-
             // ========================================================
-            // MODULE 5
-            // STEP 11
-            // SEND CONVERSATION INFORMATION
+            // ACTIVE CONVERSATION
             // ========================================================
 
             const conversation =
                 window.GPAMessengerConversation;
-
 
             if (
                 !conversation ||
@@ -282,10 +276,8 @@
                 return;
             }
 
-
             const participants =
                 conversation.participants || [];
-
 
             if (
                 !Array.isArray(participants) ||
@@ -300,14 +292,12 @@
                 return;
             }
 
-
-            // --------------------------------------------------------
-            // Get login token
-            // --------------------------------------------------------
+            // ========================================================
+            // LOGIN TOKEN
+            // ========================================================
 
             const token =
                 localStorage.getItem("token");
-
 
             if (!token) {
 
@@ -319,18 +309,16 @@
                 return;
             }
 
-
-            // --------------------------------------------------------
-            // Selected contact
-            // --------------------------------------------------------
+            // ========================================================
+            // RECEIVER
+            // ========================================================
 
             const receiverId =
                 participants[1];
 
-
-            // --------------------------------------------------------
-            // Add conversation information
-            // --------------------------------------------------------
+            // ========================================================
+            // ADD CONVERSATION INFORMATION
+            // ========================================================
 
             const messageWithConversation = {
 
@@ -344,16 +332,14 @@
 
             };
 
-
-            // --------------------------------------------------------
+            // ========================================================
             // SEND TO BACKEND
-            // --------------------------------------------------------
+            // ========================================================
 
             this.socket.emit(
                 "gpa:primary:message",
                 messageWithConversation
             );
-
 
             console.log(
                 "[GPA PRIMARY CHAT SOCKET] " +
@@ -363,25 +349,17 @@
 
         }
 
-
-    } // <-- CLOSE PrimaryUserChatSocket CLASS
-
+    }
 
     // ============================================================
-    // CREATE MODULE
+    // CREATE SOCKET INSTANCE
     // ============================================================
 
     const primaryUserChatSocket =
         new PrimaryUserChatSocket();
 
-
-    // ============================================================
-    // GLOBAL ACCESS
-    // ============================================================
-
     window.GPAPrimaryUserSocket =
         primaryUserChatSocket;
-
 
     // ============================================================
     // START
@@ -392,7 +370,6 @@
         primaryUserChatSocket.initialize();
 
     }
-
 
     if (
         document.readyState ===
@@ -409,6 +386,5 @@
         start();
 
     }
-
 
 })();
