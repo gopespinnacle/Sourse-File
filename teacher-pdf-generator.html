@@ -431,6 +431,23 @@ function createEditorPage(){
     );
 
     content.addEventListener(
+        "keydown",
+        e=>{
+            if(e.key!=="Enter"){
+                return;
+            }
+
+            /*
+             * Let the browser create the new Word-style paragraph first.
+             * Then check whether the new line belongs on the next A4 page.
+             */
+            setTimeout(()=>{
+                forceWordPageBreak(pageObject);
+            },0);
+        }
+    );
+
+    content.addEventListener(
         "input",
         ()=>{
             setActivePage(
@@ -438,6 +455,12 @@ function createEditorPage(){
             );
 
             saveRange();
+
+            /*
+             * Enter must be handled immediately so the cursor can
+             * physically move to the next A4 page.
+             */
+            forceWordPageBreak(pageObject);
 
             schedulePagination();
             schedulePreview();
@@ -1756,6 +1779,206 @@ function setupExistingImagesForPage(
 /* =========================================================
    WORD-STYLE AUTOMATIC PAGINATION
    ========================================================= */
+
+
+/* =========================================================
+   WORD-LIKE ENTER -> NEXT A4 PAGE
+   ========================================================= */
+
+function forceWordPageBreak(pageObject){
+
+    if(!pageObject){
+        return;
+    }
+
+    const content=
+        pageObject.content;
+
+    if(!content.isConnected){
+        return;
+    }
+
+    const contentRect=
+        content.getBoundingClientRect();
+
+    const selection=
+        window.getSelection();
+
+    let caretAtBottom=false;
+
+    if(
+        selection &&
+        selection.rangeCount &&
+        content.contains(
+            selection.anchorNode
+        )
+    ){
+
+        const range=
+            selection.getRangeAt(0);
+
+        const rect=
+            range.getBoundingClientRect();
+
+        if(
+            rect &&
+            rect.bottom >=
+            contentRect.bottom-4
+        ){
+            caretAtBottom=true;
+        }
+    }
+
+    /*
+     * scrollHeight catches the case where the browser has
+     * already created a line beyond the printable A4 area.
+     */
+    const contentOverflow=
+        content.scrollHeight >
+        content.clientHeight+2;
+
+    if(
+        !caretAtBottom &&
+        !contentOverflow
+    ){
+        return;
+    }
+
+    const pageIndex=
+        editorPages.indexOf(
+            pageObject
+        );
+
+    if(pageIndex<0){
+        return;
+    }
+
+    const next=
+        ensureEditorPage(
+            pageIndex+1
+        );
+
+    /*
+     * Find the exact block containing the cursor.
+     * When Enter is pressed at the bottom, browsers normally
+     * create a new <div><br></div>. Moving that block gives
+     * genuine Word-like behaviour: the cursor follows it.
+     */
+    let node=
+        selection &&
+        selection.rangeCount
+            ? selection.anchorNode
+            : null;
+
+    let block=null;
+
+    while(
+        node &&
+        node!==content
+    ){
+
+        if(
+            node.parentElement &&
+            node.parentElement.parentElement===
+                content
+        ){
+            block=node.parentElement;
+            break;
+        }
+
+        node=node.parentNode;
+    }
+
+    /*
+     * If the cursor is inside a direct child block,
+     * move only that current paragraph/line.
+     */
+    if(
+        block &&
+        block.parentElement===content
+    ){
+
+        const blockRect=
+            block.getBoundingClientRect();
+
+        /*
+         * Only move the current block when it is actually
+         * at/over the bottom. This prevents normal Enter
+         * presses in the middle of a page from jumping.
+         */
+        if(
+            blockRect.bottom >=
+            contentRect.bottom-4 ||
+            content.scrollHeight >
+            content.clientHeight+2
+        ){
+
+            block.remove();
+
+            /*
+             * Put the block at the beginning of Page 2.
+             */
+            next.content.insertBefore(
+                block,
+                next.content.firstChild
+            );
+
+            setActivePage(
+                pageIndex+1
+            );
+
+            /*
+             * Restore the caret inside the moved block.
+             */
+            const range=
+                document.createRange();
+
+            range.selectNodeContents(
+                block
+            );
+
+            range.collapse(false);
+
+            const sel=
+                window.getSelection();
+
+            sel.removeAllRanges();
+            sel.addRange(range);
+
+            savedRange=
+                range.cloneRange();
+
+            savedEditor=
+                next.content;
+
+            next.content.focus();
+
+            resizePenCanvas(
+                next
+            );
+
+            schedulePreview();
+
+            return;
+        }
+    }
+
+    /*
+     * Fallback:
+     * run the normal complete-block pagination logic.
+     */
+    paginateEditorWithoutPreview();
+
+    setActivePage(
+        Math.min(
+            pageIndex+1,
+            editorPages.length-1
+        )
+    );
+
+    schedulePreview();
+}
+
 
 function schedulePagination(){
 
