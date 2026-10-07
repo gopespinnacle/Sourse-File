@@ -23,6 +23,166 @@
         href="chat/primaryUserChat.css"
     >
 
+
+    <!-- =====================================================
+         MODULE 5
+         CONTACTS CSS
+         ===================================================== -->
+
+    <style>
+
+        /* =====================================================
+           CONTACTS PANEL
+           ===================================================== */
+
+        .gpa-messenger-contacts {
+
+            width: 300px;
+
+            border-right: 1px solid #ddd;
+
+            background: #ffffff;
+
+            overflow-y: auto;
+
+            flex-shrink: 0;
+        }
+
+
+        .gpa-messenger-contacts-header {
+
+            padding: 18px;
+
+            font-size: 20px;
+
+            font-weight: bold;
+
+            border-bottom: 1px solid #ddd;
+
+        }
+
+
+        .gpa-messenger-contact {
+
+            padding: 14px 16px;
+
+            border-bottom: 1px solid #eeeeee;
+
+            cursor: pointer;
+
+        }
+
+
+        .gpa-messenger-contact:hover {
+
+            background: #f5f7fb;
+
+        }
+
+
+        .gpa-messenger-contact-name {
+
+            font-weight: 600;
+
+            font-size: 15px;
+
+        }
+
+
+        .gpa-messenger-contact-info {
+
+            margin-top: 4px;
+
+            font-size: 13px;
+
+            color: #777;
+
+        }
+
+
+        .gpa-messenger-contact-role {
+
+            margin-top: 3px;
+
+            font-size: 12px;
+
+            color: #3155a6;
+
+            text-transform: capitalize;
+
+        }
+
+
+        .gpa-messenger-contacts-loading {
+
+            padding: 20px;
+
+            color: #777;
+
+        }
+
+
+        .gpa-messenger-contacts-error {
+
+            padding: 20px;
+
+            color: #c62828;
+
+        }
+
+
+        /* =====================================================
+           MESSENGER LAYOUT
+           ===================================================== */
+
+        .gpa-messenger-layout {
+
+            display: flex;
+
+            height: 100vh;
+
+            width: 100%;
+
+        }
+
+
+        .gpa-messenger-chat-area {
+
+            flex: 1;
+
+            min-width: 0;
+
+            display: flex;
+
+            flex-direction: column;
+
+        }
+
+
+        .gpa-primary-messenger-header {
+
+            flex-shrink: 0;
+
+        }
+
+
+        #gpaPrimaryConversation {
+
+            flex: 1;
+
+            overflow-y: auto;
+
+        }
+
+
+        .gpa-primary-composer {
+
+            flex-shrink: 0;
+
+        }
+
+    </style>
+
 </head>
 
 
@@ -31,74 +191,360 @@
 
     <!-- =====================================================
          GPA MESSENGER
-         MODULE 1
-         PRIMARY USER
+         MODULE 5
          ===================================================== -->
 
-    <div class="gpa-primary-messenger">
+    <div class="gpa-messenger-layout">
 
 
         <!-- =================================================
-             HEADER
+             CONTACTS
              ================================================= -->
 
         <div
-            class="gpa-primary-messenger-header"
+            class="gpa-messenger-contacts"
         >
 
-            GPA Messenger
-
-        </div>
-
-
-        <!-- =================================================
-             CONVERSATION
-             ================================================= -->
-
-        <div
-            id="gpaPrimaryConversation"
-        ></div>
-
-
-        <!-- =================================================
-             COMPOSER
-             ================================================= -->
-
-        <div
-            class="gpa-primary-composer"
-        >
-
-
-            <textarea
-                id="gpaPrimaryMessageInput"
-                placeholder="Type a message..."
-                rows="1"
-            ></textarea>
-
-
-            <button
-                id="gpaPrimarySendButton"
-                type="button"
+            <div
+                class="gpa-messenger-contacts-header"
             >
-                Send
-            </button>
+                Contacts
+            </div>
 
+
+            <div
+                id="gpaMessengerContacts"
+            >
+
+                <div
+                    class="gpa-messenger-contacts-loading"
+                >
+                    Loading contacts...
+                </div>
+
+            </div>
 
         </div>
 
+
+        <!-- =================================================
+             CHAT AREA
+             ================================================= -->
+
+        <div
+            class="gpa-messenger-chat-area"
+        >
+
+
+            <!-- =============================================
+                 HEADER
+                 ============================================= -->
+
+            <div
+                class="gpa-primary-messenger-header"
+            >
+
+                GPA Messenger
+
+            </div>
+
+
+            <!-- =============================================
+                 CONVERSATION
+                 ============================================= -->
+
+            <div
+                id="gpaPrimaryConversation"
+            ></div>
+
+
+            <!-- =============================================
+                 COMPOSER
+                 ============================================= -->
+
+            <div
+                class="gpa-primary-composer"
+            >
+
+                <textarea
+                    id="gpaPrimaryMessageInput"
+                    placeholder="Type a message..."
+                    rows="1"
+                ></textarea>
+
+
+                <button
+                    id="gpaPrimarySendButton"
+                    type="button"
+                >
+                    Send
+                </button>
+
+            </div>
+
+
+        </div>
 
     </div>
 
 
     <!-- =====================================================
-         MODULE 1 JAVASCRIPT
+         SOCKET.IO
          ===================================================== -->
 
-    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <script
+        src="https://cdn.socket.io/4.8.1/socket.io.min.js"
+    ></script>
 
-<script src="chat/primaryUserChatSocket.js"></script>
 
-<script src="chat/primaryUserChat.js"></script>
+    <!-- =====================================================
+         MODULE 1 / 2 / 4
+         ===================================================== -->
+
+    <script
+        src="chat/primaryUserChatSocket.js"
+    ></script>
+
+    <script
+        src="chat/primaryUserChat.js"
+    ></script>
+
+
+    <!-- =====================================================
+         MODULE 5
+         CONTACTS
+         ===================================================== -->
+
+    <script>
+
+        /**
+         * ====================================================
+         * GPA MESSENGER
+         * MODULE 5
+         * LOAD CONTACTS
+         * ====================================================
+         */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                loadMessengerContacts();
+
+            }
+        );
+
+
+        async function loadMessengerContacts() {
+
+            const contactsContainer =
+                document.getElementById(
+                    "gpaMessengerContacts"
+                );
+
+
+            // =================================================
+            // GET EXISTING ACADEMY LOGIN TOKEN
+            // =================================================
+
+            const token =
+                localStorage.getItem("token");
+
+
+            if (!token) {
+
+                contactsContainer.innerHTML = `
+                    <div class="gpa-messenger-contacts-error">
+                        Login required.
+                    </div>
+                `;
+
+                console.error(
+                    "[GPA MESSENGER CONTACTS] " +
+                    "No login token found."
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                // =============================================
+                // CALL CONTACTS API
+                // =============================================
+
+                const response =
+                    await fetch(
+                        "https://academy-backend-eatl.onrender.com/api/messenger/contacts",
+                        {
+                            method: "GET",
+
+                            headers: {
+
+                                "Authorization":
+                                    "Bearer " + token
+
+                            }
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                console.log(
+                    "[GPA MESSENGER CONTACTS]",
+                    data
+                );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.message ||
+                        "Unable to load contacts."
+                    );
+
+                }
+
+
+                // =============================================
+                // DISPLAY CONTACTS
+                // =============================================
+
+                displayMessengerContacts(
+                    data.contacts || []
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "[GPA MESSENGER CONTACTS] " +
+                    "Failed:",
+                    error
+                );
+
+
+                contactsContainer.innerHTML = `
+
+                    <div
+                        class="gpa-messenger-contacts-error"
+                    >
+                        Unable to load contacts.
+                    </div>
+
+                `;
+
+            }
+
+        }
+
+
+        function displayMessengerContacts(
+            contacts
+        ) {
+
+            const contactsContainer =
+                document.getElementById(
+                    "gpaMessengerContacts"
+                );
+
+
+            if (!contacts || contacts.length === 0) {
+
+                contactsContainer.innerHTML = `
+
+                    <div
+                        class="gpa-messenger-contacts-loading"
+                    >
+                        No contacts found.
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+            contactsContainer.innerHTML = "";
+
+
+            contacts.forEach(
+                function (contact) {
+
+                    const contactElement =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    contactElement.className =
+                        "gpa-messenger-contact";
+
+
+                    contactElement.innerHTML = `
+
+                        <div
+                            class="gpa-messenger-contact-name"
+                        >
+                            ${escapeMessengerText(
+                                contact.name || "Unknown"
+                            )}
+                        </div>
+
+
+                        <div
+                            class="gpa-messenger-contact-info"
+                        >
+                            ${escapeMessengerText(
+                                contact.email || ""
+                            )}
+                        </div>
+
+
+                        <div
+                            class="gpa-messenger-contact-role"
+                        >
+                            ${escapeMessengerText(
+                                contact.role || ""
+                            )}
+                        </div>
+
+                    `;
+
+
+                    contactsContainer.appendChild(
+                        contactElement
+                    );
+
+                }
+            );
+
+        }
+
+
+        function escapeMessengerText(
+            value
+        ) {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+            div.textContent =
+                value;
+
+            return div.innerHTML;
+
+        }
+
+    </script>
 
 
 </body>
