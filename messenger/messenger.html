@@ -644,7 +644,7 @@
 
     window.GPAMessengerContacts =
     contacts;
-    
+
 
     contactsContainer.innerHTML =
 
@@ -772,6 +772,107 @@ function selectMessengerContact(
         "[GPA MESSENGER] Selected contact:",
         selectedMessengerContact
     );
+
+        // =================================================
+    // MODULE 5
+    // STEP 8
+    // LOAD / CREATE CONVERSATION
+    // =================================================
+
+    if (!selectedMessengerContact) {
+
+        console.error(
+            "[GPA MESSENGER] No contact selected."
+        );
+
+        return;
+
+    }
+
+
+    const conversationToken =
+        localStorage.getItem("token");
+
+
+    if (!conversationToken) {
+
+        console.error(
+            "[GPA MESSENGER] Login token not found."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "https://academy-backend-eatl.onrender.com/api/messenger/conversation",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " +
+                            conversationToken
+                    },
+
+                    body: JSON.stringify({
+
+                        receiverId:
+                            selectedMessengerContact._id
+
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "[GPA MESSENGER] Conversation response:",
+            data
+        );
+
+
+        if (
+            data.success &&
+            data.conversation
+        ) {
+
+            window.GPAMessengerConversation =
+                data.conversation;
+
+
+            console.log(
+                "[GPA MESSENGER] Conversation ID:",
+                data.conversation._id
+            );
+
+        } else {
+
+            console.error(
+                "[GPA MESSENGER] Conversation failed:",
+                data
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "[GPA MESSENGER] Conversation API error:",
+            error
+        );
+
+    }
 
 
     // =================================================
