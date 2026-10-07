@@ -98,7 +98,7 @@ label{display:block;font-size:13px;font-weight:700;color:#334155;margin-bottom:7
 <button class="tool" type="button" onclick="format('undo')">↶</button><button class="tool" type="button" onclick="format('redo')">↷</button><span class="separator"></span>
 <button class="tool" type="button" onclick="format('bold')"><b>B</b></button><button class="tool" type="button" onclick="format('italic')"><i>I</i></button><button class="tool" type="button" onclick="format('underline')"><u>U</u></button><span class="separator"></span>
 <button class="tool" type="button" onclick="insertSubHeading()">H2</button><button class="tool" type="button" onclick="format('insertUnorderedList')">•</button><button class="tool" type="button" onclick="format('insertOrderedList')">1.</button><button class="tool" type="button" onclick="format('justifyLeft')">≡</button><button class="tool" type="button" onclick="format('justifyCenter')">≡</button><span class="separator"></span>
-<button class="tool" type="button" onclick="document.getElementById('imageInput').click()">🖼</button><button class="tool" type="button" id="penButton" onclick="togglePen()">✏</button><button class="tool" type="button" onclick="clearPen()">⌫</button>
+<button class="tool" type="button" onclick="document.getElementById('imageInput').click()">🖼</button><button class="tool" type="button" id="penButton" onclick="togglePen()">✏</button><button class="tool" type="button" id="eraserButton" onclick="toggleEraser()">🧽</button><button class="tool" type="button" onclick="clearPen()">⌫</button>
 <input id="imageInput" type="file" accept="image/*" multiple class="hidden">
 </div>
 </div>
@@ -111,7 +111,7 @@ label{display:block;font-size:13px;font-weight:700;color:#334155;margin-bottom:7
 <div class="pen-layer"><canvas id="penCanvas"></canvas></div>
 </div>
 </div>
-<div class="pen-hint">Type or paste text, paste multiple images with Ctrl+V, use 🖼 for multiple image files, or use ✏ for mouse/stylus writing. Images can be moved and resized.</div>
+<div class="pen-hint">Type or paste text, paste multiple images with Ctrl+V, use 🖼 for multiple image files, use ✏ for pen/stylus writing, or 🧽 to erase only pen writing. Images can be moved and resized.</div>
 <div id="status" class="status"></div>
 <div class="bottom-actions"><button class="btn btn-secondary" type="button" onclick="clearDocument()">Clear</button><button class="btn btn-primary" id="generateBtn" type="button" onclick="generatePDF()">Generate Homework Document</button></div>
 </section>
@@ -127,6 +127,7 @@ const API="https://academy-backend-eatl.onrender.com";
 const token=sessionStorage.getItem("token");
 let documentType="Homework";
 let penEnabled=false;
+let penTool="pen";
 let drawing=false;
 let penHasDrawing=false;
 let penStrokes=[];
@@ -669,10 +670,37 @@ function resizePenCanvas(){
 window.addEventListener("resize",resizePenCanvas);
 setTimeout(resizePenCanvas,300);
 
-function togglePen(){
- penEnabled=!penEnabled;
+function updatePenToolUI(){
+ const penButton=document.getElementById("penButton");
+ const eraserButton=document.getElementById("eraserButton");
+
+ penButton.classList.toggle(
+  "active",
+  penEnabled && penTool==="pen"
+ );
+
+ eraserButton.classList.toggle(
+  "active",
+  penEnabled && penTool==="eraser"
+ );
+
  editorPage.classList.toggle("pen-mode",penEnabled);
- document.getElementById("penButton").classList.toggle("active",penEnabled);
+}
+
+function togglePen(){
+ if(penEnabled && penTool==="pen"){
+  penEnabled=false;
+ }else{
+  penEnabled=true;
+  penTool="pen";
+ }
+ updatePenToolUI();
+}
+
+function toggleEraser(){
+ penEnabled=true;
+ penTool="eraser";
+ updatePenToolUI();
 }
 
 /* IMPORTANT: coordinates are stored in the A4 page itself. */
@@ -684,23 +712,150 @@ function point(e){
  };
 }
 
+function distancePointToSegment(px,py,x1,y1,x2,y2){
+ const dx=x2-x1;
+ const dy=y2-y1;
+
+ if(dx===0 && dy===0){
+  return Math.hypot(px-x1,py-y1);
+ }
+
+ const t=Math.max(
+  0,
+  Math.min(
+   1,
+   ((px-x1)*dx + (py-y1)*dy) / (dx*dx + dy*dy)
+  )
+ );
+
+ const cx=x1+t*dx;
+ const cy=y1+t*dy;
+
+ return Math.hypot(px-cx,py-cy);
+}
+
+/*
+ * Erase ONLY pen strokes.
+ * Text, tables and images are never touched because this function
+ * only modifies the penStrokes array.
+ */
+function erasePenAt(p){
+ const radius=18;
+ const nextStrokes=[];
+
+ for(const stroke of penStrokes){
+
+  if(!stroke || stroke.length===0) continue;
+
+  if(stroke.length===1){
+   if(Math.hypot(
+    stroke[0].x-p.x,
+    stroke[0].y-p.y
+   ) > radius){
+    nextStrokes.push(stroke);
+   }
+   continue;
+  }
+
+  let currentSegment=[];
+
+  for(let i=0;i<stroke.length;i++){
+
+   const current=stroke[i];
+
+   let hit =
+    Math.hypot(
+     current.x-p.x,
+     current.y-p.y
+    ) <= radius;
+
+   if(!hit && i>0){
+    const previous=stroke[i-1];
+
+    hit =
+      distancePointToSegment(
+       p.x,
+       p.y,
+       previous.x,
+       previous.y,
+       current.x,
+       current.y
+      ) <= radius;
+   }
+
+   if(hit){
+
+    if(currentSegment.length>=2){
+     nextStrokes.push(currentSegment);
+    }
+
+    currentSegment=[];
+
+   }else{
+
+    currentSegment.push({
+     x:current.x,
+     y:current.y
+    });
+
+   }
+  }
+
+  if(currentSegment.length>=2){
+   nextStrokes.push(currentSegment);
+  }
+ }
+
+ penStrokes=nextStrokes;
+ penHasDrawing=penStrokes.length>0;
+
+ redrawPenCanvas();
+}
+
 penCanvas.addEventListener("pointerdown",e=>{
  if(!penEnabled)return;
+
  e.preventDefault();
+
+ penCanvas.setPointerCapture(e.pointerId);
+
+ const p=point(e);
+
+ /* ERASER MODE */
+ if(penTool==="eraser"){
+  erasePenAt(p);
+  return;
+ }
+
+ /* PEN MODE */
  drawing=true;
  penHasDrawing=true;
- penCanvas.setPointerCapture(e.pointerId);
- const p=point(e);
+
  currentPenStroke=[p];
  penStrokes.push(currentPenStroke);
+
  penCtx.beginPath();
  penCtx.moveTo(p.x,p.y);
 });
 
 penCanvas.addEventListener("pointermove",e=>{
- if(!drawing||!penEnabled||!currentPenStroke)return;
- e.preventDefault();
+
+ if(!penEnabled)return;
+
  const p=point(e);
+
+ /* ERASER MODE */
+ if(penTool==="eraser"){
+  e.preventDefault();
+  erasePenAt(p);
+  return;
+ }
+
+ /* PEN MODE */
+ if(!drawing || !currentPenStroke)return;
+
+ e.preventDefault();
+
  currentPenStroke.push(p);
  penCtx.lineTo(p.x,p.y);
  penCtx.stroke();
@@ -722,12 +877,25 @@ function clearPen(){
  currentPenStroke=null;
  penHasDrawing=false;
  drawing=false;
+
  const ratio=window.devicePixelRatio||1;
+
  penCtx.save();
  penCtx.setTransform(1,0,0,1,0,0);
- penCtx.clearRect(0,0,penCanvas.width,penCanvas.height);
+ penCtx.clearRect(
+  0,
+  0,
+  penCanvas.width,
+  penCanvas.height
+ );
  penCtx.restore();
+
  setupPenContext();
+
+ /* Return to normal text mode after clearing */
+ penEnabled=false;
+ penTool="pen";
+ updatePenToolUI();
 }
 
 function createPenOverlay(page){
