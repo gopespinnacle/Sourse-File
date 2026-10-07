@@ -42,7 +42,7 @@ label{display:block;font-size:13px;font-weight:700;color:#334155;margin-bottom:7
 .doc-title{font-size:22pt;font-weight:700;line-height:1.1;margin-top:4px}.doc-subtitle{font-size:13pt;font-weight:700;margin-top:5px}
 .doc-meta{display:flex;justify-content:space-between;background:#edf6ff;border-radius:8px;padding:10px 13px;margin:15px 58px 22px;font-size:11pt;font-weight:700}
 .editor-content{position:relative;min-height:850px;margin:0 58px;padding:0 0 80px;font-family:"Times New Roman",serif;font-size:10pt;font-weight:700;line-height:1.55;outline:none}
-.editor-content:empty:before{content:"Enter homework / assessment content here...";color:#94a3b8;font-weight:400}
+.editor-content:empty:before{content:"Enter homework / assessment content here...";color:#94a3b8;font-weight:400}.image-paste-spacer{display:block;height:8px;line-height:8px}
 .editor-content h1,.editor-content h2,.editor-content h3,.editor-content p,.editor-content div{font-family:"Times New Roman",serif}
 .editor-content h1{font-size:14pt;font-weight:700;text-decoration:underline;margin:0 0 18px}.editor-content h2,.editor-content h3{font-size:12pt;font-weight:700;margin:16px 0 8px}.editor-content p{font-size:10pt;font-weight:700;margin:0 0 7px}
 .editor-content table{width:100%;border-collapse:collapse;margin:14px 0;font-family:"Times New Roman",serif;font-size:10pt;font-weight:700;table-layout:auto}
@@ -63,8 +63,8 @@ label{display:block;font-size:13px;font-weight:700;color:#334155;margin-bottom:7
 .preview-content{position:relative;min-height:850px;margin:0 58px;padding:0 0 80px;font-family:"Times New Roman",serif;font-size:10pt;font-weight:700;line-height:1.55}
 .preview-content h1,.preview-content h2,.preview-content h3,.preview-content p,.preview-content div{font-family:"Times New Roman",serif}.preview-content h1{font-size:14pt;font-weight:700;text-decoration:underline;margin:0 0 18px}.preview-content h2,.preview-content h3{font-size:12pt;font-weight:700;margin:16px 0 8px}.preview-content p{font-size:10pt;font-weight:700;margin:0 0 7px}
 .preview-content table{width:100%;border-collapse:collapse;margin:14px 0;font-family:"Times New Roman",serif;font-size:10pt;font-weight:700;table-layout:auto}.preview-content th,.preview-content td{border:1px solid #333;padding:6px 8px;vertical-align:top;font-weight:700;line-height:1.35;word-wrap:break-word}.preview-content th{background:#eef3f9}
-.preview-content .image-box{border:0;box-shadow:none;cursor:default}.preview-content .image-resize-handle,.preview-content .image-delete-button{display:none}
-.preview-pen{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:50}.preview-pen img{display:block;width:100%;height:100%;object-fit:fill}
+.preview-content .image-box{border:0;box-shadow:none;cursor:default}.preview-content .image-resize-handle,.preview-content .image-delete-button,.preview-content .image-paste-spacer{display:none}
+.preview-pen{position:absolute;left:0;top:0;pointer-events:none;z-index:50}.preview-pen canvas{display:block;width:794px;pointer-events:none}
 .hidden{display:none!important}
 @media(max-width:900px){#sidebar-container{display:none}.main{margin-left:0;padding:18px}.field-grid,.type-grid{grid-template-columns:1fr}.page-head{align-items:flex-start;gap:12px;flex-direction:column}.editor-scroll{padding:8px}.preview-shell{padding:8px}}
 </style>
@@ -129,6 +129,8 @@ let documentType="Homework";
 let penEnabled=false;
 let drawing=false;
 let penHasDrawing=false;
+let penStrokes=[];
+let currentPenStroke=null;
 let selectedImageBox=null;
 let savedRange=null;
 
@@ -189,24 +191,204 @@ function updateMeta(){
  document.getElementById("editorGradeMeta").textContent="Grade: "+grade;
 }
 
-function placeAtSavedRange(node){
+function getSafeEditorRange(){
+
  const editor=document.getElementById("editor");
- editor.focus();
- let range=savedRange;
- if(!range||!editor.contains(range.commonAncestorContainer)){
-  range=document.createRange();range.selectNodeContents(editor);range.collapse(false);
+
+ let range=null;
+
+ try{
+
+  if(
+   savedRange &&
+   editor.contains(savedRange.commonAncestorContainer)
+  ){
+   range=savedRange.cloneRange();
+
+   /*
+    * If the saved range is inside an image wrapper,
+    * move the caret after that wrapper instead of trying
+    * to insert another image inside the non-editable image.
+    */
+   const container =
+       range.commonAncestorContainer.nodeType === 3
+       ? range.commonAncestorContainer.parentElement
+       : range.commonAncestorContainer;
+
+   const imageBox =
+       container &&
+       container.closest
+       ? container.closest(".image-box")
+       : null;
+
+   if(imageBox){
+      range.selectNode(imageBox);
+      range.collapse(false);
+   }
+
+  }
+
+ }catch(err){
+
+  range=null;
+
  }
- range.deleteContents();range.insertNode(node);range.setStartAfter(node);range.collapse(true);
- const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);savedRange=range.cloneRange();
+
+ if(!range){
+
+  range=document.createRange();
+  range.selectNodeContents(editor);
+  range.collapse(false);
+
+ }
+
+ return range;
+
 }
 
+
+function placeAtSavedRange(node){
+
+ const editor=document.getElementById("editor");
+
+ editor.focus();
+
+ const range=getSafeEditorRange();
+
+ /*
+  * Do NOT delete the selected image or selected image wrapper.
+  * Only delete selected text.
+  */
+ if(!range.collapsed){
+
+    const selectedBox =
+        range.commonAncestorContainer.nodeType === 3
+        ? range.commonAncestorContainer.parentElement?.closest(".image-box")
+        : range.commonAncestorContainer.closest?.(".image-box");
+
+    if(!selectedBox){
+        range.deleteContents();
+    }else{
+        range.collapse(false);
+    }
+
+ }
+
+ range.insertNode(node);
+
+ /*
+  * Add a real editable line after every pasted image.
+  * This is what makes repeated Ctrl+V reliable.
+  */
+ const spacer=document.createElement("br");
+ spacer.className="image-paste-spacer";
+
+ if(node.parentNode){
+    node.parentNode.insertBefore(
+        spacer,
+        node.nextSibling
+    );
+ }
+
+ range.setStartAfter(spacer);
+ range.collapse(true);
+
+ const sel=window.getSelection();
+
+ sel.removeAllRanges();
+ sel.addRange(range);
+
+ savedRange=range.cloneRange();
+
+}
+
+
 function insertImage(src){
- const box=document.createElement("span");box.className="image-box";box.contentEditable="false";box.style.width="360px";
- const img=document.createElement("img");img.src=src;img.alt="Inserted image";
- const handle=document.createElement("span");handle.className="image-resize-handle";handle.title="Resize image";
- const del=document.createElement("button");del.type="button";del.className="image-delete-button";del.textContent="×";del.title="Delete image";
- box.append(img,handle,del);placeAtSavedRange(box);setupImageBox(box);selectImageBox(box);
- img.onload=()=>{if(img.naturalWidth&&img.naturalHeight){const max=Math.max(160,document.getElementById("editor").clientWidth);box.style.width=Math.min(360,max,img.naturalWidth)+"px";}resizePenCanvas();};
+
+ const box=document.createElement("span");
+
+ box.className="image-box";
+ box.contentEditable="false";
+ box.style.width="360px";
+
+ const img=document.createElement("img");
+
+ img.src=src;
+ img.alt="Inserted image";
+ img.draggable=false;
+
+ const handle=document.createElement("span");
+
+ handle.className="image-resize-handle";
+ handle.title="Resize image";
+
+ const del=document.createElement("button");
+
+ del.type="button";
+ del.className="image-delete-button";
+ del.textContent="×";
+ del.title="Delete image";
+
+ box.append(
+    img,
+    handle,
+    del
+ );
+
+ placeAtSavedRange(box);
+
+ setupImageBox(box);
+
+ selectImageBox(box);
+
+ /*
+  * Immediately put the caret after the image.
+  * Do not wait for image.onload to establish the paste position.
+  */
+ const spacer=box.nextSibling;
+
+ if(spacer){
+
+    const range=document.createRange();
+
+    range.setStartAfter(spacer);
+    range.collapse(true);
+
+    const sel=window.getSelection();
+
+    sel.removeAllRanges();
+    sel.addRange(range);
+
+    savedRange=range.cloneRange();
+
+ }
+
+ img.onload=()=>{
+
+    if(
+        img.naturalWidth &&
+        img.naturalHeight
+    ){
+
+        const max=
+            Math.max(
+                160,
+                document.getElementById("editor").clientWidth
+            );
+
+        box.style.width=
+            Math.min(
+                360,
+                max,
+                img.naturalWidth
+            )+"px";
+
+    }
+
+    resizePenCanvas();
+
+ };
+
 }
 
 function selectImageBox(box){document.querySelectorAll("#editor .image-box").forEach(x=>x.classList.remove("selected"));selectedImageBox=null;if(box){box.classList.add("selected");selectedImageBox=box;}}
@@ -238,41 +420,292 @@ document.getElementById("imageInput").addEventListener("change",async function()
 function fileToDataURL(file){return new Promise(resolve=>{const r=new FileReader();r.onload=e=>resolve(e.target.result);r.onerror=()=>resolve(null);r.readAsDataURL(file);});}
 
 async function handlePaste(e){
- const items=Array.from(e.clipboardData?.items||[]);
- const html=e.clipboardData?.getData("text/html")||"";
- const imageItems=items.filter(x=>x.type.startsWith("image/"));
- if(imageItems.length&&!html.includes("<table")){
-  e.preventDefault();
-  saveRange();
-  for(const item of imageItems){const f=item.getAsFile();if(!f)continue;const data=await fileToDataURL(f);if(data)insertImage(data);}
-  return;
+
+ const clipboard =
+     e.clipboardData;
+
+ if(!clipboard){
+    return;
  }
- setTimeout(()=>{setupExistingImages();resizePenCanvas();saveRange();},50);
+
+ const items =
+     Array.from(
+         clipboard.items || []
+     );
+
+ const imageItems =
+     items.filter(
+         item =>
+             item.type &&
+             item.type.toLowerCase().startsWith("image/")
+     );
+
+ /*
+  * IMPORTANT:
+  * If the clipboard contains one or more images,
+  * always handle the paste ourselves.
+  *
+  * We do NOT use a one-time flag.
+  * Therefore Ctrl+V can be used repeatedly:
+  *
+  * Image 1 → Ctrl+V
+  * Image 2 → Ctrl+V
+  * Image 3 → Ctrl+V
+  * Image 4 → Ctrl+V
+  */
+ if(imageItems.length){
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    /*
+     * Save the current caret BEFORE any async operation.
+     */
+    saveRange();
+
+    for(
+        const item of imageItems
+    ){
+
+        const file =
+            item.getAsFile();
+
+        if(!file){
+            continue;
+        }
+
+        const data =
+            await fileToDataURL(file);
+
+        if(!data){
+            continue;
+        }
+
+        /*
+         * Insert one image, restore the caret,
+         * then continue to the next image.
+         */
+        insertImage(data);
+
+        await new Promise(
+            resolve =>
+                requestAnimationFrame(resolve)
+        );
+
+    }
+
+    /*
+     * Put focus back into the editor so the
+     * NEXT Ctrl+V is always received by the editor.
+     */
+    const editor =
+        document.getElementById("editor");
+
+    editor.focus();
+
+    if(savedRange){
+
+        try{
+
+            const sel =
+                window.getSelection();
+
+            sel.removeAllRanges();
+            sel.addRange(
+                savedRange.cloneRange()
+            );
+
+        }catch(err){
+
+            console.warn(
+                "Could not restore paste caret:",
+                err
+            );
+
+        }
+
+    }
+
+    resizePenCanvas();
+
+    return;
+
+ }
+
+ /*
+  * Normal text/table paste.
+  * Let the browser insert the original HTML,
+  * then convert any pasted images to our movable
+  * image boxes.
+  */
+ setTimeout(
+    ()=>{
+        setupExistingImages();
+        resizePenCanvas();
+        saveRange();
+    },
+    50
+ );
+
 }
-document.getElementById("editor").addEventListener("paste",handlePaste);
+
+document
+    .getElementById("editor")
+    .addEventListener(
+        "paste",
+        handlePaste
+    );
 
 function setupExistingImages(){document.querySelectorAll("#editor img").forEach(img=>{if(img.closest(".image-box"))return;const box=document.createElement("span");box.className="image-box";box.contentEditable="false";box.style.width=Math.min(360,document.getElementById("editor").clientWidth)+"px";img.parentNode.insertBefore(box,img);box.appendChild(img);const h=document.createElement("span");h.className="image-resize-handle";const d=document.createElement("button");d.type="button";d.className="image-delete-button";d.textContent="×";box.append(h,d);setupImageBox(box);});}
 
 /* PEN */
 const editorPage=document.getElementById("editorPage"),editor=document.getElementById("editor"),penCanvas=document.getElementById("penCanvas"),penCtx=penCanvas.getContext("2d");
-function resizePenCanvas(){
- const rect=editorPage.getBoundingClientRect();
- const cssW=794;
- const cssH=Math.max(1123,editorPage.scrollHeight);
- const ratio=window.devicePixelRatio||1;
- const old=document.createElement("canvas");old.width=penCanvas.width;old.height=penCanvas.height;
- if(old.width&&old.height)old.getContext("2d").drawImage(penCanvas,0,0);
- penCanvas.width=Math.ceil(cssW*ratio);penCanvas.height=Math.ceil(cssH*ratio);penCanvas.style.width=cssW+"px";penCanvas.style.height=cssH+"px";
- penCtx.setTransform(ratio,0,0,ratio,0,0);penCtx.lineWidth=2.2;penCtx.lineCap="round";penCtx.lineJoin="round";penCtx.strokeStyle="#0d6efd";
- if(old.width&&old.height)penCtx.drawImage(old,0,0,old.width,old.height,0,0,Math.min(cssW,old.width/ratio),Math.min(cssH,old.height/ratio));
+
+function penPageHeight(){
+ return Math.max(1123, editorPage.scrollHeight, editor.scrollHeight + 250);
 }
-window.addEventListener("resize",resizePenCanvas);setTimeout(resizePenCanvas,300);
-function togglePen(){penEnabled=!penEnabled;editorPage.classList.toggle("pen-mode",penEnabled);document.getElementById("penButton").classList.toggle("active",penEnabled);}
-function point(e){const r=penCanvas.getBoundingClientRect();return{x:e.clientX-r.left+editorPage.scrollLeft,y:e.clientY-r.top+editorPage.scrollTop};}
-penCanvas.addEventListener("pointerdown",e=>{if(!penEnabled)return;drawing=true;penHasDrawing=true;penCanvas.setPointerCapture(e.pointerId);const p=point(e);penCtx.beginPath();penCtx.moveTo(p.x,p.y);});
-penCanvas.addEventListener("pointermove",e=>{if(!drawing||!penEnabled)return;const p=point(e);penCtx.lineTo(p.x,p.y);penCtx.stroke();});
-penCanvas.addEventListener("pointerup",()=>drawing=false);penCanvas.addEventListener("pointercancel",()=>drawing=false);
-function clearPen(){const ratio=window.devicePixelRatio||1;penCtx.save();penCtx.setTransform(1,0,0,1,0,0);penCtx.clearRect(0,0,penCanvas.width,penCanvas.height);penCtx.restore();penCtx.setTransform(ratio,0,0,ratio,0,0);penCtx.lineWidth=2.2;penCtx.lineCap="round";penCtx.lineJoin="round";penCtx.strokeStyle="#0d6efd";penHasDrawing=false;drawing=false;}
+
+function setupPenContext(){
+ const ratio=window.devicePixelRatio||1;
+ penCtx.setTransform(ratio,0,0,ratio,0,0);
+ penCtx.lineWidth=2.2;
+ penCtx.lineCap="round";
+ penCtx.lineJoin="round";
+ penCtx.strokeStyle="#0d6efd";
+}
+
+function redrawPenCanvas(){
+ const ratio=window.devicePixelRatio||1;
+ penCtx.save();
+ penCtx.setTransform(1,0,0,1,0,0);
+ penCtx.clearRect(0,0,penCanvas.width,penCanvas.height);
+ penCtx.restore();
+ setupPenContext();
+
+ for(const stroke of penStrokes){
+  if(!stroke || stroke.length<1) continue;
+  penCtx.beginPath();
+  penCtx.moveTo(stroke[0].x,stroke[0].y);
+  for(let i=1;i<stroke.length;i++){
+   penCtx.lineTo(stroke[i].x,stroke[i].y);
+  }
+  penCtx.stroke();
+ }
+}
+
+function resizePenCanvas(){
+ const cssW=794;
+ const cssH=penPageHeight();
+ const ratio=window.devicePixelRatio||1;
+ penCanvas.width=Math.ceil(cssW*ratio);
+ penCanvas.height=Math.ceil(cssH*ratio);
+ penCanvas.style.width=cssW+"px";
+ penCanvas.style.height=cssH+"px";
+ redrawPenCanvas();
+}
+
+window.addEventListener("resize",resizePenCanvas);
+setTimeout(resizePenCanvas,300);
+
+function togglePen(){
+ penEnabled=!penEnabled;
+ editorPage.classList.toggle("pen-mode",penEnabled);
+ document.getElementById("penButton").classList.toggle("active",penEnabled);
+}
+
+/* IMPORTANT: coordinates are stored in the A4 page itself. */
+function point(e){
+ const r=penCanvas.getBoundingClientRect();
+ return {
+  x:e.clientX-r.left,
+  y:e.clientY-r.top
+ };
+}
+
+penCanvas.addEventListener("pointerdown",e=>{
+ if(!penEnabled)return;
+ e.preventDefault();
+ drawing=true;
+ penHasDrawing=true;
+ penCanvas.setPointerCapture(e.pointerId);
+ const p=point(e);
+ currentPenStroke=[p];
+ penStrokes.push(currentPenStroke);
+ penCtx.beginPath();
+ penCtx.moveTo(p.x,p.y);
+});
+
+penCanvas.addEventListener("pointermove",e=>{
+ if(!drawing||!penEnabled||!currentPenStroke)return;
+ e.preventDefault();
+ const p=point(e);
+ currentPenStroke.push(p);
+ penCtx.lineTo(p.x,p.y);
+ penCtx.stroke();
+});
+
+function finishPenStroke(){
+ drawing=false;
+ currentPenStroke=null;
+}
+
+penCanvas.addEventListener("pointerup",finishPenStroke);
+penCanvas.addEventListener("pointercancel",finishPenStroke);
+penCanvas.addEventListener("pointerleave",()=>{
+ if(drawing) finishPenStroke();
+});
+
+function clearPen(){
+ penStrokes=[];
+ currentPenStroke=null;
+ penHasDrawing=false;
+ drawing=false;
+ const ratio=window.devicePixelRatio||1;
+ penCtx.save();
+ penCtx.setTransform(1,0,0,1,0,0);
+ penCtx.clearRect(0,0,penCanvas.width,penCanvas.height);
+ penCtx.restore();
+ setupPenContext();
+}
+
+function createPenOverlay(page){
+ if(!penHasDrawing) return;
+
+ const h=penPageHeight();
+ const layer=document.createElement("div");
+ layer.className="preview-pen";
+ layer.style.width="794px";
+ layer.style.height=h+"px";
+ layer.style.left="0";
+ layer.style.top="0";
+
+ const canvas=document.createElement("canvas");
+ const ratio=2;
+ canvas.width=794*ratio;
+ canvas.height=h*ratio;
+ canvas.style.width="794px";
+ canvas.style.height=h+"px";
+ canvas.style.display="block";
+ canvas.style.pointerEvents="none";
+
+ const ctx=canvas.getContext("2d");
+ ctx.setTransform(ratio,0,0,ratio,0,0);
+ ctx.lineWidth=2.2;
+ ctx.lineCap="round";
+ ctx.lineJoin="round";
+ ctx.strokeStyle="#0d6efd";
+
+ for(const stroke of penStrokes){
+  if(!stroke || !stroke.length) continue;
+  ctx.beginPath();
+  ctx.moveTo(stroke[0].x,stroke[0].y);
+  for(let i=1;i<stroke.length;i++) ctx.lineTo(stroke[i].x,stroke[i].y);
+  ctx.stroke();
+ }
+
+ layer.appendChild(canvas);
+ page.appendChild(layer);
+}
 
 /* AUTOMATIC PDF CONTENT FORMATTING */
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
@@ -306,7 +739,7 @@ function buildPreview(){
  const header=document.createElement("div");header.className="doc-header";header.innerHTML='<img src="images/logo.png" class="doc-logo" alt="Gopes Pinnacle"><div class="doc-title">GOPES PINNACLE</div><div class="doc-subtitle">Structured Online Academy</div>';page.appendChild(header);
  const meta=document.createElement("div");meta.className="doc-meta";meta.innerHTML='<span>'+esc(document.getElementById("editorTopicMeta").textContent)+'</span><span>'+esc(document.getElementById("editorGradeMeta").textContent)+'</span>';page.appendChild(meta);
  const content=document.createElement("div");content.className="preview-content";content.innerHTML=buildFormattedContent();page.appendChild(content);
- if(penHasDrawing){const layer=document.createElement("div");layer.className="preview-pen";const img=document.createElement("img");img.src=penCanvas.toDataURL("image/png");layer.appendChild(img);page.appendChild(layer);}
+ createPenOverlay(page);
  mount.appendChild(page);return page;
 }
 
