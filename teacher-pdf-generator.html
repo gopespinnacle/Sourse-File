@@ -39,16 +39,42 @@ label{display:block;font-size:13px;font-weight:700;color:#334155;margin-bottom:7
 .tool:hover{background:#edf4ff;border-color:#8bb4ed}
 .tool.active{background:#0d6efd;color:#fff;border-color:#0d6efd}
 .separator{width:1px;background:#d7e0eb;margin:0 4px}
-.editor-wrap{position:relative;margin:0 22px 18px}
-.editor{min-height:520px;max-height:none;overflow:auto;border:1px solid #d7e0eb;border-radius:0 0 12px 12px;padding:28px;background:#fff;font-family:"Times New Roman",serif;font-weight:700;font-size:10pt;line-height:1.55;outline:none}
+.editor-wrap{
+position:relative;
+width:794px;
+max-width:calc(100% - 44px);
+height:1123px;
+margin:0 auto 18px;
+overflow:auto;
+background:#dfe7f1;
+border:1px solid #d7e0eb;
+border-radius:0 0 12px 12px;
+}
+.editor{
+width:794px;
+min-height:1123px;
+max-height:none;
+overflow:visible;
+border:none;
+border-radius:0;
+padding:55px 58px 60px;
+background:#fff;
+font-family:"Times New Roman",serif;
+font-weight:700;
+font-size:10pt;
+line-height:1.55;
+outline:none;
+}
 .editor:empty:before{content:"Enter homework / assessment content here...";color:#94a3b8;font-weight:400}
 .editor .main-heading{font-size:14pt;font-weight:700;text-decoration:underline;margin:0 0 18px}
 .editor .sub-heading{font-size:12pt;font-weight:700;margin:16px 0 8px}
 .editor .body-content{font-size:10pt;font-weight:700;margin:0 0 7px}
-.editor table{border-collapse:collapse;width:100%;margin:14px 0;font-family:"Times New Roman",serif;font-size:10pt;font-weight:700}
+.editor table{border-collapse:collapse;width:100%;margin:14px 0;font-family:"Times New Roman",serif;font-size:10pt;font-weight:700;table-layout:auto}
+.editor .image-box{display:block;width:360px;max-width:100%;margin:14px 0}
+.editor .image-box img{width:100%;height:auto}
 .editor table th,.editor table td{border:1px solid #333;padding:6px 8px;vertical-align:top;font-weight:700}
 .editor table th{background:#eef3f9}
-.editor .image-box{position:relative;display:inline-block;vertical-align:middle;margin:12px 8px;max-width:100%;border:2px solid transparent;line-height:0;cursor:move;user-select:none}
+.editor .image-box{position:relative;display:block;vertical-align:middle;margin:14px 0;max-width:100%;border:2px solid transparent;line-height:0;cursor:move;user-select:none}
 .editor .image-box.selected{border-color:#0d6efd;box-shadow:0 0 0 2px rgba(13,110,253,.12)}
 .editor .image-box img{display:block;width:100%;height:auto;max-width:none;pointer-events:none}
 .image-resize-handle{position:absolute;right:-7px;bottom:-7px;width:15px;height:15px;background:#0d6efd;border:2px solid #fff;border-radius:4px;cursor:nwse-resize;z-index:10;display:none}
@@ -67,7 +93,7 @@ label{display:block;font-size:13px;font-weight:700;color:#334155;margin-bottom:7
 .btn-primary:disabled{opacity:.6;cursor:not-allowed}
 .status{margin:0 22px 18px;padding:11px 13px;border-radius:10px;background:#eff6ff;color:#1e40af;font-size:13px;display:none}
 .preview-shell{background:#dfe7f1;border-radius:14px;padding:18px;overflow:auto}
-#pdfPreview{width:794px;min-height:1123px;margin:0 auto;background:#fff;padding:55px 58px 60px;font-family:"Times New Roman",serif;color:#000}
+#pdfPreview{width:794px;min-height:1123px;margin:0 auto;background:#fff;padding:55px 58px 60px;overflow:hidden;font-family:"Times New Roman",serif;color:#000}
 .pdf-header{position:relative;text-align:center;border-bottom:4px solid #173b67;padding-bottom:14px;margin-bottom:20px;min-height:86px}
 .pdf-logo{position:absolute;left:0;top:0;width:88px;height:auto;object-fit:contain}
 .pdf-title{font-size:22pt;font-weight:700;line-height:1.1;margin-top:4px}
@@ -199,6 +225,7 @@ const token = sessionStorage.getItem("token");
 let documentType = "Homework";
 let penEnabled = false;
 let drawing = false;
+let penHasDrawing = false;
 let selectedImageBox = null;
 
 if(!token){
@@ -308,9 +335,13 @@ function insertSubHeading(){
 }
 
 function autoEditorHeight(){
+    /*
+     * The editor is intentionally a fixed A4 working sheet.
+     * Content can grow inside the A4 sheet and the editor wrapper
+     * scrolls instead of changing the page width/geometry.
+     */
     const editor = document.getElementById("editor");
     editor.style.height = "auto";
-    editor.style.height = Math.max(520, editor.scrollHeight + 10) + "px";
 }
 
 /* PASTE */
@@ -497,7 +528,7 @@ function setupExistingImages(){
         const box = document.createElement("span");
         box.className = "image-box";
         box.contentEditable = "false";
-        box.style.width = Math.min(360, Math.max(180, img.width || 360)) + "px";
+        box.style.width = "360px";
 
         const parent = img.parentNode;
         parent.insertBefore(box, img);
@@ -597,6 +628,7 @@ penCanvas.addEventListener("pointerdown", e=>{
     drawing = true;
     penCanvas.setPointerCapture(e.pointerId);
     const p = pointFromEvent(e);
+    penHasDrawing = true;
     penCtx.beginPath();
     penCtx.moveTo(p.x,p.y);
 });
@@ -618,6 +650,7 @@ penCanvas.addEventListener("pointercancel", ()=>{
 
 function clearPen(){
     penCtx.clearRect(0,0,penCanvas.width,penCanvas.height);
+    penHasDrawing = false;
 }
 
 /* PREVIEW / FORMATTING */
@@ -731,6 +764,9 @@ function buildFormattedContent(){
             clone.classList.remove("selected");
             clone.style.border = "0";
             clone.style.boxShadow = "none";
+            clone.style.display = "block";
+            clone.style.margin = "14px 0";
+            clone.style.maxWidth = "100%";
             output += clone.outerHTML;
             return;
         }
@@ -765,6 +801,9 @@ function buildFormattedContent(){
                     box.classList.remove("selected");
                     box.style.border = "0";
                     box.style.boxShadow = "none";
+                    box.style.display = "block";
+                    box.style.margin = "14px 0";
+                    box.style.maxWidth = "100%";
                 });
                 clone.style.fontFamily = '"Times New Roman", serif';
                 clone.style.fontSize = "10pt";
@@ -850,16 +889,57 @@ async function generatePDF(){
         document.getElementById("previewContent").innerHTML =
             formatted;
 
-        /* Add handwriting as a final image if pen was used */
-        if(penEnabled){
+        /*
+         * ADD TEACHER HANDWRITING
+         * The pen drawing lives on a separate editor canvas.
+         * We must convert that canvas to an image and WAIT for the
+         * image to finish loading before html2canvas captures the PDF preview.
+         */
+        if(penHasDrawing){
+
             const penData = penCanvas.toDataURL("image/png");
 
-            const img = document.createElement("img");
-            img.src = penData;
-            img.className = "pdf-img";
-            img.style.maxHeight = "350px";
+            const handwritingWrap = document.createElement("div");
+            handwritingWrap.style.width = "100%";
+            handwritingWrap.style.margin = "14px 0";
+            handwritingWrap.style.textAlign = "left";
 
-            document.getElementById("previewContent").appendChild(img);
+            const handwritingImg = document.createElement("img");
+
+            handwritingImg.src = penData;
+            handwritingImg.alt = "Teacher handwriting";
+            handwritingImg.style.display = "block";
+            handwritingImg.style.width = "100%";
+            handwritingImg.style.height = "auto";
+            handwritingImg.style.maxWidth = "100%";
+            handwritingImg.style.objectFit = "contain";
+
+            handwritingWrap.appendChild(handwritingImg);
+
+            document
+                .getElementById("previewContent")
+                .appendChild(handwritingWrap);
+
+            /*
+             * IMPORTANT:
+             * Wait until the generated handwriting image is actually
+             * decoded by the browser before taking the PDF screenshot.
+             */
+            if(handwritingImg.decode){
+                try{
+                    await handwritingImg.decode();
+                }catch(e){
+                    console.warn(
+                        "Handwriting image decode warning:",
+                        e
+                    );
+                }
+            }else{
+                await new Promise(resolve=>{
+                    handwritingImg.onload = resolve;
+                    handwritingImg.onerror = resolve;
+                });
+            }
         }
 
         await document.fonts.ready;
