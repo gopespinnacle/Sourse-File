@@ -45,6 +45,17 @@ label{display:block;font-size:13px;font-weight:700;color:#334155;margin-bottom:7
 .editor .main-heading{font-size:14pt;font-weight:700;text-decoration:underline;margin:0 0 18px}
 .editor .sub-heading{font-size:12pt;font-weight:700;margin:16px 0 8px}
 .editor .body-content{font-size:10pt;font-weight:700;margin:0 0 7px}
+.editor table{border-collapse:collapse;width:100%;margin:14px 0;font-family:"Times New Roman",serif;font-size:10pt;font-weight:700}
+.editor table th,.editor table td{border:1px solid #333;padding:6px 8px;vertical-align:top;font-weight:700}
+.editor table th{background:#eef3f9}
+.editor .image-box{position:relative;display:inline-block;vertical-align:middle;margin:12px 8px;max-width:100%;border:2px solid transparent;line-height:0;cursor:move;user-select:none}
+.editor .image-box.selected{border-color:#0d6efd;box-shadow:0 0 0 2px rgba(13,110,253,.12)}
+.editor .image-box img{display:block;width:100%;height:auto;max-width:none;pointer-events:none}
+.image-resize-handle{position:absolute;right:-7px;bottom:-7px;width:15px;height:15px;background:#0d6efd;border:2px solid #fff;border-radius:4px;cursor:nwse-resize;z-index:10;display:none}
+.image-box.selected .image-resize-handle{display:block}
+.image-delete-button{position:absolute;right:-7px;top:-30px;width:25px;height:25px;border:0;border-radius:6px;background:#dc2626;color:#fff;font-weight:800;cursor:pointer;z-index:11;display:none;line-height:25px;padding:0}
+.image-box.selected .image-delete-button{display:block}
+.editor-wrap.pen-mode .image-box{pointer-events:none}
 .pen-layer{position:absolute;inset:0;pointer-events:none;z-index:4}
 .editor-wrap.pen-mode .pen-layer{pointer-events:auto}
 .pen-layer canvas{width:100%;height:100%;display:block}
@@ -65,6 +76,10 @@ label{display:block;font-size:13px;font-weight:700;color:#334155;margin-bottom:7
 .pdf-main-heading{font-size:14pt;font-weight:700;text-decoration:underline;text-align:center;margin:0 0 18px}
 .pdf-sub-heading{font-size:12pt;font-weight:700;margin:16px 0 8px}
 .pdf-body{font-size:10pt;font-weight:700;margin:0 0 7px;line-height:1.55}
+.pdf-table{width:100%;border-collapse:collapse;margin:14px 0;table-layout:auto;font-family:"Times New Roman",serif;font-size:10pt;font-weight:700;page-break-inside:auto}
+.pdf-table th,.pdf-table td{border:1px solid #333;padding:6px 8px;vertical-align:top;font-family:"Times New Roman",serif;font-size:10pt;font-weight:700;line-height:1.35;word-wrap:break-word}
+.pdf-table th{background:#eef3f9}
+.pdf-table tr{page-break-inside:avoid}
 .pdf-img{max-width:100%;height:auto;display:block;margin:10px auto}
 .preview-title{font-weight:800;color:#0f2d52;margin:0 0 10px}
 .hidden{display:none!important}
@@ -184,6 +199,7 @@ const token = sessionStorage.getItem("token");
 let documentType = "Homework";
 let penEnabled = false;
 let drawing = false;
+let selectedImageBox = null;
 
 if(!token){
     window.location.href = "teacher-login.html";
@@ -322,28 +338,183 @@ function handlePaste(event){
 }
 
 function insertImage(src){
+    const editor = document.getElementById("editor");
+
+    const box = document.createElement("span");
+    box.className = "image-box";
+    box.contentEditable = "false";
+    box.style.width = "360px";
+
     const img = document.createElement("img");
     img.src = src;
-    img.style.maxWidth = "100%";
-    img.style.height = "auto";
-    img.style.display = "block";
-    img.style.margin = "12px auto";
+    img.alt = "Inserted image";
+
+    const resizeHandle = document.createElement("span");
+    resizeHandle.className = "image-resize-handle";
+    resizeHandle.title = "Resize image";
+
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.className = "image-delete-button";
+    deleteButton.textContent = "×";
+    deleteButton.title = "Delete image";
+
+    box.appendChild(img);
+    box.appendChild(resizeHandle);
+    box.appendChild(deleteButton);
 
     const selection = window.getSelection();
 
     if(selection && selection.rangeCount){
         const range = selection.getRangeAt(0);
         range.deleteContents();
-        range.insertNode(img);
-        range.setStartAfter(img);
+        range.insertNode(box);
+        range.setStartAfter(box);
         range.collapse(true);
         selection.removeAllRanges();
         selection.addRange(range);
     }else{
-        document.getElementById("editor").appendChild(img);
+        editor.appendChild(box);
     }
 
+    setupImageBox(box);
+
+    img.onload = () => {
+        if(img.naturalWidth && img.naturalHeight){
+            const maxWidth = Math.max(180, editor.clientWidth - 50);
+            const preferred = Math.min(360, maxWidth, img.naturalWidth);
+            box.style.width = preferred + "px";
+        }
+        autoEditorHeight();
+    };
+
     autoEditorHeight();
+    selectImageBox(box);
+}
+
+function selectImageBox(box){
+    document.querySelectorAll("#editor .image-box").forEach(el=>{
+        el.classList.remove("selected");
+    });
+
+    if(box){
+        box.classList.add("selected");
+        selectedImageBox = box;
+    }else{
+        selectedImageBox = null;
+    }
+}
+
+function setupImageBox(box){
+    const img = box.querySelector("img");
+    const handle = box.querySelector(".image-resize-handle");
+    const deleteButton = box.querySelector(".image-delete-button");
+
+    box.addEventListener("pointerdown", function(e){
+        if(penEnabled) return;
+        if(e.target === handle || e.target === deleteButton) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+        selectImageBox(box);
+
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const startTransform = box.style.transform || "translate(0px, 0px)";
+        const match = startTransform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/);
+        const baseX = match ? parseFloat(match[1]) : 0;
+        const baseY = match ? parseFloat(match[2]) : 0;
+
+        let moved = false;
+
+        const move = ev => {
+            const dx = ev.clientX - startX;
+            const dy = ev.clientY - startY;
+
+            if(Math.abs(dx) > 2 || Math.abs(dy) > 2) moved = true;
+
+            box.style.transform = `translate(${baseX + dx}px, ${baseY + dy}px)`;
+        };
+
+        const up = ev => {
+            document.removeEventListener("pointermove", move);
+            document.removeEventListener("pointerup", up);
+            autoEditorHeight();
+        };
+
+        document.addEventListener("pointermove", move);
+        document.addEventListener("pointerup", up);
+    });
+
+    handle.addEventListener("pointerdown", function(e){
+        if(penEnabled) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+        selectImageBox(box);
+
+        const startX = e.clientX;
+        const startWidth = box.getBoundingClientRect().width;
+        const startHeight = box.getBoundingClientRect().height;
+        const ratio = startWidth && startHeight ? startHeight / startWidth : 0.75;
+
+        const move = ev => {
+            const maxWidth = Math.max(120, document.getElementById("editor").clientWidth - 35);
+            const newWidth = Math.max(
+                100,
+                Math.min(maxWidth, startWidth + (ev.clientX - startX))
+            );
+
+            box.style.width = newWidth + "px";
+            if(ratio){
+                img.style.height = Math.round(newWidth * ratio) + "px";
+            }
+            autoEditorHeight();
+        };
+
+        const up = () => {
+            document.removeEventListener("pointermove", move);
+            document.removeEventListener("pointerup", up);
+        };
+
+        document.addEventListener("pointermove", move);
+        document.addEventListener("pointerup", up);
+    });
+
+    deleteButton.addEventListener("click", function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        box.remove();
+        selectedImageBox = null;
+        autoEditorHeight();
+    });
+}
+
+function setupExistingImages(){
+    document.querySelectorAll("#editor img").forEach(img=>{
+        if(img.closest(".image-box")) return;
+
+        const box = document.createElement("span");
+        box.className = "image-box";
+        box.contentEditable = "false";
+        box.style.width = Math.min(360, Math.max(180, img.width || 360)) + "px";
+
+        const parent = img.parentNode;
+        parent.insertBefore(box, img);
+        box.appendChild(img);
+
+        const resizeHandle = document.createElement("span");
+        resizeHandle.className = "image-resize-handle";
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "image-delete-button";
+        deleteButton.textContent = "×";
+
+        box.appendChild(resizeHandle);
+        box.appendChild(deleteButton);
+        setupImageBox(box);
+    });
 }
 
 document.getElementById("imageInput").addEventListener("change", function(){
@@ -355,6 +526,20 @@ document.getElementById("imageInput").addEventListener("change", function(){
     reader.readAsDataURL(file);
     this.value = "";
 });
+
+setupExistingImages();
+
+/* IMAGE SELECTION */
+document.getElementById("editor").addEventListener("click", function(e){
+    const box = e.target.closest(".image-box");
+
+    if(box){
+        selectImageBox(box);
+    }else{
+        selectImageBox(null);
+    }
+});
+
 
 /* PEN */
 const penCanvas = document.getElementById("penCanvas");
@@ -464,103 +649,148 @@ function classifyText(text, index){
     return `<p class="pdf-body">${escapeHtml(t)}</p>`;
 }
 
+function isSubHeadingText(text){
+    const t = text.trim();
+
+    return (
+        /^\d+[\.\)]\s+/.test(t) ||
+        /^[A-Z][\.\)]\s+/.test(t) ||
+        /^Question\s+\d+/i.test(t) ||
+        /^Section\s+/i.test(t) ||
+        /^Part\s+[A-Z0-9]/i.test(t)
+    );
+}
+
 function buildFormattedContent(){
     const source = document.getElementById("editor");
-
     const temp = source.cloneNode(true);
 
-    /* Remove pen overlay; handwriting is added separately */
+    temp.querySelectorAll(".image-resize-handle,.image-delete-button").forEach(x=>x.remove());
+
+    /* The editor-only image controls must never appear in the PDF. */
     temp.querySelectorAll("script,style").forEach(x=>x.remove());
 
-    let output = "";
+    const children = Array.from(temp.childNodes);
     let headingUsed = false;
+    let output = "";
 
-    function walk(node){
+    function addTextElement(text, tagName="P"){
+        const t = text.replace(/\u00a0/g," ").trim();
+        if(!t) return;
+
+        if(!headingUsed){
+            output += `<div class="pdf-main-heading">${escapeHtml(t)}</div>`;
+            headingUsed = true;
+            return;
+        }
+
+        if(tagName === "H1" || tagName === "H2" || tagName === "H3" || isSubHeadingText(t)){
+            output += `<div class="pdf-sub-heading">${escapeHtml(t)}</div>`;
+        }else{
+            output += `<p class="pdf-body">${escapeHtml(t)}</p>`;
+        }
+    }
+
+    function processNode(node){
         if(node.nodeType === Node.TEXT_NODE){
-            const lines = node.textContent.split(/\n+/);
-
-            lines.forEach(line=>{
-                const t = line.trim();
-                if(!t) return;
-
-                if(!headingUsed){
-                    output += `<div class="pdf-main-heading">${escapeHtml(t)}</div>`;
-                    headingUsed = true;
-                }else if(
-                    /^\d+[\.\)]\s+/.test(t) ||
-                    /^[A-Z][\.\)]\s+/.test(t) ||
-                    /^Question\s+\d+/i.test(t) ||
-                    /^Section\s+/i.test(t)
-                ){
-                    output += `<div class="pdf-sub-heading">${escapeHtml(t)}</div>`;
-                }else{
-                    output += `<p class="pdf-body">${escapeHtml(t)}</p>`;
-                }
-            });
+            node.textContent.split(/\n+/).forEach(line=>addTextElement(line));
             return;
         }
 
         if(node.nodeType !== Node.ELEMENT_NODE) return;
 
-        if(node.tagName === "IMG"){
-            output += `<img class="pdf-img" src="${node.src}">`;
+        const tag = node.tagName;
+
+        /* =====================================================
+           TABLE: PRESERVE THE ENTIRE TABLE STRUCTURE
+           ===================================================== */
+        if(tag === "TABLE"){
+            node.classList.add("pdf-table");
+            node.querySelectorAll("th,td").forEach(cell=>{
+                cell.style.fontFamily = '"Times New Roman", serif';
+                cell.style.fontSize = "10pt";
+                cell.style.fontWeight = "700";
+            });
+            output += node.outerHTML;
             return;
         }
 
-        const block =
-            ["DIV","P","H1","H2","H3","LI","BR"].includes(node.tagName);
-
-        if(block){
-            const text = node.textContent.trim();
-
-            if(text && node.querySelector("img") === null){
-                if(!headingUsed){
-                    output += `<div class="pdf-main-heading">${escapeHtml(text)}</div>`;
-                    headingUsed = true;
-                }else if(
-                    node.tagName === "H1" ||
-                    node.tagName === "H2" ||
-                    node.tagName === "H3" ||
-                    /^\d+[\.\)]\s+/.test(text) ||
-                    /^[A-Z][\.\)]\s+/.test(text) ||
-                    /^Question\s+\d+/i.test(text) ||
-                    /^Section\s+/i.test(text)
-                ){
-                    output += `<div class="pdf-sub-heading">${escapeHtml(text)}</div>`;
-                }else{
-                    output += `<p class="pdf-body">${escapeHtml(text)}</p>`;
-                }
-            }
+        /* =====================================================
+           IMAGE / MOVABLE IMAGE WRAPPER
+           ===================================================== */
+        if(tag === "IMG"){
+            const img = node.cloneNode(true);
+            img.className = "pdf-img";
+            output += img.outerHTML;
+            return;
         }
 
-        node.childNodes.forEach(child=>{
-            if(
-                child.nodeType === Node.ELEMENT_NODE &&
-                ["DIV","P","H1","H2","H3","LI"].includes(child.tagName)
-            ){
-                /* already processed as block */
-                if(child.querySelector("img")){
-                    child.querySelectorAll("img").forEach(img=>{
-                        output += `<img class="pdf-img" src="${img.src}">`;
-                    });
-                }
-            }else{
-                walk(child);
+        if(node.classList.contains("image-box")){
+            const clone = node.cloneNode(true);
+            clone.querySelectorAll(".image-resize-handle,.image-delete-button").forEach(x=>x.remove());
+            clone.classList.remove("selected");
+            clone.style.border = "0";
+            clone.style.boxShadow = "none";
+            output += clone.outerHTML;
+            return;
+        }
+
+        /* Lists remain lists instead of becoming one paragraph. */
+        if(tag === "UL" || tag === "OL"){
+            const list = node.cloneNode(true);
+            list.style.fontFamily = '"Times New Roman", serif';
+            list.style.fontSize = "10pt";
+            list.style.fontWeight = "700";
+            list.style.margin = "8px 0 10px 24px";
+            output += list.outerHTML;
+            return;
+        }
+
+        /* A normal block is converted to the required automatic style. */
+        if(["H1","H2","H3","P","DIV","LI"].includes(tag)){
+            const hasTable = !!node.querySelector("table");
+            const hasImage = !!node.querySelector("img,.image-box");
+
+            if(hasTable || hasImage){
+                /* Preserve mixed content without flattening tables/images. */
+                const clone = node.cloneNode(true);
+                clone.querySelectorAll(".image-resize-handle,.image-delete-button").forEach(x=>x.remove());
+                clone.querySelectorAll("table").forEach(table=>table.classList.add("pdf-table"));
+                clone.querySelectorAll("th,td").forEach(cell=>{
+                    cell.style.fontFamily = '"Times New Roman", serif';
+                    cell.style.fontSize = "10pt";
+                    cell.style.fontWeight = "700";
+                });
+                clone.querySelectorAll(".image-box").forEach(box=>{
+                    box.classList.remove("selected");
+                    box.style.border = "0";
+                    box.style.boxShadow = "none";
+                });
+                clone.style.fontFamily = '"Times New Roman", serif';
+                clone.style.fontSize = "10pt";
+                clone.style.fontWeight = "700";
+                output += clone.outerHTML;
+                return;
             }
-        });
+
+            const text = node.textContent.trim();
+            if(!text) return;
+            addTextElement(text,tag);
+            return;
+        }
+
+        /* Inline content such as <span>, <b>, <i> is kept as text. */
+        const text = node.textContent.trim();
+        if(text) addTextElement(text,tag);
     }
 
-    temp.childNodes.forEach(walk);
+    children.forEach(processNode);
 
-    /* Avoid duplicate text from nested block structures */
     if(!output.trim()){
-        const plain = source.innerText.trim();
-        plain.split(/\n+/).forEach((line,i)=>{
-            output += classifyText(line,i);
-        });
+        output = `<p class="pdf-body">No content entered.</p>`;
     }
 
-    return output || `<p class="pdf-body">No content entered.</p>`;
+    return output;
 }
 
 function updatePreviewMeta(){
@@ -715,6 +945,7 @@ function clearDocument(){
     document.getElementById("editor").innerHTML = "";
     document.getElementById("topicInput").value = "";
     clearPen();
+    selectedImageBox = null;
     updatePreviewMeta();
     document.getElementById("previewContent").innerHTML =
         `<div class="pdf-main-heading">Your document preview will appear here</div>
