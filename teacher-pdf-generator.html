@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PDF Generator | Gopes Pinnacle Academy</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -11,1028 +11,336 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:"Segoe UI",Arial,sans-serif;background:#eef3f9;color:#172033}
-button,select,input{font:inherit}
-.app{min-height:100vh}
-#sidebar-container{position:fixed;left:0;top:0;width:240px;height:100vh;z-index:20}
+button,input,select{font:inherit}
+#sidebar-container{position:fixed;left:0;top:0;width:240px;height:100vh;z-index:9999}
 .main{margin-left:240px;padding:28px 32px 50px}
 .page-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
 .page-head h1{margin:0;color:#0f2d52;font-size:28px}
 .page-head p{margin:6px 0 0;color:#64748b}
-.teacher-badge{background:white;border:1px solid #dbe5f0;border-radius:14px;padding:10px 16px;box-shadow:0 6px 20px rgba(15,45,82,.06)}
-.card{background:white;border:1px solid #dbe5f0;border-radius:18px;box-shadow:0 10px 30px rgba(15,45,82,.07);padding:22px;margin-bottom:20px}
+.teacher-badge{background:#fff;border:1px solid #dbe5f0;border-radius:14px;padding:10px 16px;box-shadow:0 6px 20px rgba(15,45,82,.06)}
+.card{background:#fff;border:1px solid #dbe5f0;border-radius:18px;box-shadow:0 10px 30px rgba(15,45,82,.07);padding:22px;margin-bottom:20px}
 .card-title{font-size:15px;font-weight:800;color:#0f2d52;margin-bottom:14px;text-transform:uppercase;letter-spacing:.6px}
 .type-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .type-option{border:2px solid #dce6f2;border-radius:15px;padding:18px;cursor:pointer;transition:.2s;background:#fff;display:flex;gap:14px;align-items:center}
 .type-option:hover{border-color:#7aa9e8;transform:translateY(-1px)}
 .type-option.active{border-color:#0d6efd;background:#eff6ff;box-shadow:0 5px 18px rgba(13,110,253,.12)}
 .type-icon{width:44px;height:44px;border-radius:12px;background:#eaf2ff;color:#0d6efd;display:grid;place-items:center;font-size:22px}
-.type-option strong{display:block;font-size:16px}
-.type-option span{display:block;color:#64748b;font-size:12px;margin-top:4px}
+.type-option strong{display:block;font-size:16px}.type-option span{display:block;color:#64748b;font-size:12px;margin-top:4px}
 input,select{width:100%;height:46px;border:1px solid #cfd9e6;border-radius:10px;padding:0 13px;background:#fff;outline:none}
 input:focus,select:focus{border-color:#0d6efd;box-shadow:0 0 0 3px rgba(13,110,253,.1)}
 .field-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px}
 label{display:block;font-size:13px;font-weight:700;color:#334155;margin-bottom:7px}
-.editor-card{padding:0;overflow:hidden}
-.editor-top{padding:18px 22px 0}
+.editor-card{padding:0;overflow:hidden}.editor-top{padding:18px 22px 0}
 .toolbar{display:flex;flex-wrap:wrap;gap:5px;padding:10px;border:1px solid #d7e0eb;border-bottom:0;border-radius:12px 12px 0 0;background:#f7fafd}
-.tool{min-width:34px;height:34px;border:1px solid #d7e0eb;background:#fff;border-radius:7px;cursor:pointer;font-weight:700;color:#243b53}
-.tool:hover{background:#edf4ff;border-color:#8bb4ed}
-.tool.active{background:#0d6efd;color:#fff;border-color:#0d6efd}
+.tool{min-width:34px;height:34px;border:1px solid #d7e0eb;background:#fff;border-radius:7px;cursor:pointer;font-weight:700;color:#243b53}.tool:hover{background:#edf4ff;border-color:#8bb4ed}.tool.active{background:#0d6efd;color:#fff;border-color:#0d6efd}
 .separator{width:1px;background:#d7e0eb;margin:0 4px}
-.editor-wrap{
-position:relative;
-width:794px;
-max-width:calc(100% - 44px);
-height:1123px;
-margin:0 auto 18px;
-overflow:auto;
-background:#dfe7f1;
-border:1px solid #d7e0eb;
-border-radius:0 0 12px 12px;
-}
-.editor{
-width:794px;
-min-height:1123px;
-max-height:none;
-overflow:visible;
-border:none;
-border-radius:0;
-padding:55px 58px 60px;
-background:#fff;
-font-family:"Times New Roman",serif;
-font-weight:700;
-font-size:10pt;
-line-height:1.55;
-outline:none;
-}
-.editor:empty:before{content:"Enter homework / assessment content here...";color:#94a3b8;font-weight:400}
-.editor .main-heading{font-size:14pt;font-weight:700;text-decoration:underline;margin:0 0 18px}
-.editor .sub-heading{font-size:12pt;font-weight:700;margin:16px 0 8px}
-.editor .body-content{font-size:10pt;font-weight:700;margin:0 0 7px}
-.editor table{border-collapse:collapse;width:100%;margin:14px 0;font-family:"Times New Roman",serif;font-size:10pt;font-weight:700;table-layout:auto}
-.editor .image-box{display:block;width:360px;max-width:100%;margin:14px 0}
-.editor .image-box img{width:100%;height:auto}
-.editor table th,.editor table td{border:1px solid #333;padding:6px 8px;vertical-align:top;font-weight:700}
-.editor table th{background:#eef3f9}
-.editor .image-box{position:relative;display:block;vertical-align:middle;margin:14px 0;max-width:100%;border:2px solid transparent;line-height:0;cursor:move;user-select:none}
-.editor .image-box.selected{border-color:#0d6efd;box-shadow:0 0 0 2px rgba(13,110,253,.12)}
-.editor .image-box img{display:block;width:100%;height:auto;max-width:none;pointer-events:none}
-.image-resize-handle{position:absolute;right:-7px;bottom:-7px;width:15px;height:15px;background:#0d6efd;border:2px solid #fff;border-radius:4px;cursor:nwse-resize;z-index:10;display:none}
+.editor-scroll{width:100%;max-height:1200px;overflow:auto;background:#dfe7f1;padding:18px}
+.a4-page{position:relative;width:794px;min-height:1123px;margin:0 auto;background:#fff;box-shadow:0 5px 20px rgba(15,45,82,.14);font-family:"Times New Roman",serif;color:#000;overflow:hidden}
+.editor-page{overflow:visible}
+.doc-header{position:relative;text-align:center;border-bottom:4px solid #173b67;padding:18px 30px 14px;margin:0 58px;min-height:105px}
+.doc-logo{position:absolute;left:0;top:18px;width:88px;height:auto;object-fit:contain}
+.doc-title{font-size:22pt;font-weight:700;line-height:1.1;margin-top:4px}.doc-subtitle{font-size:13pt;font-weight:700;margin-top:5px}
+.doc-meta{display:flex;justify-content:space-between;background:#edf6ff;border-radius:8px;padding:10px 13px;margin:15px 58px 22px;font-size:11pt;font-weight:700}
+.editor-content{position:relative;min-height:850px;margin:0 58px;padding:0 0 80px;font-family:"Times New Roman",serif;font-size:10pt;font-weight:700;line-height:1.55;outline:none}
+.editor-content:empty:before{content:"Enter homework / assessment content here...";color:#94a3b8;font-weight:400}
+.editor-content h1,.editor-content h2,.editor-content h3,.editor-content p,.editor-content div{font-family:"Times New Roman",serif}
+.editor-content h1{font-size:14pt;font-weight:700;text-decoration:underline;margin:0 0 18px}.editor-content h2,.editor-content h3{font-size:12pt;font-weight:700;margin:16px 0 8px}.editor-content p{font-size:10pt;font-weight:700;margin:0 0 7px}
+.editor-content table{width:100%;border-collapse:collapse;margin:14px 0;font-family:"Times New Roman",serif;font-size:10pt;font-weight:700;table-layout:auto}
+.editor-content th,.editor-content td{border:1px solid #333;padding:6px 8px;vertical-align:top;font-weight:700;line-height:1.35;word-wrap:break-word}.editor-content th{background:#eef3f9}
+.image-box{position:relative;display:block;width:360px;max-width:100%;margin:14px 0;line-height:0;border:2px solid transparent;cursor:move;user-select:none}
+.image-box.selected{border-color:#0d6efd;box-shadow:0 0 0 2px rgba(13,110,253,.12)}
+.image-box img{display:block;width:100%;height:auto;max-width:none;pointer-events:none}
+.image-resize-handle{position:absolute;right:-8px;bottom:-8px;width:16px;height:16px;background:#0d6efd;border:2px solid #fff;border-radius:4px;cursor:nwse-resize;z-index:20;display:none}
 .image-box.selected .image-resize-handle{display:block}
-.image-delete-button{position:absolute;right:-7px;top:-30px;width:25px;height:25px;border:0;border-radius:6px;background:#dc2626;color:#fff;font-weight:800;cursor:pointer;z-index:11;display:none;line-height:25px;padding:0}
+.image-delete-button{position:absolute;right:-8px;top:-31px;width:25px;height:25px;border:0;border-radius:6px;background:#dc2626;color:#fff;font-weight:800;cursor:pointer;z-index:21;display:none;line-height:25px;padding:0}
 .image-box.selected .image-delete-button{display:block}
-.editor-wrap.pen-mode .image-box{pointer-events:none}
-.pen-layer{position:absolute;inset:0;pointer-events:none;z-index:4}
-.editor-wrap.pen-mode .pen-layer{pointer-events:auto}
-.pen-layer canvas{width:100%;height:100%;display:block}
-.pen-hint{font-size:12px;color:#64748b;margin:-8px 22px 18px}
-.bottom-actions{display:flex;justify-content:flex-end;gap:10px;padding:0 22px 22px}
-.btn{border:0;border-radius:10px;padding:12px 18px;font-weight:800;cursor:pointer}
-.btn-secondary{background:#e8eef6;color:#334155}
-.btn-primary{background:#0d6efd;color:white;box-shadow:0 7px 18px rgba(13,110,253,.2)}
-.btn-primary:disabled{opacity:.6;cursor:not-allowed}
+.pen-layer{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:50}.pen-mode .pen-layer{pointer-events:auto}
+.pen-layer canvas{display:block;width:100%;height:100%}.pen-mode .image-box{pointer-events:none}
+.pen-hint{font-size:12px;color:#64748b;margin:12px 22px 18px}.bottom-actions{display:flex;justify-content:flex-end;gap:10px;padding:0 22px 22px}
+.btn{border:0;border-radius:10px;padding:12px 18px;font-weight:800;cursor:pointer}.btn-secondary{background:#e8eef6;color:#334155}.btn-primary{background:#0d6efd;color:#fff;box-shadow:0 7px 18px rgba(13,110,253,.2)}.btn-primary:disabled{opacity:.6;cursor:not-allowed}
 .status{margin:0 22px 18px;padding:11px 13px;border-radius:10px;background:#eff6ff;color:#1e40af;font-size:13px;display:none}
-.preview-shell{background:#dfe7f1;border-radius:14px;padding:18px;overflow:auto}
-#pdfPreview{width:794px;min-height:1123px;margin:0 auto;background:#fff;padding:55px 58px 60px;overflow:hidden;font-family:"Times New Roman",serif;color:#000}
-.pdf-header{position:relative;text-align:center;border-bottom:4px solid #173b67;padding-bottom:14px;margin-bottom:20px;min-height:86px}
-.pdf-logo{position:absolute;left:0;top:0;width:88px;height:auto;object-fit:contain}
-.pdf-title{font-size:22pt;font-weight:700;line-height:1.1;margin-top:4px}
-.pdf-subtitle{font-size:13pt;font-weight:700;margin-top:5px}
-.pdf-meta{display:flex;justify-content:space-between;background:#edf6ff;border-radius:8px;padding:10px 13px;margin:15px 0 22px;font-size:11pt;font-weight:700}
-.pdf-main-heading{font-size:14pt;font-weight:700;text-decoration:underline;text-align:center;margin:0 0 18px}
-.pdf-sub-heading{font-size:12pt;font-weight:700;margin:16px 0 8px}
-.pdf-body{font-size:10pt;font-weight:700;margin:0 0 7px;line-height:1.55}
-.pdf-table{width:100%;border-collapse:collapse;margin:14px 0;table-layout:auto;font-family:"Times New Roman",serif;font-size:10pt;font-weight:700;page-break-inside:auto}
-.pdf-table th,.pdf-table td{border:1px solid #333;padding:6px 8px;vertical-align:top;font-family:"Times New Roman",serif;font-size:10pt;font-weight:700;line-height:1.35;word-wrap:break-word}
-.pdf-table th{background:#eef3f9}
-.pdf-table tr{page-break-inside:avoid}
-.pdf-img{max-width:100%;height:auto;display:block;margin:10px auto}
-.preview-title{font-weight:800;color:#0f2d52;margin:0 0 10px}
+.preview-shell{background:#dfe7f1;border-radius:14px;padding:18px;overflow:auto}.preview-page{position:relative}
+.preview-content{position:relative;min-height:850px;margin:0 58px;padding:0 0 80px;font-family:"Times New Roman",serif;font-size:10pt;font-weight:700;line-height:1.55}
+.preview-content h1,.preview-content h2,.preview-content h3,.preview-content p,.preview-content div{font-family:"Times New Roman",serif}.preview-content h1{font-size:14pt;font-weight:700;text-decoration:underline;margin:0 0 18px}.preview-content h2,.preview-content h3{font-size:12pt;font-weight:700;margin:16px 0 8px}.preview-content p{font-size:10pt;font-weight:700;margin:0 0 7px}
+.preview-content table{width:100%;border-collapse:collapse;margin:14px 0;font-family:"Times New Roman",serif;font-size:10pt;font-weight:700;table-layout:auto}.preview-content th,.preview-content td{border:1px solid #333;padding:6px 8px;vertical-align:top;font-weight:700;line-height:1.35;word-wrap:break-word}.preview-content th{background:#eef3f9}
+.preview-content .image-box{border:0;box-shadow:none;cursor:default}.preview-content .image-resize-handle,.preview-content .image-delete-button{display:none}
+.preview-pen{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:50}.preview-pen img{display:block;width:100%;height:100%;object-fit:fill}
 .hidden{display:none!important}
-@media(max-width:900px){
-#sidebar-container{display:none}.main{margin-left:0;padding:18px}.field-grid,.type-grid{grid-template-columns:1fr}.page-head{align-items:flex-start;gap:12px;flex-direction:column}.preview-shell{padding:8px}
-}
+@media(max-width:900px){#sidebar-container{display:none}.main{margin-left:0;padding:18px}.field-grid,.type-grid{grid-template-columns:1fr}.page-head{align-items:flex-start;gap:12px;flex-direction:column}.editor-scroll{padding:8px}.preview-shell{padding:8px}}
 </style>
 </head>
-
 <body>
 <div id="sidebar-container"></div>
 
 <main class="main">
-    <div class="page-head">
-        <div>
-            <h1>PDF Generator</h1>
-            <p>Create professional Homework and Assessment documents.</p>
-        </div>
-        <div class="teacher-badge" id="teacherBadge">Teacher Portal</div>
-    </div>
+<div class="page-head"><div><h1>PDF Generator</h1><p>Create professional Homework and Assessment documents.</p></div><div class="teacher-badge" id="teacherBadge">Teacher Portal</div></div>
 
-    <section class="card">
-        <div class="card-title">1. Document Type</div>
-        <div class="type-grid">
-            <div class="type-option active" data-type="Homework" onclick="selectType('Homework')">
-                <div class="type-icon">📘</div>
-                <div><strong>Homework</strong><span>Create a homework document</span></div>
-            </div>
-            <div class="type-option" data-type="Assessment" onclick="selectType('Assessment')">
-                <div class="type-icon">📝</div>
-                <div><strong>Assessment</strong><span>Create an assessment document</span></div>
-            </div>
-        </div>
-    </section>
+<section class="card">
+<div class="card-title">1. Document Type</div>
+<div class="type-grid">
+<div class="type-option active" data-type="Homework" onclick="selectType('Homework')"><div class="type-icon">📘</div><div><strong>Homework</strong><span>Create a homework document</span></div></div>
+<div class="type-option" data-type="Assessment" onclick="selectType('Assessment')"><div class="type-icon">📝</div><div><strong>Assessment</strong><span>Create an assessment document</span></div></div>
+</div>
+</section>
 
-    <section class="card">
-        <div class="card-title">2. Document Details</div>
-        <div class="field-grid">
-            <div>
-                <label id="topicLabel">Homework Topic</label>
-                <input id="topicInput" placeholder="Example: Fractions – Practice Worksheet">
-            </div>
-            <div>
-                <label>Grade</label>
-                <select id="gradeSelect">
-                    <option value="">Loading mapped grades...</option>
-                </select>
-            </div>
-        </div>
-    </section>
+<section class="card">
+<div class="card-title">2. Document Details</div>
+<div class="field-grid">
+<div><label id="topicLabel">Homework Topic</label><input id="topicInput" placeholder="Example: Fractions – Practice Worksheet"></div>
+<div><label>Grade</label><select id="gradeSelect"><option value="">Loading mapped grades...</option></select></div>
+</div>
+</section>
 
-    <section class="card editor-card">
-        <div class="editor-top">
-            <div class="card-title" id="editorTitle">3. Enter Homework</div>
-            <div class="toolbar">
-                <button class="tool" onclick="format('undo')" title="Undo">↶</button>
-                <button class="tool" onclick="format('redo')" title="Redo">↷</button>
-                <span class="separator"></span>
-                <button class="tool" onclick="format('bold')" title="Bold"><b>B</b></button>
-                <button class="tool" onclick="format('italic')" title="Italic"><i>I</i></button>
-                <button class="tool" onclick="format('underline')" title="Underline"><u>U</u></button>
-                <span class="separator"></span>
-                <button class="tool" onclick="insertSubHeading()" title="Temporary subheading">H2</button>
-                <button class="tool" onclick="format('insertUnorderedList')" title="Bullets">•</button>
-                <button class="tool" onclick="format('insertOrderedList')" title="Numbering">1.</button>
-                <button class="tool" onclick="format('justifyLeft')" title="Align left">≡</button>
-                <button class="tool" onclick="format('justifyCenter')" title="Center">≡</button>
-                <span class="separator"></span>
-                <button class="tool" onclick="document.getElementById('imageInput').click()" title="Insert image">🖼</button>
-                <button class="tool" id="penButton" onclick="togglePen()" title="Pen">✏</button>
-                <button class="tool" onclick="clearPen()" title="Clear pen">⌫</button>
-                <input id="imageInput" type="file" accept="image/*" class="hidden">
-            </div>
-        </div>
+<section class="card editor-card">
+<div class="editor-top">
+<div class="card-title" id="editorTitle">3. Enter Homework</div>
+<div class="toolbar">
+<button class="tool" type="button" onclick="format('undo')">↶</button><button class="tool" type="button" onclick="format('redo')">↷</button><span class="separator"></span>
+<button class="tool" type="button" onclick="format('bold')"><b>B</b></button><button class="tool" type="button" onclick="format('italic')"><i>I</i></button><button class="tool" type="button" onclick="format('underline')"><u>U</u></button><span class="separator"></span>
+<button class="tool" type="button" onclick="insertSubHeading()">H2</button><button class="tool" type="button" onclick="format('insertUnorderedList')">•</button><button class="tool" type="button" onclick="format('insertOrderedList')">1.</button><button class="tool" type="button" onclick="format('justifyLeft')">≡</button><button class="tool" type="button" onclick="format('justifyCenter')">≡</button><span class="separator"></span>
+<button class="tool" type="button" onclick="document.getElementById('imageInput').click()">🖼</button><button class="tool" type="button" id="penButton" onclick="togglePen()">✏</button><button class="tool" type="button" onclick="clearPen()">⌫</button>
+<input id="imageInput" type="file" accept="image/*" multiple class="hidden">
+</div>
+</div>
 
-        <div class="editor-wrap" id="editorWrap">
-            <div id="editor" class="editor" contenteditable="true"
-                 onpaste="handlePaste(event)"
-                 oninput="autoEditorHeight()"></div>
-            <div class="pen-layer"><canvas id="penCanvas"></canvas></div>
-        </div>
+<div class="editor-scroll" id="editorScroll">
+<div class="a4-page editor-page" id="editorPage">
+<div class="doc-header"><img src="images/logo.png" class="doc-logo" alt="Gopes Pinnacle"><div class="doc-title">GOPES PINNACLE</div><div class="doc-subtitle">Structured Online Academy</div></div>
+<div class="doc-meta"><span id="editorTopicMeta">Homework Topic: —</span><span id="editorGradeMeta">Grade: —</span></div>
+<div id="editor" class="editor-content" contenteditable="true"></div>
+<div class="pen-layer"><canvas id="penCanvas"></canvas></div>
+</div>
+</div>
+<div class="pen-hint">Type or paste text, paste multiple images with Ctrl+V, use 🖼 for multiple image files, or use ✏ for mouse/stylus writing. Images can be moved and resized.</div>
+<div id="status" class="status"></div>
+<div class="bottom-actions"><button class="btn btn-secondary" type="button" onclick="clearDocument()">Clear</button><button class="btn btn-primary" id="generateBtn" type="button" onclick="generatePDF()">Generate Homework Document</button></div>
+</section>
 
-        <div class="pen-hint">Type, paste text, paste images with Ctrl+V, or switch to Pen mode for mouse/stylus writing.</div>
-        <div id="status" class="status"></div>
-
-        <div class="bottom-actions">
-            <button class="btn btn-secondary" onclick="clearDocument()">Clear</button>
-            <button class="btn btn-primary" id="generateBtn" onclick="generatePDF()">Generate Homework Document</button>
-        </div>
-    </section>
-
-    <section class="card">
-        <div class="card-title">Live PDF Preview</div>
-        <div class="preview-shell">
-            <div id="pdfPreview">
-                <div class="pdf-header">
-                    <img src="images/logo.png" class="pdf-logo" alt="Gopes Pinnacle">
-                    <div class="pdf-title">GOPES PINNACLE</div>
-                    <div class="pdf-subtitle">Structured Online Academy</div>
-                </div>
-                <div class="pdf-meta">
-                    <span id="previewTopic">Homework Topic: —</span>
-                    <span id="previewGrade">Grade: —</span>
-                </div>
-                <div id="previewContent">
-                    <div class="pdf-main-heading">Your document preview will appear here</div>
-                    <p class="pdf-body">Enter your content above and click Generate Document.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+<section class="card">
+<div class="card-title">Live PDF Preview</div>
+<div class="preview-shell"><div id="previewMount"></div></div>
+</section>
 </main>
 
 <script>
-const API = "https://academy-backend-eatl.onrender.com";
-const token = sessionStorage.getItem("token");
-let documentType = "Homework";
-let penEnabled = false;
-let drawing = false;
-let penHasDrawing = false;
-let selectedImageBox = null;
+const API="https://academy-backend-eatl.onrender.com";
+const token=sessionStorage.getItem("token");
+let documentType="Homework";
+let penEnabled=false;
+let drawing=false;
+let penHasDrawing=false;
+let selectedImageBox=null;
+let savedRange=null;
 
-if(!token){
-    window.location.href = "teacher-login.html";
-}
+if(!token){window.location.href="teacher-login.html";}
 
-/* SIDEBAR */
-fetch("teacher-sidebar.html")
-.then(r => r.text())
-.then(html => {
-    document.getElementById("sidebar-container").innerHTML = html;
-})
-.catch(() => {});
+fetch("teacher-sidebar.html").then(r=>r.text()).then(html=>{document.getElementById("sidebar-container").innerHTML=html;}).catch(()=>{});
 
-/* TYPE */
 function selectType(type){
-    documentType = type;
-
-    document.querySelectorAll(".type-option").forEach(el=>{
-        el.classList.toggle("active", el.dataset.type === type);
-    });
-
-    document.getElementById("topicLabel").textContent =
-        type + " Topic";
-
-    document.getElementById("editorTitle").textContent =
-        "3. Enter " + type;
-
-    document.getElementById("generateBtn").textContent =
-        "Generate " + type + " Document";
-
-    updatePreviewMeta();
+ documentType=type;
+ document.querySelectorAll(".type-option").forEach(el=>el.classList.toggle("active",el.dataset.type===type));
+ document.getElementById("topicLabel").textContent=type+" Topic";
+ document.getElementById("editorTitle").textContent="3. Enter "+type;
+ document.getElementById("generateBtn").textContent="Generate "+type+" Document";
+ updateMeta();
 }
 
-/* LOAD MAPPED GRADES */
 async function loadMappedGrades(){
-    const select = document.getElementById("gradeSelect");
-
-    try{
-        const res = await fetch(
-            API + "/api/teacher/all-period-assignments",
-            {
-                headers:{
-                    "Authorization":"Bearer " + token
-                }
-            }
-        );
-
-        const data = await res.json();
-        const rows = Array.isArray(data.data) ? data.data : [];
-
-        const grades = [...new Set(
-            rows
-            .map(x => x.className)
-            .filter(Boolean)
-        )];
-
-        select.innerHTML = "";
-
-        if(!grades.length){
-            select.innerHTML = `<option value="">No mapped grade found</option>`;
-            return;
-        }
-
-        grades.sort((a,b)=>{
-            const na = parseInt(String(a).match(/\d+/)?.[0] || 999);
-            const nb = parseInt(String(b).match(/\d+/)?.[0] || 999);
-            return na - nb || String(a).localeCompare(String(b));
-        });
-
-        grades.forEach(grade=>{
-            const option = document.createElement("option");
-            option.value = grade;
-            option.textContent = grade;
-            select.appendChild(option);
-        });
-
-        updatePreviewMeta();
-
-        /* Teacher name if available in API */
-        const teacherName =
-            rows[0]?.teacherName ||
-            rows[0]?.teacher?.name ||
-            "";
-
-        if(teacherName){
-            document.getElementById("teacherBadge").textContent =
-                "Teacher • " + teacherName;
-        }
-
-    }catch(err){
-        console.error("GRADE LOAD ERROR:", err);
-        select.innerHTML =
-            `<option value="">Unable to load mapped grades</option>`;
-    }
+ const select=document.getElementById("gradeSelect");
+ try{
+  const res=await fetch(API+"/api/teacher/all-period-assignments",{headers:{Authorization:"Bearer "+token}});
+  const data=await res.json();
+  const rows=Array.isArray(data.data)?data.data:[];
+  const grades=[...new Set(rows.map(x=>x.className).filter(Boolean))];
+  select.innerHTML="";
+  if(!grades.length){select.innerHTML='<option value="">No mapped grade found</option>';return;}
+  grades.sort((a,b)=>{const na=parseInt(String(a).match(/\d+/)?.[0]||999);const nb=parseInt(String(b).match(/\d+/)?.[0]||999);return na-nb||String(a).localeCompare(String(b));});
+  grades.forEach(g=>{const o=document.createElement("option");o.value=g;o.textContent=g;select.appendChild(o);});
+  const teacherName=rows[0]?.teacherName||rows[0]?.teacher?.name||"";
+  if(teacherName)document.getElementById("teacherBadge").textContent="Teacher • "+teacherName;
+  updateMeta();
+ }catch(err){console.error(err);select.innerHTML='<option value="">Unable to load mapped grades</option>';}
 }
 
-/* EDITOR */
-function format(command){
-    document.getElementById("editor").focus();
-    document.execCommand(command, false, null);
+function format(command){document.getElementById("editor").focus();document.execCommand(command,false,null);saveRange();}
+function insertSubHeading(){document.getElementById("editor").focus();document.execCommand("formatBlock",false,"h3");saveRange();}
+
+function saveRange(){
+ const sel=window.getSelection();
+ if(!sel||!sel.rangeCount)return;
+ const r=sel.getRangeAt(0);
+ if(document.getElementById("editor").contains(r.commonAncestorContainer)){savedRange=r.cloneRange();}
 }
 
-function insertSubHeading(){
-    document.getElementById("editor").focus();
-    document.execCommand("formatBlock", false, "h3");
+document.getElementById("editor").addEventListener("keyup",saveRange);
+document.getElementById("editor").addEventListener("mouseup",saveRange);
+document.getElementById("editor").addEventListener("input",()=>{saveRange();updateMeta();resizePenCanvas();});
+document.getElementById("editor").addEventListener("click",e=>{const box=e.target.closest(".image-box");selectImageBox(box||null);saveRange();});
+
+document.addEventListener("selectionchange",()=>{saveRange();});
+
+document.getElementById("topicInput").addEventListener("input",updateMeta);
+document.getElementById("gradeSelect").addEventListener("change",updateMeta);
+
+function updateMeta(){
+ const topic=document.getElementById("topicInput").value.trim()||"—";
+ const grade=document.getElementById("gradeSelect").value||"—";
+ document.getElementById("editorTopicMeta").textContent=documentType+" Topic: "+topic;
+ document.getElementById("editorGradeMeta").textContent="Grade: "+grade;
 }
 
-function autoEditorHeight(){
-    /*
-     * The editor is intentionally a fixed A4 working sheet.
-     * Content can grow inside the A4 sheet and the editor wrapper
-     * scrolls instead of changing the page width/geometry.
-     */
-    const editor = document.getElementById("editor");
-    editor.style.height = "auto";
-}
-
-/* PASTE */
-function handlePaste(event){
-    const items = event.clipboardData?.items || [];
-
-    for(const item of items){
-        if(item.type.startsWith("image/")){
-            event.preventDefault();
-
-            const file = item.getAsFile();
-            const reader = new FileReader();
-
-            reader.onload = e=>{
-                insertImage(e.target.result);
-            };
-
-            reader.readAsDataURL(file);
-            return;
-        }
-    }
-
-    /* Plain text paste stays editable */
-    setTimeout(autoEditorHeight, 50);
+function placeAtSavedRange(node){
+ const editor=document.getElementById("editor");
+ editor.focus();
+ let range=savedRange;
+ if(!range||!editor.contains(range.commonAncestorContainer)){
+  range=document.createRange();range.selectNodeContents(editor);range.collapse(false);
+ }
+ range.deleteContents();range.insertNode(node);range.setStartAfter(node);range.collapse(true);
+ const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);savedRange=range.cloneRange();
 }
 
 function insertImage(src){
-    const editor = document.getElementById("editor");
-
-    const box = document.createElement("span");
-    box.className = "image-box";
-    box.contentEditable = "false";
-    box.style.width = "360px";
-
-    const img = document.createElement("img");
-    img.src = src;
-    img.alt = "Inserted image";
-
-    const resizeHandle = document.createElement("span");
-    resizeHandle.className = "image-resize-handle";
-    resizeHandle.title = "Resize image";
-
-    const deleteButton = document.createElement("button");
-    deleteButton.type = "button";
-    deleteButton.className = "image-delete-button";
-    deleteButton.textContent = "×";
-    deleteButton.title = "Delete image";
-
-    box.appendChild(img);
-    box.appendChild(resizeHandle);
-    box.appendChild(deleteButton);
-
-    const selection = window.getSelection();
-
-    if(selection && selection.rangeCount){
-        const range = selection.getRangeAt(0);
-        range.deleteContents();
-        range.insertNode(box);
-        range.setStartAfter(box);
-        range.collapse(true);
-        selection.removeAllRanges();
-        selection.addRange(range);
-    }else{
-        editor.appendChild(box);
-    }
-
-    setupImageBox(box);
-
-    img.onload = () => {
-        if(img.naturalWidth && img.naturalHeight){
-            const maxWidth = Math.max(180, editor.clientWidth - 50);
-            const preferred = Math.min(360, maxWidth, img.naturalWidth);
-            box.style.width = preferred + "px";
-        }
-        autoEditorHeight();
-    };
-
-    autoEditorHeight();
-    selectImageBox(box);
+ const box=document.createElement("span");box.className="image-box";box.contentEditable="false";box.style.width="360px";
+ const img=document.createElement("img");img.src=src;img.alt="Inserted image";
+ const handle=document.createElement("span");handle.className="image-resize-handle";handle.title="Resize image";
+ const del=document.createElement("button");del.type="button";del.className="image-delete-button";del.textContent="×";del.title="Delete image";
+ box.append(img,handle,del);placeAtSavedRange(box);setupImageBox(box);selectImageBox(box);
+ img.onload=()=>{if(img.naturalWidth&&img.naturalHeight){const max=Math.max(160,document.getElementById("editor").clientWidth);box.style.width=Math.min(360,max,img.naturalWidth)+"px";}resizePenCanvas();};
 }
 
-function selectImageBox(box){
-    document.querySelectorAll("#editor .image-box").forEach(el=>{
-        el.classList.remove("selected");
-    });
-
-    if(box){
-        box.classList.add("selected");
-        selectedImageBox = box;
-    }else{
-        selectedImageBox = null;
-    }
-}
+function selectImageBox(box){document.querySelectorAll("#editor .image-box").forEach(x=>x.classList.remove("selected"));selectedImageBox=null;if(box){box.classList.add("selected");selectedImageBox=box;}}
 
 function setupImageBox(box){
-    const img = box.querySelector("img");
-    const handle = box.querySelector(".image-resize-handle");
-    const deleteButton = box.querySelector(".image-delete-button");
-
-    box.addEventListener("pointerdown", function(e){
-        if(penEnabled) return;
-        if(e.target === handle || e.target === deleteButton) return;
-
-        e.preventDefault();
-        e.stopPropagation();
-        selectImageBox(box);
-
-        const startX = e.clientX;
-        const startY = e.clientY;
-        const startTransform = box.style.transform || "translate(0px, 0px)";
-        const match = startTransform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/);
-        const baseX = match ? parseFloat(match[1]) : 0;
-        const baseY = match ? parseFloat(match[2]) : 0;
-
-        let moved = false;
-
-        const move = ev => {
-            const dx = ev.clientX - startX;
-            const dy = ev.clientY - startY;
-
-            if(Math.abs(dx) > 2 || Math.abs(dy) > 2) moved = true;
-
-            box.style.transform = `translate(${baseX + dx}px, ${baseY + dy}px)`;
-        };
-
-        const up = ev => {
-            document.removeEventListener("pointermove", move);
-            document.removeEventListener("pointerup", up);
-            autoEditorHeight();
-        };
-
-        document.addEventListener("pointermove", move);
-        document.addEventListener("pointerup", up);
-    });
-
-    handle.addEventListener("pointerdown", function(e){
-        if(penEnabled) return;
-
-        e.preventDefault();
-        e.stopPropagation();
-        selectImageBox(box);
-
-        const startX = e.clientX;
-        const startWidth = box.getBoundingClientRect().width;
-        const startHeight = box.getBoundingClientRect().height;
-        const ratio = startWidth && startHeight ? startHeight / startWidth : 0.75;
-
-        const move = ev => {
-            const maxWidth = Math.max(120, document.getElementById("editor").clientWidth - 35);
-            const newWidth = Math.max(
-                100,
-                Math.min(maxWidth, startWidth + (ev.clientX - startX))
-            );
-
-            box.style.width = newWidth + "px";
-            if(ratio){
-                img.style.height = Math.round(newWidth * ratio) + "px";
-            }
-            autoEditorHeight();
-        };
-
-        const up = () => {
-            document.removeEventListener("pointermove", move);
-            document.removeEventListener("pointerup", up);
-        };
-
-        document.addEventListener("pointermove", move);
-        document.addEventListener("pointerup", up);
-    });
-
-    deleteButton.addEventListener("click", function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        box.remove();
-        selectedImageBox = null;
-        autoEditorHeight();
-    });
+ const img=box.querySelector("img"),handle=box.querySelector(".image-resize-handle"),del=box.querySelector(".image-delete-button");
+ box.addEventListener("pointerdown",e=>{
+  if(penEnabled||e.target===handle||e.target===del)return;
+  e.preventDefault();e.stopPropagation();selectImageBox(box);
+  const startX=e.clientX,startY=e.clientY,startL=parseFloat(box.style.left||0),startT=parseFloat(box.style.top||0);
+  const move=ev=>{box.style.left=(startL+ev.clientX-startX)+"px";box.style.top=(startT+ev.clientY-startY)+"px";};
+  const up=()=>{document.removeEventListener("pointermove",move);document.removeEventListener("pointerup",up);resizePenCanvas();};
+  document.addEventListener("pointermove",move);document.addEventListener("pointerup",up);
+ });
+ handle.addEventListener("pointerdown",e=>{
+  if(penEnabled)return;e.preventDefault();e.stopPropagation();selectImageBox(box);
+  const startX=e.clientX,startW=box.getBoundingClientRect().width,startH=box.getBoundingClientRect().height,ratio=startH/startW;
+  const move=ev=>{const max=Math.max(120,document.getElementById("editor").clientWidth);const w=Math.max(100,Math.min(max,startW+ev.clientX-startX));box.style.width=w+"px";img.style.height="auto";if(ratio)img.style.height=Math.round(w*ratio)+"px";};
+  const up=()=>{document.removeEventListener("pointermove",move);document.removeEventListener("pointerup",up);resizePenCanvas();};
+  document.addEventListener("pointermove",move);document.addEventListener("pointerup",up);
+ });
+ del.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();box.remove();selectedImageBox=null;resizePenCanvas();});
 }
 
-function setupExistingImages(){
-    document.querySelectorAll("#editor img").forEach(img=>{
-        if(img.closest(".image-box")) return;
+document.getElementById("imageInput").addEventListener("change",async function(){
+ const files=Array.from(this.files||[]);this.value="";
+ for(const file of files){const data=await fileToDataURL(file);if(data)insertImage(data);}
+});
+function fileToDataURL(file){return new Promise(resolve=>{const r=new FileReader();r.onload=e=>resolve(e.target.result);r.onerror=()=>resolve(null);r.readAsDataURL(file);});}
 
-        const box = document.createElement("span");
-        box.className = "image-box";
-        box.contentEditable = "false";
-        box.style.width = "360px";
-
-        const parent = img.parentNode;
-        parent.insertBefore(box, img);
-        box.appendChild(img);
-
-        const resizeHandle = document.createElement("span");
-        resizeHandle.className = "image-resize-handle";
-
-        const deleteButton = document.createElement("button");
-        deleteButton.type = "button";
-        deleteButton.className = "image-delete-button";
-        deleteButton.textContent = "×";
-
-        box.appendChild(resizeHandle);
-        box.appendChild(deleteButton);
-        setupImageBox(box);
-    });
+async function handlePaste(e){
+ const items=Array.from(e.clipboardData?.items||[]);
+ const html=e.clipboardData?.getData("text/html")||"";
+ const imageItems=items.filter(x=>x.type.startsWith("image/"));
+ if(imageItems.length&&!html.includes("<table")){
+  e.preventDefault();
+  saveRange();
+  for(const item of imageItems){const f=item.getAsFile();if(!f)continue;const data=await fileToDataURL(f);if(data)insertImage(data);}
+  return;
+ }
+ setTimeout(()=>{setupExistingImages();resizePenCanvas();saveRange();},50);
 }
+document.getElementById("editor").addEventListener("paste",handlePaste);
 
-document.getElementById("imageInput").addEventListener("change", function(){
-    const file = this.files[0];
-    if(!file) return;
-
-    const reader = new FileReader();
-    reader.onload = e => insertImage(e.target.result);
-    reader.readAsDataURL(file);
-    this.value = "";
-});
-
-setupExistingImages();
-
-/* IMAGE SELECTION */
-document.getElementById("editor").addEventListener("click", function(e){
-    const box = e.target.closest(".image-box");
-
-    if(box){
-        selectImageBox(box);
-    }else{
-        selectImageBox(null);
-    }
-});
-
+function setupExistingImages(){document.querySelectorAll("#editor img").forEach(img=>{if(img.closest(".image-box"))return;const box=document.createElement("span");box.className="image-box";box.contentEditable="false";box.style.width=Math.min(360,document.getElementById("editor").clientWidth)+"px";img.parentNode.insertBefore(box,img);box.appendChild(img);const h=document.createElement("span");h.className="image-resize-handle";const d=document.createElement("button");d.type="button";d.className="image-delete-button";d.textContent="×";box.append(h,d);setupImageBox(box);});}
 
 /* PEN */
-const penCanvas = document.getElementById("penCanvas");
-const penCtx = penCanvas.getContext("2d");
-const editorWrap = document.getElementById("editorWrap");
-
+const editorPage=document.getElementById("editorPage"),editor=document.getElementById("editor"),penCanvas=document.getElementById("penCanvas"),penCtx=penCanvas.getContext("2d");
 function resizePenCanvas(){
-    const rect = editorWrap.getBoundingClientRect();
-    const ratio = window.devicePixelRatio || 1;
-
-    const old = document.createElement("canvas");
-    old.width = penCanvas.width;
-    old.height = penCanvas.height;
-
-    if(penCanvas.width && penCanvas.height){
-        old.getContext("2d").drawImage(penCanvas,0,0);
-    }
-
-    penCanvas.width = Math.max(1, Math.floor(rect.width * ratio));
-    penCanvas.height = Math.max(1, Math.floor(rect.height * ratio));
-    penCanvas.style.width = rect.width + "px";
-    penCanvas.style.height = rect.height + "px";
-
-    penCtx.setTransform(ratio,0,0,ratio,0,0);
-
-    if(old.width && old.height){
-        penCtx.drawImage(old,0,0,old.width,old.height,0,0,rect.width,rect.height);
-    }
-
-    penCtx.lineWidth = 2.2;
-    penCtx.lineCap = "round";
-    penCtx.lineJoin = "round";
-    penCtx.strokeStyle = "#0d6efd";
+ const rect=editorPage.getBoundingClientRect();
+ const cssW=794;
+ const cssH=Math.max(1123,editorPage.scrollHeight);
+ const ratio=window.devicePixelRatio||1;
+ const old=document.createElement("canvas");old.width=penCanvas.width;old.height=penCanvas.height;
+ if(old.width&&old.height)old.getContext("2d").drawImage(penCanvas,0,0);
+ penCanvas.width=Math.ceil(cssW*ratio);penCanvas.height=Math.ceil(cssH*ratio);penCanvas.style.width=cssW+"px";penCanvas.style.height=cssH+"px";
+ penCtx.setTransform(ratio,0,0,ratio,0,0);penCtx.lineWidth=2.2;penCtx.lineCap="round";penCtx.lineJoin="round";penCtx.strokeStyle="#0d6efd";
+ if(old.width&&old.height)penCtx.drawImage(old,0,0,old.width,old.height,0,0,Math.min(cssW,old.width/ratio),Math.min(cssH,old.height/ratio));
 }
+window.addEventListener("resize",resizePenCanvas);setTimeout(resizePenCanvas,300);
+function togglePen(){penEnabled=!penEnabled;editorPage.classList.toggle("pen-mode",penEnabled);document.getElementById("penButton").classList.toggle("active",penEnabled);}
+function point(e){const r=penCanvas.getBoundingClientRect();return{x:e.clientX-r.left+editorPage.scrollLeft,y:e.clientY-r.top+editorPage.scrollTop};}
+penCanvas.addEventListener("pointerdown",e=>{if(!penEnabled)return;drawing=true;penHasDrawing=true;penCanvas.setPointerCapture(e.pointerId);const p=point(e);penCtx.beginPath();penCtx.moveTo(p.x,p.y);});
+penCanvas.addEventListener("pointermove",e=>{if(!drawing||!penEnabled)return;const p=point(e);penCtx.lineTo(p.x,p.y);penCtx.stroke();});
+penCanvas.addEventListener("pointerup",()=>drawing=false);penCanvas.addEventListener("pointercancel",()=>drawing=false);
+function clearPen(){const ratio=window.devicePixelRatio||1;penCtx.save();penCtx.setTransform(1,0,0,1,0,0);penCtx.clearRect(0,0,penCanvas.width,penCanvas.height);penCtx.restore();penCtx.setTransform(ratio,0,0,ratio,0,0);penCtx.lineWidth=2.2;penCtx.lineCap="round";penCtx.lineJoin="round";penCtx.strokeStyle="#0d6efd";penHasDrawing=false;drawing=false;}
 
-window.addEventListener("resize", resizePenCanvas);
-setTimeout(resizePenCanvas, 300);
-
-function togglePen(){
-    penEnabled = !penEnabled;
-    editorWrap.classList.toggle("pen-mode", penEnabled);
-    document.getElementById("penButton").classList.toggle("active", penEnabled);
-}
-
-function pointFromEvent(e){
-    const r = penCanvas.getBoundingClientRect();
-    return {
-        x:e.clientX-r.left,
-        y:e.clientY-r.top
-    };
-}
-
-penCanvas.addEventListener("pointerdown", e=>{
-    if(!penEnabled) return;
-    drawing = true;
-    penCanvas.setPointerCapture(e.pointerId);
-    const p = pointFromEvent(e);
-    penHasDrawing = true;
-    penCtx.beginPath();
-    penCtx.moveTo(p.x,p.y);
-});
-
-penCanvas.addEventListener("pointermove", e=>{
-    if(!drawing || !penEnabled) return;
-    const p = pointFromEvent(e);
-    penCtx.lineTo(p.x,p.y);
-    penCtx.stroke();
-});
-
-penCanvas.addEventListener("pointerup", ()=>{
-    drawing = false;
-});
-
-penCanvas.addEventListener("pointercancel", ()=>{
-    drawing = false;
-});
-
-function clearPen(){
-    penCtx.clearRect(0,0,penCanvas.width,penCanvas.height);
-    penHasDrawing = false;
-}
-
-/* PREVIEW / FORMATTING */
-function escapeHtml(value){
-    return value
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;");
-}
-
-function classifyText(text, index){
-    const t = text.trim();
-
-    if(!t) return "";
-
-    if(index === 0){
-        return `<div class="pdf-main-heading">${escapeHtml(t)}</div>`;
-    }
-
-    if(
-        /^\d+[\.\)]\s+/.test(t) ||
-        /^[A-Z][\.\)]\s+/.test(t) ||
-        /^Question\s+\d+/i.test(t) ||
-        /^Section\s+/i.test(t)
-    ){
-        return `<div class="pdf-sub-heading">${escapeHtml(t)}</div>`;
-    }
-
-    return `<p class="pdf-body">${escapeHtml(t)}</p>`;
-}
-
-function isSubHeadingText(text){
-    const t = text.trim();
-
-    return (
-        /^\d+[\.\)]\s+/.test(t) ||
-        /^[A-Z][\.\)]\s+/.test(t) ||
-        /^Question\s+\d+/i.test(t) ||
-        /^Section\s+/i.test(t) ||
-        /^Part\s+[A-Z0-9]/i.test(t)
-    );
-}
-
+/* AUTOMATIC PDF CONTENT FORMATTING */
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function isSubHeadingText(s){const t=s.trim();return /^\d+[\.)]\s+/.test(t)||/^[A-Z][\.)]\s+/.test(t)||/^Question\s+\d+/i.test(t)||/^Section\s+/i.test(t)||/^Part\s+[A-Z0-9]/i.test(t);}
+function formatTextBlock(text,headingState,tag){const t=text.replace(/\u00a0/g," ").trim();if(!t)return"";if(!headingState.used){headingState.used=true;return '<h1>'+esc(t)+'</h1>';}if(["H1","H2","H3"].includes(tag)||isSubHeadingText(t))return '<h2>'+esc(t)+'</h2>';return '<p>'+esc(t)+'</p>';}
 function buildFormattedContent(){
-    const source = document.getElementById("editor");
-    const temp = source.cloneNode(true);
-
-    temp.querySelectorAll(".image-resize-handle,.image-delete-button").forEach(x=>x.remove());
-
-    /* The editor-only image controls must never appear in the PDF. */
-    temp.querySelectorAll("script,style").forEach(x=>x.remove());
-
-    const children = Array.from(temp.childNodes);
-    let headingUsed = false;
-    let output = "";
-
-    function addTextElement(text, tagName="P"){
-        const t = text.replace(/\u00a0/g," ").trim();
-        if(!t) return;
-
-        if(!headingUsed){
-            output += `<div class="pdf-main-heading">${escapeHtml(t)}</div>`;
-            headingUsed = true;
-            return;
-        }
-
-        if(tagName === "H1" || tagName === "H2" || tagName === "H3" || isSubHeadingText(t)){
-            output += `<div class="pdf-sub-heading">${escapeHtml(t)}</div>`;
-        }else{
-            output += `<p class="pdf-body">${escapeHtml(t)}</p>`;
-        }
-    }
-
-    function processNode(node){
-        if(node.nodeType === Node.TEXT_NODE){
-            node.textContent.split(/\n+/).forEach(line=>addTextElement(line));
-            return;
-        }
-
-        if(node.nodeType !== Node.ELEMENT_NODE) return;
-
-        const tag = node.tagName;
-
-        /* =====================================================
-           TABLE: PRESERVE THE ENTIRE TABLE STRUCTURE
-           ===================================================== */
-        if(tag === "TABLE"){
-            node.classList.add("pdf-table");
-            node.querySelectorAll("th,td").forEach(cell=>{
-                cell.style.fontFamily = '"Times New Roman", serif';
-                cell.style.fontSize = "10pt";
-                cell.style.fontWeight = "700";
-            });
-            output += node.outerHTML;
-            return;
-        }
-
-        /* =====================================================
-           IMAGE / MOVABLE IMAGE WRAPPER
-           ===================================================== */
-        if(tag === "IMG"){
-            const img = node.cloneNode(true);
-            img.className = "pdf-img";
-            output += img.outerHTML;
-            return;
-        }
-
-        if(node.classList.contains("image-box")){
-            const clone = node.cloneNode(true);
-            clone.querySelectorAll(".image-resize-handle,.image-delete-button").forEach(x=>x.remove());
-            clone.classList.remove("selected");
-            clone.style.border = "0";
-            clone.style.boxShadow = "none";
-            clone.style.display = "block";
-            clone.style.margin = "14px 0";
-            clone.style.maxWidth = "100%";
-            output += clone.outerHTML;
-            return;
-        }
-
-        /* Lists remain lists instead of becoming one paragraph. */
-        if(tag === "UL" || tag === "OL"){
-            const list = node.cloneNode(true);
-            list.style.fontFamily = '"Times New Roman", serif';
-            list.style.fontSize = "10pt";
-            list.style.fontWeight = "700";
-            list.style.margin = "8px 0 10px 24px";
-            output += list.outerHTML;
-            return;
-        }
-
-        /* A normal block is converted to the required automatic style. */
-        if(["H1","H2","H3","P","DIV","LI"].includes(tag)){
-            const hasTable = !!node.querySelector("table");
-            const hasImage = !!node.querySelector("img,.image-box");
-
-            if(hasTable || hasImage){
-                /* Preserve mixed content without flattening tables/images. */
-                const clone = node.cloneNode(true);
-                clone.querySelectorAll(".image-resize-handle,.image-delete-button").forEach(x=>x.remove());
-                clone.querySelectorAll("table").forEach(table=>table.classList.add("pdf-table"));
-                clone.querySelectorAll("th,td").forEach(cell=>{
-                    cell.style.fontFamily = '"Times New Roman", serif';
-                    cell.style.fontSize = "10pt";
-                    cell.style.fontWeight = "700";
-                });
-                clone.querySelectorAll(".image-box").forEach(box=>{
-                    box.classList.remove("selected");
-                    box.style.border = "0";
-                    box.style.boxShadow = "none";
-                    box.style.display = "block";
-                    box.style.margin = "14px 0";
-                    box.style.maxWidth = "100%";
-                });
-                clone.style.fontFamily = '"Times New Roman", serif';
-                clone.style.fontSize = "10pt";
-                clone.style.fontWeight = "700";
-                output += clone.outerHTML;
-                return;
-            }
-
-            const text = node.textContent.trim();
-            if(!text) return;
-            addTextElement(text,tag);
-            return;
-        }
-
-        /* Inline content such as <span>, <b>, <i> is kept as text. */
-        const text = node.textContent.trim();
-        if(text) addTextElement(text,tag);
-    }
-
-    children.forEach(processNode);
-
-    if(!output.trim()){
-        output = `<p class="pdf-body">No content entered.</p>`;
-    }
-
-    return output;
+ const src=document.getElementById("editor"),temp=src.cloneNode(true);temp.querySelectorAll(".image-resize-handle,.image-delete-button").forEach(x=>x.remove());
+ const state={used:false};let html="";
+ function walk(node){
+  if(node.nodeType===Node.TEXT_NODE){node.textContent.split(/\n+/).forEach(line=>html+=formatTextBlock(line,state,"P"));return;}
+  if(node.nodeType!==Node.ELEMENT_NODE)return;
+  const tag=node.tagName;
+  if(tag==="TABLE"){const c=node.cloneNode(true);c.className="pdf-table";html+=c.outerHTML;return;}
+  if(tag==="UL"||tag==="OL"){const c=node.cloneNode(true);c.style.fontFamily='"Times New Roman",serif';c.style.fontSize="10pt";c.style.fontWeight="700";html+=c.outerHTML;return;}
+  if(tag==="IMG"){const c=node.cloneNode(true);c.className="pdf-img";html+=c.outerHTML;return;}
+  if(node.classList.contains("image-box")){const c=node.cloneNode(true);c.classList.remove("selected");c.querySelectorAll(".image-resize-handle,.image-delete-button").forEach(x=>x.remove());c.style.border="0";c.style.boxShadow="none";html+=c.outerHTML;return;}
+  if(["H1","H2","H3","P","DIV","LI"].includes(tag)){
+   if(node.querySelector("table")){const c=node.cloneNode(true);c.querySelectorAll(".image-resize-handle,.image-delete-button").forEach(x=>x.remove());c.querySelectorAll("table").forEach(x=>x.classList.add("pdf-table"));html+=c.outerHTML;return;}
+   if(node.querySelector(".image-box,img")){const c=node.cloneNode(true);c.querySelectorAll(".image-resize-handle,.image-delete-button").forEach(x=>x.remove());html+=c.outerHTML;return;}
+   html+=formatTextBlock(node.textContent,state,tag);return;
+  }
+  const text=node.textContent.trim();if(text)html+=formatTextBlock(text,state,tag);
+ }
+ Array.from(temp.childNodes).forEach(walk);
+ return html||'<p>No content entered.</p>';
 }
 
-function updatePreviewMeta(){
-    const topic =
-        document.getElementById("topicInput").value.trim();
-
-    const grade =
-        document.getElementById("gradeSelect").value;
-
-    document.getElementById("previewTopic").textContent =
-        documentType + " Topic: " + (topic || "—");
-
-    document.getElementById("previewGrade").textContent =
-        "Grade: " + (grade || "—");
+function buildPreview(){
+ const mount=document.getElementById("previewMount");mount.innerHTML="";
+ const page=document.createElement("div");page.className="a4-page preview-page";
+ const header=document.createElement("div");header.className="doc-header";header.innerHTML='<img src="images/logo.png" class="doc-logo" alt="Gopes Pinnacle"><div class="doc-title">GOPES PINNACLE</div><div class="doc-subtitle">Structured Online Academy</div>';page.appendChild(header);
+ const meta=document.createElement("div");meta.className="doc-meta";meta.innerHTML='<span>'+esc(document.getElementById("editorTopicMeta").textContent)+'</span><span>'+esc(document.getElementById("editorGradeMeta").textContent)+'</span>';page.appendChild(meta);
+ const content=document.createElement("div");content.className="preview-content";content.innerHTML=buildFormattedContent();page.appendChild(content);
+ if(penHasDrawing){const layer=document.createElement("div");layer.className="preview-pen";const img=document.createElement("img");img.src=penCanvas.toDataURL("image/png");layer.appendChild(img);page.appendChild(layer);}
+ mount.appendChild(page);return page;
 }
 
-document.getElementById("topicInput").addEventListener("input",updatePreviewMeta);
-document.getElementById("gradeSelect").addEventListener("change",updatePreviewMeta);
-
-/* GENERATE */
 async function generatePDF(){
-    const topic = document.getElementById("topicInput").value.trim();
-    const grade = document.getElementById("gradeSelect").value;
-    const editor = document.getElementById("editor");
-
-    if(!topic){
-        alert("Please enter the " + documentType.toLowerCase() + " topic.");
-        return;
-    }
-
-    if(!grade){
-        alert("Please select a mapped grade.");
-        return;
-    }
-
-    if(!editor.innerText.trim() && !editor.querySelector("img")){
-        alert("Please enter the " + documentType.toLowerCase() + " content.");
-        return;
-    }
-
-    const btn = document.getElementById("generateBtn");
-    const status = document.getElementById("status");
-
-    btn.disabled = true;
-    status.style.display = "block";
-    status.textContent = "Formatting your document and generating PDF...";
-
-    try{
-        const formatted = buildFormattedContent();
-
-        document.getElementById("previewTopic").textContent =
-            documentType + " Topic: " + topic;
-
-        document.getElementById("previewGrade").textContent =
-            "Grade: " + grade;
-
-        document.getElementById("previewContent").innerHTML =
-            formatted;
-
-        /*
-         * ADD TEACHER HANDWRITING
-         * The pen drawing lives on a separate editor canvas.
-         * We must convert that canvas to an image and WAIT for the
-         * image to finish loading before html2canvas captures the PDF preview.
-         */
-        if(penHasDrawing){
-
-            const penData = penCanvas.toDataURL("image/png");
-
-            const handwritingWrap = document.createElement("div");
-            handwritingWrap.style.width = "100%";
-            handwritingWrap.style.margin = "14px 0";
-            handwritingWrap.style.textAlign = "left";
-
-            const handwritingImg = document.createElement("img");
-
-            handwritingImg.src = penData;
-            handwritingImg.alt = "Teacher handwriting";
-            handwritingImg.style.display = "block";
-            handwritingImg.style.width = "100%";
-            handwritingImg.style.height = "auto";
-            handwritingImg.style.maxWidth = "100%";
-            handwritingImg.style.objectFit = "contain";
-
-            handwritingWrap.appendChild(handwritingImg);
-
-            document
-                .getElementById("previewContent")
-                .appendChild(handwritingWrap);
-
-            /*
-             * IMPORTANT:
-             * Wait until the generated handwriting image is actually
-             * decoded by the browser before taking the PDF screenshot.
-             */
-            if(handwritingImg.decode){
-                try{
-                    await handwritingImg.decode();
-                }catch(e){
-                    console.warn(
-                        "Handwriting image decode warning:",
-                        e
-                    );
-                }
-            }else{
-                await new Promise(resolve=>{
-                    handwritingImg.onload = resolve;
-                    handwritingImg.onerror = resolve;
-                });
-            }
-        }
-
-        await document.fonts.ready;
-
-        const target = document.getElementById("pdfPreview");
-
-        const canvas = await html2canvas(target,{
-            scale:2,
-            backgroundColor:"#ffffff",
-            useCORS:true,
-            logging:false
-        });
-
-        const {jsPDF} = window.jspdf;
-
-        const pdf = new jsPDF({
-            orientation:"portrait",
-            unit:"mm",
-            format:"a4"
-        });
-
-        const pageWidth = 210;
-        const pageHeight = 297;
-        const margin = 0;
-
-        const imgWidth = pageWidth;
-        const imgHeight =
-            canvas.height * imgWidth / canvas.width;
-
-        let remaining = imgHeight;
-        let position = 0;
-
-        pdf.addImage(
-            canvas.toDataURL("image/jpeg",0.96),
-            "JPEG",
-            margin,
-            position,
-            imgWidth,
-            imgHeight
-        );
-
-        remaining -= pageHeight;
-
-        while(remaining > 0){
-            position = -(imgHeight - remaining);
-            pdf.addPage();
-            pdf.addImage(
-                canvas.toDataURL("image/jpeg",0.96),
-                "JPEG",
-                margin,
-                position,
-                imgWidth,
-                imgHeight
-            );
-            remaining -= pageHeight;
-        }
-
-        const safeTopic =
-            topic.replace(/[^a-z0-9]+/gi,"_").replace(/^_|_$/g,"");
-
-        const safeGrade =
-            grade.replace(/[^a-z0-9]+/gi,"_");
-
-        pdf.save(
-            `Gopes_Pinnacle_${documentType}_${safeGrade}_${safeTopic}.pdf`
-        );
-
-        status.textContent = "PDF generated and downloaded successfully.";
-
-    }catch(err){
-        console.error("PDF GENERATION ERROR:",err);
-        status.textContent = "PDF generation failed. Please check the browser console.";
-        alert("Unable to generate PDF. Please try again.");
-    }finally{
-        btn.disabled = false;
-    }
+ const topic=document.getElementById("topicInput").value.trim(),grade=document.getElementById("gradeSelect").value,editor=document.getElementById("editor");
+ if(!topic){alert("Please enter the "+documentType.toLowerCase()+" topic.");return;}if(!grade){alert("Please select a mapped grade.");return;}
+ if(!editor.innerText.trim()&&!editor.querySelector("img,.image-box,table")&&!penHasDrawing){alert("Please enter the "+documentType.toLowerCase()+" content.");return;}
+ const btn=document.getElementById("generateBtn"),status=document.getElementById("status");btn.disabled=true;status.style.display="block";status.textContent="Formatting and generating PDF...";
+ try{
+  setupExistingImages();resizePenCanvas();
+  const page=buildPreview();
+  await document.fonts.ready;
+  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+  const canvas=await html2canvas(page,{scale:2,backgroundColor:"#fff",useCORS:true,logging:false,allowTaint:true});
+  const {jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+  const pageCssHeight=1123,scale=canvas.width/794,pagePxHeight=Math.round(pageCssHeight*scale);
+  let y=0,index=0;
+  while(y<canvas.height){
+   const h=Math.min(pagePxHeight,canvas.height-y);const slice=document.createElement("canvas");slice.width=canvas.width;slice.height=h;slice.getContext("2d").drawImage(canvas,0,y,canvas.width,h,0,0,canvas.width,h);
+   if(index>0)pdf.addPage();
+   const img=slice.toDataURL("image/jpeg",0.96);const imgH=297*(h/pagePxHeight);pdf.addImage(img,"JPEG",0,0,210,imgH);
+   y+=h;index++;
+  }
+  const safeTopic=topic.replace(/[^a-z0-9]+/gi,"_").replace(/^_|_$/g,"")||"Document";const safeGrade=grade.replace(/[^a-z0-9]+/gi,"_");
+  pdf.save(`Gopes_Pinnacle_${documentType}_${safeGrade}_${safeTopic}.pdf`);status.textContent="PDF generated and downloaded successfully.";
+ }catch(err){console.error("PDF GENERATION ERROR:",err);status.textContent="PDF generation failed.";alert("Unable to generate PDF. Please check the browser console.");}
+ finally{btn.disabled=false;}
 }
 
-/* CLEAR */
 function clearDocument(){
-    if(!confirm("Clear the current document?")) return;
-
-    document.getElementById("editor").innerHTML = "";
-    document.getElementById("topicInput").value = "";
-    clearPen();
-    selectedImageBox = null;
-    updatePreviewMeta();
-    document.getElementById("previewContent").innerHTML =
-        `<div class="pdf-main-heading">Your document preview will appear here</div>
-         <p class="pdf-body">Enter your content above and click Generate Document.</p>`;
+ document.getElementById("editor").innerHTML="";document.getElementById("topicInput").value="";clearPen();selectedImageBox=null;penEnabled=false;editorPage.classList.remove("pen-mode");document.getElementById("penButton").classList.remove("active");updateMeta();document.getElementById("previewMount").innerHTML="";resizePenCanvas();
 }
 
-loadMappedGrades();
+loadMappedGrades();updateMeta();setTimeout(setupExistingImages,300);
 </script>
 </body>
 </html>
