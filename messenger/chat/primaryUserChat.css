@@ -1,0 +1,245 @@
+/**
+ * ============================================================
+ * GPA MESSENGER
+ * MODULE 1
+ * PRIMARY USER CHAT
+ * ============================================================
+ */
+
+
+.gpa-primary-messenger {
+
+    width: 100%;
+
+    max-width: 700px;
+
+    height: 600px;
+
+    margin: 30px auto;
+
+    display: flex;
+
+    flex-direction: column;
+
+    border: 1px solid #dfe3e8;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    background: #ffffff;
+
+    box-sizing: border-box;
+}
+
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.gpa-primary-messenger-header {
+
+    padding: 16px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    font-size: 20px;
+
+    font-weight: 600;
+}
+
+
+/* ============================================================
+   CONVERSATION
+   ============================================================ */
+
+#gpaPrimaryConversation {
+
+    flex: 1;
+
+    overflow-y: auto;
+
+    padding: 16px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    background: #f7f8fa;
+
+    box-sizing: border-box;
+}
+
+
+/* ============================================================
+   MESSAGE ROW
+   ============================================================ */
+
+.gpa-primary-message-row {
+
+    width: 100%;
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    box-sizing: border-box;
+}
+
+
+/* ============================================================
+   MESSAGE BUBBLE
+   ============================================================ */
+
+.gpa-primary-message-bubble {
+
+    max-width: 75%;
+
+    padding: 10px 14px;
+
+    border-radius: 16px;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    font-size: 15px;
+
+    line-height: 1.45;
+
+    white-space: pre-wrap;
+
+    overflow-wrap: anywhere;
+
+    box-sizing: border-box;
+}
+
+
+/* ============================================================
+   COMPOSER
+   ============================================================ */
+
+.gpa-primary-composer {
+
+    display: flex;
+
+    align-items: flex-end;
+
+    gap: 8px;
+
+    padding: 12px;
+
+    border-top: 1px solid #e5e7eb;
+
+    background: #ffffff;
+
+    box-sizing: border-box;
+}
+
+
+/* ============================================================
+   INPUT
+   ============================================================ */
+
+#gpaPrimaryMessageInput {
+
+    flex: 1;
+
+    min-height: 44px;
+
+    max-height: 120px;
+
+    padding: 11px 12px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 10px;
+
+    outline: none;
+
+    resize: none;
+
+    font-family: inherit;
+
+    font-size: 15px;
+
+    line-height: 1.4;
+
+    box-sizing: border-box;
+}
+
+
+#gpaPrimaryMessageInput:focus {
+
+    border-color: #2563eb;
+}
+
+
+/* ============================================================
+   SEND BUTTON
+   ============================================================ */
+
+#gpaPrimarySendButton {
+
+    min-width: 80px;
+
+    height: 44px;
+
+    padding: 0 16px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+#gpaPrimarySendButton:hover {
+
+    opacity: 0.92;
+}
+
+
+#gpaPrimarySendButton:active {
+
+    transform: scale(0.98);
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 600px) {
+
+    .gpa-primary-messenger {
+
+        width: 100%;
+
+        height: 100vh;
+
+        margin: 0;
+
+        border: none;
+
+        border-radius: 0;
+    }
+
+
+    .gpa-primary-message-bubble {
+
+        max-width: 85%;
+    }
+
+}

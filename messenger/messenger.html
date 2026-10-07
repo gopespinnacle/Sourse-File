@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -10,214 +11,92 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-
-
     <title>GPA Messenger</title>
-        <link
-    rel="stylesheet"
-    href="users/messengerUserListUI.css"
->
-
-<link
-    rel="stylesheet"
-    href="chat/messengerChatWindow.css"
->
-
-    <style>
-
-        .gpa-messenger-main {
-
-            display: flex;
-
-            width: 100%;
-
-            max-width: 1200px;
-
-            height: 650px;
-
-            border: 1px solid #e5e7eb;
-
-            border-radius: 10px;
-
-            overflow: hidden;
-
-            background: #ffffff;
-
-        }
 
 
-        .gpa-messenger-user-panel {
+    <!-- =====================================================
+         MODULE 1 CSS
+         ===================================================== -->
 
-            width: 360px;
-
-            flex-shrink: 0;
-
-            overflow-y: auto;
-
-            border-right: 1px solid #e5e7eb;
-
-        }
-
-
-        .gpa-messenger-chat-panel {
-
-            flex: 1;
-
-            min-width: 0;
-
-        }
-
-
-        @media (max-width: 800px) {
-
-            .gpa-messenger-main {
-
-                flex-direction: column;
-
-                height: auto;
-
-            }
-
-
-            .gpa-messenger-user-panel {
-
-                width: 100%;
-
-                max-height: 400px;
-
-                border-right: none;
-
-                border-bottom: 1px solid #e5e7eb;
-
-            }
-
-
-            .gpa-messenger-chat-panel {
-
-                min-height: 450px;
-
-            }
-
-        }
-
-    </style>
+    <link
+        rel="stylesheet"
+        href="chat/primaryUserChat.css"
+    >
 
 </head>
 
 
 <body>
 
+
     <!-- =====================================================
          GPA MESSENGER
-         Main Messenger Entry Page
+         MODULE 1
+         PRIMARY USER
          ===================================================== -->
 
-    <div id="messengerApp">
+    <div class="gpa-primary-messenger">
 
-        <h1>GPA Messenger</h1>
 
-        <p id="messengerStatus">
-            Starting Messenger...
-        </p>
+        <!-- =================================================
+             HEADER
+             ================================================= -->
 
-        <div class="gpa-messenger-main">
+        <div
+            class="gpa-primary-messenger-header"
+        >
 
-    <div
-        id="gpaMessengerUserList"
-        class="gpa-messenger-user-panel"
-    ></div>
+            GPA Messenger
 
-    <div
-        id="gpaMessengerChatWindow"
-        class="gpa-messenger-chat-panel"
-    ></div>
+        </div>
 
-</div>
+
+        <!-- =================================================
+             CONVERSATION
+             ================================================= -->
+
+        <div
+            id="gpaPrimaryConversation"
+        ></div>
+
+
+        <!-- =================================================
+             COMPOSER
+             ================================================= -->
+
+        <div
+            class="gpa-primary-composer"
+        >
+
+
+            <textarea
+                id="gpaPrimaryMessageInput"
+                placeholder="Type a message..."
+                rows="1"
+            ></textarea>
+
+
+            <button
+                id="gpaPrimarySendButton"
+                type="button"
+            >
+                Send
+            </button>
+
+
+        </div>
+
 
     </div>
 
 
     <!-- =====================================================
-         SOCKET.IO CLIENT
+         MODULE 1 JAVASCRIPT
          ===================================================== -->
 
-<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
-
-<script src="messengerSocketClient.js"></script>
-
-<script src="chat/messengerChatService.js"></script>
-
-<script src="chat/messengerChatHistory.js"></script>
-
-<script src="chat/messengerChatMessages.js"></script>
-
-<script src="users/messengerUserService.js"></script>
-
-<script src="users/messengerUserList.js"></script>
-
-<script src="users/messengerUserListUI.js"></script>
-
-<script src="chat/messengerChatSocket.js"></script>
-
-<script src="chat/messengerChatWindow.js"></script>
-
-<script src="chat/messengerChatComposer.js"></script>
-
-<script src="messengerCore.js"></script>
-
-    <!-- =====================================================
-         START GPA MESSENGER
-         ===================================================== -->
-
-    <script>
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            function () {
-
-                console.log(
-                    "GPA Messenger page loaded."
-                );
-
-
-                // ------------------------------------------------
-                // Start Messenger Core
-                // ------------------------------------------------
-
-                if (
-                    typeof GPAMessengerCore !== "undefined"
-                ) {
-
-                    GPAMessengerCore.initialize();
-
-
-                    const status =
-                        document.getElementById(
-                            "messengerStatus"
-                        );
-
-
-                    if (
-                        GPAMessengerCore.isInitialized()
-                    ) {
-
-                        status.textContent =
-                            "Messenger Core initialized.";
-
-                    }
-
-                } else {
-
-                    console.error(
-                        "GPA Messenger Core not found."
-                    );
-
-                }
-
-            }
-        );
-
-    </script>
+    <script
+        src="chat/primaryUserChat.js"
+    ></script>
 
 
 </body>
