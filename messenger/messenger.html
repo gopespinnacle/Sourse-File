@@ -212,6 +212,24 @@
 
 }
 
+/* =====================================================
+   MODULE 5
+   STEP 7
+   SELECTED CONTACT
+   ===================================================== */
+
+.gpa-messenger-contact {
+    transition: background 0.15s ease;
+}
+
+.gpa-messenger-contact.selected {
+    background: #e8eefc;
+}
+
+.gpa-messenger-contact:active {
+    background: #dce6fa;
+}
+
     </style>
 
 </head>
@@ -383,6 +401,8 @@
 
 
             if (!token) {
+
+                
 
                 contactsContainer.innerHTML = `
                     <div class="gpa-messenger-contacts-error">
@@ -573,32 +593,34 @@
 
                 html += `
 
-                    <div
-                        class="gpa-messenger-contact"
-                    >
+    <div
+        class="gpa-messenger-contact"
+        data-contact-id="${contact._id}"
+        onclick="selectMessengerContact('${contact._id}')"
+    >
 
-                        <div
-                            class="gpa-messenger-contact-name"
-                        >
-                            ${escapeMessengerText(
-                                contact.name ||
-                                "Unknown"
-                            )}
-                        </div>
+        <div
+            class="gpa-messenger-contact-name"
+        >
+            ${escapeMessengerText(
+                contact.name ||
+                "Unknown"
+            )}
+        </div>
 
 
-                        <div
-                            class="gpa-messenger-contact-info"
-                        >
-                            ${escapeMessengerText(
-                                contact.email ||
-                                ""
-                            )}
-                        </div>
+        <div
+            class="gpa-messenger-contact-info"
+        >
+            ${escapeMessengerText(
+                contact.email ||
+                ""
+            )}
+        </div>
 
-                    </div>
+    </div>
 
-                `;
+`;
 
             }
         );
@@ -619,6 +641,9 @@
     // =====================================================
     // DISPLAY SEPARATE ROLE SECTIONS
     // =====================================================
+
+    window.GPAMessengerContacts =
+    contacts;
 
     contactsContainer.innerHTML =
 
@@ -647,6 +672,126 @@
             "👨‍👩‍👧 PARENTS",
             parents
         );
+
+}
+
+// =====================================================
+// MODULE 5
+// STEP 7
+// SELECT CONTACT
+// =====================================================
+
+let selectedMessengerContact = null;
+
+
+function selectMessengerContact(
+    contactId
+) {
+
+    console.log(
+        "[GPA MESSENGER] Contact selected:",
+        contactId
+    );
+
+
+    // =================================================
+    // REMOVE PREVIOUS SELECTION
+    // =================================================
+
+    const allContacts =
+        document.querySelectorAll(
+            ".gpa-messenger-contact"
+        );
+
+
+    allContacts.forEach(
+        function (contactElement) {
+
+            contactElement.classList.remove(
+                "selected"
+            );
+
+        }
+    );
+
+
+    // =================================================
+    // SELECT CLICKED CONTACT
+    // =================================================
+
+    const selectedElement =
+        document.querySelector(
+            `.gpa-messenger-contact[data-contact-id="${contactId}"]`
+        );
+
+
+    if (selectedElement) {
+
+        selectedElement.classList.add(
+            "selected"
+        );
+
+    }
+
+
+    // =================================================
+    // FIND CONTACT DATA
+    // =================================================
+
+    const token =
+        localStorage.getItem("token");
+
+
+    // Contacts are stored from the API response.
+    // Find the selected contact from the displayed list.
+
+    if (
+        window.GPAMessengerContacts &&
+        Array.isArray(
+            window.GPAMessengerContacts
+        )
+    ) {
+
+        selectedMessengerContact =
+            window.GPAMessengerContacts.find(
+                function (contact) {
+
+                    return (
+                        String(contact._id) ===
+                        String(contactId)
+                    );
+
+                }
+            );
+
+    }
+
+
+    console.log(
+        "[GPA MESSENGER] Selected contact:",
+        selectedMessengerContact
+    );
+
+
+    // =================================================
+    // UPDATE CHAT HEADER
+    // =================================================
+
+    const header =
+        document.querySelector(
+            ".gpa-primary-messenger-header"
+        );
+
+
+    if (
+        header &&
+        selectedMessengerContact
+    ) {
+
+        header.textContent =
+            selectedMessengerContact.name;
+
+    }
 
 }
         function escapeMessengerText(
