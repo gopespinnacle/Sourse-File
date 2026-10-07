@@ -1868,13 +1868,14 @@ function forceWordPageBreak(pageObject){
 
                        block.remove();
 
-            /*
-             * Put the block at the end of the next page
-             * so question/paragraph order is preserved.
-             */
-            next.content.appendChild(
-                block
-            );
+/*
+ * Put the block at the beginning of the next page.
+ * This preserves the original pasted order.
+ */
+next.content.insertBefore(
+    block,
+    next.content.firstChild
+);
 
             setActivePage(
                 pageIndex+1
@@ -1979,6 +1980,7 @@ function getFlowChildren(
             )
     );
 }
+
 
 
 function getBlockHeight(
@@ -2516,9 +2518,13 @@ function moveOverflowFromPage(
         );
 
     for(
-        const block
-        of blocks
-    ){
+    let blockIndex=blocks.length-1;
+    blockIndex>=0;
+    blockIndex--
+){
+
+    const block=
+        blocks[blockIndex];
 
         if(
             !block ||
@@ -2577,8 +2583,9 @@ function moveOverflowFromPage(
 
             if(splitBlock){
 
-                next.content.appendChild(
-    splitBlock
+                next.content.insertBefore(
+    splitBlock,
+    next.content.firstChild
 );
 
                 changed=true;
@@ -2602,8 +2609,9 @@ function moveOverflowFromPage(
 
         if(mixedSplit){
 
-            next.content.appendChild(
-    mixedSplit
+            next.content.insertBefore(
+    mixedSplit,
+    next.content.firstChild
 );
 
             changed=true;
@@ -2642,8 +2650,9 @@ function moveOverflowFromPage(
                  */
                 if(table===block){
 
-                    next.content.appendChild(
-    continuation
+                    next.content.insertBefore(
+    continuation,
+    next.content.firstChild
 );
 
                 }else{
@@ -2680,11 +2689,12 @@ function moveOverflowFromPage(
          */
         block.remove();
 
-        next.content.appendChild(
-            block
-        );
+next.content.insertBefore(
+    block,
+    next.content.firstChild
+);
 
-        changed=true;
+changed=true;
     }
 
     return changed;
