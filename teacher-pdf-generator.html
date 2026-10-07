@@ -795,40 +795,189 @@ function buildFormattedContent(){
  return html||'<p>No content entered.</p>';
 }
 
-function buildPreview(){
- const mount=document.getElementById("previewMount");mount.innerHTML="";
- const page=document.createElement("div");page.className="a4-page preview-page";
- const header=document.createElement("div");header.className="doc-header";header.innerHTML='<img src="images/logo.png" class="doc-logo" alt="Gopes Pinnacle"><div class="doc-title">GOPES PINNACLE</div><div class="doc-subtitle">Structured Online Academy</div>';page.appendChild(header);
- const meta=document.createElement("div");meta.className="doc-meta";meta.innerHTML='<span>'+esc(document.getElementById("editorTopicMeta").textContent)+'</span><span>'+esc(document.getElementById("editorGradeMeta").textContent)+'</span>';page.appendChild(meta);
- const content=document.createElement("div");content.className="preview-content";content.innerHTML=buildFormattedContent();page.appendChild(content);
- createPenOverlay(page);
- mount.appendChild(page);return page;
+/* ================= A4 PAGINATION ================= */
+const A4_W = 794;
+const A4_H = 1123;
+const A4_CONTENT_H = 900;
+
+function makeA4Page(){
+ const page=document.createElement("div");
+ page.className="a4-page preview-page";
+ page.style.width=A4_W+"px";
+ page.style.height=A4_H+"px";
+ page.style.minHeight=A4_H+"px";
+ page.style.overflow="hidden";
+ const header=document.createElement("div");
+ header.className="doc-header";
+ header.innerHTML='<img src="images/logo.png" class="doc-logo" alt="Gopes Pinnacle"><div class="doc-title">GOPES PINNACLE</div><div class="doc-subtitle">Structured Online Academy</div>';
+ page.appendChild(header);
+ const meta=document.createElement("div");
+ meta.className="doc-meta";
+ meta.innerHTML='<span>'+esc(document.getElementById("editorTopicMeta").textContent)+'</span><span>'+esc(document.getElementById("editorGradeMeta").textContent)+'</span>';
+ page.appendChild(meta);
+ const content=document.createElement("div");
+ content.className="preview-content paginated-content";
+ content.style.height=A4_CONTENT_H+"px";
+ content.style.minHeight=A4_CONTENT_H+"px";
+ content.style.overflow="hidden";
+ page.appendChild(content);
+ return {page,content};
+}
+
+function getImageBoxesForPagination(){
+ const editor=document.getElementById("editor");
+ return Array.from(editor.querySelectorAll(":scope > .image-box"));
+}
+
+function cloneCleanNode(node){
+ const c=node.cloneNode(true);
+ c.querySelectorAll?.(".image-resize-handle,.image-delete-button").forEach(x=>x.remove());
+ c.classList?.remove("selected");
+ return c;
+}
+
+function buildPaginatedPreview(){
+ const mount=document.getElementById("previewMount");
+ mount.innerHTML="";
+ const pages=[];
+ const source=document.getElementById("editor");
+ const formatted=document.createElement("div");
+ formatted.className="preview-content";
+ formatted.innerHTML=buildFormattedContent();
+ formatted.style.position="absolute";
+ formatted.style.left="-100000px";
+ formatted.style.top="0";
+ formatted.style.width="678px";
+ formatted.style.visibility="hidden";
+ document.body.appendChild(formatted);
+
+ let current=makeA4Page();
+ mount.appendChild(current.page);
+ pages.push(current.page);
+ let used=0;
+ const children=Array.from(formatted.children);
+
+ for(const child of children){
+   const clone=cloneCleanNode(child);
+   clone.style.breakInside="avoid";
+   clone.style.pageBreakInside="avoid";
+   current.content.appendChild(clone);
+   const h=clone.getBoundingClientRect().height;
+
+   if(used>0 && used+h>A4_CONTENT_H){
+      clone.remove();
+      current=makeA4Page();
+      mount.appendChild(current.page);
+      pages.push(current.page);
+      current.content.appendChild(clone);
+      used=clone.getBoundingClientRect().height;
+   }else{
+      used+=h;
+   }
+ }
+
+ formatted.remove();
+
+ /* Put freely-movable images on the same A4 page where the teacher placed them. */
+ const imageBoxes=getImageBoxesForPagination();
+ for(const box of imageBoxes){
+   const left=parseFloat(box.style.left||0);
+   const top=parseFloat(box.style.top||0);
+   const pageIndex=Math.max(0,Math.floor(top/A4_CONTENT_H));
+   while(pages.length<=pageIndex){
+      const extra=makeA4Page();
+      mount.appendChild(extra.page);
+      pages.push(extra.page);
+   }
+   const targetContent=pages[pageIndex].querySelector(".paginated-content");
+   const clone=cloneCleanNode(box);
+   clone.style.position="absolute";
+   clone.style.left=Math.max(0,left)+"px";
+   clone.style.top=Math.max(0,top-(pageIndex*A4_CONTENT_H))+"px";
+   clone.style.margin="0";
+   clone.style.border="0";
+   clone.style.boxShadow="none";
+   clone.style.cursor="default";
+   clone.style.zIndex="20";
+   targetContent.appendChild(clone);
+ }
+
+ /* Put teacher pen writing on the correct A4 page instead of one long canvas. */
+ if(penHasDrawing){
+   for(let pageIndex=0;pageIndex<pages.length;pageIndex++){
+      const target=pages[pageIndex];
+      const layer=document.createElement("div");
+      layer.className="preview-pen";
+      layer.style.width=A4_W+"px";
+      layer.style.height=A4_H+"px";
+      layer.style.left="0";
+      layer.style.top="0";
+      const canvas=document.createElement("canvas");
+      const ratio=2;
+      canvas.width=A4_W*ratio;
+      canvas.height=A4_CONTENT_H*ratio;
+      canvas.style.width=A4_W+"px";
+      canvas.style.height=A4_CONTENT_H+"px";
+      canvas.style.display="block";
+      canvas.style.pointerEvents="none";
+      const ctx=canvas.getContext("2d");
+      ctx.setTransform(ratio,0,0,ratio,0,0);
+      ctx.lineWidth=2.2;
+      ctx.lineCap="round";
+      ctx.lineJoin="round";
+      ctx.strokeStyle="#0d6efd";
+      for(const stroke of penStrokes){
+        if(!stroke || !stroke.length)continue;
+        const pts=stroke.filter(p=>p.y>=pageIndex*A4_CONTENT_H && p.y<(pageIndex+1)*A4_CONTENT_H);
+        if(!pts.length)continue;
+        ctx.beginPath();
+        ctx.moveTo(pts[0].x,pts[0].y-pageIndex*A4_CONTENT_H);
+        for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i].x,pts[i].y-pageIndex*A4_CONTENT_H);
+        ctx.stroke();
+      }
+      layer.appendChild(canvas);
+      target.appendChild(layer);
+   }
+ }
+
+ return pages;
 }
 
 async function generatePDF(){
  const topic=document.getElementById("topicInput").value.trim(),grade=document.getElementById("gradeSelect").value,editor=document.getElementById("editor");
- if(!topic){alert("Please enter the "+documentType.toLowerCase()+" topic.");return;}if(!grade){alert("Please select a mapped grade.");return;}
+ if(!topic){alert("Please enter the "+documentType.toLowerCase()+" topic.");return;}
+ if(!grade){alert("Please select a mapped grade.");return;}
  if(!editor.innerText.trim()&&!editor.querySelector("img,.image-box,table")&&!penHasDrawing){alert("Please enter the "+documentType.toLowerCase()+" content.");return;}
- const btn=document.getElementById("generateBtn"),status=document.getElementById("status");btn.disabled=true;status.style.display="block";status.textContent="Formatting and generating PDF...";
+ const btn=document.getElementById("generateBtn"),status=document.getElementById("status");
+ btn.disabled=true;
+ status.style.display="block";
+ status.textContent="Creating A4 pages...";
  try{
-  setupExistingImages();resizePenCanvas();
-  const page=buildPreview();
-  await document.fonts.ready;
-  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-  const canvas=await html2canvas(page,{scale:2,backgroundColor:"#fff",useCORS:true,logging:false,allowTaint:true});
-  const {jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
-  const pageCssHeight=1123,scale=canvas.width/794,pagePxHeight=Math.round(pageCssHeight*scale);
-  let y=0,index=0;
-  while(y<canvas.height){
-   const h=Math.min(pagePxHeight,canvas.height-y);const slice=document.createElement("canvas");slice.width=canvas.width;slice.height=h;slice.getContext("2d").drawImage(canvas,0,y,canvas.width,h,0,0,canvas.width,h);
-   if(index>0)pdf.addPage();
-   const img=slice.toDataURL("image/jpeg",0.96);const imgH=297*(h/pagePxHeight);pdf.addImage(img,"JPEG",0,0,210,imgH);
-   y+=h;index++;
-  }
-  const safeTopic=topic.replace(/[^a-z0-9]+/gi,"_").replace(/^_|_$/g,"")||"Document";const safeGrade=grade.replace(/[^a-z0-9]+/gi,"_");
-  pdf.save(`Gopes_Pinnacle_${documentType}_${safeGrade}_${safeTopic}.pdf`);status.textContent="PDF generated and downloaded successfully.";
- }catch(err){console.error("PDF GENERATION ERROR:",err);status.textContent="PDF generation failed.";alert("Unable to generate PDF. Please check the browser console.");}
- finally{btn.disabled=false;}
+   setupExistingImages();
+   resizePenCanvas();
+   await document.fonts.ready;
+   await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+   const pages=buildPaginatedPreview();
+   await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+   const {jsPDF}=window.jspdf;
+   const pdf=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+   for(let i=0;i<pages.length;i++){
+      status.textContent="Rendering A4 page "+(i+1)+" of "+pages.length+"...";
+      const canvas=await html2canvas(pages[i],{scale:2,backgroundColor:"#fff",useCORS:true,logging:false,allowTaint:true});
+      if(i>0)pdf.addPage();
+      pdf.addImage(canvas.toDataURL("image/jpeg",0.96),"JPEG",0,0,210,297);
+   }
+   const safeTopic=topic.replace(/[^a-z0-9]+/gi,"_").replace(/^_|_$/g,"")||"Document";
+   const safeGrade=grade.replace(/[^a-z0-9]+/gi,"_");
+   pdf.save(`Gopes_Pinnacle_${documentType}_${safeGrade}_${safeTopic}.pdf`);
+   status.textContent="PDF generated and downloaded successfully. "+pages.length+" A4 page(s).";
+ }catch(err){
+   console.error("PDF GENERATION ERROR:",err);
+   status.textContent="PDF generation failed.";
+   alert("Unable to generate PDF. Please check the browser console.");
+ }finally{
+   btn.disabled=false;
+ }
 }
 
 function clearDocument(){
