@@ -1866,14 +1866,14 @@ function forceWordPageBreak(pageObject){
             content.clientHeight+2
         ){
 
-            block.remove();
+                       block.remove();
 
             /*
-             * Put the block at the beginning of Page 2.
+             * Put the block at the end of the next page
+             * so question/paragraph order is preserved.
              */
-            next.content.insertBefore(
-                block,
-                next.content.firstChild
+            next.content.appendChild(
+                block
             );
 
             setActivePage(
@@ -2577,10 +2577,9 @@ function moveOverflowFromPage(
 
             if(splitBlock){
 
-                next.content.insertBefore(
-                    splitBlock,
-                    next.content.firstChild
-                );
+                next.content.appendChild(
+    splitBlock
+);
 
                 changed=true;
 
@@ -2603,10 +2602,9 @@ function moveOverflowFromPage(
 
         if(mixedSplit){
 
-            next.content.insertBefore(
-                mixedSplit,
-                next.content.firstChild
-            );
+            next.content.appendChild(
+    mixedSplit
+);
 
             changed=true;
 
@@ -2644,10 +2642,9 @@ function moveOverflowFromPage(
                  */
                 if(table===block){
 
-                    next.content.insertBefore(
-                        continuation,
-                        next.content.firstChild
-                    );
+                    next.content.appendChild(
+    continuation
+);
 
                 }else{
 
@@ -2671,7 +2668,7 @@ function moveOverflowFromPage(
             }
         }
 
-        /*
+                /*
          * =====================================================
          * CASE 4:
          * Normal paragraph / heading / list block.
@@ -2683,9 +2680,8 @@ function moveOverflowFromPage(
          */
         block.remove();
 
-        next.content.insertBefore(
-            block,
-            next.content.firstChild
+        next.content.appendChild(
+            block
         );
 
         changed=true;
