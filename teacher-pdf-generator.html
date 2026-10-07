@@ -2201,62 +2201,493 @@ function splitLongTextBlock(
 }
 
 
+function getNodeVisualBottom(node){
+    if(!node){
+        return 0;
+    }
+
+    if(node.nodeType===Node.TEXT_NODE){
+
+        const range=document.createRange();
+        range.selectNodeContents(node);
+
+        const rects=
+            Array.from(range.getClientRects());
+
+        if(!rects.length){
+            return 0;
+        }
+
+        return Math.max(
+            ...rects.map(r=>r.bottom)
+        );
+    }
+
+    return node.getBoundingClientRect().bottom;
+}
+
+
+/*
+ * Split a flow block that contains several child elements
+ * such as headings, paragraphs, lists and tables.
+ *
+ * IMPORTANT:
+ * Floating .image-box elements are never touched here.
+ */
+function splitMixedFlowBlock(
+    block,
+    content
+){
+
+    const children=
+        Array.from(
+            block.childNodes
+        );
+
+    if(children.length<2){
+        return null;
+    }
+
+    const contentRect=
+        content.getBoundingClientRect();
+
+    const pageBottom=
+        contentRect.top+
+        content.clientHeight;
+
+    let splitIndex=-1;
+
+    for(
+        let i=0;
+        i<children.length;
+        i++
+    ){
+
+        const child=children[i];
+
+        if(
+            child.nodeType===Node.TEXT_NODE &&
+            !child.nodeValue.trim()
+        ){
+            continue;
+        }
+
+        const bottom=
+            getNodeVisualBottom(child);
+
+        if(
+            bottom>
+            pageBottom+1
+        ){
+            splitIndex=i;
+            break;
+        }
+    }
+
+    if(splitIndex<0){
+        return null;
+    }
+
+    /*
+     * Keep at least one child on the current page.
+     * If the first child itself is too large, let the
+     * normal long-text logic handle it.
+     */
+    if(splitIndex===0){
+
+        const first=children[0];
+
+        if(
+            first.nodeType===Node.ELEMENT_NODE &&
+            first.textContent.trim() &&
+            !first.querySelector("img,table")
+        ){
+
+            const split=
+                splitLongTextBlock(
+                    first,
+                    content
+                );
+
+            if(split){
+
+                const wrapper=
+                    document.createElement(
+                        block.tagName
+                    );
+
+                wrapper.style.cssText=
+                    block.style.cssText;
+
+                wrapper.className=
+                    block.className;
+
+                wrapper.appendChild(split);
+
+                return wrapper;
+            }
+        }
+
+        return null;
+    }
+
+    const newBlock=
+        document.createElement(
+            block.tagName
+        );
+
+    newBlock.style.cssText=
+        block.style.cssText;
+
+    newBlock.className=
+        block.className;
+
+    for(
+        let i=splitIndex;
+        i<children.length;
+        i++
+    ){
+
+        const child=children[i];
+
+        newBlock.appendChild(
+            child
+        );
+    }
+
+    /*
+     * If nothing was actually moved,
+     * do not report a change.
+     */
+    if(!newBlock.childNodes.length){
+        return null;
+    }
+
+    return newBlock;
+}
+
+
+/*
+ * If a table itself is taller than the remaining A4
+ * area, move its rows to a continuation table.
+ *
+ * This keeps the existing table styling.
+ */
+function splitLargeTable(
+    table,
+    content
+){
+
+    if(
+        !table ||
+        table.tagName!=="TABLE"
+    ){
+        return null;
+    }
+
+    const rows=
+        Array.from(
+            table.rows||[]
+        );
+
+    if(rows.length<2){
+        return null;
+    }
+
+    const contentRect=
+        content.getBoundingClientRect();
+
+    const pageBottom=
+        contentRect.top+
+        content.clientHeight;
+
+    let splitIndex=-1;
+
+    for(
+        let i=0;
+        i<rows.length;
+        i++
+    ){
+
+        if(
+            rows[i].getBoundingClientRect().bottom>
+            pageBottom+1
+        ){
+
+            splitIndex=i;
+            break;
+        }
+    }
+
+    if(splitIndex<=0){
+        return null;
+    }
+
+    const newTable=
+        table.cloneNode(false);
+
+    newTable.innerHTML="";
+
+    /*
+     * Preserve the column/header structure.
+     * If the original table has a THEAD, clone it.
+     */
+    const thead=
+        table.querySelector("thead");
+
+    if(thead){
+        newTable.appendChild(
+            thead.cloneNode(true)
+        );
+    }
+
+    const tbody=
+        table.querySelector("tbody");
+
+    const sourceRows=
+        tbody
+            ? Array.from(tbody.rows)
+            : rows;
+
+    const continuationBody=
+        document.createElement(
+            "tbody"
+        );
+
+    const startRow=
+        Math.max(
+            0,
+            splitIndex-
+            (thead ? 0 : 0)
+        );
+
+    for(
+        let i=startRow;
+        i<sourceRows.length;
+        i++
+    ){
+
+        continuationBody.appendChild(
+            sourceRows[i]
+        );
+    }
+
+    if(continuationBody.rows.length){
+        newTable.appendChild(
+            continuationBody
+        );
+    }
+
+    if(
+        tbody &&
+        tbody.rows.length===0
+    ){
+        return null;
+    }
+
+    return newTable;
+}
+
+
 function moveOverflowFromPage(
     pageIndex
 ){
 
-    const pageObject=editorPages[pageIndex];
+    const pageObject=
+        editorPages[pageIndex];
 
     if(!pageObject){
         return false;
     }
 
-    const content=pageObject.content;
+    const content=
+        pageObject.content;
+
     let changed=false;
 
     /*
-     * IMPORTANT: image-box elements are floating objects.
-     * They are deliberately excluded from pagination.
-     * If the teacher places an image on Page 1, pressing Enter
-     * and moving text to Page 2 will NOT move that image.
+     * IMPORTANT:
+     * .image-box is a floating Word-style object.
+     * It is NEVER moved by automatic text pagination.
      */
-    const blocks=getFlowChildren(content);
+    const blocks=
+        getFlowChildren(
+            content
+        );
 
-    for(const block of blocks){
+    for(
+        const block
+        of blocks
+    ){
 
-        if(!block || !block.isConnected){
-            continue;
-        }
-
-        const rect=block.getBoundingClientRect();
-        const contentRect=content.getBoundingClientRect();
-        const bottom=rect.bottom-contentRect.top;
-
-        if(bottom <= content.clientHeight+1){
-            continue;
-        }
-
-        const next=ensureEditorPage(pageIndex+1);
-
-        /* Split a very long text block at a safe word boundary. */
         if(
-            block.getBoundingClientRect().height > content.clientHeight &&
+            !block ||
+            !block.isConnected
+        ){
+            continue;
+        }
+
+        /*
+         * Re-read the position every time because
+         * previous blocks may already have moved.
+         */
+        const contentRect=
+            content.getBoundingClientRect();
+
+        const rect=
+            block.getBoundingClientRect();
+
+        const bottom=
+            rect.bottom-
+            contentRect.top;
+
+        if(
+            bottom<=
+            content.clientHeight+1
+        ){
+            continue;
+        }
+
+        const next=
+            ensureEditorPage(
+                pageIndex+1
+            );
+
+        /*
+         * =====================================================
+         * CASE 1:
+         * This is one very large plain text block.
+         * Split it at a word boundary.
+         * =====================================================
+         */
+        if(
+            block.getBoundingClientRect().height >
+            content.clientHeight &&
             block.textContent.trim() &&
-            !block.querySelector('img,table')
+            !block.querySelector(
+                "img,table"
+            )
         ){
 
-            const splitBlock=splitLongTextBlock(block,content);
+            const splitBlock=
+                splitLongTextBlock(
+                    block,
+                    content
+                );
 
             if(splitBlock){
-                next.content.insertBefore(splitBlock,next.content.firstChild);
+
+                next.content.insertBefore(
+                    splitBlock,
+                    next.content.firstChild
+                );
+
                 changed=true;
+
                 continue;
             }
         }
 
-        /* Move ONLY text/content blocks. Floating images stay put. */
+        /*
+         * =====================================================
+         * CASE 2:
+         * One block contains many paragraphs/headings/
+         * lists/tables. Split it between child elements.
+         * =====================================================
+         */
+        const mixedSplit=
+            splitMixedFlowBlock(
+                block,
+                content
+            );
+
+        if(mixedSplit){
+
+            next.content.insertBefore(
+                mixedSplit,
+                next.content.firstChild
+            );
+
+            changed=true;
+
+            continue;
+        }
+
+        /*
+         * =====================================================
+         * CASE 3:
+         * A table itself reaches the bottom.
+         * Try to continue it on the next page.
+         * =====================================================
+         */
+        const table=
+            block.tagName==="TABLE"
+                ? block
+                : block.querySelector(
+                    "table"
+                );
+
+        if(table){
+
+            const continuation=
+                splitLargeTable(
+                    table,
+                    content
+                );
+
+            if(continuation){
+
+                /*
+                 * If the table is the direct block,
+                 * the continuation table becomes the
+                 * next-page block.
+                 */
+                if(table===block){
+
+                    next.content.insertBefore(
+                        continuation,
+                        next.content.firstChild
+                    );
+
+                }else{
+
+                    /*
+                     * For a table nested inside a block,
+                     * move the whole block to the next page.
+                     * This avoids destroying the teacher's
+                     * original formatting.
+                     */
+                    block.remove();
+
+                    next.content.insertBefore(
+                        block,
+                        next.content.firstChild
+                    );
+                }
+
+                changed=true;
+
+                continue;
+            }
+        }
+
+        /*
+         * =====================================================
+         * CASE 4:
+         * Normal paragraph / heading / list block.
+         *
+         * Move the complete block to the next A4 page.
+         * Images are not included because getFlowChildren()
+         * excludes .image-box.
+         * =====================================================
+         */
         block.remove();
-        next.content.insertBefore(block,next.content.firstChild);
+
+        next.content.insertBefore(
+            block,
+            next.content.firstChild
+        );
+
         changed=true;
     }
 
@@ -2288,6 +2719,7 @@ function cleanupEmptyTrailingPages(){
             editorPages.pop();
 
         }else{
+
             break;
         }
     }
@@ -2297,29 +2729,35 @@ function cleanupEmptyTrailingPages(){
 function paginateEditor(){
 
     /*
-     * Repeat because moving content from
-     * Page 1 can cause Page 2 to overflow.
+     * Repeat until every page fits.
+     *
+     * A large pasted document can require many
+     * A4 pages, so do not stop after the first split.
      */
     let guard=0;
     let changed=true;
 
     while(
         changed &&
-        guard<100
+        guard<500
     ){
 
         changed=false;
         guard++;
 
+        const pageCount=
+            editorPages.length;
+
         for(
             let i=0;
-            i<editorPages.length;
+            i<pageCount;
             i++
         ){
 
             if(
                 moveOverflowFromPage(i)
             ){
+
                 changed=true;
             }
         }
@@ -2328,7 +2766,10 @@ function paginateEditor(){
     cleanupEmptyTrailingPages();
 
     editorPages.forEach(
-        (pageObject,index)=>{
+        (
+            pageObject,
+            index
+        )=>{
 
             pageObject.page.dataset.pageIndex=
                 index;
