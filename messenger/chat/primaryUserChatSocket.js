@@ -158,148 +158,204 @@ this.socket.on(
 );
 
             // ========================================================
-            // MESSAGE HISTORY RECEIVED
-            // ========================================================
-
-            this.socket.on(
-                "gpa:primary:message:history:received",
-                (messages) => {
-
-                    console.log(
-                        "[GPA PRIMARY MESSAGE HISTORY] " +
-                        "History received:",
-                        messages
-                    );
-
-                    if (!Array.isArray(messages)) {
-
-                        console.warn(
-                            "[GPA PRIMARY MESSAGE HISTORY] " +
-                            "Invalid history received."
-                        );
-
-                        return;
-                    }
-
-                    if (
-                        !window.GPAPrimaryUserChat ||
-                        typeof window.GPAPrimaryUserChat.displayMessage !==
-                            "function"
-                    ) {
-
-                        console.warn(
-                            "[GPA PRIMARY MESSAGE HISTORY] " +
-                            "Primary User Chat is not available."
-                        );
-
-                        return;
-                    }
-
-                    messages.forEach(
-                        (message) => {
-
-                            // ========================================================
-// DETERMINE MESSAGE DIRECTION FROM RECEIVER
-// ========================================================
-//
-// Every saved message contains:
-//
-// receiverId
-//
-// If receiverId is the CURRENT USER:
-//     Someone else sent this message
-//     → INCOMING → LEFT
-//
-// If receiverId is NOT the current user:
-//     Current user sent this message
-//     → OUTGOING → RIGHT
+// MESSAGE HISTORY RECEIVED
 // ========================================================
 
-let currentUserId = null;
+this.socket.on(
+    "gpa:primary:message:history:received",
+    (messages) => {
+
+        console.log(
+            "[GPA PRIMARY MESSAGE HISTORY] " +
+            "History received:",
+            messages
+        );
 
 
-// --------------------------------------------------------
-// READ EXISTING LOGIN TOKEN
-// --------------------------------------------------------
+        // ====================================================
+        // VALIDATE HISTORY
+        // ====================================================
 
-const token =
-    localStorage.getItem("token");
+        if (!Array.isArray(messages)) {
 
-
-if (token) {
-
-    try {
-
-        const tokenPayload =
-            JSON.parse(
-                atob(
-                    token.split(".")[1]
-                        .replace(/-/g, "+")
-                        .replace(/_/g, "/")
-                )
+            console.warn(
+                "[GPA PRIMARY MESSAGE HISTORY] " +
+                "Invalid history received."
             );
 
+            return;
+        }
 
-        currentUserId =
-            tokenPayload.id;
 
-    }
-    catch (error) {
+        // ====================================================
+        // CHECK CHAT MODULE
+        // ====================================================
 
-        console.error(
-            "[GPA PRIMARY CHAT SOCKET] " +
-            "Unable to read current user ID:",
-            error
+        if (
+            !window.GPAPrimaryUserChat ||
+            typeof window.GPAPrimaryUserChat.displayMessage !==
+                "function"
+        ) {
+
+            console.warn(
+                "[GPA PRIMARY MESSAGE HISTORY] " +
+                "Primary User Chat is not available."
+            );
+
+            return;
+        }
+
+
+        // ====================================================
+        // GET CURRENT USER ID
+        // ====================================================
+
+        const token =
+            localStorage.getItem("token") ||
+            sessionStorage.getItem("token");
+
+
+        let currentUserId =
+            null;
+
+
+        if (token) {
+
+            try {
+
+                const tokenPayload =
+                    JSON.parse(
+                        atob(
+                            token
+                                .split(".")[1]
+                                .replace(/-/g, "+")
+                                .replace(/_/g, "/")
+                        )
+                    );
+
+
+                currentUserId =
+                    tokenPayload.id;
+
+
+                console.log(
+                    "[GPA PRIMARY MESSAGE HISTORY] " +
+                    "Current user ID:",
+                    currentUserId
+                );
+
+            }
+            catch (error) {
+
+                console.error(
+                    "[GPA PRIMARY MESSAGE HISTORY] " +
+                    "Unable to read current user ID:",
+                    error
+                );
+
+                return;
+            }
+
+        }
+        else {
+
+            console.warn(
+                "[GPA PRIMARY MESSAGE HISTORY] " +
+                "Login token is missing."
+            );
+
+            return;
+        }
+
+
+        // ====================================================
+        // DISPLAY HISTORY
+        // ====================================================
+
+        messages.forEach(
+            (message) => {
+
+                // ==================================================
+                // DETERMINE MESSAGE DIRECTION
+                // ==================================================
+                //
+                // receiverId === currentUserId
+                //
+                // Someone else sent this message.
+                //
+                // INCOMING → LEFT
+                //
+                //
+                // receiverId !== currentUserId
+                //
+                // Current user sent this message.
+                //
+                // OUTGOING → RIGHT
+                // ==================================================
+
+                let messageDirection =
+                    "outgoing";
+
+
+                if (
+                    message.receiverId &&
+                    String(message.receiverId) ===
+                        String(currentUserId)
+                ) {
+
+                    messageDirection =
+                        "incoming";
+
+                }
+
+
+                console.log(
+                    "[GPA PRIMARY MESSAGE HISTORY] " +
+                    "Message direction:",
+                    {
+                        messageId:
+                            message.messageId,
+
+                        receiverId:
+                            message.receiverId,
+
+                        currentUserId:
+                            currentUserId,
+
+                        direction:
+                            messageDirection
+                    }
+                );
+
+
+                // ==================================================
+                // DISPLAY MESSAGE
+                // ==================================================
+
+                window.GPAPrimaryUserChat.displayMessage({
+
+                    id:
+                        message.messageId,
+
+                    text:
+                        message.text,
+
+                    sender:
+                        message.sender,
+
+                    createdAt:
+                        message.sentAt,
+
+                    direction:
+                        messageDirection
+
+                });
+
+            }
         );
 
     }
-
-}
-
-
-// --------------------------------------------------------
-// DETERMINE DIRECTION
-// --------------------------------------------------------
-
-const messageDirection =
-    message.receiverId &&
-    currentUserId &&
-    String(message.receiverId) ===
-        String(currentUserId)
-
-        ? "incoming"
-
-        : "outgoing";
-
-
-// --------------------------------------------------------
-// DISPLAY HISTORY MESSAGE
-// --------------------------------------------------------
-
-window.GPAPrimaryUserChat.displayMessage({
-
-    id:
-        message.messageId,
-
-    text:
-        message.text,
-
-    sender:
-        message.sender,
-
-    createdAt:
-        message.sentAt,
-
-    direction:
-        messageDirection
-
-});
-
-                        }
-                    );
-
-                }
-            );
+);
 
             // ========================================================
             // DISCONNECT
