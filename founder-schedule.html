@@ -64,6 +64,49 @@ document.getElementById("sidebar-container").innerHTML = data;
 </div>
 <button onclick="addSchedule()">Add Schedule</button>
 
+<!-- =========================================================
+     TIMETABLE FILTER
+========================================================= -->
+
+<div class="schedule-filter-box">
+
+    <strong>Filter Timetable</strong>
+
+    <select id="filterTeacher">
+        <option value="all">All Teachers</option>
+    </select>
+
+    <select id="filterDay">
+        <option value="all">All Days</option>
+        <option value="Monday">Monday</option>
+        <option value="Tuesday">Tuesday</option>
+        <option value="Wednesday">Wednesday</option>
+        <option value="Thursday">Thursday</option>
+        <option value="Friday">Friday</option>
+        <option value="Saturday">Saturday</option>
+        <option value="Sunday">Sunday</option>
+    </select>
+
+    <input
+        type="text"
+        id="filterClass"
+        placeholder="Search Class"
+    >
+
+    <button type="button" onclick="applyScheduleFilters()">
+        Apply Filter
+    </button>
+
+    <button
+        type="button"
+        onclick="clearScheduleFilters()"
+        style="background:#555;"
+    >
+        Clear
+    </button>
+
+</div>
+
 <table border="1" width="100%" id="scheduleTable">
 
 <thead>
@@ -142,14 +185,23 @@ teachers = data.teachers;
 
 const select = document.getElementById("teacher");
 const gridSelect = document.getElementById("gridTeacher");
+const filterTeacher = document.getElementById("filterTeacher");
 
 select.innerHTML = "";
 
+filterTeacher.innerHTML =
+    '<option value="all">All Teachers</option>';
+
 teachers.forEach(t=>{
 
-select.innerHTML += `<option value="${t._id}">${t.name}</option>`;
+select.innerHTML +=
+    `<option value="${t._id}">${t.name}</option>`;
 
-gridSelect.innerHTML += `<option value="${t._id}">${t.name}</option>`;
+gridSelect.innerHTML +=
+    `<option value="${t._id}">${t.name}</option>`;
+
+filterTeacher.innerHTML +=
+    `<option value="${t._id}">${t.name}</option>`;
 
 });
 if (teachers.length > 0) {
@@ -344,6 +396,179 @@ allSchedules = data.schedules || [];
 
 buildGrid(allSchedules);
 }
+
+// =========================================================
+// FILTER TEACHER WEEKLY TIMETABLE
+// =========================================================
+
+function applyScheduleFilters() {
+
+    const teacherId =
+        document.getElementById("filterTeacher").value;
+
+    const day =
+        document.getElementById("filterDay").value;
+
+    const classSearch =
+        document.getElementById("filterClass").value
+        .trim()
+        .toLowerCase();
+
+
+    const filteredSchedules = allSchedules.filter(s => {
+
+        // -----------------------------
+        // TEACHER FILTER
+        // -----------------------------
+        if (teacherId !== "all") {
+
+            if (
+                !s.teacher ||
+                s.teacher._id !== teacherId
+            ) {
+                return false;
+            }
+        }
+
+
+        // -----------------------------
+        // DAY FILTER
+        // -----------------------------
+        if (day !== "all") {
+
+            if (s.day !== day) {
+                return false;
+            }
+        }
+
+
+        // -----------------------------
+        // CLASS FILTER
+        // -----------------------------
+        if (classSearch !== "") {
+
+            const className =
+                (s.className || "")
+                .toLowerCase();
+
+            if (!className.includes(classSearch)) {
+                return false;
+            }
+        }
+
+
+        return true;
+    });
+
+
+       renderScheduleTable(filteredSchedules);
+}
+
+
+// =========================================================
+// RENDER FILTERED SCHEDULE TABLE
+// =========================================================
+
+function renderScheduleTable(schedules) {
+
+    const tbody =
+        document.querySelector("#scheduleTable tbody");
+
+    tbody.innerHTML = "";
+
+
+    if (!schedules || schedules.length === 0) {
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="9"
+                    style="
+                        text-align:center;
+                        padding:20px;
+                        color:#777;
+                    ">
+                    No timetable found
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    schedules.forEach(s => {
+
+        tbody.innerHTML += `
+            <tr>
+
+                <td>
+                    ${s.teacher ? s.teacher.name : "Unknown"}
+                </td>
+
+                <td>
+                    ${s.day}
+                </td>
+
+                <td>
+                    ${s.className}
+                </td>
+
+                <td>
+                    ${s.subject || "-"}
+                </td>
+
+                <td>
+                    ${s.eca || "-"}
+                </td>
+
+                <td>
+                    ${s.language || "-"}
+                </td>
+
+                <td>
+                    ${convertTo12Hour(s.startTime)}
+                </td>
+
+                <td>
+                    ${convertTo12Hour(s.endTime)}
+                </td>
+
+                <td>
+
+                    <button
+                        onclick="editSchedule('${s._id}')">
+                        Edit
+                    </button>
+
+                    <button
+                        onclick="deleteSchedule('${s._id}')">
+                        Delete
+                    </button>
+
+                </td>
+
+            </tr>
+        `;
+
+    });
+}
+
+
+// =========================================================
+// CLEAR FILTER
+// =========================================================
+
+function clearScheduleFilters() {
+
+    document.getElementById("filterTeacher").value = "all";
+
+    document.getElementById("filterDay").value = "all";
+
+    document.getElementById("filterClass").value = "";
+
+    renderScheduleTable(allSchedules);
+}
+
 
 loadTeachers();
 loadSchedules();
