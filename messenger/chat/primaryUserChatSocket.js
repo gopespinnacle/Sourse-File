@@ -125,19 +125,34 @@ this.socket.on(
 
         window.GPAPrimaryUserChat.displayMessage({
 
-            id:
-                message.id,
+    id:
+        message.id,
 
-            text:
-                message.text,
+    text:
+        message.text,
 
-            sender:
-                message.sender,
+    sender:
+        message.sender,
 
-            createdAt:
-                message.receivedAt
+    createdAt:
+        message.receivedAt,
 
-        });
+    // ========================================================
+    // REAL-TIME MESSAGE IS FROM THE OTHER PARTICIPANT
+    // ========================================================
+    //
+    // The backend now sends the realtime message only to the
+    // other socket.
+    //
+    // Therefore this message is an INCOMING message.
+    //
+    // Incoming → LEFT
+    // ========================================================
+
+    direction:
+        "incoming"
+
+});
 
     }
 );
@@ -183,21 +198,102 @@ this.socket.on(
                     messages.forEach(
                         (message) => {
 
-                            window.GPAPrimaryUserChat.displayMessage({
+                            // ========================================================
+// DETERMINE MESSAGE DIRECTION FROM RECEIVER
+// ========================================================
+//
+// Every saved message contains:
+//
+// receiverId
+//
+// If receiverId is the CURRENT USER:
+//     Someone else sent this message
+//     → INCOMING → LEFT
+//
+// If receiverId is NOT the current user:
+//     Current user sent this message
+//     → OUTGOING → RIGHT
+// ========================================================
 
-                                id:
-                                    message.messageId,
+let currentUserId = null;
 
-                                text:
-                                    message.text,
 
-                                sender:
-                                    message.sender,
+// --------------------------------------------------------
+// READ EXISTING LOGIN TOKEN
+// --------------------------------------------------------
 
-                                createdAt:
-                                    message.sentAt
+const token =
+    localStorage.getItem("token");
 
-                            });
+
+if (token) {
+
+    try {
+
+        const tokenPayload =
+            JSON.parse(
+                atob(
+                    token.split(".")[1]
+                        .replace(/-/g, "+")
+                        .replace(/_/g, "/")
+                )
+            );
+
+
+        currentUserId =
+            tokenPayload.id;
+
+    }
+    catch (error) {
+
+        console.error(
+            "[GPA PRIMARY CHAT SOCKET] " +
+            "Unable to read current user ID:",
+            error
+        );
+
+    }
+
+}
+
+
+// --------------------------------------------------------
+// DETERMINE DIRECTION
+// --------------------------------------------------------
+
+const messageDirection =
+    message.receiverId &&
+    currentUserId &&
+    String(message.receiverId) ===
+        String(currentUserId)
+
+        ? "incoming"
+
+        : "outgoing";
+
+
+// --------------------------------------------------------
+// DISPLAY HISTORY MESSAGE
+// --------------------------------------------------------
+
+window.GPAPrimaryUserChat.displayMessage({
+
+    id:
+        message.messageId,
+
+    text:
+        message.text,
+
+    sender:
+        message.sender,
+
+    createdAt:
+        message.sentAt,
+
+    direction:
+        messageDirection
+
+});
 
                         }
                     );
