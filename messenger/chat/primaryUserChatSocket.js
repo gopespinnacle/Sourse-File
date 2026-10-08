@@ -383,17 +383,15 @@ this.socket.emit(
 // ========================================================
 
 const token =
-    localStorage.getItem("token");
+    localStorage.getItem("token") ||
+    sessionStorage.getItem("token");
 
 if (!token) {
-
     console.warn(
         "[GPA PRIMARY CHAT SOCKET] " +
         "Login token is missing."
     );
-
     return;
-
 }
 
 
