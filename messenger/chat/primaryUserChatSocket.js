@@ -376,29 +376,94 @@ this.socket.emit(
                 return;
             }
 
-            // ========================================================
-            // LOGIN TOKEN
-            // ========================================================
+            
 
-            const token =
-                localStorage.getItem("token");
+          // ========================================================
+// FIND THE OTHER PARTICIPANT
+// ========================================================
 
-            if (!token) {
+const token =
+    localStorage.getItem("token");
 
-                console.warn(
-                    "[GPA PRIMARY CHAT SOCKET] " +
-                    "Login token is missing."
-                );
+if (!token) {
 
-                return;
-            }
+    console.warn(
+        "[GPA PRIMARY CHAT SOCKET] " +
+        "Login token is missing."
+    );
 
-            // ========================================================
-            // RECEIVER
-            // ========================================================
+    return;
 
-            const receiverId =
-                participants[1];
+}
+
+
+// ========================================================
+// READ CURRENT USER ID FROM JWT
+// ========================================================
+
+let currentUserId;
+
+try {
+
+    const tokenPayload =
+        JSON.parse(
+            atob(
+                token.split(".")[1]
+                    .replace(/-/g, "+")
+                    .replace(/_/g, "/")
+            )
+        );
+
+    currentUserId =
+        tokenPayload.id;
+
+}
+catch (error) {
+
+    console.error(
+        "[GPA PRIMARY CHAT SOCKET] " +
+        "Unable to read user ID from token:",
+        error
+    );
+
+    return;
+
+}
+
+
+// ========================================================
+// FIND RECEIVER
+// ========================================================
+
+const receiverId =
+    participants.find(
+        participant =>
+            String(participant) !==
+            String(currentUserId)
+    );
+
+if (!receiverId) {
+
+    console.warn(
+        "[GPA PRIMARY CHAT SOCKET] " +
+        "Receiver could not be determined."
+    );
+
+    return;
+
+}
+
+console.log(
+    "[GPA PRIMARY CHAT SOCKET] " +
+    "Current user:",
+    currentUserId
+);
+
+console.log(
+    "[GPA PRIMARY CHAT SOCKET] " +
+    "Receiver:",
+    receiverId
+);
 
             // ========================================================
             // ADD CONVERSATION INFORMATION
