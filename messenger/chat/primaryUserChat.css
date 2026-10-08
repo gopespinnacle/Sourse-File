@@ -243,3 +243,92 @@
     }
 
 }
+
+/* ============================================================
+   GPA MESSENGER
+   STEP 2C
+   INCOMING / OUTGOING MESSAGE ALIGNMENT
+   ============================================================ */
+
+
+/* ============================================================
+   MESSAGE ROW
+   ============================================================ */
+
+.gpa-primary-message-row {
+
+    display: flex;
+
+    width: 100%;
+
+}
+
+
+/* ============================================================
+   OUTGOING MESSAGE
+   CURRENT USER
+   RIGHT SIDE
+   ============================================================ */
+
+.gpa-primary-message-row.outgoing {
+
+    justify-content: flex-end !important;
+
+}
+
+
+/* ============================================================
+   INCOMING MESSAGE
+   OTHER USER
+   LEFT SIDE
+   ============================================================ */
+
+.gpa-primary-message-row.incoming {
+
+    justify-content: flex-start !important;
+
+}
+
+
+/* ============================================================
+   MESSAGE BUBBLE
+   ============================================================ */
+
+.gpa-primary-message-row
+.gpa-primary-message-bubble {
+
+    margin-left: 0 !important;
+
+    margin-right: 0 !important;
+
+}
+
+
+/* ============================================================
+   OUTGOING BUBBLE
+   RIGHT
+   ============================================================ */
+
+.gpa-primary-message-row.outgoing
+.gpa-primary-message-bubble {
+
+    margin-left: auto !important;
+
+    margin-right: 0 !important;
+
+}
+
+
+/* ============================================================
+   INCOMING BUBBLE
+   LEFT
+   ============================================================ */
+
+.gpa-primary-message-row.incoming
+.gpa-primary-message-bubble {
+
+    margin-left: 0 !important;
+
+    margin-right: auto !important;
+
+}
