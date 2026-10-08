@@ -14,15 +14,6 @@
  *
  * This module is FRONTEND ONLY.
  *
- * NO:
- * - Backend
- * - Database
- * - Socket.IO
- * - Receiver
- * - Notifications
- *
- * Those will be added as separate modules later.
- *
  * ============================================================
  */
 
@@ -187,7 +178,18 @@
                     "primary-user",
 
                 createdAt:
-                    new Date().toISOString()
+                    new Date().toISOString(),
+
+                // =================================================
+                // MESSAGE DIRECTION
+                // =================================================
+                // This message was created by the current user.
+                //
+                // Therefore it must appear on the RIGHT.
+                // =================================================
+
+                direction:
+                    "outgoing"
 
             };
 
@@ -219,23 +221,22 @@
             this.input.focus();
 
 
+            // ========================================================
+            // MODULE 2
+            // SEND MESSAGE TO BACKEND SOCKET
+            // ========================================================
 
- // ========================================================
-// MODULE 2
-// SEND MESSAGE TO BACKEND SOCKET
-// ========================================================
+            if (
+                window.GPAPrimaryUserSocket &&
+                typeof window.GPAPrimaryUserSocket.sendMessage ===
+                    "function"
+            ) {
 
-if (
-    window.GPAPrimaryUserSocket &&
-    typeof window.GPAPrimaryUserSocket.sendMessage ===
-        "function"
-) {
+                window.GPAPrimaryUserSocket.sendMessage(
+                    message
+                );
 
-    window.GPAPrimaryUserSocket.sendMessage(
-        message
-    );
-
-}
+            }
 
 
             console.log(
@@ -263,6 +264,46 @@ if (
 
             messageRow.className =
                 "gpa-primary-message-row";
+
+
+            // ====================================================
+            // MESSAGE DIRECTION
+            // ====================================================
+
+            /*
+             *
+             * outgoing
+             * --------
+             * Current user's message.
+             *
+             * This will be displayed on the RIGHT.
+             *
+             *
+             * incoming
+             * --------
+             * Other person's message.
+             *
+             * This will be displayed on the LEFT.
+             *
+             */
+
+            if (
+                message.direction ===
+                "incoming"
+            ) {
+
+                messageRow.classList.add(
+                    "incoming"
+                );
+
+            }
+            else {
+
+                messageRow.classList.add(
+                    "outgoing"
+                );
+
+            }
 
 
             // ----------------------------------------------------
@@ -377,7 +418,8 @@ if (
             startPrimaryUserChat
         );
 
-    } else {
+    }
+    else {
 
         startPrimaryUserChat();
 
