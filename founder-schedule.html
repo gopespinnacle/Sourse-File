@@ -195,13 +195,19 @@ filterTeacher.innerHTML =
 teachers.forEach(t=>{
 
 select.innerHTML +=
-    `<option value="${t._id}">${t.name}</option>`;
+    `<option value="${t._id}">
+        ${t.name} - ${t.teacherId}
+    </option>`;
 
 gridSelect.innerHTML +=
-    `<option value="${t._id}">${t.name}</option>`;
+    `<option value="${t._id}">
+        ${t.name} - ${t.teacherId}
+    </option>`;
 
 filterTeacher.innerHTML +=
-    `<option value="${t._id}">${t.name}</option>`;
+    `<option value="${t._id}">
+        ${t.name} - ${t.teacherId}
+    </option>`;
 
 });
 if (teachers.length > 0) {
@@ -374,7 +380,13 @@ data.schedules.forEach(s=>{
 
 tbody.innerHTML += `
 <tr>
-<td>${s.teacher ? s.teacher.name : "Unknown"}</td>
+<td>
+    ${
+        s.teacher
+            ? `${s.teacher.name} - ${s.teacher.teacherId || ""}`
+            : "Unknown"
+    }
+</td>
 <td>${s.day}</td>
 <td>${s.className}</td>
 
@@ -502,8 +514,12 @@ function renderScheduleTable(schedules) {
             <tr>
 
                 <td>
-                    ${s.teacher ? s.teacher.name : "Unknown"}
-                </td>
+    ${
+        s.teacher
+            ? `${s.teacher.name} - ${s.teacher.teacherId || ""}`
+            : "Unknown"
+    }
+</td>
 
                 <td>
                     ${s.day}
