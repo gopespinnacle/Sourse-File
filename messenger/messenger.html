@@ -527,32 +527,35 @@
     // SEPARATE CONTACTS BY ROLE
     // =====================================================
 
-    const students =
-        contacts.filter(
-            contact =>
-                contact.role === "student"
-        );
+    const founders =
+    contacts.filter(
+        contact =>
+            contact.role === "founder"
+    );
 
+const students =
+    contacts.filter(
+        contact =>
+            contact.role === "student"
+    );
 
-    const teachers =
-        contacts.filter(
-            contact =>
-                contact.role === "teacher"
-        );
+const teachers =
+    contacts.filter(
+        contact =>
+            contact.role === "teacher"
+    );
 
+const admins =
+    contacts.filter(
+        contact =>
+            contact.role === "admin"
+    );
 
-    const admins =
-        contacts.filter(
-            contact =>
-                contact.role === "admin"
-        );
-
-
-    const parents =
-        contacts.filter(
-            contact =>
-                contact.role === "parent"
-        );
+const parents =
+    contacts.filter(
+        contact =>
+            contact.role === "parent"
+    );
 
 
     // =====================================================
@@ -649,31 +652,38 @@
 
     contactsContainer.innerHTML =
 
-        createContactSection(
-            "👨‍🎓 STUDENTS",
-            students
-        )
+    createContactSection(
+        "👑 FOUNDER",
+        founders
+    )
 
-        +
+    +
 
-        createContactSection(
-            "👨‍🏫 TEACHERS",
-            teachers
-        )
+    createContactSection(
+        "👨‍🎓 STUDENTS",
+        students
+    )
 
-        +
+    +
 
-        createContactSection(
-            "👨‍💼 ADMINS",
-            admins
-        )
+    createContactSection(
+        "👨‍🏫 TEACHERS",
+        teachers
+    )
 
-        +
+    +
 
-        createContactSection(
-            "👨‍👩‍👧 PARENTS",
-            parents
-        );
+    createContactSection(
+        "👨‍💼 ADMINS",
+        admins
+    )
+
+    +
+
+    createContactSection(
+        "👨‍👩‍👧 PARENTS",
+        parents
+    );
 
 }
 
