@@ -35,15 +35,22 @@
             }
 
             this.socket = io(
-                "https://academy-backend-eatl.onrender.com",
-                {
-                    transports: [
-                        "websocket",
-                        "polling"
-                    ],
-                    withCredentials: true
-                }
-            );
+    "https://academy-backend-eatl.onrender.com",
+    {
+        transports: [
+            "websocket",
+            "polling"
+        ],
+
+        withCredentials: true,
+
+        auth: {
+            token:
+                localStorage.getItem("token") ||
+                sessionStorage.getItem("token")
+        }
+    }
+);
 
             this.socket.on(
                 "connect",
