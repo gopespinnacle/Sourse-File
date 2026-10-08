@@ -397,7 +397,8 @@
             // =================================================
 
             const token =
-                localStorage.getItem("token");
+    localStorage.getItem("token") ||
+    sessionStorage.getItem("token");
 
 
             if (!token) {
@@ -740,7 +741,8 @@ async function selectMessengerContact(
     // =================================================
 
     const token =
-        localStorage.getItem("token");
+    localStorage.getItem("token") ||
+    sessionStorage.getItem("token");
 
 
     // Contacts are stored from the API response.
@@ -791,7 +793,8 @@ async function selectMessengerContact(
 
 
     const conversationToken =
-        localStorage.getItem("token");
+    localStorage.getItem("token") ||
+    sessionStorage.getItem("token");
 
 
     if (!conversationToken) {
