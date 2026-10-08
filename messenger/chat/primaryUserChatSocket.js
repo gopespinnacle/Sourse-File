@@ -78,6 +78,71 @@
             );
 
             // ========================================================
+// REAL-TIME CONVERSATION MESSAGE
+// ========================================================
+
+this.socket.on(
+    "gpa:primary:conversation:message",
+    (message) => {
+
+        console.log(
+            "[GPA PRIMARY CHAT SOCKET] " +
+            "Real-time conversation message received:",
+            message
+        );
+
+        if (!message) {
+            return;
+        }
+
+        if (
+            !window.GPAMessengerConversationId ||
+            message.conversationId !==
+                window.GPAMessengerConversationId
+        ) {
+
+            console.log(
+                "[GPA PRIMARY CHAT SOCKET] " +
+                "Message belongs to another conversation."
+            );
+
+            return;
+        }
+
+        if (
+            !window.GPAPrimaryUserChat ||
+            typeof window.GPAPrimaryUserChat.displayMessage !==
+                "function"
+        ) {
+
+            console.warn(
+                "[GPA PRIMARY CHAT SOCKET] " +
+                "Primary User Chat is not available."
+            );
+
+            return;
+        }
+
+        window.GPAPrimaryUserChat.displayMessage({
+
+            id:
+                message.id,
+
+            text:
+                message.text,
+
+            sender:
+                message.sender,
+
+            createdAt:
+                message.receivedAt
+
+        });
+
+    }
+);
+
+            // ========================================================
             // MESSAGE HISTORY RECEIVED
             // ========================================================
 
@@ -219,6 +284,25 @@
                 "Requesting history for conversation:",
                 conversationId
             );
+
+
+            // ========================================================
+// JOIN CURRENT CONVERSATION ROOM
+// ========================================================
+
+console.log(
+    "[GPA PRIMARY CHAT SOCKET] " +
+    "Joining conversation room:",
+    conversationId
+);
+
+this.socket.emit(
+    "gpa:primary:conversation:join",
+    {
+        conversationId:
+            conversationId
+    }
+);
 
             this.socket.emit(
                 "gpa:primary:message:history",
