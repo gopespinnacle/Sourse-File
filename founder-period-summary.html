@@ -5,12 +5,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Period Summary | Gopes Pinnacle Academy</title>
-
-<link rel="stylesheet" href="dashboard.css">
-
-<link rel="stylesheet"
- href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<title>Teacher Students | Gopes Pinnacle Academy</title>
+<link rel="stylesheet" href="style.css">
 
 <style>
 * {
@@ -19,265 +15,173 @@
 
 body {
     margin: 0;
+    background: #f5f7fb;
     font-family: Arial, sans-serif;
-    background: #f7f8fc;
     color: #172033;
 }
 
-/* SIDEBAR */
-
-.sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 180px;
-    height: 100vh;
-    overflow-y: auto;
-    background: #1e2b3b;
-    color: white;
-    padding: 18px 12px;
-    z-index: 1000;
-}
-
-.sidebar h2 {
-    font-size: 17px;
-    margin: 0 0 24px;
-    padding: 0 4px 16px;
-    border-bottom: 1px solid #435064;
-}
-
-.sidebar ul {
-    padding: 0;
-    margin: 0;
-    list-style: none;
-}
-
-.sidebar li {
-    padding: 13px 8px;
-    margin-bottom: 5px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 13px;
-}
-
-.sidebar li:hover,
-.sidebar li.active {
-    background: #304761;
-}
-
-.sidebar i {
-    width: 19px;
-    margin-right: 3px;
-}
-
-/* MAIN CONTENT */
-
 .main-content {
-    margin-left: 180px;
+    margin-left: 220px;
     padding: 24px;
-    min-height: 100vh;
 }
 
 .page-heading {
-    margin-bottom: 20px;
+    margin: 0 0 6px;
+    color: #16365c;
+    font-size: 25px;
 }
 
-.page-heading h2 {
-    margin: 0 0 7px;
-    font-size: 23px;
+.page-subtitle {
+    margin: 0 0 22px;
+    color: #64748b;
+    font-size: 14px;
 }
 
-.page-heading p {
-    margin: 0;
-    font-size: 13px;
-    color: #647084;
+.teacher-section {
+    margin-bottom: 28px;
 }
 
-/* FILTERS */
-
-.filters {
+.teacher-heading {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 9px;
-    margin-bottom: 18px;
-    padding: 14px;
-    background: white;
-    border-radius: 9px;
-    box-shadow: 0 2px 7px rgba(0,0,0,.06);
-}
-
-.filters select,
-.filters input,
-.filters button {
-    padding: 10px;
-    border: 1px solid #d8deea;
-    border-radius: 6px;
-    font-size: 13px;
-}
-
-.filters select {
-    min-width: 150px;
-    max-width: 100%;
-}
-
-.filters button {
-    cursor: pointer;
-    background: #24466e;
-    color: white;
-    border: none;
-}
-
-.filters button:hover {
-    background: #17375e;
-}
-
-.filters .clear-btn {
-    background: #586273;
-}
-
-/* STATUS */
-
-#status {
-    margin: 12px 2px;
-    font-size: 13px;
-    color: #687386;
-}
-
-/* PERIOD CARDS */
-
-#summaryCards {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.period-card {
-    background: white;
-    border-radius: 10px;
-    padding: 15px;
-    box-shadow: 0 2px 7px rgba(0,0,0,.08);
-    border: 1px solid #edf0f5;
-    transition: box-shadow .2s;
-}
-
-.period-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,.10);
-}
-
-.card-heading {
-    display: flex;
-    align-items: flex-start;
     justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: 11px;
+    gap: 10px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    border-radius: 12px;
+    background: #1e3045;
+    color: white;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
 }
 
 .teacher-name {
-    font-size: 15px;
-    font-weight: bold;
-    color: #18375b;
-    margin-bottom: 5px;
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
 }
 
-.student-name {
+.teacher-id {
+    color: #dbeafe;
     font-size: 14px;
-    font-weight: bold;
-    color: #26364b;
-    margin-bottom: 5px;
+    font-weight: 500;
 }
 
-.person-id {
-    font-size: 12px;
-    font-weight: normal;
-    color: #647084;
-}
-
-.period-count {
-    background: #eef2ff;
-    color: #334a85;
+.student-count {
+    background: #e0eaff;
+    color: #24466e;
+    padding: 6px 11px;
     border-radius: 20px;
-    padding: 5px 9px;
-    font-size: 11px;
-    white-space: nowrap;
+    font-size: 12px;
+    font-weight: 700;
 }
 
-/* DETAIL PILLS */
+.student-card {
+    background: white;
+    border-radius: 13px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid #edf0f5;
+}
 
-.period-details {
+.student-heading {
+    margin: 0 0 12px;
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    align-items: center;
+    gap: 7px;
+    font-size: 16px;
+    color: #16365c;
 }
 
-.detail-pill {
+.student-id {
+    color: #64748b;
+    font-size: 13px;
+    font-weight: normal;
+}
+
+.period-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.period-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 5px 8px;
-    border-radius: 5px;
-    background: #eeeeff;
-    color: #26364b;
+    background: #edf0ff;
+    color: #263b65;
+    padding: 7px 10px;
+    border-radius: 7px;
     font-size: 12px;
     line-height: 1.4;
 }
 
-.detail-pill i {
-    color: #365a91;
+.period-subject {
+    background: #e5f0ff;
 }
 
-.subject-pill {
-    background: #e8f3ff;
+.period-class {
+    background: #eeebff;
 }
 
-.time-pill {
-    background: #edf0ff;
+.period-day {
+    background: #e8f5e9;
 }
 
-.no-data {
+.period-time {
+    background: #fff2dc;
+}
+
+.empty-message,
+.error-message,
+.loading-message {
     background: white;
-    border-radius: 9px;
-    padding: 30px 15px;
-    text-align: center;
-    color: #70798a;
-    box-shadow: 0 2px 7px rgba(0,0,0,.05);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
-@media (max-width: 700px) {
-    .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
-    }
+.error-message {
+    color: #b91c1c;
+}
 
-    .sidebar ul {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-    }
-
-    .sidebar li {
-        padding: 9px;
-    }
-
+@media (max-width: 768px) {
     .main-content {
         margin-left: 0;
         padding: 14px;
     }
 
-    .filters {
-        padding: 10px;
+    .page-heading {
+        font-size: 21px;
     }
 
-    .filters select,
-    .filters input,
-    .filters button {
-        width: 100%;
+    .teacher-heading {
+        padding: 14px;
     }
 
-    .period-card {
-        padding: 12px;
+    .teacher-name {
+        font-size: 18px;
+    }
+
+    .student-card {
+        padding: 13px;
+    }
+
+    .period-list {
+        gap: 6px;
+    }
+
+    .period-badge {
+        padding: 6px 8px;
+        font-size: 11px;
+    }
+
+    .desktop-sidebar {
+        display: none;
     }
 }
 </style>
@@ -285,323 +189,400 @@ body {
 
 <body>
 
-<!-- FOUNDER SIDEBAR -->
-
-<div class="sidebar">
-
-    <h2>
-        <i class="fa fa-graduation-cap"></i>
-        Founder Panel
-    </h2>
-
-    <ul>
-
-        <li onclick="go('founder-dashboard.html')">
-            <i class="fa fa-chart-line"></i> Dashboard
-        </li>
-
-        <li onclick="go('founder-students.html')">
-            <i class="fa fa-users"></i> Students
-        </li>
-
-        <li onclick="go('founder-teachers.html')">
-            <i class="fa fa-chalkboard-teacher"></i> Teachers
-        </li>
-
-        <li onclick="go('founder-teacher-permissions.html')">
-            <i class="fa fa-user-shield"></i> Teacher Permissions
-        </li>
-
-        <li onclick="go('founder-add-teacher.html')">
-            <i class="fa fa-user-plus"></i> Add Teacher
-        </li>
-
-        <li onclick="go('founder-teacher-student-map.html')">
-            <i class="fa fa-link"></i> Teacher Student Assigned
-        </li>
-
-        <li onclick="go('founder-attendance.html')">
-            <i class="fa fa-calendar-check"></i> Attendance
-        </li>
-
-        <li onclick="go('founder-teacher-attendance.html')">
-            <i class="fa fa-user-check"></i> Teacher Attendance
-        </li>
-
-        <li onclick="go('founder-student-homework-tracking.html')">
-            <i class="fa fa-book"></i> Student Homework Tracking
-        </li>
-
-        <li onclick="go('founder-fees.html')">
-            <i class="fa fa-money-bill"></i> Fees
-        </li>
-
-        <li onclick="go('founder-salary.html')">
-            <i class="fa fa-wallet"></i> Teacher Salary
-        </li>
-
-        <li onclick="go('founder-compensation.html')">
-            <i class="fa fa-clock"></i> Compensation
-        </li>
-
-        <li onclick="go('founder-schedule.html')">
-            <i class="fa fa-calendar-alt"></i> Schedule
-        </li>
-
-        <li class="active">
-            <i class="fa fa-list"></i> Period Summary
-        </li>
-
-        <li onclick="go('founder-messages.html')">
-            <i class="fa fa-envelope"></i> Messages
-        </li>
-
-    </ul>
-
-</div>
-
-<!-- MAIN CONTENT -->
+<!-- Existing teacher sidebar -->
+<div id="sidebar-container" class="desktop-sidebar"></div>
 
 <div class="main-content">
 
-    <div class="page-heading">
-        <h2>Period Summary</h2>
-        <p>Teacher – Student – Subject – Timetable Mapping</p>
+    <h1 class="page-heading">My Students</h1>
+    <p class="page-subtitle">
+        Teacher-wise student assignments and weekly timetable
+    </p>
+
+    <div id="status" class="loading-message">
+        Loading teacher and student details...
     </div>
 
-    <!-- FILTERS -->
-
-    <div class="filters">
-
-        <select id="teacherFilter">
-            <option value="">All Teachers</option>
-        </select>
-
-        <select id="studentFilter">
-            <option value="">All Students</option>
-        </select>
-
-        <select id="subjectFilter">
-            <option value="">All Subjects</option>
-        </select>
-
-        <select id="dayFilter">
-            <option value="">All Days</option>
-            <option>Monday</option>
-            <option>Tuesday</option>
-            <option>Wednesday</option>
-            <option>Thursday</option>
-            <option>Friday</option>
-            <option>Saturday</option>
-            <option>Sunday</option>
-        </select>
-
-        <button type="button" onclick="applyFilters()">
-            <i class="fa fa-filter"></i> Apply Filter
-        </button>
-
-        <button type="button"
-                class="clear-btn"
-                onclick="clearFilters()">
-            Clear
-        </button>
-
-    </div>
-
-    <p id="status">Loading period summary...</p>
-
-    <!-- PERIOD CARDS -->
-
-    <div id="summaryCards">
-        <div class="no-data">Loading timetable mappings...</div>
-    </div>
+    <div id="teacherStudents"></div>
 
 </div>
 
 <script>
-"use strict";
-
 const API = "https://academy-backend-eatl.onrender.com";
 
-let allPeriods = [];
-let allRows = [];
+const token = sessionStorage.getItem("token");
+const role = sessionStorage.getItem("role");
 
-const token = localStorage.getItem("token");
+const output = document.getElementById("teacherStudents");
+const statusBox = document.getElementById("status");
 
+/* Load the existing sidebar */
+fetch("teacher-sidebar.html")
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Unable to load teacher sidebar.");
+        }
+        return response.text();
+    })
+    .then(html => {
+        document.getElementById("sidebar-container").innerHTML = html;
+    })
+    .catch(error => console.warn(error.message));
 
-// =====================================================
-// SIDEBAR NAVIGATION
-// =====================================================
-
-function go(page) {
-    window.location.href = page;
-}
-
-
-// =====================================================
-// SAFE HTML
-// =====================================================
-
+/* Safely display API values */
 function safe(value) {
-    return String(value ?? "-").replace(/[&<>"']/g, ch => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-    })[ch]);
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
 }
 
-
-// =====================================================
-// GET FIELD
-// =====================================================
-
-function getEntityId(entity, fields) {
-    if (!entity || typeof entity !== "object") {
-        return "";
-    }
+/* Read a value from alternative API field names */
+function firstValue(object, fields) {
+    if (!object || typeof object !== "object") return "";
 
     for (const field of fields) {
-        const value = entity[field];
+        const value = object[field];
 
-        if (
-            value !== undefined &&
-            value !== null &&
-            String(value).trim() !== ""
-        ) {
-            return String(value);
+        if (value !== undefined && value !== null && value !== "") {
+            if (typeof value === "object") {
+                if (value.$oid) return value.$oid;
+                if (value._id) return value._id;
+                if (value.name) return value.name;
+                if (value.fullName) return value.fullName;
+                continue;
+            }
+
+            return value;
         }
     }
 
     return "";
 }
 
-
-// =====================================================
-// DISPLAY TEACHER NAME + ID
-// =====================================================
-
-function teacherLabel(teacher) {
-    if (!teacher || typeof teacher !== "object") {
-        return {
-            name: "Unknown Teacher",
-            id: "ID unavailable"
-        };
-    }
-
-    return {
-        name:
-            teacher.name ||
-            teacher.fullName ||
-            teacher.teacherName ||
-            "Unknown Teacher",
-
-        id:
-            getEntityId(teacher, [
-                "teacherId",
-                "teacherID",
-                "teacher_id"
-            ]) || "ID unavailable"
-    };
+/* Get display name */
+function getName(person) {
+    return firstValue(person, [
+        "name",
+        "fullName",
+        "teacherName",
+        "studentName",
+        "username"
+    ]) || "Name unavailable";
 }
 
-
-// =====================================================
-// DISPLAY STUDENT NAME + ID
-// =====================================================
-
-function studentLabel(student) {
-    if (!student || typeof student !== "object") {
-        return {
-            name: "Unknown Student",
-            id: "ID unavailable"
-        };
-    }
-
-    return {
-        name:
-            student.name ||
-            student.fullName ||
-            student.studentName ||
-            "Unknown Student",
-
-        id:
-            getEntityId(student, [
-                "studentId",
-                "studentID",
-                "student_id"
-            ]) || "ID unavailable"
-    };
+/* Get teacher ID */
+function getTeacherId(teacher) {
+    return firstValue(teacher, [
+        "teacherId",
+        "teacherID",
+        "teacherCode",
+        "staffId",
+        "staffID"
+    ]) || "";
 }
 
+/* Get student ID */
+function getStudentId(student) {
+    return firstValue(student, [
+        "studentId",
+        "studentID",
+        "studentCode",
+        "admissionNumber",
+        "admissionNo"
+    ]) || "";
+}
 
-// =====================================================
-// FORMAT TIME
-// =====================================================
+/* Format time from HH:mm or HH:mm:ss */
+function formatTime(value) {
+    if (!value) return "-";
 
-function formatTime(time) {
-    if (!time) return "-";
+    const match = String(value).match(/^(\d{1,2}):(\d{2})/);
 
-    const match = String(time).match(
-        /^(\d{1,2}):(\d{2})(?::\d{2})?$/
-    );
-
-    if (!match) return safe(time);
+    if (!match) return safe(value);
 
     let hour = Number(match[1]);
     const minute = match[2];
-
-    if (hour > 23 || Number(minute) > 59) {
-        return safe(time);
-    }
-
     const suffix = hour >= 12 ? "PM" : "AM";
 
     hour = hour % 12 || 12;
 
-    return `${String(hour).padStart(2, "0")}:${minute} ${suffix}`;
+    return `${hour}:${minute} ${suffix}`;
 }
 
+/* Normalize populated student objects */
+function normalizeStudent(value) {
+    if (!value) return null;
 
-// =====================================================
-// NORMALIZE API RESPONSE
-// =====================================================
+    if (Array.isArray(value)) return null;
 
-function extractPeriods(result) {
-    if (Array.isArray(result)) return result;
-
-    if (Array.isArray(result?.data)) {
-        return result.data;
+    if (typeof value === "string") {
+        return {
+            _id: value,
+            name: "Student details unavailable"
+        };
     }
 
-    if (Array.isArray(result?.periods)) {
-        return result.periods;
-    }
+    if (typeof value !== "object") return null;
 
-    return [];
+    return value;
 }
 
+/* Group period records by teacher and student */
+function buildTeacherGroups(periods) {
+    const teacherGroups = new Map();
 
-// =====================================================
-// LOAD DATA FROM EXISTING BACKEND
-// =====================================================
+    periods.forEach(period => {
+        const teacher = period.teacher;
 
-async function loadPeriodSummary() {
-    const status = document.getElementById("status");
-    const cards = document.getElementById("summaryCards");
+        if (!teacher || typeof teacher !== "object") {
+            return;
+        }
 
-    try {
-        if (!token) {
-            throw new Error(
-                "Please log in to the Founder Panel first."
+        const teacherKey =
+            String(teacher._id || teacher.id || getTeacherId(teacher) ||
+            getName(teacher));
+
+        if (!teacherGroups.has(teacherKey)) {
+            teacherGroups.set(teacherKey, {
+                teacher,
+                students: new Map()
+            });
+        }
+
+        const group = teacherGroups.get(teacherKey);
+
+        /*
+         * Support either:
+         * period.assignments = [{ student: {...} }]
+         * or period.student = {...}
+         */
+        let assignments = [];
+
+        if (Array.isArray(period.assignments)) {
+            assignments = period.assignments;
+        } else if (Array.isArray(period.students)) {
+            assignments = period.students.map(student => ({ student }));
+        } else if (period.student) {
+            assignments = [{ student: period.student }];
+        }
+
+        assignments.forEach(assignment => {
+            const student = normalizeStudent(
+                assignment.student || assignment
             );
+
+            if (!student) return;
+
+            const studentKey = String(
+                student._id ||
+                student.id ||
+                getStudentId(student) ||
+                getName(student)
+            );
+
+            if (!group.students.has(studentKey)) {
+                group.students.set(studentKey, {
+                    student,
+                    periods: []
+                });
+            }
+
+            group.students.get(studentKey).periods.push({
+                subject:
+                    period.subject ||
+                    assignment.subject ||
+                    "-",
+
+                className:
+                    period.className ||
+                    assignment.className ||
+                    student.grade ||
+                    "-",
+
+                day:
+                    period.day ||
+                    assignment.day ||
+                    "-",
+
+                startTime:
+                    period.startTime ||
+                    assignment.startTime ||
+                    "",
+
+                endTime:
+                    period.endTime ||
+                    assignment.endTime ||
+                    ""
+            });
+        });
+    });
+
+    return [...teacherGroups.values()].sort((a, b) =>
+        getName(a.teacher).localeCompare(getName(b.teacher))
+    );
+}
+
+/* Display all teacher and student details */
+function renderTeacherStudents(periods) {
+    const groups = buildTeacherGroups(periods);
+
+    if (!groups.length) {
+        output.innerHTML = `
+            <div class="empty-message">
+                No teacher-student assignments were found.
+            </div>
+        `;
+
+        statusBox.textContent = "No assignments found.";
+        return;
+    }
+
+    let totalStudents = 0;
+    let totalPeriods = 0;
+
+    output.innerHTML = groups.map(group => {
+        const teacher = group.teacher;
+        const teacherName = getName(teacher);
+        const teacherId = getTeacherId(teacher);
+
+        const students = [...group.students.values()].sort((a, b) =>
+            getName(a.student).localeCompare(getName(b.student))
+        );
+
+        totalStudents += students.length;
+
+        const studentCards = students.map(item => {
+            const student = item.student;
+            const studentName = getName(student);
+            const studentId = getStudentId(student);
+
+            /*
+             * Remove duplicate timetable entries without
+             * merging different subjects or different times.
+             */
+            const uniquePeriods = [];
+            const seenPeriods = new Set();
+
+            item.periods.forEach(period => {
+                const key = [
+                    period.subject,
+                    period.className,
+                    period.day,
+                    period.startTime,
+                    period.endTime
+                ].join("|");
+
+                if (!seenPeriods.has(key)) {
+                    seenPeriods.add(key);
+                    uniquePeriods.push(period);
+                }
+            });
+
+            totalPeriods += uniquePeriods.length;
+
+            uniquePeriods.sort((a, b) => {
+                const dayOrder = [
+                    "Monday", "Tuesday", "Wednesday",
+                    "Thursday", "Friday", "Saturday", "Sunday"
+                ];
+
+                const dayDifference =
+                    dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day);
+
+                if (dayDifference !== 0) {
+                    return (
+                        (dayDifference < 0 ? 0 : dayDifference) -
+                        (dayDifference < 0 ? dayDifference : 0)
+                    );
+                }
+
+                return String(a.startTime).localeCompare(
+                    String(b.startTime)
+                );
+            });
+
+            const periodBadges = uniquePeriods.map(period => `
+                <span class="period-badge period-subject">
+                    📘 ${safe(period.subject)}
+                </span>
+
+                <span class="period-badge period-class">
+                    🎓 ${safe(period.className)}
+                </span>
+
+                <span class="period-badge period-day">
+                    📅 ${safe(period.day)}
+                </span>
+
+                <span class="period-badge period-time">
+                    🕒 ${formatTime(period.startTime)}
+                    - ${formatTime(period.endTime)}
+                </span>
+            `).join("");
+
+            return `
+                <article class="student-card">
+                    <h3 class="student-heading">
+                        <span>👤 ${safe(studentName)}</span>
+                        <span class="student-id">
+                            / ${safe(studentId || "Student ID unavailable")}
+                        </span>
+                    </h3>
+
+                    <div class="period-list">
+                        ${periodBadges || `
+                            <span class="period-badge">
+                                No timetable details available
+                            </span>
+                        `}
+                    </div>
+                </article>
+            `;
+        }).join("");
+
+        return `
+            <section class="teacher-section">
+                <header class="teacher-heading">
+                    <h2 class="teacher-name">
+                        👩‍🏫 ${safe(teacherName)}
+                        <span class="teacher-id">
+                            (${safe(teacherId || "Teacher ID unavailable")})
+                        </span>
+                    </h2>
+
+                    <span class="student-count">
+                        ${students.length} student(s)
+                    </span>
+                </header>
+
+                ${studentCards || `
+                    <div class="empty-message">
+                        No students assigned to this teacher.
+                    </div>
+                `}
+            </section>
+        `;
+    }).join("");
+
+    statusBox.textContent =
+        `${groups.length} teacher(s), ${totalStudents} student(s), ` +
+        `${totalPeriods} student-period mapping(s) loaded.`;
+}
+
+/* Fetch existing backend data */
+async function loadTeacherStudents() {
+    try {
+        if (!token || role !== "teacher") {
+            window.location.href = "teacher-login.html";
+            return;
         }
 
         const response = await fetch(
-            `${API}/api/founder/periodassignments`,
+            `${API}/api/teacher/all-period-assignments`,
             {
-                method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`
                 }
@@ -612,323 +593,32 @@ async function loadPeriodSummary() {
 
         if (!response.ok) {
             throw new Error(
-                result.message || "Unable to load period mappings."
+                result.message || "Unable to load student assignments."
             );
         }
 
-        allPeriods = extractPeriods(result);
-        allRows = [];
+        const periods = Array.isArray(result.data)
+            ? result.data
+            : [];
 
-        allPeriods.forEach(period => {
-            const assignments = Array.isArray(period.assignments)
-                ? period.assignments
-                : [];
-
-            assignments.forEach(assignment => {
-                const student = assignment.student;
-
-                if (!student || typeof student !== "object") {
-                    return;
-                }
-
-                allRows.push({
-                    teacher: period.teacher || null,
-                    student: student,
-
-                    subject:
-                        assignment.subject ||
-                        period.subject ||
-                        "-",
-
-                    className:
-                        assignment.className ||
-                        period.className ||
-                        student.grade ||
-                        "-",
-
-                    day:
-                        assignment.day ||
-                        period.day ||
-                        "-",
-
-                    startTime:
-                        assignment.startTime ||
-                        period.startTime ||
-                        "",
-
-                    endTime:
-                        assignment.endTime ||
-                        period.endTime ||
-                        ""
-                });
-            });
-        });
-
-        console.log(
-            "Period Summary API response:",
-            result
-        );
-
-        console.log(
-            "First period teacher object:",
-            allPeriods[0]?.teacher
-        );
-
-        populateFilters();
-        renderRows(allRows);
-
-        status.textContent =
-            `${allRows.length} student-period mapping(s) loaded.`;
+        renderTeacherStudents(periods);
 
     } catch (error) {
-        console.error("Period Summary error:", error);
+        console.error("Teacher students page error:", error);
 
-        status.textContent = error.message;
+        statusBox.textContent = "Unable to load student assignments.";
 
-        cards.innerHTML = `
-            <div class="no-data">
-                ${safe(error.message)}
+        output.innerHTML = `
+            <div class="error-message">
+                ${safe(error.message || "An unexpected error occurred.")}
+                <br><br>
+                Please check your login and backend connection.
             </div>
         `;
     }
 }
 
-
-// =====================================================
-// POPULATE FILTERS
-// =====================================================
-
-function populateFilters() {
-    const teacherSelect =
-        document.getElementById("teacherFilter");
-
-    const studentSelect =
-        document.getElementById("studentFilter");
-
-    const subjectSelect =
-        document.getElementById("subjectFilter");
-
-    const teachers = new Map();
-    const students = new Map();
-    const subjects = new Set();
-
-    allRows.forEach(row => {
-        const teacher = row.teacher;
-        const student = row.student;
-
-        const teacherId = getEntityId(teacher, ["_id"]);
-        const studentId = getEntityId(student, ["_id"]);
-
-        if (teacherId) {
-            const label = teacherLabel(teacher);
-
-            teachers.set(
-                teacherId,
-                `${label.name} (${label.id})`
-            );
-        }
-
-        if (studentId) {
-            const label = studentLabel(student);
-
-            students.set(
-                studentId,
-                `${label.name} (${label.id})`
-            );
-        }
-
-        if (row.subject && row.subject !== "-") {
-            subjects.add(row.subject);
-        }
-    });
-
-    teacherSelect.innerHTML =
-        '<option value="">All Teachers</option>';
-
-    studentSelect.innerHTML =
-        '<option value="">All Students</option>';
-
-    subjectSelect.innerHTML =
-        '<option value="">All Subjects</option>';
-
-    [...teachers.entries()]
-        .sort((a, b) => a[1].localeCompare(b[1]))
-        .forEach(([id, label]) => {
-            teacherSelect.add(new Option(label, id));
-        });
-
-    [...students.entries()]
-        .sort((a, b) => a[1].localeCompare(b[1]))
-        .forEach(([id, label]) => {
-            studentSelect.add(new Option(label, id));
-        });
-
-    [...subjects]
-        .sort((a, b) => a.localeCompare(b))
-        .forEach(subject => {
-            subjectSelect.add(new Option(subject, subject));
-        });
-}
-
-
-// =====================================================
-// RENDER CARD-BASED PERIOD SUMMARY
-// =====================================================
-
-function renderRows(rows) {
-    const container = document.getElementById("summaryCards");
-
-    if (!rows.length) {
-        container.innerHTML = `
-            <div class="no-data">
-                <i class="fa fa-calendar-xmark"></i>
-                <p>No matching period mappings found.</p>
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML = rows.map(row => {
-        const teacher = teacherLabel(row.teacher);
-        const student = studentLabel(row.student);
-
-        return `
-            <div class="period-card">
-
-                <div class="card-heading">
-
-                    <div>
-                        <div class="teacher-name">
-                            <i class="fa fa-chalkboard-user"></i>
-                            ${safe(teacher.name)}
-                            <span class="person-id">
-                                (${safe(teacher.id)})
-                            </span>
-                        </div>
-
-                        <div class="student-name">
-                            <i class="fa fa-user-graduate"></i>
-                            ${safe(student.name)}
-                            <span class="person-id">
-                                / ${safe(student.id)}
-                            </span>
-                        </div>
-                    </div>
-
-                    <span class="period-count">
-                        <i class="fa fa-calendar-check"></i>
-                        Period
-                    </span>
-
-                </div>
-
-                <div class="period-details">
-
-                    <span class="detail-pill subject-pill">
-                        <i class="fa fa-book"></i>
-                        ${safe(row.subject)}
-                    </span>
-
-                    <span class="detail-pill">
-                        <i class="fa fa-graduation-cap"></i>
-                        ${safe(row.className)}
-                    </span>
-
-                    <span class="detail-pill">
-                        <i class="fa fa-calendar-day"></i>
-                        ${safe(row.day)}
-                    </span>
-
-                    <span class="detail-pill time-pill">
-                        <i class="fa fa-clock"></i>
-                        ${formatTime(row.startTime)}
-                        - ${formatTime(row.endTime)}
-                    </span>
-
-                </div>
-
-            </div>
-        `;
-    }).join("");
-}
-
-
-// =====================================================
-// APPLY FILTERS
-// =====================================================
-
-function applyFilters() {
-    const teacherId =
-        document.getElementById("teacherFilter").value;
-
-    const studentId =
-        document.getElementById("studentFilter").value;
-
-    const subject =
-        document.getElementById("subjectFilter").value;
-
-    const day =
-        document.getElementById("dayFilter").value;
-
-    const filtered = allRows.filter(row => {
-        if (
-            teacherId &&
-            getEntityId(row.teacher, ["_id"]) !== teacherId
-        ) {
-            return false;
-        }
-
-        if (
-            studentId &&
-            getEntityId(row.student, ["_id"]) !== studentId
-        ) {
-            return false;
-        }
-
-        if (subject && row.subject !== subject) {
-            return false;
-        }
-
-        if (
-            day &&
-            String(row.day).toLowerCase() !== day.toLowerCase()
-        ) {
-            return false;
-        }
-
-        return true;
-    });
-
-    renderRows(filtered);
-
-    document.getElementById("status").textContent =
-        `${filtered.length} matching period mapping(s).`;
-}
-
-
-// =====================================================
-// CLEAR FILTERS
-// =====================================================
-
-function clearFilters() {
-    document.getElementById("teacherFilter").value = "";
-    document.getElementById("studentFilter").value = "";
-    document.getElementById("subjectFilter").value = "";
-    document.getElementById("dayFilter").value = "";
-
-    renderRows(allRows);
-
-    document.getElementById("status").textContent =
-        `${allRows.length} student-period mapping(s) loaded.`;
-}
-
-
-// =====================================================
-// START
-// =====================================================
-
-loadPeriodSummary();
-
+loadTeacherStudents();
 </script>
 
 </body>
