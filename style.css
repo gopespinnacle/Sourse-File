@@ -1805,3 +1805,52 @@ background: #2c5282;
 
 }
 }
+
+/* =========================================================
+   TIMETABLE FILTER
+========================================================= */
+
+.schedule-filter-box {
+    margin: 15px 0;
+    padding: 12px;
+    background: #f4f7fb;
+    border: 1px solid #d8dee8;
+    border-radius: 8px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.schedule-filter-box strong {
+    margin-right: 5px;
+    color: #1f3d63;
+}
+
+.schedule-filter-box select,
+.schedule-filter-box input {
+    padding: 8px 10px;
+    border: 1px solid #bbb;
+    border-radius: 5px;
+    font-size: 14px;
+    background: white;
+}
+
+.schedule-filter-box input {
+    width: 130px;
+}
+
+.schedule-filter-box button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 5px;
+    background: #1f4e79;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.schedule-filter-box button:hover {
+    opacity: 0.9;
+}
