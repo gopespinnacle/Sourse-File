@@ -404,7 +404,8 @@ this.socket.on(
                         message.sentAt,
 
                     direction:
-                        messageDirection
+                        messageDirection,
+                        deliveryStatus: message.deliveryStatus
 
                 });
                 
