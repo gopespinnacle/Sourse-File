@@ -192,6 +192,8 @@ this.socket.on(
 
 
         // Acknowledge delivery to the sender
+        
+        // Mark the incoming message as read
         if (
             this.socket &&
             this.socket.connected &&
@@ -199,13 +201,14 @@ this.socket.on(
             message.conversationId
         ) {
             this.socket.emit(
-                "gpa:primary:message:delivered",
+                "gpa:primary:message:read",
                 {
                     messageId: message.id,
                     conversationId: message.conversationId
                 }
             );
         }
+
 
 
     }
