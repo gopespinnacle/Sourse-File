@@ -283,23 +283,18 @@ function getName(person, fallback) {
 }
 
 
+
 function teacherLabel(teacher) {
     if (!teacher || typeof teacher !== "object") {
         return "Unknown Teacher (ID unavailable)";
     }
 
-    const name =
-        teacher.name ||
-        teacher.fullName ||
-        teacher.username ||
-        "Unknown Teacher";
+    const name = getName(teacher, "Unknown Teacher");
 
     const id =
-        teacher.teacherId ||
-        teacher.teacherID ||
-        teacher.employeeId ||
-        teacher.employeeID ||
-        teacher.user?.teacherId ||
+        getTeacherId(teacher) ||
+        getTeacherId(teacher.user) ||
+        getTeacherId(teacher.profile) ||
         "";
 
     return `${name} (${id || "ID unavailable"})`;
@@ -310,22 +305,17 @@ function studentLabel(student) {
         return "Unknown Student (ID unavailable)";
     }
 
-    const name =
-        student.name ||
-        student.fullName ||
-        student.username ||
-        "Unknown Student";
+    const name = getName(student, "Unknown Student");
 
     const id =
-        student.studentId ||
-        student.studentID ||
-        student.admissionNumber ||
-        student.admissionNo ||
-        student.user?.studentId ||
+        getStudentId(student) ||
+        getStudentId(student.user) ||
+        getStudentId(student.profile) ||
         "";
 
     return `${name} (${id || "ID unavailable"})`;
 }
+
 
 
 function formatTime(time) {
