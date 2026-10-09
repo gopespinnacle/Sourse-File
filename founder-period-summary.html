@@ -282,23 +282,51 @@ function getName(person, fallback) {
            fallback;
 }
 
+
 function teacherLabel(teacher) {
-    if (!teacher) return "Unknown Teacher (ID unavailable)";
+    if (!teacher || typeof teacher !== "object") {
+        return "Unknown Teacher (ID unavailable)";
+    }
 
-    const name = teacher.name || "Unknown Teacher";
-    const id = teacher.teacherId || teacher.id || "";
+    const name =
+        teacher.name ||
+        teacher.fullName ||
+        teacher.username ||
+        "Unknown Teacher";
 
-    return id ? `${name} (${id})` : `${name} (ID unavailable)`;
+    const id =
+        teacher.teacherId ||
+        teacher.teacherID ||
+        teacher.employeeId ||
+        teacher.employeeID ||
+        teacher.user?.teacherId ||
+        "";
+
+    return `${name} (${id || "ID unavailable"})`;
 }
 
 function studentLabel(student) {
-    if (!student) return "Unknown Student (ID unavailable)";
+    if (!student || typeof student !== "object") {
+        return "Unknown Student (ID unavailable)";
+    }
 
-    const name = student.name || "Unknown Student";
-    const id = student.studentId || student.id || "";
+    const name =
+        student.name ||
+        student.fullName ||
+        student.username ||
+        "Unknown Student";
 
-    return id ? `${name} (${id})` : `${name} (ID unavailable)`;
+    const id =
+        student.studentId ||
+        student.studentID ||
+        student.admissionNumber ||
+        student.admissionNo ||
+        student.user?.studentId ||
+        "";
+
+    return `${name} (${id || "ID unavailable"})`;
 }
+
 
 function formatTime(time) {
     if (!time) return "-";
