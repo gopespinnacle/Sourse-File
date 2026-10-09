@@ -260,6 +260,8 @@ function getTeacherId(teacher) {
            teacher.teacherID ||
            teacher.employeeId ||
            teacher.employeeID ||
+           teacher.user?.teacherId ||
+           teacher.profile?.teacherId ||
            "";
 }
 
@@ -290,14 +292,11 @@ function teacherLabel(teacher) {
     }
 
     const name = getName(teacher, "Unknown Teacher");
+    const id = getTeacherId(teacher);
 
-    const id =
-        getTeacherId(teacher) ||
-        getTeacherId(teacher.user) ||
-        getTeacherId(teacher.profile) ||
-        "";
-
-    return `${name} (${id || "ID unavailable"})`;
+    return id
+        ? `${name} (${id})`
+        : `${name} (ID unavailable)`;
 }
 
 function studentLabel(student) {
