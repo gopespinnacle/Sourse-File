@@ -283,17 +283,21 @@ function getName(person, fallback) {
 }
 
 function teacherLabel(teacher) {
-    const name = getName(teacher, "Unknown Teacher");
-    const id = getTeacherId(teacher);
+    if (!teacher) return "Unknown Teacher (ID unavailable)";
 
-    return id ? `${name} (${id})` : name;
+    const name = teacher.name || "Unknown Teacher";
+    const id = teacher.teacherId || teacher.id || "";
+
+    return id ? `${name} (${id})` : `${name} (ID unavailable)`;
 }
 
 function studentLabel(student) {
-    const name = getName(student, "Unknown Student");
-    const id = getStudentId(student);
+    if (!student) return "Unknown Student (ID unavailable)";
 
-    return id ? `${name} (${id})` : name;
+    const name = student.name || "Unknown Student";
+    const id = student.studentId || student.id || "";
+
+    return id ? `${name} (${id})` : `${name} (ID unavailable)`;
 }
 
 function formatTime(time) {
