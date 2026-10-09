@@ -190,6 +190,24 @@ this.socket.on(
 
 });
 
+
+        // Acknowledge delivery to the sender
+        if (
+            this.socket &&
+            this.socket.connected &&
+            message.id &&
+            message.conversationId
+        ) {
+            this.socket.emit(
+                "gpa:primary:message:delivered",
+                {
+                    messageId: message.id,
+                    conversationId: message.conversationId
+                }
+            );
+        }
+
+
     }
 );
 

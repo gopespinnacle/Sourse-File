@@ -421,6 +421,53 @@ updateMessageStatus(messageId, deliveryStatus) {
 }
 
 
+updateMessageStatus(messageId, deliveryStatus) {
+
+    if (!messageId) return;
+
+    const rows = this.conversation.querySelectorAll(
+        ".gpa-primary-message-row"
+    );
+
+    rows.forEach((row) => {
+
+        if (row.dataset.messageId !== String(messageId)) {
+            return;
+        }
+
+        const tick = row.querySelector(
+            ".gpa-primary-message-status"
+        );
+
+        if (!tick) return;
+
+        tick.classList.remove("delivered", "read");
+
+        if (deliveryStatus === "read") {
+
+            tick.textContent = "✓✓";
+            tick.classList.add("read");
+            tick.setAttribute("aria-label", "Read");
+
+        } else if (deliveryStatus === "delivered") {
+
+            tick.textContent = "✓✓";
+            tick.classList.add("delivered");
+            tick.setAttribute("aria-label", "Delivered");
+
+        } else {
+
+            tick.textContent = "✓";
+            tick.setAttribute("aria-label", "Sent");
+
+        }
+
+        tick.dataset.status = deliveryStatus;
+    });
+}
+
+
+
 
         // ========================================================
         // MESSAGE ID
