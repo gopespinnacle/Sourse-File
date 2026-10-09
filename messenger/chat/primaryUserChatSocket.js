@@ -407,6 +407,26 @@ this.socket.on(
                         messageDirection
 
                 });
+                
+                // Mark previously received messages as read
+                // when this conversation's history is opened.
+                if (
+                    messageDirection === "incoming" &&
+                    this.socket &&
+                    this.socket.connected &&
+                    message.messageId &&
+                    window.GPAMessengerConversationId
+                ) {
+                    this.socket.emit(
+                        "gpa:primary:message:read",
+                        {
+                            messageId: message.messageId,
+                            conversationId:
+                                window.GPAMessengerConversationId
+                        }
+                    );
+                }
+
 
             }
         );
