@@ -558,7 +558,7 @@ function renderScheduleTable(schedules) {
 
         tbody.innerHTML = `
             <tr>
-                <td colspan="9"
+                <td colspan="10"
                     style="
                         text-align:center;
                         padding:20px;
@@ -576,67 +576,23 @@ function renderScheduleTable(schedules) {
     schedules.forEach(s => {
 
         tbody.innerHTML += `
-            <tr>
+            
+<tr>
+    <td>${s.teacher ? s.teacher.name : "Unknown"}</td>
+    <td>${getTeacherId(s)}</td>
+    <td>${s.day || "-"}</td>
+    <td>${s.className || "-"}</td>
+    <td>${s.subject || "-"}</td>
+    <td>${s.eca || "-"}</td>
+    <td>${s.language || "-"}</td>
+    <td>${convertTo12Hour(s.startTime)}</td>
+    <td>${convertTo12Hour(s.endTime)}</td>
+    <td>
+        <button onclick="editSchedule('${s._id}')">Edit</button>
+        <button onclick="deleteSchedule('${s._id}')">Delete</button>
+    </td>
+</tr>
 
-               <td>
-    ${s.teacher ? s.teacher.name : "Unknown"}
-</td>
-
-<td>
-    ${getTeacherId(s)}
-</td>
-
-<td>
-    ${s.day}
-</td>
-
-<td>
-    ${s.className}
-</td>
-
-                <td>
-                    ${s.day}
-                </td>
-
-                <td>
-                    ${s.className}
-                </td>
-
-                <td>
-                    ${s.subject || "-"}
-                </td>
-
-                <td>
-                    ${s.eca || "-"}
-                </td>
-
-                <td>
-                    ${s.language || "-"}
-                </td>
-
-                <td>
-                    ${convertTo12Hour(s.startTime)}
-                </td>
-
-                <td>
-                    ${convertTo12Hour(s.endTime)}
-                </td>
-
-                <td>
-
-                    <button
-                        onclick="editSchedule('${s._id}')">
-                        Edit
-                    </button>
-
-                    <button
-                        onclick="deleteSchedule('${s._id}')">
-                        Delete
-                    </button>
-
-                </td>
-
-            </tr>
         `;
 
     });
