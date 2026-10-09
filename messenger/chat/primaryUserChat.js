@@ -265,6 +265,10 @@
             messageRow.className =
                 "gpa-primary-message-row";
 
+                if (message.id) {
+    messageRow.dataset.messageId = message.id;
+}
+
 
             // ====================================================
             // MESSAGE DIRECTION
@@ -329,8 +333,32 @@
              * JavaScript into the conversation.
              */
 
-            messageBubble.textContent =
-                message.text;
+            
+const messageText = document.createElement("span");
+messageText.textContent = message.text || "";
+messageBubble.appendChild(messageText);
+
+if (message.direction !== "incoming") {
+    const statusTick = document.createElement("span");
+
+    statusTick.className = "gpa-primary-message-status";
+    statusTick.textContent = "✓";
+    statusTick.dataset.status = message.deliveryStatus || "sent";
+    statusTick.setAttribute("aria-label", "Sent");
+
+    if (message.deliveryStatus === "delivered" ||
+        message.deliveryStatus === "read") {
+        statusTick.textContent = "✓✓";
+        statusTick.classList.add(message.deliveryStatus);
+        statusTick.setAttribute(
+            "aria-label",
+            message.deliveryStatus === "read" ? "Read" : "Delivered"
+        );
+    }
+
+    messageBubble.appendChild(statusTick);
+}
+
 
 
             // ----------------------------------------------------
@@ -358,6 +386,40 @@
             this.conversation.scrollTop =
                 this.conversation.scrollHeight;
         }
+
+        
+updateMessageStatus(messageId, deliveryStatus) {
+    if (!messageId) return;
+
+    const rows = this.conversation.querySelectorAll(
+        ".gpa-primary-message-row"
+    );
+
+    rows.forEach((row) => {
+        if (row.dataset.messageId !== String(messageId)) return;
+
+        const tick = row.querySelector(".gpa-primary-message-status");
+        if (!tick) return;
+
+        tick.classList.remove("delivered", "read");
+
+        if (deliveryStatus === "read") {
+            tick.textContent = "✓✓";
+            tick.classList.add("read");
+            tick.setAttribute("aria-label", "Read");
+        } else if (deliveryStatus === "delivered") {
+            tick.textContent = "✓✓";
+            tick.classList.add("delivered");
+            tick.setAttribute("aria-label", "Delivered");
+        } else {
+            tick.textContent = "✓";
+            tick.setAttribute("aria-label", "Sent");
+        }
+
+        tick.dataset.status = deliveryStatus;
+    });
+}
+
 
 
         // ========================================================

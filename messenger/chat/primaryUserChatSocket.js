@@ -73,6 +73,8 @@
 
             this.socket.on(
                 "gpa:primary:message:received",
+
+                
                 (message) => {
 
                     console.log(
@@ -83,6 +85,33 @@
 
                 }
             );
+
+            
+/* Update outgoing message ticks when backend confirms status */
+this.socket.on(
+    "gpa:primary:message:status",
+    (receipt) => {
+        if (!receipt) return;
+
+        if (
+            String(receipt.conversationId) !==
+            String(window.GPAMessengerConversationId)
+        ) {
+            return;
+        }
+
+        if (
+            window.GPAPrimaryUserChat &&
+            typeof window.GPAPrimaryUserChat.updateMessageStatus === "function"
+        ) {
+            window.GPAPrimaryUserChat.updateMessageStatus(
+                receipt.messageId,
+                receipt.deliveryStatus
+            );
+        }
+    }
+);
+
 
             // ========================================================
 // REAL-TIME CONVERSATION MESSAGE
