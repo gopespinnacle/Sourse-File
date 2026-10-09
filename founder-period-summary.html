@@ -1,85 +1,283 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Period Summary | Founder Panel</title>
+
+<title>Period Summary | Gopes Pinnacle Academy</title>
+
 <link rel="stylesheet" href="dashboard.css">
 
+<link rel="stylesheet"
+ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
 
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: #f4f6fa;
+    background: #f7f8fc;
     color: #172033;
 }
+
+/* SIDEBAR */
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 180px;
+    height: 100vh;
+    overflow-y: auto;
+    background: #1e2b3b;
+    color: white;
+    padding: 18px 12px;
+    z-index: 1000;
+}
+
+.sidebar h2 {
+    font-size: 17px;
+    margin: 0 0 24px;
+    padding: 0 4px 16px;
+    border-bottom: 1px solid #435064;
+}
+
+.sidebar ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.sidebar li {
+    padding: 13px 8px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 13px;
+}
+
+.sidebar li:hover,
+.sidebar li.active {
+    background: #304761;
+}
+
+.sidebar i {
+    width: 19px;
+    margin-right: 3px;
+}
+
+/* MAIN CONTENT */
 
 .main-content {
     margin-left: 180px;
     padding: 24px;
+    min-height: 100vh;
 }
 
-h2 { margin-top: 0; }
+.page-heading {
+    margin-bottom: 20px;
+}
+
+.page-heading h2 {
+    margin: 0 0 7px;
+    font-size: 23px;
+}
+
+.page-heading p {
+    margin: 0;
+    font-size: 13px;
+    color: #647084;
+}
+
+/* FILTERS */
 
 .filters {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin: 18px 0;
-}
-
-input, select, button {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 18px;
+    padding: 14px;
     background: white;
+    border-radius: 9px;
+    box-shadow: 0 2px 7px rgba(0,0,0,.06);
 }
 
-button {
+.filters select,
+.filters input,
+.filters button {
+    padding: 10px;
+    border: 1px solid #d8deea;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.filters select {
+    min-width: 150px;
+    max-width: 100%;
+}
+
+.filters button {
     cursor: pointer;
     background: #24466e;
     color: white;
     border: none;
 }
 
-.table-wrap {
-    overflow-x: auto;
-    background: white;
-    border-radius: 8px;
+.filters button:hover {
+    background: #17375e;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 1050px;
+.filters .clear-btn {
+    background: #586273;
 }
 
-th, td {
-    padding: 12px 10px;
-    border: 1px solid #ddd;
-    text-align: left;
+/* STATUS */
+
+#status {
+    margin: 12px 2px;
     font-size: 13px;
-    line-height: 1.5;
+    color: #687386;
 }
 
-th {
-    background: #edf1f7;
-    color: #17375e;
+/* PERIOD CARDS */
+
+#summaryCards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.period-card {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 7px rgba(0,0,0,.08);
+    border: 1px solid #edf0f5;
+    transition: box-shadow .2s;
+}
+
+.period-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,.10);
+}
+
+.card-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 11px;
+}
+
+.teacher-name {
+    font-size: 15px;
+    font-weight: bold;
+    color: #18375b;
+    margin-bottom: 5px;
+}
+
+.student-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #26364b;
+    margin-bottom: 5px;
+}
+
+.person-id {
+    font-size: 12px;
+    font-weight: normal;
+    color: #647084;
+}
+
+.period-count {
+    background: #eef2ff;
+    color: #334a85;
+    border-radius: 20px;
+    padding: 5px 9px;
+    font-size: 11px;
     white-space: nowrap;
 }
 
-#status {
-    margin: 12px 0;
-    color: #555;
+/* DETAIL PILLS */
+
+.period-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.detail-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+    border-radius: 5px;
+    background: #eeeeff;
+    color: #26364b;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.detail-pill i {
+    color: #365a91;
+}
+
+.subject-pill {
+    background: #e8f3ff;
+}
+
+.time-pill {
+    background: #edf0ff;
+}
+
+.no-data {
+    background: white;
+    border-radius: 9px;
+    padding: 30px 15px;
+    text-align: center;
+    color: #70798a;
+    box-shadow: 0 2px 7px rgba(0,0,0,.05);
 }
 
 @media (max-width: 700px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+    .sidebar ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .sidebar li {
+        padding: 9px;
+    }
+
     .main-content {
         margin-left: 0;
         padding: 14px;
+    }
+
+    .filters {
+        padding: 10px;
+    }
+
+    .filters select,
+    .filters input,
+    .filters button {
+        width: 100%;
+    }
+
+    .period-card {
+        padding: 12px;
     }
 }
 </style>
@@ -87,13 +285,94 @@ th {
 
 <body>
 
-<!-- Add this page to your existing Founder sidebar -->
+<!-- FOUNDER SIDEBAR -->
+
+<div class="sidebar">
+
+    <h2>
+        <i class="fa fa-graduation-cap"></i>
+        Founder Panel
+    </h2>
+
+    <ul>
+
+        <li onclick="go('founder-dashboard.html')">
+            <i class="fa fa-chart-line"></i> Dashboard
+        </li>
+
+        <li onclick="go('founder-students.html')">
+            <i class="fa fa-users"></i> Students
+        </li>
+
+        <li onclick="go('founder-teachers.html')">
+            <i class="fa fa-chalkboard-teacher"></i> Teachers
+        </li>
+
+        <li onclick="go('founder-teacher-permissions.html')">
+            <i class="fa fa-user-shield"></i> Teacher Permissions
+        </li>
+
+        <li onclick="go('founder-add-teacher.html')">
+            <i class="fa fa-user-plus"></i> Add Teacher
+        </li>
+
+        <li onclick="go('founder-teacher-student-map.html')">
+            <i class="fa fa-link"></i> Teacher Student Assigned
+        </li>
+
+        <li onclick="go('founder-attendance.html')">
+            <i class="fa fa-calendar-check"></i> Attendance
+        </li>
+
+        <li onclick="go('founder-teacher-attendance.html')">
+            <i class="fa fa-user-check"></i> Teacher Attendance
+        </li>
+
+        <li onclick="go('founder-student-homework-tracking.html')">
+            <i class="fa fa-book"></i> Student Homework Tracking
+        </li>
+
+        <li onclick="go('founder-fees.html')">
+            <i class="fa fa-money-bill"></i> Fees
+        </li>
+
+        <li onclick="go('founder-salary.html')">
+            <i class="fa fa-wallet"></i> Teacher Salary
+        </li>
+
+        <li onclick="go('founder-compensation.html')">
+            <i class="fa fa-clock"></i> Compensation
+        </li>
+
+        <li onclick="go('founder-schedule.html')">
+            <i class="fa fa-calendar-alt"></i> Schedule
+        </li>
+
+        <li class="active">
+            <i class="fa fa-list"></i> Period Summary
+        </li>
+
+        <li onclick="go('founder-messages.html')">
+            <i class="fa fa-envelope"></i> Messages
+        </li>
+
+    </ul>
+
+</div>
+
+<!-- MAIN CONTENT -->
+
 <div class="main-content">
 
-    <h2>Period Summary</h2>
-    <p>Teacher – Student – Subject – Timetable Mapping</p>
+    <div class="page-heading">
+        <h2>Period Summary</h2>
+        <p>Teacher – Student – Subject – Timetable Mapping</p>
+    </div>
+
+    <!-- FILTERS -->
 
     <div class="filters">
+
         <select id="teacherFilter">
             <option value="">All Teachers</option>
         </select>
@@ -106,42 +385,62 @@ th {
             <option value="">All Subjects</option>
         </select>
 
-        <button onclick="applyFilters()">Apply Filter</button>
-        <button onclick="clearFilters()">Clear</button>
+        <select id="dayFilter">
+            <option value="">All Days</option>
+            <option>Monday</option>
+            <option>Tuesday</option>
+            <option>Wednesday</option>
+            <option>Thursday</option>
+            <option>Friday</option>
+            <option>Saturday</option>
+            <option>Sunday</option>
+        </select>
+
+        <button type="button" onclick="applyFilters()">
+            <i class="fa fa-filter"></i> Apply Filter
+        </button>
+
+        <button type="button"
+                class="clear-btn"
+                onclick="clearFilters()">
+            Clear
+        </button>
+
     </div>
 
     <p id="status">Loading period summary...</p>
 
-    <div class="table-wrap">
-        <table>
-            <thead>
-                <tr>
-                    <th>Teacher Name (Teacher ID)</th>
-                    <th>Student Name (Student ID)</th>
-                    <th>Subject</th>
-                    <th>Class</th>
-                    <th>Day</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                </tr>
-            </thead>
-            <tbody id="summaryBody">
-                <tr>
-                    <td colspan="7">Loading...</td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- PERIOD CARDS -->
+
+    <div id="summaryCards">
+        <div class="no-data">Loading timetable mappings...</div>
     </div>
 
 </div>
 
 <script>
+"use strict";
+
 const API = "https://academy-backend-eatl.onrender.com";
 
 let allPeriods = [];
 let allRows = [];
 
 const token = localStorage.getItem("token");
+
+
+// =====================================================
+// SIDEBAR NAVIGATION
+// =====================================================
+
+function go(page) {
+    window.location.href = page;
+}
+
+
+// =====================================================
+// SAFE HTML
+// =====================================================
 
 function safe(value) {
     return String(value ?? "-").replace(/[&<>"']/g, ch => ({
@@ -153,14 +452,110 @@ function safe(value) {
     })[ch]);
 }
 
+
+// =====================================================
+// GET FIELD
+// =====================================================
+
+function getEntityId(entity, fields) {
+    if (!entity || typeof entity !== "object") {
+        return "";
+    }
+
+    for (const field of fields) {
+        const value = entity[field];
+
+        if (
+            value !== undefined &&
+            value !== null &&
+            String(value).trim() !== ""
+        ) {
+            return String(value);
+        }
+    }
+
+    return "";
+}
+
+
+// =====================================================
+// DISPLAY TEACHER NAME + ID
+// =====================================================
+
+function teacherLabel(teacher) {
+    if (!teacher || typeof teacher !== "object") {
+        return {
+            name: "Unknown Teacher",
+            id: "ID unavailable"
+        };
+    }
+
+    return {
+        name:
+            teacher.name ||
+            teacher.fullName ||
+            teacher.teacherName ||
+            "Unknown Teacher",
+
+        id:
+            getEntityId(teacher, [
+                "teacherId",
+                "teacherID",
+                "teacher_id"
+            ]) || "ID unavailable"
+    };
+}
+
+
+// =====================================================
+// DISPLAY STUDENT NAME + ID
+// =====================================================
+
+function studentLabel(student) {
+    if (!student || typeof student !== "object") {
+        return {
+            name: "Unknown Student",
+            id: "ID unavailable"
+        };
+    }
+
+    return {
+        name:
+            student.name ||
+            student.fullName ||
+            student.studentName ||
+            "Unknown Student",
+
+        id:
+            getEntityId(student, [
+                "studentId",
+                "studentID",
+                "student_id"
+            ]) || "ID unavailable"
+    };
+}
+
+
+// =====================================================
+// FORMAT TIME
+// =====================================================
+
 function formatTime(time) {
     if (!time) return "-";
 
-    const parts = time.split(":");
-    if (parts.length < 2) return safe(time);
+    const match = String(time).match(
+        /^(\d{1,2}):(\d{2})(?::\d{2})?$/
+    );
 
-    let hour = Number(parts[0]);
-    const minute = parts[1];
+    if (!match) return safe(time);
+
+    let hour = Number(match[1]);
+    const minute = match[2];
+
+    if (hour > 23 || Number(minute) > 59) {
+        return safe(time);
+    }
+
     const suffix = hour >= 12 ? "PM" : "AM";
 
     hour = hour % 12 || 12;
@@ -168,30 +563,45 @@ function formatTime(time) {
     return `${String(hour).padStart(2, "0")}:${minute} ${suffix}`;
 }
 
-function teacherLabel(teacher) {
-    if (!teacher) return "Unknown Teacher (ID unavailable)";
 
-    return `${teacher.name || "Unknown Teacher"} (${teacher.teacherId || "ID unavailable"})`;
+// =====================================================
+// NORMALIZE API RESPONSE
+// =====================================================
+
+function extractPeriods(result) {
+    if (Array.isArray(result)) return result;
+
+    if (Array.isArray(result?.data)) {
+        return result.data;
+    }
+
+    if (Array.isArray(result?.periods)) {
+        return result.periods;
+    }
+
+    return [];
 }
 
-function studentLabel(student) {
-    if (!student) return "Unknown Student (ID unavailable)";
 
-    return `${student.name || "Unknown Student"} (${student.studentId || "ID unavailable"})`;
-}
+// =====================================================
+// LOAD DATA FROM EXISTING BACKEND
+// =====================================================
 
 async function loadPeriodSummary() {
     const status = document.getElementById("status");
-    const tbody = document.getElementById("summaryBody");
+    const cards = document.getElementById("summaryCards");
 
     try {
         if (!token) {
-            throw new Error("Please log in to the Founder Panel first.");
+            throw new Error(
+                "Please log in to the Founder Panel first."
+            );
         }
 
         const response = await fetch(
             `${API}/api/founder/periodassignments`,
             {
+                method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`
                 }
@@ -201,60 +611,130 @@ async function loadPeriodSummary() {
         const result = await response.json();
 
         if (!response.ok) {
-            throw new Error(result.message || "Unable to load periods.");
+            throw new Error(
+                result.message || "Unable to load period mappings."
+            );
         }
 
-        allPeriods = result.data || [];
+        allPeriods = extractPeriods(result);
         allRows = [];
 
         allPeriods.forEach(period => {
-            (period.assignments || []).forEach(assignment => {
+            const assignments = Array.isArray(period.assignments)
+                ? period.assignments
+                : [];
+
+            assignments.forEach(assignment => {
                 const student = assignment.student;
 
-                if (!student) return;
+                if (!student || typeof student !== "object") {
+                    return;
+                }
 
                 allRows.push({
-                    teacher: period.teacher,
-                    student,
-                    subject: period.subject || "-",
-                    className: period.className || student.grade || "-",
-                    day: period.day || "-",
-                    startTime: period.startTime || "",
-                    endTime: period.endTime || ""
+                    teacher: period.teacher || null,
+                    student: student,
+
+                    subject:
+                        assignment.subject ||
+                        period.subject ||
+                        "-",
+
+                    className:
+                        assignment.className ||
+                        period.className ||
+                        student.grade ||
+                        "-",
+
+                    day:
+                        assignment.day ||
+                        period.day ||
+                        "-",
+
+                    startTime:
+                        assignment.startTime ||
+                        period.startTime ||
+                        "",
+
+                    endTime:
+                        assignment.endTime ||
+                        period.endTime ||
+                        ""
                 });
             });
         });
 
+        console.log(
+            "Period Summary API response:",
+            result
+        );
+
+        console.log(
+            "First period teacher object:",
+            allPeriods[0]?.teacher
+        );
+
         populateFilters();
         renderRows(allRows);
 
-        status.textContent = `${allRows.length} student-period mapping(s) loaded.`;
+        status.textContent =
+            `${allRows.length} student-period mapping(s) loaded.`;
 
     } catch (error) {
         console.error("Period Summary error:", error);
 
         status.textContent = error.message;
-        tbody.innerHTML =
-            `<tr><td colspan="7">Unable to load period summary. Check the backend response.</td></tr>`;
+
+        cards.innerHTML = `
+            <div class="no-data">
+                ${safe(error.message)}
+            </div>
+        `;
     }
 }
 
+
+// =====================================================
+// POPULATE FILTERS
+// =====================================================
+
 function populateFilters() {
-    const teacherSelect = document.getElementById("teacherFilter");
-    const studentSelect = document.getElementById("studentFilter");
-    const subjectSelect = document.getElementById("subjectFilter");
+    const teacherSelect =
+        document.getElementById("teacherFilter");
+
+    const studentSelect =
+        document.getElementById("studentFilter");
+
+    const subjectSelect =
+        document.getElementById("subjectFilter");
 
     const teachers = new Map();
     const students = new Map();
     const subjects = new Set();
 
     allRows.forEach(row => {
-        if (row.teacher?._id) {
-            teachers.set(row.teacher._id, teacherLabel(row.teacher));
+        const teacher = row.teacher;
+        const student = row.student;
+
+        const teacherId = getEntityId(teacher, ["_id"]);
+        const studentId = getEntityId(student, ["_id"]);
+
+        if (teacherId) {
+            const label = teacherLabel(teacher);
+
+            teachers.set(
+                teacherId,
+                `${label.name} (${label.id})`
+            );
         }
 
-        if (row.student?._id) {
-            students.set(row.student._id, studentLabel(row.student));
+        if (studentId) {
+            const label = studentLabel(student);
+
+            students.set(
+                studentId,
+                `${label.name} (${label.id})`
+            );
         }
 
         if (row.subject && row.subject !== "-") {
@@ -262,9 +742,14 @@ function populateFilters() {
         }
     });
 
-    teacherSelect.innerHTML = '<option value="">All Teachers</option>';
-    studentSelect.innerHTML = '<option value="">All Students</option>';
-    subjectSelect.innerHTML = '<option value="">All Subjects</option>';
+    teacherSelect.innerHTML =
+        '<option value="">All Teachers</option>';
+
+    studentSelect.innerHTML =
+        '<option value="">All Students</option>';
+
+    subjectSelect.innerHTML =
+        '<option value="">All Subjects</option>';
 
     [...teachers.entries()]
         .sort((a, b) => a[1].localeCompare(b[1]))
@@ -278,42 +763,138 @@ function populateFilters() {
             studentSelect.add(new Option(label, id));
         });
 
-    [...subjects].sort().forEach(subject => {
-        subjectSelect.add(new Option(subject, subject));
-    });
+    [...subjects]
+        .sort((a, b) => a.localeCompare(b))
+        .forEach(subject => {
+            subjectSelect.add(new Option(subject, subject));
+        });
 }
 
+
+// =====================================================
+// RENDER CARD-BASED PERIOD SUMMARY
+// =====================================================
+
 function renderRows(rows) {
-    const tbody = document.getElementById("summaryBody");
+    const container = document.getElementById("summaryCards");
 
     if (!rows.length) {
-        tbody.innerHTML =
-            '<tr><td colspan="7">No matching period mappings found.</td></tr>';
+        container.innerHTML = `
+            <div class="no-data">
+                <i class="fa fa-calendar-xmark"></i>
+                <p>No matching period mappings found.</p>
+            </div>
+        `;
         return;
     }
 
-    tbody.innerHTML = rows.map(row => `
-        <tr>
-            <td>${safe(teacherLabel(row.teacher))}</td>
-            <td>${safe(studentLabel(row.student))}</td>
-            <td>${safe(row.subject)}</td>
-            <td>${safe(row.className)}</td>
-            <td>${safe(row.day)}</td>
-            <td>${formatTime(row.startTime)}</td>
-            <td>${formatTime(row.endTime)}</td>
-        </tr>
-    `).join("");
+    container.innerHTML = rows.map(row => {
+        const teacher = teacherLabel(row.teacher);
+        const student = studentLabel(row.student);
+
+        return `
+            <div class="period-card">
+
+                <div class="card-heading">
+
+                    <div>
+                        <div class="teacher-name">
+                            <i class="fa fa-chalkboard-user"></i>
+                            ${safe(teacher.name)}
+                            <span class="person-id">
+                                (${safe(teacher.id)})
+                            </span>
+                        </div>
+
+                        <div class="student-name">
+                            <i class="fa fa-user-graduate"></i>
+                            ${safe(student.name)}
+                            <span class="person-id">
+                                / ${safe(student.id)}
+                            </span>
+                        </div>
+                    </div>
+
+                    <span class="period-count">
+                        <i class="fa fa-calendar-check"></i>
+                        Period
+                    </span>
+
+                </div>
+
+                <div class="period-details">
+
+                    <span class="detail-pill subject-pill">
+                        <i class="fa fa-book"></i>
+                        ${safe(row.subject)}
+                    </span>
+
+                    <span class="detail-pill">
+                        <i class="fa fa-graduation-cap"></i>
+                        ${safe(row.className)}
+                    </span>
+
+                    <span class="detail-pill">
+                        <i class="fa fa-calendar-day"></i>
+                        ${safe(row.day)}
+                    </span>
+
+                    <span class="detail-pill time-pill">
+                        <i class="fa fa-clock"></i>
+                        ${formatTime(row.startTime)}
+                        - ${formatTime(row.endTime)}
+                    </span>
+
+                </div>
+
+            </div>
+        `;
+    }).join("");
 }
 
+
+// =====================================================
+// APPLY FILTERS
+// =====================================================
+
 function applyFilters() {
-    const teacherId = document.getElementById("teacherFilter").value;
-    const studentId = document.getElementById("studentFilter").value;
-    const subject = document.getElementById("subjectFilter").value;
+    const teacherId =
+        document.getElementById("teacherFilter").value;
+
+    const studentId =
+        document.getElementById("studentFilter").value;
+
+    const subject =
+        document.getElementById("subjectFilter").value;
+
+    const day =
+        document.getElementById("dayFilter").value;
 
     const filtered = allRows.filter(row => {
-        if (teacherId && row.teacher?._id !== teacherId) return false;
-        if (studentId && row.student?._id !== studentId) return false;
-        if (subject && row.subject !== subject) return false;
+        if (
+            teacherId &&
+            getEntityId(row.teacher, ["_id"]) !== teacherId
+        ) {
+            return false;
+        }
+
+        if (
+            studentId &&
+            getEntityId(row.student, ["_id"]) !== studentId
+        ) {
+            return false;
+        }
+
+        if (subject && row.subject !== subject) {
+            return false;
+        }
+
+        if (
+            day &&
+            String(row.day).toLowerCase() !== day.toLowerCase()
+        ) {
+            return false;
+        }
 
         return true;
     });
@@ -321,13 +902,19 @@ function applyFilters() {
     renderRows(filtered);
 
     document.getElementById("status").textContent =
-        `${filtered.length} matching mapping(s).`;
+        `${filtered.length} matching period mapping(s).`;
 }
+
+
+// =====================================================
+// CLEAR FILTERS
+// =====================================================
 
 function clearFilters() {
     document.getElementById("teacherFilter").value = "";
     document.getElementById("studentFilter").value = "";
     document.getElementById("subjectFilter").value = "";
+    document.getElementById("dayFilter").value = "";
 
     renderRows(allRows);
 
@@ -335,8 +922,15 @@ function clearFilters() {
         `${allRows.length} student-period mapping(s) loaded.`;
 }
 
+
+// =====================================================
+// START
+// =====================================================
+
 loadPeriodSummary();
+
 </script>
 
 </body>
 </html>
+```
