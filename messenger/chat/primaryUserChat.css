@@ -332,3 +332,24 @@
     margin-right: auto !important;
 
 }
+
+
+/* GPA Messenger message status ticks */
+
+.gpa-primary-message-status {
+    display: inline-block;
+    margin-left: 6px;
+    font-size: 13px;
+    line-height: 1;
+    color: #d1d5db;
+    white-space: nowrap;
+    vertical-align: baseline;
+}
+
+.gpa-primary-message-status.delivered {
+    color: #d1d5db;
+}
+
+.gpa-primary-message-status.read {
+    color: #60a5fa;
+}
