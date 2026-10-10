@@ -355,3 +355,36 @@ body{
     background-image: none !important;
     content: none !important;
 }
+
+/* FIX: Remove oversized decorative logo from teacher sidebar */
+
+.sidebar {
+    background-image: none !important;
+}
+
+.sidebar > img:not(.sidebar-logo) {
+    display: none !important;
+}
+
+.sidebar-brand {
+    height: 75px !important;
+    min-height: 75px !important;
+    max-height: 75px !important;
+    padding: 5px 10px !important;
+    margin-bottom: 15px !important;
+    overflow: hidden !important;
+}
+
+.sidebar-brand .sidebar-logo {
+    width: 120px !important;
+    max-width: 120px !important;
+    height: 40px !important;
+    max-height: 40px !important;
+    object-fit: contain !important;
+}
+
+/* Stop oversized decorative pseudo-elements */
+.sidebar::before,
+.sidebar::after {
+    background-image: none !important;
+}
