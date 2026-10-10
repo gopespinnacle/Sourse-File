@@ -1,344 +1,124 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
-<title>Teacher Dashboard</title>
-<link rel="stylesheet" href="dashboard.css">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Teacher Dashboard | Gopes Pinnacle Academy</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--navy:#061943;--navy2:#0b2e70;--blue:#1265f5;--gold:#ffd36d;--ink:#102653;--muted:#7082a3;--line:#e2ebfa;--shadow:0 12px 30px #183b7410}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,"Segoe UI",Arial,sans-serif;color:var(--ink);background:linear-gradient(130deg,#edf5ff,#f9fbff 60%,#e7f0ff);min-height:100vh}a{text-decoration:none;color:inherit}button{font:inherit;cursor:pointer}
+.sidebar{position:fixed;inset:0 auto 0 0;width:250px;overflow:auto;z-index:50;padding:22px 14px;color:white;background:radial-gradient(circle at 80% 10%,#f4b83d25,transparent 18%),linear-gradient(155deg,#041331,#08265d 60%,#0b3987);box-shadow:8px 0 30px #09285c20}
+.brand{display:flex;align-items:center;gap:12px;padding:4px 8px 22px;margin-bottom:18px;border-bottom:1px solid #ffffff30}.brand-icon{width:50px;height:50px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(145deg,#fff,#8cc5ff 45%,#1656df);color:#0a2b69;font-size:26px;box-shadow:0 0 0 1px #ffffff60}.brand-name{font:19px/1.05 Georgia,serif;letter-spacing:1.4px;color:var(--gold)}.brand-name small{display:block;font:9px Arial;letter-spacing:4px;color:#d5e7ff;margin-top:5px}
+.sidebar ul{list-style:none;margin:0;padding:0}.sidebar li{display:flex;align-items:center;gap:13px;min-height:44px;padding:0 12px;margin:5px 0;border:1px solid transparent;border-radius:12px;color:#e7f0ff;font-size:12px;font-weight:700;cursor:pointer;transition:.2s}.sidebar li i{width:20px;text-align:center;color:#80d5ff;font-size:16px}.sidebar li:hover{background:#ffffff14;border-color:#ffffff20;transform:translateX(2px)}.sidebar li#menu-dashboard{background:linear-gradient(100deg,#ffe18a,#176cf8 20%,#174bd0);border-color:#ffffff90;box-shadow:0 4px 20px #0068ff50}.sidebar li#menu-dashboard i{color:#ffdf82}.sidebar li:last-child{margin-top:18px;padding-top:12px;border-top:1px solid #ffffff30;border-radius:0}.sidebar li:last-child i{color:var(--gold)}.sidebar-footer{margin-top:24px;padding:14px 12px;border:1px solid #ffffff25;border-radius:14px;background:#ffffff0d;color:#c3d9ff;font-size:11px;line-height:1.6}.sidebar-footer i{color:var(--gold);margin-right:6px}
+.main{margin-left:250px;padding:20px 22px 35px;min-width:0}.mobile-header{display:none}.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}.eyebrow{font-size:10px;letter-spacing:2px;font-weight:850;text-transform:uppercase;color:#1765e9;margin-bottom:7px}.topbar h1{margin:0;font-size:clamp(22px,2vw,31px);line-height:1.15;color:#071b4b;letter-spacing:-.7px}.topbar h1 span{color:#1767f7}.tagline{margin-top:7px;font-size:12px;color:#60779f}.top-actions{display:flex;align-items:center;gap:9px}.date-chip,.icon-btn,.profile{background:#ffffffed;border:1px solid #dbe7fb;box-shadow:0 5px 18px #173b7710}.date-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;font-size:11px;font-weight:700;color:#2b4777;white-space:nowrap}.date-chip i{font-size:18px;color:var(--blue)}.icon-btn{width:41px;height:41px;border-radius:13px;color:#17366d;position:relative}.dot{position:absolute;right:7px;top:7px;width:7px;height:7px;border-radius:50%;background:#ff4d66}.profile{display:flex;align-items:center;gap:9px;padding:6px 10px 6px 6px;border-radius:16px;min-width:160px}.avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#d7e9ff,#80b8ff);color:#14366c;font-weight:850;border:2px solid white}.profile strong{display:block;font-size:11px}.profile small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.profile .fa-chevron-down{margin-left:auto;font-size:10px;color:#58719a}
+.hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:145px;padding:24px 28px;margin-bottom:16px;border-radius:22px;color:#fff;background:radial-gradient(circle at 85% 10%,#ffffff35,transparent 20%),linear-gradient(110deg,#071b4b,#0b48b4 54%,#82c4ff);box-shadow:0 14px 32px #0f429d25}.hero:before{content:"";position:absolute;width:360px;height:230px;right:15%;top:-130px;border:1px solid #ffffff40;border-radius:50%;box-shadow:0 0 0 18px #ffffff08,0 0 0 38px #ffffff06;transform:rotate(-18deg)}.hero:after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,transparent,#ffdb79,#fff1bf,transparent)}.hero-copy,.hero-art{position:relative;z-index:1}.hero .eyebrow{color:#ffdc82}.hero h2{font-size:clamp(22px,2vw,30px);line-height:1.2;margin:0 0 8px}.hero p{margin:0;color:#e0edff;font-size:12px}.hero-art{display:flex;align-items:center;gap:14px}.cap{font-size:58px;color:#ffdb78;filter:drop-shadow(0 8px 8px #0004);transform:rotate(-8deg)}.quote{max-width:155px;text-align:center;font:15px/1.45 Georgia,serif;color:#fff7dc}.quote span{display:block;width:42px;height:3px;background:var(--gold);margin:9px auto 0;border-radius:3px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:15px}.stat{display:flex;align-items:center;gap:11px;min-width:0;padding:15px 13px;background:#ffffffed;border:1px solid var(--line);border-radius:17px;box-shadow:var(--shadow);cursor:pointer;transition:.2s}.stat:hover{transform:translateY(-3px)}.stat-icon{flex:0 0 46px;width:46px;height:46px;display:grid;place-items:center;border-radius:14px;font-size:20px}.blue{color:#176bfa;background:#e4efff}.green{color:#079b69;background:#dcf9ed}.gold{color:#d88900;background:#fff0d0}.purple{color:#7b43de;background:#efe5ff}.stat-copy{min-width:0}.stat-copy strong{display:block;font-size:25px;line-height:1.1;color:#0a2055}.stat-copy span{display:block;margin-top:4px;font-size:11px;font-weight:800}.stat-copy small{display:block;color:#7183a4;font-size:9px;margin-top:3px}.stat-arrow{margin-left:auto;color:#3975d8;font-size:12px}
+.grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(250px,.92fr) minmax(220px,.75fr);gap:13px;align-items:stretch}.panel{min-width:0;background:#ffffffef;border:1px solid var(--line);border-radius:19px;padding:16px;box-shadow:var(--shadow)}.heading{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:14px}.panel-title{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:850;color:#102657}.title-icon{width:32px;height:32px;display:grid;place-items:center;border-radius:10px;background:#e8f1ff;color:#1265f5}.text-link{font-size:10px;font-weight:850;color:#1265f5;white-space:nowrap}.empty{display:flex;align-items:center;gap:12px;padding:17px 13px;border:1px dashed #cdddf7;border-radius:14px;background:#f8fbff;color:#60779f}.empty-icon{width:40px;height:40px;flex:0 0 40px;border-radius:12px;background:#e7f0ff;color:#2874ee;display:grid;place-items:center}.empty strong{display:block;font-size:11px;color:#183565;margin-bottom:4px}.empty span{font-size:10px;line-height:1.45}.class-row{display:flex;align-items:center;gap:9px;padding:10px;margin-top:9px;border:1px solid #e5edfa;border-radius:13px;background:linear-gradient(100deg,#fbfdff,#fff)}.subject-icon{width:34px;height:34px;flex:0 0 34px;border-radius:11px;display:grid;place-items:center;background:#e2f8ee;color:#0b9b6a}.class-info{flex:1;min-width:0}.class-info strong{display:block;font-size:10px}.class-info span{display:block;font-size:9px;color:#7485a3;margin-top:4px}.primary{border:0;border-radius:9px;background:linear-gradient(100deg,#1265f5,#388cff);color:white;font-weight:800;font-size:9px;padding:10px;box-shadow:0 4px 11px #1265f533}.calendar-top{display:flex;align-items:center;justify-content:space-between;gap:7px;margin-bottom:12px}.calendar-top strong{font-size:12px}.calendar-top button{width:28px;height:28px;border:1px solid #e1eafa;border-radius:9px;background:#f7faff;color:#2469d6}.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;text-align:center}.weekday{padding:7px 0;color:#52709f;background:#f0f6ff;border-radius:6px;font-size:9px;font-weight:800}.day{position:relative;min-height:31px;display:grid;place-items:center;border-radius:8px;font-size:10px;color:#213c70}.day.muted{color:#b0bdd2}.day.today{background:#1265f5;color:#fff;font-weight:850}.calendar-note{margin-top:11px;padding:9px;border-radius:10px;background:#f4f8ff;color:#7083a4;font-size:9px;line-height:1.5}.quick-list{display:grid;gap:8px}.quick{display:flex;align-items:center;gap:9px;width:100%;padding:11px 10px;border:1px solid transparent;border-radius:11px;text-align:left;font-size:10px;font-weight:800;color:#173360;transition:.2s}.quick:hover{transform:translateX(3px)}.quick i:first-child{width:29px;height:29px;display:grid;place-items:center;border-radius:9px}.quick i:last-child{margin-left:auto;color:#2768d5}.quick.qgreen{background:#e4f9ef;border-color:#d2f2e3}.qgreen i:first-child{background:#c7f3df;color:#079665}.quick.qgold{background:#fff3dc;border-color:#ffebc4}.qgold i:first-child{background:#ffe6ad;color:#c47b00}.quick.qblue{background:#e7f1ff;border-color:#dceaff}.qblue i:first-child{background:#d1e4ff;color:#1765e7}.quick.qpurple{background:#f1eaff;border-color:#e8dcff}.qpurple i:first-child{background:#e3d3ff;color:#7540d5}
+.lower{display:grid;grid-template-columns:1.2fr .8fr;gap:13px;margin-top:13px}.notice{display:flex;align-items:flex-start;gap:12px;padding:15px;border:1px solid #ffe2a3;border-left:4px solid #ffb51e;border-radius:14px;background:linear-gradient(110deg,#fff9e9,#fff)}.notice-icon{width:36px;height:36px;flex:0 0 36px;display:grid;place-items:center;border-radius:11px;background:#fff0c8;color:#b77800}.notice strong{display:block;font-size:12px;color:#7c4d00;margin-bottom:5px}.notice p{font-size:10px;line-height:1.55;color:#826a45;margin:0}.shortcuts{display:grid;gap:12px}.shortcut{display:flex;align-items:center;gap:10px;font-size:10px;font-weight:800}.shortcut i{width:33px;height:33px;display:grid;place-items:center;border-radius:10px;background:#edf4ff;color:#236fe9}.shortcut small{display:block;color:#7788a6;font-size:9px;font-weight:500;margin-top:4px}
+.bottom-nav{display:none}.overlay{display:none}
+@media(max-width:1250px){.sidebar{width:225px}.main{margin-left:225px;padding:17px}.grid{grid-template-columns:minmax(0,1.2fr) minmax(250px,.9fr)}.quick-panel{grid-column:1/-1}.quick-list{grid-template-columns:repeat(4,minmax(0,1fr))}.quick{font-size:9px;padding:8px}.quick i:last-child{display:none}}
+@media(max-width:850px){.sidebar{width:260px;transform:translateX(-105%);transition:transform .25s}.sidebar.show{transform:translateX(0)}.overlay.show{display:block;position:fixed;inset:0;background:#020e27a0;z-index:40}.main{margin-left:0;padding:13px 13px 85px}.mobile-header{display:flex;align-items:center;gap:11px;padding:9px 13px;background:#061943;color:white}.menu-btn{width:38px;height:38px;border:1px solid #ffffff30;border-radius:11px;background:#ffffff12;color:white}.welcome-box{flex:1;min-width:0}.welcome-text{font-size:9px;color:#bdd8ff}.teacher-mobile-name{font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mobile-header>.fa-user-circle{font-size:26px;color:#d8e8ff}.topbar{align-items:flex-start}.topbar .date-chip{display:none}.topbar .profile{min-width:0}.profile>div:nth-child(2){display:none}.hero{min-height:120px;padding:19px}.cap{font-size:43px}.quote{display:none}.stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.stat{padding:12px}.stat-icon{width:40px;height:40px;flex-basis:40px}.stat-copy strong{font-size:21px}.grid{grid-template-columns:1fr}.quick-panel{grid-column:auto}.quick-list{grid-template-columns:repeat(2,minmax(0,1fr))}.lower{grid-template-columns:1fr}.bottom-nav{position:fixed;display:grid;grid-template-columns:repeat(4,1fr);left:0;right:0;bottom:0;z-index:30;padding:8px 5px calc(8px + env(safe-area-inset-bottom));background:#fffffff5;border-top:1px solid #dce7f8;box-shadow:0 -5px 20px #0f306414}.bottom-nav a{display:flex;flex-direction:column;align-items:center;gap:4px;color:#5d7295;font-size:9px;font-weight:750;padding:4px}.bottom-nav a i{font-size:17px;color:#1768ed}}
+@media(max-width:480px){.main{padding:11px 9px 82px}.topbar h1{font-size:21px}.topbar .profile{display:none}.hero{padding:16px}.hero h2{font-size:21px}.hero p{font-size:10px}.stat{gap:8px;padding:10px}.stat-icon{width:35px;height:35px;flex-basis:35px;font-size:15px}.stat-copy strong{font-size:19px}.stat-copy span{font-size:9px}.panel{padding:12px;border-radius:15px}.panel-title{font-size:12px}.class-row{gap:6px;padding:8px}.class-info strong{font-size:9px}.class-info span{font-size:8px}.primary{padding:8px;font-size:8px}.quick-list{grid-template-columns:1fr}}
+</style>
 </head>
-
 <body>
-
-<div class="overlay"
-onclick="closeMenu()">
-</div>
-
-<div class="mobile-header">
-
-    <button class="menu-btn"
-    onclick="toggleMenu()">
-        <i class="fa fa-bars"></i>
-    </button>
-
-    <div class="welcome-box">
-
-    <div class="welcome-text">
-        Welcome
-    </div>
-
-    <div id="mobileTeacherName"
-    class="teacher-mobile-name">
-    </div>
-
-</div>
-
-    <i class="fa fa-user-circle"></i>
-
-</div>
-<div class="sidebar">
-    <h2>Academy ERP</h2>
-    <ul>
-
-        <li id="menu-dashboard">
-            <i class="fa fa-chart-line"></i> Dashboard
-        </li>
-
-        <li id="menu-myClasses" onclick="goToClasses()">
-            <i class="fa fa-book"></i> My Classes
-        </li>
-
-        <li
-    id="menu-classRegister"
-    onclick="location.href='teacher-class-register.html'"
->
-    <i class="fa fa-clipboard-list"></i>
-    Daily Class Register
-</li>
-
-        <li id="menu-attendance">
-            <i class="fa fa-calendar-check"></i> Attendance
-        </li>
-
-        <li id="menu-aiAssessment" onclick="location.href='teacher-ai-assessment.html'">
-            <i class="fa fa-robot"></i> AI Assessment
-        </li>
-
-        <li id="menu-homework" onclick="location.href='teacher-homework-classes.html'">
-    <i class="fa fa-tasks"></i> Homework
-</li>
-
-<li id="menu-materials" onclick="location.href='teacher-materials.html'">
-    <i class="fa fa-book-open"></i> Materials
-</li>
-
-<li id="menu-pdfGenerator" onclick="location.href='teacher-pdf-generator.html'">
-    <i class="fa fa-file-pdf"></i> PDF Generator
-</li>
-
-<li id="menu-applyLeave" onclick="location.href='teacher-leave.html'">
-    <i class="fa fa-calendar-plus"></i> Apply Leave
-</li>
-
-<li id="menu-calendar" onclick="location.href='teacher-calendar.html'">
-    <i class="fa fa-calendar-alt"></i> Calendar
-</li>
-
-        <li id="menu-marksEntry">
-            <i class="fa fa-pen"></i> Marks Entry
-        </li>
-
-
-        
-        <li onclick="logout()">
-            <i class="fa fa-sign-out-alt"></i> Logout
-        </li>
-
-
-
-    </ul>
-</div>
-
-<div class="main">
-
-    <div class="topbar">
-        <h3>Welcome, <span id="teacherName"></span></h3>
-        <div class="profile">
-            <i class="fa fa-user-circle"></i>
-        </div>
-    </div>
-
-    <div class="cards">
-
-      <div class="card" onclick="goToPeriods()">
-    <i class="fa fa-book"></i>
-    <h4>My Classes</h4>
-    <p id="totalClasses">0</p>
-</div>
-
-        <div class="card" onclick="goToStudentsPage()">
-            <i class="fa fa-users"></i>
-            <h4>Total Students</h4>
-            <p id="totalStudents">0</p>
-        </div>
-
-        
-
-
-<div class="card" onclick="location.href='teacher-calendar.html'">
-
-    <i class="fa fa-calendar-alt"></i>
-
-    <h4>Calendar</h4>
-
-    <p>View Academy Events</p>
-
-</div>
-    </div>
-
-</div>
-
-<div class="bottom-nav">
-
-    <div onclick="location.href='teacher-dashboard.html'">
-        <i class="fa fa-home"></i>
-        <span>Home</span>
-    </div>
-
-    <div onclick="location.href='teacher-periods.html'">
-        <i class="fa fa-book"></i>
-        <span>Classes</span>
-    </div>
-
-    <div onclick="location.href='teacher-homework-classes.html'">
-    <i class="fa fa-tasks"></i>
-    <span>Work</span>
-</div>
-
-    <div onclick="location.href='teacher-calendar.html'">
-    <i class="fa fa-calendar-alt"></i>
-    <span>Calendar</span>
-</div>
-
-</div>
-
+<div class="overlay" onclick="closeMenu()"></div>
+<div class="mobile-header"><button class="menu-btn" onclick="toggleMenu()" aria-label="Open menu"><i class="fa fa-bars"></i></button><div class="welcome-box"><div class="welcome-text">Gopes Pinnacle Academy</div><div id="mobileTeacherName" class="teacher-mobile-name">Teacher Dashboard</div></div><i class="fa fa-user-circle"></i></div>
+<aside class="sidebar">
+  <div class="brand"><div class="brand-icon"><i class="fa-solid fa-cube"></i></div><div class="brand-name">GOPES<br>PINNACLE<small>ACADEMY</small></div></div>
+  <ul>
+    <li id="menu-dashboard" onclick="location.href='teacher-dashboard.html'"><i class="fa fa-chart-line"></i>Dashboard</li>
+    <li id="menu-myClasses" onclick="goToClasses()"><i class="fa fa-book-open"></i>My Classes</li>
+    <li id="menu-classRegister" onclick="location.href='teacher-class-register.html'"><i class="fa fa-clipboard-list"></i>Daily Class Register</li>
+    <li id="menu-attendance" onclick="location.href='teacher-attendance.html'"><i class="fa fa-calendar-check"></i>Attendance</li>
+    <li id="menu-aiAssessment" onclick="location.href='teacher-ai-assessment.html'"><i class="fa fa-robot"></i>AI Assessment</li>
+    <li id="menu-homework" onclick="location.href='teacher-homework-classes.html'"><i class="fa fa-tasks"></i>Homework</li>
+    <li id="menu-materials" onclick="location.href='teacher-materials.html'"><i class="fa fa-book-open"></i>Materials</li>
+    <li id="menu-pdfGenerator" onclick="location.href='teacher-pdf-generator.html'"><i class="fa fa-file-pdf"></i>PDF Generator</li>
+    <li id="menu-applyLeave" onclick="location.href='teacher-leave.html'"><i class="fa fa-calendar-plus"></i>Apply Leave</li>
+    <li id="menu-calendar" onclick="location.href='teacher-calendar.html'"><i class="fa fa-calendar-alt"></i>Calendar</li>
+    <li id="menu-marksEntry" onclick="location.href='teacher-marks-entry.html'"><i class="fa fa-pen"></i>Marks Entry</li>
+    <li onclick="logout()"><i class="fa fa-right-from-bracket"></i>Logout</li>
+  </ul>
+  <div class="sidebar-footer"><i class="fa-solid fa-star"></i><strong>Teach · Inspire · Empower</strong><br>Helping every learner grow, every day.</div>
+</aside>
+<main class="main">
+  <header class="topbar"><div><div class="eyebrow">Gopes Pinnacle Academy</div><h1>Welcome back, <span id="teacherName">Teacher</span> 👋</h1><div class="tagline">Teach · Inspire · Empower · Shape the Future</div></div>
+  <div class="top-actions"><div class="date-chip"><i class="fa-regular fa-calendar-days"></i><span id="todayDate">Today</span></div><button class="icon-btn" aria-label="Notifications"><i class="fa-regular fa-bell"></i><span class="dot"></span></button><div class="profile"><div class="avatar" id="teacherInitial">T</div><div><strong id="profileTeacherName">Teacher</strong><small>Teacher workspace</small></div><i class="fa fa-chevron-down"></i></div></div></header>
+  <section class="hero"><div class="hero-copy"><div class="eyebrow">Your teaching workspace</div><h2>Inspire minds.<br>Build brighter futures.</h2><p>Manage your classes, students and daily teaching tasks in one place.</p></div><div class="hero-art"><div class="cap"><i class="fa-solid fa-graduation-cap"></i></div><div class="quote">“Empower today.<br>Inspire tomorrow.”<span></span></div></div></section>
+  <section class="stats">
+    <div class="stat" onclick="goToPeriods()"><div class="stat-icon blue"><i class="fa-solid fa-book-open"></i></div><div class="stat-copy"><strong id="totalClasses">0</strong><span>My Classes</span><small>Assigned teaching periods</small></div><i class="fa fa-chevron-right stat-arrow"></i></div>
+    <div class="stat" onclick="goToStudentsPage()"><div class="stat-icon green"><i class="fa-solid fa-users"></i></div><div class="stat-copy"><strong id="totalStudents">0</strong><span>Total Students</span><small>Across assigned periods</small></div><i class="fa fa-chevron-right stat-arrow"></i></div>
+    <div class="stat" onclick="location.href='teacher-homework-classes.html'"><div class="stat-icon gold"><i class="fa-solid fa-clipboard-check"></i></div><div class="stat-copy"><strong>—</strong><span>Homework</span><small>Open homework workspace</small></div><i class="fa fa-chevron-right stat-arrow"></i></div>
+    <div class="stat" onclick="location.href='teacher-ai-assessment.html'"><div class="stat-icon purple"><i class="fa-solid fa-chart-column"></i></div><div class="stat-copy"><strong>—</strong><span>Assessments</span><small>Open assessment workspace</small></div><i class="fa fa-chevron-right stat-arrow"></i></div>
+  </section>
+  <section class="grid">
+    <article class="panel"><div class="heading"><div class="panel-title"><span class="title-icon"><i class="fa-solid fa-chalkboard-user"></i></span>Teaching Workspace</div><a class="text-link" href="teacher-periods.html">View Classes <i class="fa fa-arrow-right"></i></a></div>
+      <div class="empty"><div class="empty-icon"><i class="fa-solid fa-calendar-day"></i></div><div><strong>Your assigned classes are ready</strong><span>Open My Classes to view your assigned periods and student lists. Your existing class data remains connected.</span></div></div>
+      <div class="class-row"><div class="subject-icon"><i class="fa-solid fa-users"></i></div><div class="class-info"><strong>My Classes & Student Lists</strong><span>View assigned classes, periods and students</span></div><button class="primary" onclick="goToPeriods()">Open →</button></div>
+      <div class="class-row"><div class="subject-icon" style="background:#fff0d5;color:#c78100"><i class="fa-solid fa-clipboard-check"></i></div><div class="class-info"><strong>Daily Class Register</strong><span>Continue to your class register</span></div><button class="primary" onclick="location.href='teacher-class-register.html'">Open →</button></div>
+    </article>
+    <article class="panel"><div class="heading"><div class="panel-title"><span class="title-icon"><i class="fa-regular fa-calendar-days"></i></span>My Calendar</div><a class="text-link" href="teacher-calendar.html">Full Calendar</a></div><div class="calendar-top"><button onclick="changeMonth(-1)" aria-label="Previous month"><i class="fa fa-chevron-left"></i></button><strong id="calendarMonth">Month Year</strong><button onclick="changeMonth(1)" aria-label="Next month"><i class="fa fa-chevron-right"></i></button></div><div class="calendar-grid" id="miniCalendar"></div><div class="calendar-note"><i class="fa fa-circle-info"></i> View academy events, holidays and teaching schedules in the full calendar.</div></article>
+    <article class="panel quick-panel"><div class="heading"><div class="panel-title"><span class="title-icon" style="background:#fff1d7;color:#ce8500"><i class="fa-solid fa-bolt"></i></span>Quick Actions</div></div><div class="quick-list">
+      <button class="quick qgreen" onclick="location.href='teacher-class-register.html'"><i class="fa-solid fa-clipboard-check"></i>Daily Class Register<i class="fa fa-chevron-right"></i></button>
+      <button class="quick qgold" onclick="location.href='teacher-homework-classes.html'"><i class="fa-solid fa-list-check"></i>Review Homework<i class="fa fa-chevron-right"></i></button>
+      <button class="quick qblue" onclick="location.href='teacher-materials.html'"><i class="fa-solid fa-cloud-arrow-up"></i>Manage Materials<i class="fa fa-chevron-right"></i></button>
+      <button class="quick qpurple" onclick="location.href='teacher-ai-assessment.html'"><i class="fa-solid fa-file-circle-check"></i>AI Assessment<i class="fa fa-chevron-right"></i></button>
+    </div></article>
+  </section>
+  <section class="lower">
+    <article class="panel"><div class="heading"><div class="panel-title"><span class="title-icon" style="background:#fff1d7;color:#c78300"><i class="fa-solid fa-bullhorn"></i></span>Academy Notice</div><a class="text-link" href="teacher-calendar.html">Calendar →</a></div><div class="notice"><div class="notice-icon"><i class="fa-solid fa-star"></i></div><div><strong>Stay connected with academy updates</strong><p>Check your teacher calendar for academy events, holidays and scheduled activities. Open the calendar page for the complete event list.</p></div></div></article>
+    <article class="panel"><div class="heading"><div class="panel-title"><span class="title-icon" style="background:#e3f8ed;color:#0a9b69"><i class="fa-solid fa-wand-magic-sparkles"></i></span>Teacher Shortcuts</div></div><div class="shortcuts">
+      <a class="shortcut" href="teacher-leave.html"><i class="fa-solid fa-calendar-plus"></i><span>Apply for Leave<small>Submit a leave request</small></span></a>
+      <a class="shortcut" href="teacher-pdf-generator.html"><i style="background:#fff0f0;color:#e34b5d" class="fa-solid fa-file-pdf"></i><span>PDF Generator<small>Create teaching documents</small></span></a>
+      <a class="shortcut" href="teacher-marks-entry.html"><i style="background:#f0e8ff;color:#7844d7" class="fa-solid fa-pen-to-square"></i><span>Marks Entry<small>Open student marks workspace</small></span></a>
+    </div></article>
+  </section>
+</main>
+<nav class="bottom-nav"><a href="teacher-dashboard.html"><i class="fa fa-house"></i><span>Home</span></a><a href="teacher-periods.html"><i class="fa fa-book-open"></i><span>Classes</span></a><a href="teacher-homework-classes.html"><i class="fa fa-tasks"></i><span>Homework</span></a><a href="teacher-calendar.html"><i class="fa fa-calendar-alt"></i><span>Calendar</span></a></nav>
 <script>
-   
-const name = sessionStorage.getItem("teacherName");
-const token = sessionStorage.getItem("token");
-const role = sessionStorage.getItem("role");
-
-if (!token || role !== "teacher") {
-    alert("Please login first");
-    window.location.href = "teacher-login.html";
+const name=sessionStorage.getItem("teacherName"),token=sessionStorage.getItem("token"),role=sessionStorage.getItem("role");
+if(!token||role!=="teacher"){alert("Please login first");window.location.href="teacher-login.html";}
+const displayName=name||"Teacher";
+document.getElementById("teacherName").innerText=displayName;
+document.getElementById("mobileTeacherName").innerText=displayName;
+document.getElementById("profileTeacherName").innerText=displayName;
+document.getElementById("teacherInitial").innerText=displayName.trim().charAt(0).toUpperCase()||"T";
+const now=new Date();
+document.getElementById("todayDate").innerHTML=now.toLocaleDateString("en-IN",{weekday:"short",day:"2-digit",month:"short",year:"numeric"})+"<br><small>"+now.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})+"</small>";
+async function loadDashboard(){
+ try{
+  const res=await fetch("https://academy-backend-eatl.onrender.com/api/teacher/classes",{headers:{"Authorization":"Bearer "+token}});
+  if(!res.ok){console.error("Teacher classes API failed:",res.status);return;}
+  const res2=await fetch("https://academy-backend-eatl.onrender.com/api/teacher/all-period-assignments",{headers:{"Authorization":"Bearer "+token}});
+  if(!res2.ok){console.error("Period assignments API failed:",res2.status);return;}
+  const data2=await res2.json(),periods=Array.isArray(data2.data)?data2.data:[];
+  const studentSet=new Set();
+  periods.forEach(p=>{if(Array.isArray(p.students))p.students.forEach(s=>{if(s&&s._id)studentSet.add(s._id);});});
+  animateNumber("totalClasses",periods.length);animateNumber("totalStudents",studentSet.size);
+  try{const res3=await fetch("https://academy-backend-eatl.onrender.com/api/teacher/assessments",{headers:{"Authorization":"Bearer "+token}});if(!res3.ok)console.error("Assessments API failed:",res3.status);}catch(e){console.error("Assessments request failed:",e);}
+ }catch(e){console.error("Unable to load teacher dashboard:",e);}
 }
-
-document.getElementById("teacherName").innerText = name || "";
-
-document.getElementById(
-    "mobileTeacherName"
-).innerText =
-name || "";
-
-async function loadDashboard() {
-
-    const res = await fetch(
-        "https://academy-backend-eatl.onrender.com/api/teacher/classes",
-        {
-            headers: {
-                "Authorization": "Bearer " + token
-            }
-        }
-    );
-if (!res.ok) {
-    console.error("API failed:", res.status);
-    return;
+function logout(){sessionStorage.clear();window.location.href="teacher-login.html";}
+function animateNumber(id,number){const el=document.getElementById(id);if(!el)return;if(!number||number<1){el.innerText=0;return;}let count=0;const step=Math.max(1,Math.ceil(number/35));const timer=setInterval(()=>{count=Math.min(number,count+step);el.innerText=count;if(count>=number)clearInterval(timer);},25);}
+function goToClasses(){window.location.href="teacher-classes.html";}
+function goToPeriods(){window.location.href="teacher-periods.html";}
+function goToStudentsPage(){window.location.href="teacher-students.html";}
+function toggleMenu(){document.querySelector(".sidebar").classList.toggle("show");document.querySelector(".overlay").classList.toggle("show");}
+function closeMenu(){document.querySelector(".sidebar").classList.remove("show");document.querySelector(".overlay").classList.remove("show");}
+const permissions=JSON.parse(sessionStorage.getItem("menuPermissions")||"{}");
+Object.keys(permissions).forEach(menu=>{if(permissions[menu]===false){const item=document.getElementById("menu-"+menu);if(item)item.style.display="none";}});
+let calendarDate=new Date(now.getFullYear(),now.getMonth(),1);
+function changeMonth(delta){calendarDate=new Date(calendarDate.getFullYear(),calendarDate.getMonth()+delta,1);renderMiniCalendar();}
+function renderMiniCalendar(){
+ const grid=document.getElementById("miniCalendar"),label=document.getElementById("calendarMonth");if(!grid||!label)return;
+ label.textContent=calendarDate.toLocaleDateString("en-IN",{month:"long",year:"numeric"});grid.innerHTML="";
+ ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(d=>{const e=document.createElement("div");e.className="weekday";e.textContent=d;grid.appendChild(e);});
+ const first=new Date(calendarDate.getFullYear(),calendarDate.getMonth(),1).getDay(),days=new Date(calendarDate.getFullYear(),calendarDate.getMonth()+1,0).getDate(),prevDays=new Date(calendarDate.getFullYear(),calendarDate.getMonth(),0).getDate();
+ for(let i=0;i<first;i++){const e=document.createElement("div");e.className="day muted";e.textContent=prevDays-first+i+1;grid.appendChild(e);}
+ for(let d=1;d<=days;d++){const e=document.createElement("div");e.className="day";if(d===now.getDate()&&calendarDate.getMonth()===now.getMonth()&&calendarDate.getFullYear()===now.getFullYear())e.classList.add("today");e.textContent=d;grid.appendChild(e);}
+ const trailing=(7-((first+days)%7))%7;for(let d=1;d<=trailing;d++){const e=document.createElement("div");e.className="day muted";e.textContent=d;grid.appendChild(e);}
 }
-    /* GET PERIOD DATA */
-const res2 = await fetch(
-    "https://academy-backend-eatl.onrender.com/api/teacher/all-period-assignments",
-    {
-        headers: {
-            "Authorization": "Bearer " + token
-        }
-    }
-);
-
-const data2 = await res2.json();
-
-console.log(data2);
-
-/* TOTAL PERIODS (My Classes) */
-const totalClasses = data2.data.length;
-
-/* UNIQUE STUDENTS */
-let studentSet = new Set();
-
-data2.data.forEach(p => {
-
-    console.log("Period:", p);
-
-    console.log("Students:", p.students);
-
-    if (Array.isArray(p.students)) {
-
-        p.students.forEach(student => {
-
-            console.log("Student:", student);
-
-            if (student && student._id) {
-
-                studentSet.add(student._id);
-
-            }
-
-        });
-
-    }
-
-});
-
-const totalStudents = studentSet.size;
-
-/* UPDATE UI */
-animateNumber("totalClasses", totalClasses);
-animateNumber("totalStudents", totalStudents);
-
-    /* Assessments (this is OK) */
-    const res3 = await fetch("https://academy-backend-eatl.onrender.com/api/teacher/assessments", {
-        headers: { "Authorization": "Bearer " + token }
-    });
-
-    const data3 = await res3.json();
-   // animateNumber("assessmentCount", data3.assessments.length);
-}
-
-function logout(){
-    sessionStorage.clear();
-    window.location.href = "teacher-login.html";
-}
-
-loadDashboard();
-function animateNumber(id, number) {
-
-    if (number === 0) {
-        document.getElementById(id).innerText = 0;
-        return;
-    }
-
-    let count = 0;
-
-    const interval = setInterval(() => {
-        count++;
-        document.getElementById(id).innerText = count;
-
-        if (count >= number) {
-            clearInterval(interval);
-        }
-    }, 40);
-}
-function goToClasses(){
-    window.location.href = "teacher-classes.html";
-}
-function goToPeriods(){
-    window.location.href = "teacher-periods.html";
-}
-function goToStudentsPage(){
-    window.location.href = "teacher-students.html";
-}
-
-
-function toggleMenu(){
-
-    document
-    .querySelector(".sidebar")
-    .classList.toggle("show");
-
-    document
-    .querySelector(".overlay")
-    .classList.toggle("show");
-
-}
-
-function closeMenu(){
-
-    document
-    .querySelector(".sidebar")
-    .classList.remove("show");
-
-    document
-    .querySelector(".overlay")
-    .classList.remove("show");
-
-}
-
-const permissions = JSON.parse(
-sessionStorage.getItem("menuPermissions") || "{}"
-);
-
-Object.keys(permissions).forEach(menu=>{
-
-    if(permissions[menu] === false){
-
-        const item = document.getElementById("menu-" + menu);
-
-        if(item){
-
-            item.style.display = "none";
-
-        }
-
-    }
-
-});
-
-
+renderMiniCalendar();loadDashboard();
 </script>
-
-
-
-</body>
-</html>
+</body></html>
