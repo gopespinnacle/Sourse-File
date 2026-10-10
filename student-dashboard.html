@@ -1,1802 +1,3810 @@
 <!DOCTYPE html>
+
 <html>
+
 <head>
+
+
 
 <meta charset="UTF-8">
 
+
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+
+
 <title>Student Dashboard</title>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
 
 <style>
 
+
+
 body {
+
     margin:0;
+
     font-family: 'Segoe UI';
+
     background:#f1f5f9;
+
 }
+
+
+
 
 
 .mobile-header {
+
     display: none;
+
 }
+
+
 
 .sidebar-overlay {
+
     display: none;
+
 }
+
+
 
 /* SIDEBAR */
+
 .sidebar {
+
     width:240px;
+
     height:100vh;
+
     background:#0f172a;
+
     color:white;
+
     position:fixed;
+
 }
+
+
 
 .sidebar h2 {
+
     text-align:center;
+
     padding:20px;
+
 }
+
+
 
 .sidebar ul {
+
     list-style:none;
+
     padding:0;
+
 }
+
+
 
 .sidebar ul li {
+
     padding:15px;
+
     cursor:pointer;
+
     transition:0.3s;
+
 }
+
+
 
 .sidebar ul li:hover {
+
     background:#1e293b;
+
 }
+
+
 
 /* MAIN */
+
 .main {
+
     margin-left:240px;
+
     padding:20px;
+
 }
+
+
 
 /* TOPBAR */
+
 .topbar {
+
     display:flex;
+
     justify-content:space-between;
+
     align-items:center;
+
     margin-bottom:20px;
+
 }
+
 /* CLASS SECTION */
+
 .class-box {
+
     margin-top:30px;
+
 }
+
+
 
 .class-item {
+
     background:white;
+
     padding:12px;
+
     border-radius:8px;
+
     margin-bottom:10px;
+
     box-shadow:0 2px 6px rgba(0,0,0,0.08);
+
 }
+
+
 
 /* =========================================================
+
    ACADEMIC CONTINUITY NOTICE
+
    ========================================================= */
 
+
+
 .academic-continuity-section {
+
     margin-top: 25px;
+
     display: none;
+
 }
+
+
 
 .academic-continuity-title {
+
     font-size: 20px;
+
     font-weight: 700;
+
     margin-bottom: 12px;
+
 }
 
+
+
 .continuity-notice {
+
     background: linear-gradient(
+
         135deg,
+
         #fffdf5,
+
         #ffffff
+
     );
+
+
 
     border-left: 6px solid #d4a017;
 
+
+
     border-radius: 12px;
+
+
 
     padding: 24px 28px;
 
+
+
     margin-bottom: 18px;
 
+
+
     box-shadow:
+
         0 4px 15px rgba(0,0,0,0.10);
 
+
+
     position: relative;
+
 }
 
+
+
 .continuity-notice::before {
+
     content: "✨";
+
+
 
     position: absolute;
 
+
+
     top: 18px;
+
     right: 22px;
 
+
+
     font-size: 28px;
+
 }
 
+
+
 .continuity-heading {
+
     color: #173b67;
+
+
 
     font-size: 21px;
 
+
+
     font-weight: 800;
 
+
+
     margin-bottom: 15px;
+
 }
 
+
+
 .continuity-message {
+
     color: #263238;
 
+
+
     font-size: 16px;
+
+
 
     line-height: 1.7;
 
+
+
     margin-bottom: 12px;
+
 }
+
+
 
 .continuity-message strong {
+
     color: #173b67;
+
 }
 
+
+
 .continuity-compensation {
+
     background: #eef6ff;
+
+
 
     border: 1px solid #b8d8ff;
 
+
+
     border-radius: 9px;
+
+
 
     padding: 14px 18px;
 
+
+
     margin-top: 15px;
+
+
 
     color: #173b67;
 
+
+
     font-size: 16px;
 
+
+
     line-height: 1.6;
+
 }
 
+
+
 .continuity-footer {
+
     margin-top: 16px;
+
+
 
     font-style: italic;
 
+
+
     color: #5f6368;
+
+
 
     font-size: 14px;
 
+
+
     line-height: 1.6;
+
 }
 
+
+
 /* =========================================================
+
    STUDENT DASHBOARD — MOBILE PROFESSIONAL UI
+
    DESKTOP UI IS NOT CHANGED
+
    ========================================================= */
+
+
 
 @media (max-width: 768px) {
 
+
+
     body {
+
         background: #f4f7fb;
+
         overflow-x: hidden;
+
     }
+
+
+
 
 
     /* =====================================================
+
        MOBILE TOP HEADER
+
        ===================================================== */
+
+
 
     .mobile-header {
 
+
+
         display: flex;
+
+
 
         align-items: center;
 
+
+
         justify-content: space-between;
+
+
 
         position: fixed;
 
+
+
         top: 0;
+
         left: 0;
+
         right: 0;
+
+
 
         height: 64px;
 
+
+
         padding: 0 16px;
+
+
 
         background: #0f172a;
 
+
+
         color: white;
+
+
 
         z-index: 1000;
 
+
+
         box-shadow:
+
             0 3px 12px rgba(0,0,0,.18);
 
+
+
     }
+
+
+
 
 
     .mobile-menu-btn {
 
+
+
         width: 42px;
+
+
 
         height: 42px;
 
+
+
         border: none;
+
+
 
         border-radius: 10px;
 
+
+
         background: #1e293b;
+
+
 
         color: white;
 
+
+
         font-size: 20px;
+
+
 
         cursor: pointer;
 
+
+
     }
+
+
+
 
 
     .mobile-logo {
 
+
+
         width: 145px;
+
+
 
         height: auto;
 
+
+
         object-fit: contain;
 
+
+
     }
+
+
+
 
 
     .mobile-header-title {
 
+
+
         font-size: 14px;
+
+
 
         font-weight: 600;
 
+
+
         letter-spacing: .3px;
 
+
+
     }
+
+
+
 
 
     /* =====================================================
+
        SIDEBAR
+
        ===================================================== */
+
+
 
     .sidebar {
 
+
+
         width: 270px;
+
+
 
         height: 100vh;
 
+
+
         position: fixed;
+
+
 
         top: 0;
 
+
+
         left: -290px;
+
+
 
         z-index: 1200;
 
+
+
         transition:
+
             left .3s ease;
 
+
+
         box-shadow:
+
             5px 0 25px rgba(0,0,0,.25);
 
+
+
     }
+
+
+
 
 
     .sidebar.mobile-open {
 
+
+
         left: 0;
 
+
+
     }
+
+
+
 
 
     .sidebar h2 {
 
+
+
         padding: 20px;
 
+
+
     }
+
+
+
 
 
     .sidebar ul li {
 
+
+
         padding: 16px 20px;
+
+
 
         font-size: 16px;
 
+
+
     }
+
+
+
 
 
     /* =====================================================
+
        SIDEBAR OVERLAY
+
        ===================================================== */
+
+
 
     .sidebar-overlay {
 
+
+
         display: none;
+
+
 
         position: fixed;
 
+
+
         inset: 0;
 
+
+
         background:
+
             rgba(0,0,0,.45);
+
+
 
         z-index: 1100;
 
+
+
     }
+
+
+
 
 
     .sidebar-overlay.active {
 
+
+
         display: block;
+
+
 
     }
 
 
+
+
+
     /* =====================================================
+
        MAIN CONTENT
+
        ===================================================== */
+
+
 
     .main {
 
+
+
         margin-left: 0;
+
+
 
         padding: 84px 15px 30px;
 
+
+
         width: auto;
 
+
+
     }
+
+
+
 
 
     /* =====================================================
+
        TOPBAR
+
        ===================================================== */
+
+
 
     .topbar {
 
+
+
         display: block;
+
+
 
         margin-bottom: 22px;
 
+
+
     }
+
+
+
 
 
     .topbar h2 {
 
+
+
         margin: 0;
+
+
 
         font-size: 24px;
 
+
+
         line-height: 1.3;
+
+
 
         color: #172033;
 
+
+
     }
+
+
+
 
 
     /* =====================================================
+
        GENERAL SECTION
+
        ===================================================== */
+
+
 
     .class-box {
 
+
+
         margin-top: 20px;
+
+
 
         margin-bottom: 22px;
 
+
+
     }
+
+
+
 
 
     .class-box h3 {
 
+
+
         font-size: 19px;
+
+
 
         margin-bottom: 12px;
 
+
+
         color: #172033;
+
+
 
     }
 
 
+
+
+
     /* =====================================================
+
        CLASS CARDS
+
        ===================================================== */
+
+
 
     .class-item {
 
+
+
         padding: 17px;
+
+
 
         border-radius: 16px;
 
+
+
         margin-bottom: 13px;
 
+
+
         box-shadow:
+
             0 4px 16px rgba(15,23,42,.08);
+
+
 
         border: 1px solid #e8edf4;
 
+
+
         line-height: 1.7;
 
+
+
     }
+
+
+
 
 
     /* =====================================================
+
        TODAY CLASS CARD
+
        ===================================================== */
+
+
 
     .class-item[style*="display:flex"] {
 
+
+
         display: flex !important;
+
+
 
         flex-direction: column;
 
+
+
         align-items: stretch !important;
+
+
 
         gap: 14px;
 
+
+
     }
+
+
+
 
 
     .class-item button {
 
+
+
         width: 100%;
+
+
 
         min-height: 46px;
 
+
+
         font-size: 15px;
+
+
 
         font-weight: 700;
 
+
+
         border-radius: 10px !important;
 
+
+
     }
+
+
+
 
 
     /* =====================================================
+
        CALENDAR CARD
+
        ===================================================== */
+
+
 
     .class-box .class-item {
 
+
+
         display: flex !important;
+
+
 
         flex-direction: column;
 
+
+
         align-items: stretch !important;
+
+
 
         gap: 14px;
 
+
+
     }
+
+
+
 
 
     .class-box .class-item button {
 
+
+
         width: 100%;
+
+
 
         padding: 12px 18px !important;
 
+
+
     }
+
+
+
 
 
     /* =====================================================
+
        ACADEMIC CONTINUITY
+
        ===================================================== */
+
+
 
     .academic-continuity-section {
 
+
+
         margin-top: 22px;
 
+
+
     }
+
+
+
 
 
     .academic-continuity-title {
 
+
+
         font-size: 19px;
+
+
 
         line-height: 1.4;
 
+
+
     }
+
+
+
 
 
     .continuity-notice {
 
+
+
         padding: 20px 17px;
+
+
 
         border-left-width: 5px;
 
+
+
         border-radius: 15px;
 
+
+
         box-shadow:
+
             0 5px 18px rgba(0,0,0,.08);
 
+
+
     }
+
+
+
 
 
     .continuity-notice::before {
 
+
+
         top: 15px;
+
+
 
         right: 15px;
 
+
+
         font-size: 22px;
 
+
+
     }
+
+
+
 
 
     .continuity-heading {
 
+
+
         font-size: 17px;
+
+
 
         padding-right: 28px;
 
+
+
         line-height: 1.4;
 
+
+
     }
+
+
+
 
 
     .continuity-message {
 
+
+
         font-size: 14px;
+
+
 
         line-height: 1.7;
 
+
+
     }
+
+
+
 
 
     .continuity-compensation {
 
+
+
         padding: 13px;
+
+
 
         font-size: 14px;
 
+
+
         line-height: 1.6;
 
+
+
     }
+
+
+
 
 
     .continuity-footer {
 
+
+
         font-size: 13px;
+
+
 
     }
 
 
+
+
+
     /* =====================================================
+
        RECORDING FILTER
+
        ===================================================== */
+
+
 
     #subjectFilter {
 
+
+
         width: 100%;
+
+
 
         height: 46px;
 
+
+
         padding: 0 12px;
+
+
 
         border: 1px solid #d7dee8;
 
+
+
         border-radius: 10px;
+
+
 
         background: white;
 
+
+
         font-size: 15px;
+
+
 
         margin-bottom: 14px;
 
+
+
     }
+
+
+
 
 
     /* =====================================================
+
        RECORDING CARDS
+
        ===================================================== */
+
+
 
     #recordingList > div {
 
+
+
         border-radius: 15px !important;
+
+
 
         padding: 15px !important;
 
+
+
         margin-bottom: 14px !important;
 
+
+
         box-shadow:
+
             0 4px 16px rgba(15,23,42,.08);
+
+
 
         border: 1px solid #e7ebf1;
 
+
+
     }
+
+
+
 
 
     #recordingList video {
 
+
+
         width: 100% !important;
+
+
 
         height: auto;
 
+
+
         max-height: 230px;
+
+
 
         border-radius: 10px;
 
+
+
         margin-top: 8px;
+
+
 
         background: #000;
 
+
+
     }
+
+
+
 
 
     /* =====================================================
+
        MOBILE SPACING
+
        ===================================================== */
+
+
 
     #classList {
 
+
+
         width: 100%;
 
+
+
     }
+
+
+
 
 
     #academicContinuityList {
 
+
+
         width: 100%;
 
+
+
     }
+
+
+
 
 
     #recordingList {
 
+
+
         width: 100%;
+
+
 
     }
 
+
+
+}
+
+
+
+
+/* =========================================================
+   PREMIUM GLASSMORPHISM BLUE UI — VISUAL OVERRIDES
+   Keeps existing HTML IDs, navigation and JavaScript intact.
+   ========================================================= */
+:root {
+    --gp-ink: #12213f;
+    --gp-blue: #2563eb;
+    --gp-blue-dark: #10244e;
+    --gp-sky: #dff2ff;
+    --gp-muted: #64748b;
+    --gp-border: rgba(148, 163, 184, .22);
+}
+* { box-sizing: border-box; }
+html { min-height: 100%; }
+body {
+    font-family: "Segoe UI", Inter, Arial, sans-serif;
+    color: var(--gp-ink);
+    background:
+      radial-gradient(ellipse at 85% 0%, rgba(147,197,253,.38), transparent 34%),
+      radial-gradient(ellipse at 55% 85%, rgba(191,219,254,.28), transparent 38%),
+      linear-gradient(135deg, #f6faff 0%, #edf4fc 48%, #f8fbff 100%);
+    min-height: 100vh;
+}
+.sidebar {
+    width: 258px;
+    padding: 10px 14px 24px;
+    background: linear-gradient(165deg, #101b36 0%, #122b58 55%, #164e83 100%);
+    border-right: 1px solid rgba(255,255,255,.1);
+    box-shadow: 12px 0 36px rgba(15, 35, 75, .13);
+    overflow-y: auto;
+    z-index: 100;
+}
+.sidebar > div:first-child {
+    padding: 28px 12px 32px !important;
+    margin-bottom: 10px;
+}
+.sidebar > div:first-child img {
+    width: 158px !important;
+    max-width: 100%;
+    filter: drop-shadow(0 5px 14px rgba(0,0,0,.18));
+}
+.sidebar ul { margin: 0; }
+.sidebar ul li {
+    margin: 5px 0;
+    padding: 13px 14px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    color: #eaf2ff;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: .1px;
+    transition: background .2s ease, transform .2s ease, border-color .2s ease;
+}
+.sidebar ul li:hover {
+    background: rgba(255,255,255,.12);
+    border-color: rgba(255,255,255,.12);
+    transform: translateX(3px);
+}
+.main {
+    margin-left: 258px;
+    padding: 30px clamp(20px, 3vw, 44px) 42px;
+    min-height: 100vh;
+}
+.topbar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 142px;
+    margin-bottom: 28px;
+    padding: 28px 32px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.8);
+    border-radius: 24px;
+    background: linear-gradient(115deg, rgba(255,255,255,.92), rgba(224,240,255,.82));
+    box-shadow: 0 14px 36px rgba(40, 76, 130, .09), inset 0 1px 0 rgba(255,255,255,.95);
+    backdrop-filter: blur(18px);
+}
+.topbar::after {
+    content: "";
+    position: absolute;
+    width: 230px;
+    height: 230px;
+    right: -52px;
+    top: -90px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(59,130,246,.22), rgba(96,165,250,.04) 68%, transparent 70%);
+    pointer-events: none;
+}
+.topbar h2 {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    color: #12264b;
+    font-size: clamp(23px, 2vw, 30px);
+    font-weight: 750;
+    letter-spacing: -.65px;
+}
+#studentName { color: #2563eb; }
+.class-box {
+    margin-top: 24px;
+    margin-bottom: 24px;
+    padding: 24px;
+    border: 1px solid rgba(255,255,255,.88);
+    border-radius: 22px;
+    background: rgba(255,255,255,.67);
+    box-shadow: 0 12px 32px rgba(31, 64, 115, .065), inset 0 1px 0 rgba(255,255,255,.95);
+    backdrop-filter: blur(16px);
+}
+.class-box h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 18px;
+    color: #15294d;
+    font-size: 18px;
+    font-weight: 750;
+    letter-spacing: -.2px;
+}
+.class-item {
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    border: 1px solid #e4edf9;
+    border-radius: 16px;
+    background: rgba(255,255,255,.9);
+    color: #344563;
+    box-shadow: 0 5px 16px rgba(24, 58, 110, .055);
+    line-height: 1.75;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+.class-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(24, 58, 110, .09);
+}
+.class-item button {
+    font-family: inherit;
+    font-weight: 700;
+    letter-spacing: .1px;
+    transition: filter .2s ease, transform .2s ease;
+}
+.class-item button:not(:disabled):hover { filter: brightness(1.07); transform: translateY(-1px); }
+#subjectFilter {
+    min-width: 190px;
+    min-height: 42px;
+    margin: 0 0 16px;
+    padding: 0 14px;
+    border: 1px solid #d7e4f5;
+    border-radius: 11px;
+    background: rgba(255,255,255,.94);
+    color: #243b60;
+    font: inherit;
+    outline: none;
+    box-shadow: 0 3px 10px rgba(24,58,110,.04);
+}
+#subjectFilter:focus { border-color: #60a5fa; box-shadow: 0 0 0 3px rgba(59,130,246,.13); }
+#recordingList > div {
+    padding: 18px !important;
+    border: 1px solid #e4edf9;
+    border-radius: 16px;
+    background: rgba(255,255,255,.92) !important;
+    color: #344563;
+    box-shadow: 0 5px 16px rgba(24,58,110,.055);
+}
+#recordingList video {
+    max-width: 100%;
+    border-radius: 12px;
+    background: #0b1220;
+}
+.academic-continuity-title { color: #16345f; }
+.continuity-notice {
+    border: 1px solid #f4df9e;
+    border-left: 5px solid #eab308;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(255,252,235,.98), rgba(255,255,255,.95));
+    box-shadow: 0 10px 28px rgba(133, 100, 20, .08);
+}
+.continuity-compensation {
+    border-color: #c8defe;
+    background: linear-gradient(135deg, #eff6ff, #f8fbff);
+    border-radius: 12px;
+}
+.mobile-header { background: linear-gradient(110deg, #101b36, #164e83); }
+.mobile-menu-btn { border: 1px solid rgba(255,255,255,.16); }
+@media (min-width: 769px) {
+    .sidebar { left: 0; }
+}
+@media (max-width: 768px) {
+    .sidebar { padding: 8px 14px 24px; }
+    .main { padding: 82px 14px 28px; }
+    .topbar {
+        min-height: 112px;
+        padding: 22px 20px;
+        border-radius: 20px;
+    }
+    .topbar h2 { font-size: 23px; }
+    .class-box {
+        padding: 18px 15px;
+        border-radius: 18px;
+        margin-top: 18px;
+        margin-bottom: 18px;
+    }
+    .class-box h3 { font-size: 17px; }
+    .class-item { padding: 16px; border-radius: 14px; }
+    #subjectFilter { width: 100%; }
+    .continuity-notice { border-radius: 15px; }
 }
 
 </style>
+
 </head>
+
+
 
 <body>
 
+
+
     <!-- =====================================================
+
      MOBILE HEADER
+
      ===================================================== -->
+
+
 
 <div class="mobile-header">
 
+
+
     <button
+
         class="mobile-menu-btn"
+
         onclick="toggleMobileMenu()"
+
         aria-label="Open menu">
+
+
 
         <i class="fa-solid fa-bars"></i>
 
+
+
     </button>
+
+
+
 
 
     <div class="mobile-header-title">
 
+
+
         Student Portal
+
+
 
     </div>
 
 
+
+
+
     <img
+
         src="images/logo.png"
+
         class="mobile-logo">
 
+
+
 </div>
+
+
+
 
 
 <div
+
     class="sidebar-overlay"
+
     id="sidebarOverlay"
+
     onclick="closeMobileMenu()">
+
 </div>
+
+
 
 <div class="sidebar">
+
     <div style="text-align:center; padding:40px;">
+
     <img src="images/logo.png" style="width:170px;">
+
 </div>
+
     <ul>
+
     <li>🏠 Dashboard</li>
 
+
+
     <li onclick="go('student-class.html')">
+
         📅 My Classes
+
     </li>
+
+
 
     <li onclick="go('student-homework.html')">
+
         📘 Homework
+
     </li>
+
+
 
     <!-- =====================================================
+
          LEARNING MATERIALS
+
          ===================================================== -->
 
+
+
     <li onclick="go('student-materials.html')">
+
         📚 Materials
+
     </li>
+
+
 
     <li onclick="go('student-assessment.html')">
+
     📝 Assessment Sheet
+
 </li>
+
+
 
     <li onclick="go('student-calendar.html')">
+
         📅 Calendar
+
     </li>
 
+
+
     <li onclick="go('student-results.html')">
+
     📊 Results
+
 </li>
+
+
+
+
 
 
 
 <li onclick="logout()">
+
     🚪 Logout
+
 </li>
+
 </ul>
+
 </div>
+
+
 
 <div class="main">
 
+
+
 <div class="topbar">
+
     <h2>Welcome, <span id="studentName"></span></h2>
+
 </div>
+
 <div class="class-box">
+
 <h3>My Classes</h3>
+
 <div id="classList"></div>
+
 </div>
+
+
 
 <!-- =====================================================
+
      ACADEMIC CONTINUITY NOTICES
+
      ===================================================== -->
 
+
+
 <div
+
     id="academicContinuitySection"
+
     class="academic-continuity-section"
+
 >
 
+
+
     <div class="academic-continuity-title">
+
         📢 Important Academic Notice
+
     </div>
+
+
 
     <div id="academicContinuityList"></div>
 
+
+
 </div>
+
 <div class="class-box">
+
+
 
 <h3>📅 My Calendar</h3>
 
+
+
 <div class="class-item"
+
 style="
+
 display:flex;
+
 justify-content:space-between;
+
 align-items:center;
+
 ">
+
+
 
     <div>
 
+
+
         View your classes, holidays and academy events.
+
+
 
     </div>
 
+
+
     <button
+
     onclick="go('student-calendar.html')"
+
     style="
+
     background:#0d6efd;
+
     color:white;
+
     border:none;
+
     padding:8px 18px;
+
     border-radius:6px;
+
     cursor:pointer;
+
     ">
+
+
 
         Open Calendar
 
+
+
     </button>
 
-</div>
+
 
 </div>
+
+
+
+</div>
+
+
 
 <!-- ✅ ADD HERE -->
+
 <div class="class-box">
+
 <h3>📂 Class Recordings</h3>
 
+
+
 <!-- ✅ MOVE FILTER HERE -->
+
 <select id="subjectFilter" onchange="loadRecordings()">
+
 <option value="">All Subjects</option>
+
 <option value="Maths">Maths</option>
+
 <option value="Science">Science</option>
+
 </select>
 
+
+
 <div id="recordingList"></div>
-</div>
 
 </div>
+
+
+
+</div>
+
+
 
 <script>
 
+
+
 const token = localStorage.getItem("token");
 
+
+
 if(!token){
+
 window.location.href = "student-login.html";
+
 }
+
+
 
 async function loadDashboard(){
 
+
+
 const res = await fetch(
+
 "https://academy-backend-eatl.onrender.com/api/student/dashboard",
+
 {
+
 headers:{
+
 "Authorization":"Bearer " + token
+
 }
+
 }
+
 );
+
+
 
 const data = await res.json();
 
+
+
 document.getElementById("studentName").innerText = data.name;
 
+
+
 const container =
+
     document.getElementById("classList");
 
-// =========================================================
-// TODAY'S CLASSES — TIME / STATUS PRIORITY
+
+
 // =========================================================
 
+// TODAY'S CLASSES — TIME / STATUS PRIORITY
+
+// =========================================================
+
+
+
 // GET TODAY NAME
+
 const today = new Date().toLocaleDateString(
+
     'en-US',
+
     {
+
         weekday: 'long'
+
     }
+
 );
 
 
+
+
+
 // FILTER ONLY TODAY
+
 const todayClasses =
+
     data.classes.filter(c =>
 
+
+
         c.day.trim().toLowerCase() ===
+
         today.toLowerCase()
+
+
 
     );
 
 
+
+
+
 // =========================================================
+
 // CREATE THREE GROUPS
+
 // =========================================================
+
+
 
 const upcomingClasses = [];
 
+
+
 const liveClasses = [];
+
+
 
 const completedClasses = [];
 
 
-// =========================================================
-// CHECK CLASS STATUS
+
+
+
 // =========================================================
 
+// CHECK CLASS STATUS
+
+// =========================================================
+
+
+
 todayClasses.forEach(c => {
+
+
 
     const now = new Date();
 
 
+
+
+
     // START TIME
+
     const [startHour, startMinute] =
+
         c.startTime.split(":");
 
+
+
     const start =
+
         new Date();
 
+
+
     start.setHours(
+
         Number(startHour),
+
         Number(startMinute),
+
         0,
+
         0
+
     );
+
+
+
 
 
     // END TIME
+
     const [endHour, endMinute] =
+
         c.endTime.split(":");
 
+
+
     const end =
+
         new Date();
 
+
+
     end.setHours(
+
         Number(endHour),
+
         Number(endMinute),
+
         0,
+
         0
+
     );
 
 
+
+
+
     // =====================================================
+
     // UPCOMING
+
     // =====================================================
+
+
 
     if (now < start) {
 
+
+
         upcomingClasses.push(c);
+
+
 
     }
 
 
-    // =====================================================
-    // LIVE
+
+
+
     // =====================================================
 
+    // LIVE
+
+    // =====================================================
+
+
+
     else if (
+
         now >= start &&
+
         now <= end
+
     ) {
+
+
 
         liveClasses.push(c);
 
+
+
     }
 
 
+
+
+
     // =====================================================
+
     // COMPLETED
+
     // =====================================================
+
+
 
     else {
 
+
+
         completedClasses.push(c);
 
+
+
     }
+
+
 
 });
 
 
+
+
+
 // =========================================================
+
 // SORT EACH GROUP BY START TIME
+
 // =========================================================
+
+
 
 const sortByTime = (a, b) => {
 
+
+
     return a.startTime.localeCompare(
+
         b.startTime
+
     );
+
+
 
 };
 
 
+
+
+
 upcomingClasses.sort(sortByTime);
 
+
+
 liveClasses.sort(sortByTime);
+
+
 
 completedClasses.sort(sortByTime);
 
 
+
+
+
 // =========================================================
+
 // BUILD CLASS CARD
+
 // =========================================================
+
+
 
 function createClassCard(c, isLive) {
 
+
+
     const joinButton = isLive
+
         ? `
+
             <button
+
                 onclick='joinClass(
+
                     "${c._id}",
+
                     "${c.className}",
+
                     "${c.subject}",
+
                     "${c.day}",
+
                     "${c.startTime}",
+
                     "${c.endTime}"
+
                 )'
+
                 style="
+
                     background:green;
+
                     color:white;
+
                     border:none;
+
                     padding:8px 14px;
+
                     border-radius:6px;
+
                     cursor:pointer;
+
                 "
+
             >
+
                 Join Class
+
             </button>
+
           `
+
         : `
+
             <button
+
                 disabled
+
                 style="
+
                     background:#cbd5e1;
+
                     color:#64748b;
+
                     border:none;
+
                     padding:8px 14px;
+
                     border-radius:6px;
+
                     cursor:not-allowed;
+
                     opacity:0.8;
+
                 "
+
             >
+
                 Join Class
+
             </button>
+
           `;
+
+
 
     return `
 
+
+
     <div
+
         class="class-item"
+
         style="
+
             display:flex;
+
             justify-content:space-between;
+
             align-items:center;
+
         "
+
     >
+
+
 
         <div>
 
+
+
             📘 ${c.subject || "General"}
+
             |
+
             🏫 ${c.className}
+
             |
+
             📅 ${c.day}
+
             |
+
             ⏰ ${c.startTime} - ${c.endTime}
 
+
+
         </div>
+
+
+
 
 
         ${joinButton}
 
+
+
     </div>
 
+
+
     `;
+
+
 
 }
 
 
-// =========================================================
-// RENDER SECTION
+
+
+
 // =========================================================
 
+// RENDER SECTION
+
+// =========================================================
+
+
+
 function renderClassSection(
+
     title,
+
     classes,
+
     icon,
+
     isLive
+
 ) {
+
+
 
     if (classes.length === 0) {
 
+
+
         return "";
 
+
+
     }
+
+
+
 
 
     let html = `
 
+
+
         <div
+
             class="today-class-section"
+
             style="
+
                 margin-bottom:20px;
+
             "
+
         >
 
+
+
             <h4
+
                 style="
+
                     margin:0 0 10px 0;
+
                     font-size:16px;
+
                 "
+
             >
+
+
 
                 ${icon} ${title}
 
+
+
             </h4>
 
+
+
     `;
+
+
+
 
 
     classes.forEach(c => {
 
+
+
     html += createClassCard(c, isLive);
+
+
 
 });
 
 
+
+
+
     html += `
+
+
 
         </div>
 
+
+
     `;
+
+
+
 
 
     return html;
 
+
+
 }
 
 
+
+
+
 // =========================================================
+
 // NO CLASSES
+
 // =========================================================
+
+
 
 if (todayClasses.length === 0) {
 
+
+
     container.innerHTML = `
+
+
 
         <div class="class-item">
 
+
+
             No classes for today
+
+
 
         </div>
 
+
+
     `;
+
+
 
 }
 
 
-// =========================================================
-// SHOW CLASSES IN REQUIRED PRIORITY
+
+
+
 // =========================================================
 
+// SHOW CLASSES IN REQUIRED PRIORITY
+
+// =========================================================
+
+
+
 else {
+
+
 
     let html = "";
 
 
+
+
+
     // 1️⃣ UPCOMING FIRST
+
     html += renderClassSection(
+
     "UPCOMING CLASSES",
+
     upcomingClasses,
+
     "🟡",
+
     false
+
 );
+
+
+
 
 
     // 2️⃣ LIVE SECOND
+
     html += renderClassSection(
+
     "LIVE CLASSES",
+
     liveClasses,
+
     "🟢",
+
     true
+
 );
+
+
+
 
 
     // 3️⃣ COMPLETED LAST
+
     html += renderClassSection(
+
     "CLASSES OVER",
+
     completedClasses,
+
     "⚪",
+
     false
+
 );
+
+
+
 
 
     container.innerHTML = html;
 
-}
+
 
 }
+
+
+
+}
+
+
 
 function logout(){
+
 localStorage.clear();
+
 window.location.href = "student-login.html";
+
 }
+
+
 
 function go(page){
+
 window.location.href = page;
+
 }
 
+
+
 loadDashboard();
+
 async function joinClass(
+
     periodId,
+
     className,
+
     subject,
+
     day,
+
     startTime,
+
     endTime
+
 ){
+
+
 
     try{
 
+
+
         const studentId = localStorage.getItem("studentId");
 
+
+
         await fetch(
+
             "https://academy-backend-eatl.onrender.com/api/student-attendance/mark",
+
             {
+
                 method:"POST",
+
                 headers:{
+
                     "Content-Type":"application/json",
+
                     "Authorization":"Bearer " + token
+
                 },
+
                 body:JSON.stringify({
+
                     studentId,
+
                     className,
+
                     subject,
+
                     day,
+
                     startTime,
+
                     endTime
+
                 })
+
             }
+
         );
 
+
+
         /* =========================================================
+
    GET TEACHER MEETING LINK FOR THIS PERIOD
+
    ========================================================= */
+
+
 
 const meetingResponse = await fetch(
 
+
+
     "https://academy-backend-eatl.onrender.com/api/student/meeting-link/" +
+
     encodeURIComponent(periodId),
 
+
+
     {
+
         method: "GET",
 
+
+
         headers: {
+
             "Authorization": "Bearer " + token
+
         }
+
     }
 
+
+
 );
+
+
 
 const meetingData = await meetingResponse.json();
 
 
+
+
+
 /* =========================================================
+
    CHECK MEETING LINK RESPONSE
+
    ========================================================= */
+
+
 
 if(!meetingResponse.ok){
 
+
+
     console.error(
+
         "Meeting link error:",
+
         meetingData
+
     );
 
+
+
     alert(
+
         meetingData.message ||
+
         "Unable to get teacher meeting link."
+
     );
+
+
 
     return;
 
+
+
 }
+
+
+
 
 
 if(!meetingData.meetingLink){
 
+
+
     alert(
+
         "Teacher Google Meet link is not configured."
+
     );
+
+
 
     return;
 
+
+
 }
 
 
+
+
+
 /* =========================================================
+
    OPEN THE CORRECT TEACHER GOOGLE MEET
+
    ========================================================= */
 
-console.log(
-    "Teacher:",
-    meetingData.teacherName
-);
+
 
 console.log(
-    "Teacher Meeting:",
-    meetingData.meetingLink
+
+    "Teacher:",
+
+    meetingData.teacherName
+
 );
+
+
+
+console.log(
+
+    "Teacher Meeting:",
+
+    meetingData.meetingLink
+
+);
+
+
+
 
 
 window.location.href =
+
     meetingData.meetingLink;
+
+
 
     }catch(err){
 
+
+
         console.error(err);
+
         alert("Unable to join class");
 
+
+
     }
+
 }
+
 async function loadRecordings(){
 
+
+
     const subject =
+
         document.getElementById(
+
             "subjectFilter"
+
         ).value;
 
+
+
     const className =
+
         localStorage.getItem(
+
             "className"
+
         );
+
+
 
     const res = await fetch(
 
+
+
         `https://academy-backend-eatl.onrender.com/api/recordings/${className}?subject=${subject}`,
 
+
+
         {
+
             headers:{
+
                 "Authorization":
+
                     "Bearer " + token
+
             }
+
         }
+
+
 
     );
 
+
+
     const data =
+
         await res.json();
+
+
 
     let html = "";
 
+
+
     data.data.forEach(r => {
+
+
 
         html += `
 
+
+
         <div
+
         style="
+
         background:white;
+
         padding:10px;
+
         margin-bottom:10px;
+
         ">
+
+
 
             📘 ${r.subject}<br>
 
+
+
             📅
+
             ${new Date(
+
                 r.createdAt
+
             ).toLocaleString()}
+
+
 
             <br>
 
+
+
             <video
+
             width="300"
+
             controls
+
             src="${r.videoUrl}">
+
             </video>
+
+
 
         </div>
 
+
+
         `;
+
+
 
     });
 
+
+
     document.getElementById(
+
         "recordingList"
+
     ).innerHTML = html;
+
+
 
 }
 
 
+
+
+
 /* =========================================================
+
    ACADEMIC CONTINUITY NOTICE
+
    ========================================================= */
+
+
 
 async function loadAcademicContinuity(){
 
+
+
     try{
 
+
+
         const studentId =
+
             localStorage.getItem("studentId");
 
+
+
         const section =
+
             document.getElementById(
+
                 "academicContinuitySection"
+
             );
 
+
+
         const list =
+
             document.getElementById(
+
                 "academicContinuityList"
+
             );
+
+
+
 
 
         /*
+
         =====================================================
+
         STUDENT ID CHECK
+
         =====================================================
+
         */
+
+
 
         if(!studentId){
 
+
+
             console.warn(
+
                 "Student ID not found."
+
             );
 
+
+
             return;
+
+
 
         }
 
 
+
+
+
         /*
+
         =====================================================
+
         FETCH APPROVED LEAVES
+
         =====================================================
+
         */
+
+
 
         const res = await fetch(
 
+
+
             "https://academy-backend-eatl.onrender.com/api/student/academic-continuity/" +
+
             encodeURIComponent(studentId),
+
+
 
             {
 
+
+
                 headers:{
 
+
+
                     "Authorization":
+
                         "Bearer " + token
+
+
 
                 }
 
+
+
             }
 
+
+
         );
+
+
+
 
 
         if(!res.ok){
 
+
+
             console.error(
+
                 "Academic continuity API failed:",
+
                 res.status
+
             );
+
+
 
             return;
 
+
+
         }
+
+
+
 
 
         const result =
+
             await res.json();
 
 
+
+
+
         if(
+
             !result.success ||
+
             !Array.isArray(result.data) ||
+
             result.data.length === 0
+
         ){
+
+
 
             section.style.display = "none";
 
+
+
             list.innerHTML = "";
 
+
+
             return;
+
+
 
         }
 
 
+
+
+
         /*
+
         =====================================================
+
         BUILD NOTICES
+
         =====================================================
+
         */
+
+
 
         let html = "";
 
 
+
+
+
         result.data.forEach(leave => {
 
+
+
             const leaveDate =
+
                 formatContinuityDate(
+
                     leave.leaveDate
+
                 );
+
+
+
 
 
             const compensationDate =
+
                 formatContinuityDate(
+
                     leave.compensationDate
+
                 );
+
+
+
 
 
             const periodTime =
+
                 formatContinuityTime(
+
                     leave.startTime
+
                 )
+
                 +
+
                 " – "
+
                 +
+
                 formatContinuityTime(
+
                     leave.endTime
+
                 );
 
 
+
+
+
             let compensationText =
+
                 "Compensation class details will be updated by the Academy.";
 
 
+
+
+
             if(
+
                 leave.compensationDate &&
+
                 leave.compensationStartTime &&
+
                 leave.compensationEndTime
+
             ){
+
+
 
                 compensationText =
 
+
+
                     `<strong>
+
                         ${compensationDate}
+
                     </strong>
+
                     |
+
                     ${formatContinuityTime(
+
                         leave.compensationStartTime
+
                     )}
+
                     –
+
                     ${formatContinuityTime(
+
                         leave.compensationEndTime
+
                     )}`;
+
+
 
             }
 
 
+
+
+
             html += `
+
+
 
                 <div class="continuity-notice">
 
+
+
                     <div class="continuity-heading">
+
+
 
                         ✨ ACADEMIC CONTINUITY NOTICE
 
+
+
                     </div>
 
 
+
+
+
                     <div class="continuity-message">
+
+
 
                         Your scheduled class on
 
+
+
                         <strong>
+
                             ${leaveDate}
+
                         </strong>,
+
+
 
                         from
 
+
+
                         <strong>
+
                             ${periodTime}
+
                         </strong>,
 
+
+
                         will be rescheduled as your teacher
+
                         will be unavailable on this day.
 
+
+
                     </div>
+
+
+
 
 
                     <div class="continuity-message">
 
+
+
                         <strong>
+
                             Your learning will continue
+
                             without interruption.
+
                         </strong>
 
+
+
                     </div>
+
+
+
 
 
                     <div class="continuity-compensation">
 
+
+
                         📚
+
                         <strong>
+
                             Compensation Class:
+
                         </strong>
+
+
 
                         <br>
 
+
+
                         ${compensationText}
 
+
+
                     </div>
+
+
+
 
 
                     <div class="continuity-footer">
 
+
+
                         Gopes Pinnacle Academy has arranged
+
                         the compensation session to ensure
+
                         that your academic progress remains
+
                         uninterrupted.
+
+
 
                     </div>
 
+
+
                 </div>
 
+
+
             `;
+
+
 
         });
 
 
+
+
+
         /*
+
         =====================================================
+
         DISPLAY
+
         =====================================================
+
         */
 
+
+
         list.innerHTML = html;
+
+
 
         section.style.display = "block";
 
 
+
+
+
     }catch(error){
 
+
+
         console.error(
+
             "Academic continuity error:",
+
             error
+
         );
 
+
+
     }
+
+
 
 }
 
 
+
+
+
 /* =========================================================
+
    DATE FORMAT
+
    ========================================================= */
+
+
 
 function formatContinuityDate(value){
 
+
+
     if(!value){
 
+
+
         return "";
+
+
 
     }
 
 
+
+
+
     const date =
+
         new Date(value);
+
+
+
 
 
     if(isNaN(date.getTime())){
 
+
+
         return value;
+
+
 
     }
 
 
+
+
+
     return date.toLocaleDateString(
+
         "en-GB",
+
         {
+
             day: "2-digit",
+
             month: "long",
+
             year: "numeric"
+
         }
+
     );
+
+
 
 }
 
 
+
+
+
 /* =========================================================
+
    TIME FORMAT
+
    ========================================================= */
+
+
 
 function formatContinuityTime(value){
 
+
+
     if(!value){
+
+
 
         return "";
 
+
+
     }
+
+
+
 
 
     if(
+
         value.includes("AM") ||
+
         value.includes("PM")
+
     ){
 
+
+
         return value;
+
+
 
     }
 
 
+
+
+
     const parts =
+
         value.split(":");
+
+
+
 
 
     if(parts.length < 2){
 
+
+
         return value;
+
+
 
     }
 
 
+
+
+
     let hour =
+
         parseInt(
+
             parts[0],
+
             10
+
         );
 
 
+
+
+
     const minute =
+
         parts[1];
 
 
+
+
+
     const ampm =
+
         hour >= 12
+
             ? "PM"
+
             : "AM";
 
 
+
+
+
     hour =
+
         hour % 12;
+
+
+
 
 
     if(hour === 0){
 
+
+
         hour = 12;
+
+
 
     }
 
 
+
+
+
     return (
+
         hour +
+
         ":" +
+
         minute +
+
         " " +
+
         ampm
+
     );
+
+
 
 }
 
 
+
+
+
 /* =========================================================
+
    INITIAL LOAD
+
    ========================================================= */
+
+
 
 loadAcademicContinuity();
 
+
+
 loadRecordings();
 
+
+
 /* =========================================================
+
    MOBILE MENU
+
    ========================================================= */
+
+
 
 function toggleMobileMenu(){
 
+
+
     const sidebar =
+
         document.querySelector(
+
             ".sidebar"
+
         );
 
+
+
     const overlay =
+
         document.getElementById(
+
             "sidebarOverlay"
+
         );
+
+
+
 
 
     sidebar.classList.toggle(
+
         "mobile-open"
+
     );
+
+
 
     overlay.classList.toggle(
+
         "active"
+
     );
 
+
+
 }
+
+
+
 
 
 function closeMobileMenu(){
 
+
+
     const sidebar =
+
         document.querySelector(
+
             ".sidebar"
+
         );
 
+
+
     const overlay =
+
         document.getElementById(
+
             "sidebarOverlay"
+
         );
+
+
+
 
 
     sidebar.classList.remove(
+
         "mobile-open"
+
     );
+
+
 
     overlay.classList.remove(
+
         "active"
+
     );
 
+
+
 }
+
+
+
 
 
 </script>
 
 
 
+
+
+
+
 </body>
+
 </html>
