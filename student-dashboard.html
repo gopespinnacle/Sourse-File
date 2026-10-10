@@ -1678,87 +1678,64 @@ body{font-family:Inter,"Segoe UI",Arial,sans-serif!important;background:linear-g
 
 
 
+<!-- PREMIUM STUDENT SIDEBAR -->
 <div class="sidebar">
 
-    <div style="text-align:center; padding:40px;">
+    <div class="student-sidebar-brand">
+        <img src="images/logo.png"
+             alt="Gopes Pinnacle Academy">
+    </div>
 
-    <img src="images/logo.png" style="width:170px;">
+    <ul class="student-sidebar-nav">
 
-</div>
+        <li onclick="go('student-dashboard.html')"
+            data-page="student-dashboard.html">
+            <span class="student-nav-icon">🏠</span>
+            <span>Dashboard</span>
+        </li>
 
-    <ul>
+        <li onclick="go('student-class.html')"
+            data-page="student-class.html">
+            <span class="student-nav-icon">📅</span>
+            <span>My Classes</span>
+        </li>
 
-    <li>🏠 Dashboard</li>
+        <li onclick="go('student-homework.html')"
+            data-page="student-homework.html">
+            <span class="student-nav-icon">📘</span>
+            <span>Homework</span>
+        </li>
 
+        <li onclick="go('student-materials.html')"
+            data-page="student-materials.html">
+            <span class="student-nav-icon">📚</span>
+            <span>Materials</span>
+        </li>
 
+        <li onclick="go('student-assessment.html')"
+            data-page="student-assessment.html">
+            <span class="student-nav-icon">📋</span>
+            <span>Assessment Sheet</span>
+        </li>
 
-    <li onclick="go('student-class.html')">
+        <li onclick="go('student-calendar.html')"
+            data-page="student-calendar.html">
+            <span class="student-nav-icon">🗓️</span>
+            <span>Calendar</span>
+        </li>
 
-        📅 My Classes
+        <li onclick="go('student-results.html')"
+            data-page="student-results.html">
+            <span class="student-nav-icon">📊</span>
+            <span>Results</span>
+        </li>
 
-    </li>
+        <li class="student-logout" onclick="logout()">
+            <span class="student-nav-icon">🚪</span>
+            <span>Logout</span>
+        </li>
 
-
-
-    <li onclick="go('student-homework.html')">
-
-        📘 Homework
-
-    </li>
-
-
-
-    <!-- =====================================================
-
-         LEARNING MATERIALS
-
-         ===================================================== -->
-
-
-
-    <li onclick="go('student-materials.html')">
-
-        📚 Materials
-
-    </li>
-
-
-
-    <li onclick="go('student-assessment.html')">
-
-    📝 Assessment Sheet
-
-</li>
-
-
-
-    <li onclick="go('student-calendar.html')">
-
-        📅 Calendar
-
-    </li>
-
-
-
-    <li onclick="go('student-results.html')">
-
-    📊 Results
-
-</li>
-
-
-
-
-
-
-
-<li onclick="logout()">
-
-    🚪 Logout
-
-</li>
-
-</ul>
+    </ul>
 
 </div>
 
