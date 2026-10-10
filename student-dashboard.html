@@ -1596,6 +1596,232 @@ body{font-family:Inter,"Segoe UI",Arial,sans-serif!important;background:linear-g
 @media(max-width:1100px){.gp-embedded-student-calendar{height:620px}}
 @media(max-width:768px){.gp-embedded-student-calendar{height:650px;min-height:560px}}
 
+
+/* =========================================
+   GOPES PINNACLE — PREMIUM SIDEBAR
+   Image 3 inspired design
+========================================= */
+
+.sidebar {
+    position: fixed !important;
+    left: 4px;
+    top: 80px;
+    bottom: 3px;
+
+    width: 222px !important;
+    box-sizing: border-box;
+    padding: 14px 10px 20px !important;
+
+    background:
+        radial-gradient(
+            ellipse at 12% 10%,
+            rgba(30, 112, 255, .42),
+            transparent 36%
+        ),
+        radial-gradient(
+            ellipse at 90% 82%,
+            rgba(20, 99, 255, .32),
+            transparent 38%
+        ),
+        linear-gradient(
+            155deg,
+            #061638 0%,
+            #0b2b65 50%,
+            #063fa9 100%
+        ) !important;
+
+    border: 1px solid rgba(130, 184, 255, .25);
+    border-radius: 0 0 10px 10px;
+    box-shadow: 8px 0 30px rgba(0, 26, 77, .18);
+
+    overflow: hidden;
+    z-index: 100;
+}
+
+/* Subtle diagonal premium pattern */
+.sidebar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+
+    background: repeating-linear-gradient(
+        140deg,
+        transparent 0px,
+        transparent 55px,
+        rgba(111, 172, 255, .035) 56px,
+        rgba(111, 172, 255, .035) 58px
+    );
+}
+
+/* Decorative graduation cap and books */
+.sidebar::after {
+    content: "🎓\A📚";
+    white-space: pre;
+    text-align: center;
+
+    position: absolute;
+    bottom: 18px;
+    left: 0;
+    width: 100%;
+
+    font-size: 43px;
+    line-height: 1.35;
+    opacity: .95;
+    filter: drop-shadow(0 0 12px rgba(71, 153, 255, .6));
+
+    pointer-events: none;
+}
+
+/* Logo area */
+.sidebar > div:first-child {
+    position: relative;
+    z-index: 2;
+
+    min-height: 120px;
+    box-sizing: border-box;
+    padding: 10px 2px 18px !important;
+    margin-bottom: 14px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-bottom: 1px solid rgba(255, 203, 91, .4);
+}
+
+.sidebar > div:first-child img {
+    width: 195px !important;
+    max-width: 100%;
+    max-height: 100px;
+    object-fit: contain;
+
+    filter: drop-shadow(0 2px 9px rgba(0, 0, 0, .25));
+}
+
+/* Navigation list */
+.sidebar ul {
+    position: relative;
+    z-index: 2;
+
+    list-style: none;
+    margin: 0 !important;
+    padding: 0 0 145px !important;
+}
+
+/* Individual menu items */
+.sidebar ul li {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    min-height: 48px;
+    margin: 5px 0 !important;
+    padding: 0 12px !important;
+
+    color: #f4f7ff !important;
+    background: transparent !important;
+    border: 1px solid transparent;
+    border-radius: 13px;
+
+    font-size: 13px !important;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition:
+        background .25s ease,
+        border-color .25s ease,
+        box-shadow .25s ease,
+        transform .25s ease;
+}
+
+/* Larger icons */
+.sidebar ul li .student-nav-icon {
+    flex-shrink: 0;
+    width: 31px;
+    text-align: center;
+    font-size: 23px;
+}
+
+/* Existing emoji icons, if they don't use a span */
+.sidebar ul li {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .15);
+}
+
+/* Hover effect */
+.sidebar ul li:hover {
+    background: rgba(36, 103, 245, .34) !important;
+    border-color: rgba(127, 182, 255, .38);
+    box-shadow: 0 3px 15px rgba(0, 61, 181, .2);
+    transform: translateX(2px);
+}
+
+/* Active menu item */
+.sidebar ul li.active {
+    color: #fff !important;
+
+    background: linear-gradient(
+        105deg,
+        #f4c65e 0%,
+        #286bf0 13%,
+        #205be0 60%,
+        #1644b4 100%
+    ) !important;
+
+    border: 1px solid rgba(255, 218, 128, .9);
+
+    box-shadow:
+        inset 0 1px 2px rgba(255, 255, 255, .35),
+        0 0 15px rgba(35, 111, 255, .6),
+        0 4px 15px rgba(0, 0, 0, .18);
+}
+
+/* Gold accent on active item */
+.sidebar ul li.active::before {
+    content: "";
+    position: absolute;
+    left: -1px;
+    top: 5px;
+    bottom: 5px;
+    width: 4px;
+
+    border-radius: 5px;
+    background: #ffd66d;
+    box-shadow: 0 0 9px #ffd66d;
+}
+
+/* Logout separator */
+.sidebar ul li:last-child {
+    margin-top: 18px !important;
+    padding-top: 8px !important;
+    border-top: 1px solid rgba(255, 255, 255, .2);
+    border-radius: 0 0 12px 12px;
+}
+
+/* Preserve the dashboard layout */
+.main {
+    margin-left: 226px !important;
+    width: calc(100% - 226px) !important;
+    box-sizing: border-box;
+}
+
+/* Existing mobile sidebar behavior */
+@media (max-width: 768px) {
+    .sidebar {
+        left: 4px;
+        width: 222px !important;
+    }
+
+    .main {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+}
+
+
 </style>
 
 </head>
@@ -3796,6 +4022,26 @@ function closeMobileMenu(){
 
 
 
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const currentPage = location.pathname
+        .split("/")
+        .pop()
+        .toLowerCase();
+
+    document.querySelectorAll(".sidebar ul li").forEach(function (item) {
+        const page = (
+            item.getAttribute("data-page") || ""
+        ).toLowerCase();
+
+        item.classList.toggle(
+            "active",
+            page !== "" && page === currentPage
+        );
+    });
+});
+</script>
 
 
 
