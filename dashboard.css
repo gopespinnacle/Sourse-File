@@ -310,3 +310,35 @@ body{
 }
 
 }
+
+.sidebar-brand {
+    height: 88px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 10px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    overflow: hidden;
+}
+
+.sidebar-logo {
+    display: block;
+    width: 100%;
+    max-width: 175px;
+    height: 65px;
+    object-fit: contain;
+    object-position: center;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+/* Prevent decorative images from becoming oversized in the sidebar */
+.sidebar {
+    background-image: none;
+}
+
+.sidebar-brand img {
+    flex-shrink: 0;
+}
