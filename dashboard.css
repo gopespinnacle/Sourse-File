@@ -322,17 +322,19 @@ body{
     overflow: hidden;
 }
 
+
 .sidebar-logo {
     display: block;
     width: 100%;
-    max-width: 175px;
-    height: 65px;
+    max-width: 150px;
+    height: 42px;
     object-fit: contain;
     object-position: center;
     background: transparent;
     border: none;
     box-shadow: none;
 }
+
 
 /* Prevent decorative images from becoming oversized in the sidebar */
 .sidebar {
