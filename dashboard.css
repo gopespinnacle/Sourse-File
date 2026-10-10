@@ -388,3 +388,44 @@ body{
 .sidebar::after {
     background-image: none !important;
 }
+
+/* FIX TEACHER SIDEBAR LOGO SIZE */
+.sidebar .sidebar-brand {
+    height: 75px !important;
+    min-height: 75px !important;
+    max-height: 75px !important;
+    padding: 5px !important;
+    margin-bottom: 15px !important;
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.sidebar .sidebar-brand img.sidebar-logo {
+    display: block !important;
+    width: 90px !important;
+    min-width: 0 !important;
+    max-width: 90px !important;
+    height: 35px !important;
+    min-height: 0 !important;
+    max-height: 35px !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    flex: 0 0 90px !important;
+}
+
+/* Prevent other sidebar images from becoming oversized */
+.sidebar > img:not(.sidebar-logo) {
+    display: none !important;
+}
+
+.sidebar {
+    background-image: none !important;
+}
+
+.sidebar::before,
+.sidebar::after {
+    content: none !important;
+    background-image: none !important;
+}
