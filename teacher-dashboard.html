@@ -44,7 +44,20 @@ flex-shrink: 0;
 @media(max-width:850px){.sidebar{width:260px;transform:translateX(-105%);transition:transform .25s}.sidebar.show{transform:translateX(0)}.overlay.show{display:block;position:fixed;inset:0;background:#020e27a0;z-index:40}.main{margin-left:0;padding:13px 13px 85px}.mobile-header{display:flex;align-items:center;gap:11px;padding:9px 13px;background:#061943;color:white}.menu-btn{width:38px;height:38px;border:1px solid #ffffff30;border-radius:11px;background:#ffffff12;color:white}.welcome-box{flex:1;min-width:0}.welcome-text{font-size:9px;color:#bdd8ff}.teacher-mobile-name{font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mobile-header>.fa-user-circle{font-size:26px;color:#d8e8ff}.topbar{align-items:flex-start}.topbar .date-chip{display:none}.topbar .profile{min-width:0}.profile>div:nth-child(2){display:none}.hero{min-height:120px;padding:19px}.cap{font-size:43px}.quote{display:none}.stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.stat{padding:12px}.stat-icon{width:40px;height:40px;flex-basis:40px}.stat-copy strong{font-size:21px}.grid{grid-template-columns:1fr}.quick-panel{grid-column:auto}.quick-list{grid-template-columns:repeat(2,minmax(0,1fr))}.lower{grid-template-columns:1fr}.bottom-nav{position:fixed;display:grid;grid-template-columns:repeat(4,1fr);left:0;right:0;bottom:0;z-index:30;padding:8px 5px calc(8px + env(safe-area-inset-bottom));background:#fffffff5;border-top:1px solid #dce7f8;box-shadow:0 -5px 20px #0f306414}.bottom-nav a{display:flex;flex-direction:column;align-items:center;gap:4px;color:#5d7295;font-size:9px;font-weight:750;padding:4px}.bottom-nav a i{font-size:17px;color:#1768ed}}
 @media(max-width:480px){.main{padding:11px 9px 82px}.topbar h1{font-size:21px}.topbar .profile{display:none}.hero{padding:16px}.hero h2{font-size:21px}.hero p{font-size:10px}.stat{gap:8px;padding:10px}.stat-icon{width:35px;height:35px;flex-basis:35px;font-size:15px}.stat-copy strong{font-size:19px}.stat-copy span{font-size:9px}.panel{padding:12px;border-radius:15px}.panel-title{font-size:12px}.class-row{gap:6px;padding:8px}.class-info strong{font-size:9px}.class-info span{font-size:8px}.primary{padding:8px;font-size:8px}.quick-list{grid-template-columns:1fr}}
 
+/* My Calendar interaction */
+.calendar-panel {
+cursor: pointer;
+transition: box-shadow 0.2s ease;
+}
 
+.calendar-panel {
+box-shadow: 0 14px 32px #183b7418;
+}
+
+.calendar-panel button,
+.calendar-panel a {
+cursor: pointer;
+}
 </style>
 </head>
 <body>
@@ -91,7 +104,8 @@ flex-shrink: 0;
       <div class="class-row"><div class="subject-icon"><i class="fa-solid fa-users"></i></div><div class="class-info"><strong>My Classes & Student Lists</strong><span>View assigned classes, periods and students</span></div><button class="primary" onclick="goToPeriods()">Open →</button></div>
       <div class="class-row"><div class="subject-icon" style="background:#fff0d5;color:#c78100"><i class="fa-solid fa-clipboard-check"></i></div><div class="class-info"><strong>Daily Class Register</strong><span>Continue to your class register</span></div><button class="primary" onclick="location.href='teacher-class-register.html'">Open →</button></div>
     </article>
-    <article class="panel"><div class="heading"><div class="panel-title"><span class="title-icon"><i class="fa-regular fa-calendar-days"></i></span>My Calendar</div><a class="text-link" href="teacher-calendar.html">Full Calendar</a></div><div class="calendar-top"><button onclick="changeMonth(-1)" aria-label="Previous month"><i class="fa fa-chevron-left"></i></button><strong id="calendarMonth">Month Year</strong><button onclick="changeMonth(1)" aria-label="Next month"><i class="fa fa-chevron-right"></i></button></div><div class="calendar-grid" id="miniCalendar"></div><div class="calendar-note"><i class="fa fa-circle-info"></i> View academy events, holidays and teaching schedules in the full calendar.</div></article>
+     <article class="panel calendar-panel"
+    onclick="if (!event.target.closest('button, a')) window.location.href='teacher-calendar.html'"> 
     <article class="panel quick-panel"><div class="heading"><div class="panel-title"><span class="title-icon" style="background:#fff1d7;color:#ce8500"><i class="fa-solid fa-bolt"></i></span>Quick Actions</div></div><div class="quick-list">
       <button class="quick qgreen" onclick="location.href='teacher-class-register.html'"><i class="fa-solid fa-clipboard-check"></i>Daily Class Register<i class="fa fa-chevron-right"></i></button>
       <button class="quick qgold" onclick="location.href='teacher-homework-classes.html'"><i class="fa-solid fa-list-check"></i>Review Homework<i class="fa fa-chevron-right"></i></button>
