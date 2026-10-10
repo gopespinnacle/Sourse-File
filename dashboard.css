@@ -429,3 +429,43 @@ body{
     content: none !important;
     background-image: none !important;
 }
+
+/* FINAL FIX: Teacher dashboard sidebar logo */
+body .sidebar .sidebar-brand {
+    width: 100% !important;
+    height: 65px !important;
+    min-height: 65px !important;
+    max-height: 65px !important;
+    padding: 5px !important;
+    margin: 0 0 12px 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important;
+}
+
+body .sidebar .sidebar-brand img.sidebar-logo {
+    display: block !important;
+    width: 90px !important;
+    min-width: 0 !important;
+    max-width: 90px !important;
+    height: 35px !important;
+    min-height: 0 !important;
+    max-height: 35px !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    flex: 0 0 90px !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+body .sidebar {
+    background-image: none !important;
+}
+
+body .sidebar::before,
+body .sidebar::after {
+    content: none !important;
+    background-image: none !important;
+}
