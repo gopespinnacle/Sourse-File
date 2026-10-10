@@ -1539,6 +1539,54 @@ body {
     .continuity-notice { border-radius: 15px; }
 }
 
+
+/* ==========================================================
+   IMAGE 2 INSPIRED PREMIUM STUDENT DASHBOARD
+   Presentation layer only; existing API and functions retained.
+   ========================================================== */
+:root{--gp-navy:#071b55;--gp-blue:#0967f9;--gp-ink:#10265e;--gp-muted:#58709e;--gp-line:#d8e8ff}
+body{font-family:Inter,"Segoe UI",Arial,sans-serif!important;background:linear-gradient(135deg,#eaf5ff 0%,#f5faff 58%,#e8f3ff 100%)!important;color:var(--gp-ink)}
+.sidebar{width:278px!important;padding:10px 14px 26px!important;background:linear-gradient(180deg,#07184d 0%,#073b91 62%,#075bd5 100%)!important;box-shadow:8px 0 30px rgba(6,39,105,.2)!important;border-right:1px solid rgba(255,255,255,.25)}
+.sidebar>div:first-child{padding:20px 8px 24px!important}
+.sidebar>div:first-child img{width:205px!important;max-width:100%;filter:drop-shadow(0 5px 12px rgba(0,0,0,.15))}
+.sidebar ul li{padding:14px 13px!important;margin:5px 0!important;border-radius:12px!important;color:#f1f7ff!important;font-size:14px!important;font-weight:600!important;border:1px solid transparent!important}
+.sidebar ul li:hover{background:rgba(255,255,255,.13)!important;border-color:rgba(255,255,255,.18)!important;transform:translateX(2px)}
+.main.gp-dashboard{margin-left:278px!important;padding:22px clamp(18px,2.3vw,34px) 38px!important;min-height:100vh}
+.gp-hero{min-height:174px;position:relative;display:flex;align-items:center;overflow:hidden;padding:28px 34px;border:1px solid rgba(255,255,255,.95);border-radius:24px;background:linear-gradient(105deg,#fff 0%,#e9f5ff 48%,#b9ddff 100%);box-shadow:0 12px 30px rgba(31,88,165,.1);margin-bottom:20px}
+.gp-hero-copy{position:relative;z-index:2;max-width:55%}.gp-eyebrow{font-size:10px;letter-spacing:2.2px;font-weight:800;color:#3878d7;margin-bottom:10px}
+.gp-hero h1{margin:0;color:#0b2058;font-size:clamp(24px,2.4vw,36px);line-height:1.2;letter-spacing:-.8px;font-weight:850}
+.gp-hero h1 #studentName{color:#1766ef}.gp-wave{font-size:.8em}.gp-hero p{margin:10px 0 0;color:#527bb8;font-size:16px;font-weight:600}.gp-hero p span{padding:0 5px;color:#ffb323}
+.gp-hero-art{position:absolute;right:29%;top:-38px;width:210px;height:235px;display:flex;align-items:center;justify-content:center}
+.gp-orbit{position:absolute;border-radius:50%;border:1px solid rgba(62,145,255,.22);transform:rotate(-25deg)}.gp-orbit-one{width:210px;height:125px}.gp-orbit-two{width:155px;height:205px}
+.gp-cap{position:relative;z-index:1;font-size:75px;filter:drop-shadow(0 12px 10px rgba(20,79,165,.2));transform:rotate(-7deg)}
+.gp-books{position:absolute;bottom:26px;display:flex;flex-direction:column;gap:3px;width:120px;transform:rotate(-4deg)}.gp-books i{height:10px;border-radius:3px;background:linear-gradient(90deg,#0d5bcb,#62b3ff);box-shadow:0 3px 5px #9bbce8}.gp-books i:nth-child(2){background:linear-gradient(90deg,#f8fbff,#9dc8f7)}.gp-books i:nth-child(3){background:linear-gradient(90deg,#1744a4,#397cf0)}
+.gp-quote{position:absolute;right:28px;top:50%;transform:translateY(-50%);font-size:clamp(13px,1.2vw,17px);font-weight:750;line-height:1.55;color:#173d86;text-align:center}
+.gp-stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.gp-stat-card{min-width:0;display:flex;align-items:center;gap:13px;padding:17px 15px;border-radius:19px;background:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.98);box-shadow:0 7px 20px rgba(35,87,157,.08);transition:transform .2s,box-shadow .2s}
+.gp-stat-card:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(35,87,157,.13)}
+.gp-stat-icon{flex:0 0 52px;width:52px;height:52px;border-radius:15px;display:grid;place-items:center;font-size:22px}
+.gp-stat-card>div:nth-child(2){min-width:0;display:flex;flex-direction:column;gap:4px}.gp-stat-card strong{font-size:27px;line-height:1;font-weight:850;color:#0b2058}.gp-stat-card span{font-size:12px;line-height:1.35;color:#526b9b;font-weight:650}.gp-stat-arrow{margin-left:auto;color:#6c88b8;font-size:13px}
+.gp-stat-blue .gp-stat-icon{color:#0870f9;background:#dcecff}.gp-stat-red .gp-stat-icon{color:#f12f48;background:#ffe0e6}.gp-stat-green .gp-stat-icon{color:#08a76d;background:#d8faeb}.gp-stat-amber .gp-stat-icon{color:#f29a08;background:#fff0ce}
+.gp-main-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(290px,.9fr);gap:16px;align-items:stretch;margin-bottom:18px}
+.gp-panel{min-width:0;padding:20px;border:1px solid rgba(255,255,255,.95);border-radius:21px;background:rgba(255,255,255,.88);box-shadow:0 9px 28px rgba(35,87,157,.075);backdrop-filter:blur(14px)}
+.gp-panel-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.gp-panel-heading h2{display:flex;align-items:center;gap:10px;margin:0;color:#0b2058;font-size:18px;font-weight:800;letter-spacing:-.25px}
+.gp-heading-icon{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:#e4f0ff;color:#1268f3;font-size:15px}
+.gp-text-link{border:0;background:transparent;color:#075ef2;font:700 12px inherit;font-size:12px;font-weight:750;cursor:pointer;white-space:nowrap}.gp-text-link i{margin-left:5px;font-size:10px}
+.gp-today-panel #classList{display:grid;gap:10px}.gp-today-panel .class-item{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:14px;margin:0!important;padding:15px 16px!important;border:1px solid #dfebfc!important;border-radius:15px!important;background:linear-gradient(100deg,#fff,#f5faff)!important;box-shadow:0 4px 12px rgba(32,76,142,.045)!important;color:#1b356c!important;line-height:1.55}
+.gp-today-panel .class-item button{border-radius:10px!important;padding:11px 15px!important;min-width:115px;font-weight:750!important;white-space:nowrap}
+.gp-calendar-panel{position:relative;display:flex;flex-direction:column}.gp-calendar-description{color:#637aa3;font-size:13px;line-height:1.7;margin:4px 0 18px}.gp-calendar-button{margin-top:auto;min-height:44px;padding:12px 15px;border:1px solid #bdd8ff;border-radius:11px;background:linear-gradient(100deg,#0967f9,#3b8bff);color:#fff;font-weight:750;cursor:pointer;box-shadow:0 5px 12px rgba(9,103,249,.18)}.gp-calendar-button i{margin-right:7px}
+.gp-empty-state{padding:25px 12px;text-align:center;color:#6279a2}.gp-empty-state span{display:block;font-size:30px;margin-bottom:7px}.gp-empty-state strong{color:#193568}.gp-empty-state p{font-size:13px;margin-bottom:0}
+.gp-notice-section{margin:0 0 18px!important}.gp-notice-section .academic-continuity-title{display:flex;align-items:center;gap:9px;font-size:16px;color:#a94b05;margin-bottom:10px}.gp-notice-section .continuity-notice{margin:0!important;padding:19px 22px!important;border:1px solid #ffdf9a!important;border-left:6px solid #ff9d20!important;border-radius:17px!important;background:linear-gradient(105deg,#fff9ec,#fff)!important;box-shadow:0 7px 20px rgba(164,103,20,.07)!important}.gp-notice-section .continuity-heading{font-size:17px!important;margin-bottom:7px!important}.gp-notice-section .continuity-message{font-size:14px!important;margin-bottom:7px!important}
+.gp-recordings-panel{margin-bottom:18px}.gp-recordings-heading{flex-wrap:wrap}.gp-filter-label{display:flex;align-items:center;gap:8px;color:#5d739c;font-size:12px;font-weight:700}
+#subjectFilter{min-width:145px!important;min-height:38px!important;margin:0!important;padding:0 12px!important;border:1px solid #cfe0f8!important;border-radius:10px!important;background:#fff!important;color:#244274!important;font:inherit!important;font-size:12px!important}
+#recordingList{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+#recordingList>div{min-width:0;padding:13px!important;border:1px solid #e0ebfb!important;border-radius:15px!important;background:linear-gradient(145deg,#fff,#f5f9ff)!important;box-shadow:0 4px 13px rgba(35,87,157,.06)!important;color:#244274}
+#recordingList video{width:100%;max-width:100%;border-radius:10px;background:#07152f}
+@media(max-width:1200px){.gp-quote{display:none}.gp-hero-art{right:8%}.gp-hero-copy{max-width:68%}.gp-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.gp-main-grid{grid-template-columns:minmax(0,1.4fr) minmax(260px,.9fr)}}
+@media(max-width:900px){.sidebar{width:258px!important}.main.gp-dashboard{margin-left:258px!important}.gp-main-grid{grid-template-columns:1fr}.gp-hero-art{right:2%;opacity:.55}.gp-hero-copy{max-width:80%}#recordingList{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:768px){.sidebar{width:270px!important}.main.gp-dashboard{margin-left:0!important;padding:82px 13px 26px!important}.gp-hero{padding:24px 20px;min-height:150px;border-radius:19px}.gp-hero-copy{max-width:100%}.gp-hero h1{font-size:24px}.gp-hero p{font-size:13px}.gp-hero-art,.gp-quote{display:none}.gp-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.gp-stat-card{padding:13px 10px;gap:9px;border-radius:15px}.gp-stat-icon{flex-basis:42px;width:42px;height:42px;font-size:18px}.gp-stat-card strong{font-size:23px}.gp-stat-card span{font-size:11px}.gp-stat-arrow{display:none}.gp-panel{padding:15px 13px;border-radius:17px}.gp-panel-heading{gap:8px;flex-wrap:wrap}.gp-panel-heading h2{font-size:16px}.gp-today-panel .class-item{align-items:stretch!important;flex-direction:column!important}.gp-today-panel .class-item button{width:100%}#recordingList{grid-template-columns:1fr}.gp-recordings-heading .gp-text-link{margin-left:auto}.gp-calendar-panel{min-height:180px}}
+
 </style>
 
 </head>
@@ -1707,161 +1755,90 @@ body {
 
 
 
-<div class="main">
+<div class="main gp-dashboard">
+  <section class="gp-hero">
+    <div class="gp-hero-copy">
+      <div class="gp-eyebrow">GOPES PINNACLE ACADEMY</div>
+      <h1>Welcome back, <span id="studentName"></span> <span class="gp-wave">👋</span></h1>
+      <p>Learn Today <span>•</span> Grow Tomorrow</p>
+    </div>
+    <div class="gp-hero-art" aria-hidden="true">
+      <div class="gp-orbit gp-orbit-one"></div>
+      <div class="gp-orbit gp-orbit-two"></div>
+      <div class="gp-cap">🎓</div>
+      <div class="gp-books"><i></i><i></i><i></i></div>
+    </div>
+    <div class="gp-quote">“Small steps every day<br>make a big difference.”</div>
+  </section>
 
+  <section class="gp-stat-grid" aria-label="Student class summary">
+    <article class="gp-stat-card gp-stat-blue">
+      <div class="gp-stat-icon"><i class="fa-solid fa-video"></i></div>
+      <div><strong id="gpUpcomingCount">—</strong><span>Upcoming Classes</span></div>
+      <i class="fa-solid fa-chevron-right gp-stat-arrow"></i>
+    </article>
+    <article class="gp-stat-card gp-stat-red">
+      <div class="gp-stat-icon"><i class="fa-solid fa-circle-play"></i></div>
+      <div><strong id="gpLiveCount">—</strong><span>Live Class</span></div>
+      <i class="fa-solid fa-chevron-right gp-stat-arrow"></i>
+    </article>
+    <article class="gp-stat-card gp-stat-green">
+      <div class="gp-stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+      <div><strong id="gpCompletedCount">—</strong><span>Completed Classes</span></div>
+      <i class="fa-solid fa-chevron-right gp-stat-arrow"></i>
+    </article>
+    <article class="gp-stat-card gp-stat-amber">
+      <div class="gp-stat-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+      <div><strong id="gpHomeworkCount">—</strong><span>Homework Pending</span></div>
+      <i class="fa-solid fa-chevron-right gp-stat-arrow"></i>
+    </article>
+  </section>
 
-
-<div class="topbar">
-
-    <h2>Welcome, <span id="studentName"></span></h2>
-
-</div>
-
-<div class="class-box">
-
-<h3>My Classes</h3>
-
-<div id="classList"></div>
-
-</div>
-
-
-
-<!-- =====================================================
-
-     ACADEMIC CONTINUITY NOTICES
-
-     ===================================================== -->
-
-
-
-<div
-
-    id="academicContinuitySection"
-
-    class="academic-continuity-section"
-
->
-
-
-
-    <div class="academic-continuity-title">
-
-        📢 Important Academic Notice
-
+  <section class="gp-main-grid">
+    <div class="gp-panel gp-today-panel">
+      <div class="gp-panel-heading">
+        <h2><span class="gp-heading-icon"><i class="fa-solid fa-play"></i></span>Today’s Classes</h2>
+        <button class="gp-text-link" onclick="go('student-class.html')">View All <i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+      <div id="classList"></div>
+      <div id="gpNoClasses" class="gp-empty-state" hidden>
+        <span>📚</span><strong>No classes scheduled for today</strong>
+        <p>Your upcoming lessons will appear here.</p>
+      </div>
     </div>
 
+    <div class="gp-panel gp-calendar-panel">
+      <div class="gp-panel-heading">
+        <h2><span class="gp-heading-icon"><i class="fa-regular fa-calendar-days"></i></span>My Calendar</h2>
+        <button class="gp-text-link" onclick="go('student-calendar.html')">View Full Calendar</button>
+      </div>
+      <p class="gp-calendar-description">View your classes, holidays and academy events.</p>
+      <button class="gp-calendar-button" onclick="go('student-calendar.html')">
+        <i class="fa-regular fa-calendar-days"></i> Open Calendar
+      </button>
+    </div>
+  </section>
 
-
+  <section id="academicContinuitySection" class="academic-continuity-section gp-notice-section">
+    <div class="academic-continuity-title"><i class="fa-solid fa-bullhorn"></i> Important Notice</div>
     <div id="academicContinuityList"></div>
+  </section>
 
-
-
-</div>
-
-<div class="class-box">
-
-
-
-<h3>📅 My Calendar</h3>
-
-
-
-<div class="class-item"
-
-style="
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-">
-
-
-
-    <div>
-
-
-
-        View your classes, holidays and academy events.
-
-
-
+  <section class="gp-panel gp-recordings-panel">
+    <div class="gp-panel-heading gp-recordings-heading">
+      <h2><span class="gp-heading-icon"><i class="fa-solid fa-circle-play"></i></span>Class Recordings</h2>
+      <label class="gp-filter-label" for="subjectFilter">Filter:
+        <select id="subjectFilter" onchange="loadRecordings()">
+          <option value="">All Subjects</option>
+          <option value="Maths">Maths</option>
+          <option value="Science">Science</option>
+        </select>
+      </label>
+      <button class="gp-text-link" onclick="go('student-class.html')">View All Recordings <i class="fa-solid fa-chevron-right"></i></button>
     </div>
-
-
-
-    <button
-
-    onclick="go('student-calendar.html')"
-
-    style="
-
-    background:#0d6efd;
-
-    color:white;
-
-    border:none;
-
-    padding:8px 18px;
-
-    border-radius:6px;
-
-    cursor:pointer;
-
-    ">
-
-
-
-        Open Calendar
-
-
-
-    </button>
-
-
-
+    <div id="recordingList"></div>
+  </section>
 </div>
-
-
-
-</div>
-
-
-
-<!-- ✅ ADD HERE -->
-
-<div class="class-box">
-
-<h3>📂 Class Recordings</h3>
-
-
-
-<!-- ✅ MOVE FILTER HERE -->
-
-<select id="subjectFilter" onchange="loadRecordings()">
-
-<option value="">All Subjects</option>
-
-<option value="Maths">Maths</option>
-
-<option value="Science">Science</option>
-
-</select>
-
-
-
-<div id="recordingList"></div>
-
-</div>
-
-
-
-</div>
-
-
 
 <script>
 
@@ -1906,6 +1883,30 @@ const data = await res.json();
 
 
 document.getElementById("studentName").innerText = data.name;
+
+/* Update premium summary cards using the classes returned by the existing API. */
+const gpClasses = Array.isArray(data.classes) ? data.classes : [];
+const gpTodayName = new Date().toLocaleDateString("en-US", { weekday: "long" });
+const gpTodayClasses = gpClasses.filter(c => (c.day || "").trim().toLowerCase() === gpTodayName.toLowerCase());
+let gpUpcoming = 0, gpLive = 0, gpCompleted = 0;
+gpTodayClasses.forEach(c => {
+    if (!c.startTime || !c.endTime) return;
+    const [sh, sm] = c.startTime.split(":").map(Number);
+    const [eh, em] = c.endTime.split(":").map(Number);
+    const now = new Date();
+    const start = new Date(); start.setHours(sh, sm, 0, 0);
+    const end = new Date(); end.setHours(eh, em, 0, 0);
+    if (now < start) gpUpcoming++;
+    else if (now <= end) gpLive++;
+    else gpCompleted++;
+});
+const gpSetText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+gpSetText("gpUpcomingCount", gpUpcoming);
+gpSetText("gpLiveCount", gpLive);
+gpSetText("gpCompletedCount", gpCompleted);
+const gpEmpty = document.getElementById("gpNoClasses");
+if (gpEmpty) gpEmpty.hidden = gpTodayClasses.length !== 0;
+
 
 
 
