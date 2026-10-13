@@ -389,25 +389,39 @@ this.socket.on(
                 // DISPLAY MESSAGE
                 // ==================================================
 
-                window.GPAPrimaryUserChat.displayMessage({
+                
+const restoredStatus =
+    message.readAt ||
+    message.read === true ||
+    message.deliveryStatus === "read"
+        ? "read"
+        : message.deliveredAt ||
+          message.deliveryStatus === "delivered"
+            ? "delivered"
+            : "sent";
 
-                    id:
-                        message.messageId,
+window.GPAPrimaryUserChat.displayMessage({
 
-                    text:
-                        message.text,
+    id:
+        message.messageId || message.id || message._id,
 
-                    sender:
-                        message.sender,
+    text:
+        message.text,
 
-                    createdAt:
-                        message.sentAt,
+    sender:
+        message.sender,
 
-                    direction:
-                        messageDirection,
-                        deliveryStatus: message.deliveryStatus
+    createdAt:
+        message.sentAt,
 
-                });
+    direction:
+        messageDirection,
+
+    deliveryStatus:
+        restoredStatus
+
+});
+
                 
                 // Mark previously received messages as read
                 // when this conversation's history is opened.
