@@ -78,11 +78,36 @@ margin-bottom: 10px;
 cursor:pointer;
 }
 
-/* STATUS COLORS */
-.live { border-left:4px solid #00e676; }
-.upcoming { border-left:4px solid #ffeb3b; }
-.completed { border-left:4px solid #9e9e9e; }
-.disabled { opacity:0.4; }
+
+/* STATUS COLORS — ONLY LIVE CLASS IS ACTIVE */
+
+.period-card {
+    background: #e5e7eb;
+    color: #6b7280;
+    border-left: 4px solid #9ca3af;
+    box-shadow: none;
+    transition: background 0.25s ease, color 0.25s ease;
+}
+
+/* LIVE CLASS — ACTIVE BLUE */
+.period-card.live {
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: #ffffff;
+    border-left: 4px solid #00e676;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+    opacity: 1;
+}
+
+/* UPCOMING, COMPLETED AND OTHER-DAY CLASSES — INACTIVE GREY */
+.period-card.upcoming,
+.period-card.completed,
+.period-card.disabled {
+    background: #e5e7eb;
+    color: #6b7280;
+    border-left: 4px solid #9ca3af;
+    box-shadow: none;
+    opacity: 1;
+}
 
 </style>
 </head>
