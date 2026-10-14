@@ -159,36 +159,60 @@ this.socket.on(
             return;
         }
 
+       
+        // Ignore the broadcast on the exact socket that sent it.
+        // The sender's other devices will still receive the message.
+        if (
+            message.socketId &&
+            this.socket &&
+            message.socketId === this.socket.id
+        ) {
+            return;
+        }
+
+        // Determine the currently logged-in user.
+        const token =
+            localStorage.getItem("token") ||
+            sessionStorage.getItem("token");
+
+        let currentUserId = null;
+
+        if (token) {
+            try {
+                const tokenPayload = JSON.parse(
+                    atob(
+                        token.split(".")[1]
+                            .replace(/-/g, "+")
+                            .replace(/_/g, "/")
+                    )
+                );
+
+                currentUserId = tokenPayload.id;
+            } catch (error) {
+                console.error(
+                    "[GPA PRIMARY CHAT SOCKET] Unable to read current user ID:",
+                    error
+                );
+            }
+        }
+
+        // Compare the authenticated user's ID with the sender.
+        const direction =
+            currentUserId &&
+            message.senderId &&
+            String(currentUserId) === String(message.senderId)
+                ? "outgoing"
+                : "incoming";
+
         window.GPAPrimaryUserChat.displayMessage({
+            id: message.id || message.messageId,
+            text: message.text,
+            sender: message.sender,
+            createdAt: message.receivedAt,
+            direction: direction,
+            deliveryStatus: message.deliveryStatus || "sent"
+        });
 
-    id:
-        message.id,
-
-    text:
-        message.text,
-
-    sender:
-        message.sender,
-
-    createdAt:
-        message.receivedAt,
-
-    // ========================================================
-    // REAL-TIME MESSAGE IS FROM THE OTHER PARTICIPANT
-    // ========================================================
-    //
-    // The backend now sends the realtime message only to the
-    // other socket.
-    //
-    // Therefore this message is an INCOMING message.
-    //
-    // Incoming → LEFT
-    // ========================================================
-
-    direction:
-        "incoming"
-
-});
 
 
         // Acknowledge delivery to the sender
