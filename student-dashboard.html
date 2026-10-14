@@ -1975,35 +1975,37 @@ body {
     </article>
   </section>
 
-  <section class="gp-main-grid">
-    <div class="gp-panel gp-today-panel">
-      <div class="gp-panel-heading">
-        <h2><span class="gp-heading-icon"><i class="fa-solid fa-play"></i></span>Today’s Classes</h2>
-        <button class="gp-text-link" onclick="go('student-class.html')">View All <i class="fa-solid fa-chevron-right"></i></button>
-      </div>
-      <div id="classList"></div>
-      <div id="gpNoClasses" class="gp-empty-state" hidden>
-        <span>📚</span><strong>No classes scheduled for today</strong>
-        <p>Your upcoming lessons will appear here.</p>
-      </div>
+  
+<section class="gp-main-grid">
+
+  <div class="gp-panel gp-calendar-panel">
+    <div class="gp-panel-heading">
+      <h2>
+        <span class="gp-heading-icon">
+          <i class="fa-regular fa-calendar-days"></i>
+        </span>
+        My Calendar
+      </h2>
+
+      <button class="gp-text-link"
+              onclick="go('student-calendar.html')">
+        View Full Calendar
+      </button>
     </div>
 
-    <div class="gp-panel gp-calendar-panel">
-      <div class="gp-panel-heading">
-        <h2><span class="gp-heading-icon"><i class="fa-regular fa-calendar-days"></i></span>My Calendar</h2>
-        <button class="gp-text-link" onclick="go('student-calendar.html')">View Full Calendar</button>
-      </div>
-      <div class="gp-embedded-student-calendar">
-        <iframe
-          id="gpStudentCalendarFrame"
-          src="student-calendar.html"
-          title="Student calendar with classes and academy events"
-          loading="eager"
-          referrerpolicy="same-origin">
-        </iframe>
-      </div>
+    <div class="gp-embedded-student-calendar">
+      <iframe
+        id="gpStudentCalendarFrame"
+        src="student-calendar.html"
+        title="Student calendar with classes and academy events"
+        loading="eager"
+        referrerpolicy="same-origin">
+      </iframe>
     </div>
-  </section>
+  </div>
+
+</section>
+
 
   <section id="academicContinuitySection" class="academic-continuity-section gp-notice-section">
     <div class="academic-continuity-title"><i class="fa-solid fa-bullhorn"></i> Important Notice</div>
