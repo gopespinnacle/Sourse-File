@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Study Materials | GoPES Pinnacle Academy</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; padding: 28px; font-family: Arial, sans-serif;
+            background: #f4f7fb; color: #172033;
+        }
+        .container { max-width: 1100px; margin: auto; }
+        .header { margin-bottom: 24px; }
+        .header h1 { margin: 0 0 8px; font-size: 28px; }
+        .header p { color: #64748b; margin: 0; }
+        .panel {
+            background: white; padding: 24px; border-radius: 14px;
+            margin-bottom: 24px; box-shadow: 0 4px 18px rgba(15, 23, 42, .06);
+        }
+        .panel h2 { margin: 0 0 20px; font-size: 19px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .field { display: flex; flex-direction: column; gap: 8px; }
+        .field.full { grid-column: 1 / -1; }
+        label { font-size: 14px; font-weight: 600; }
+        input, select {
+            width: 100%; padding: 12px; border: 1px solid #d8e0eb;
+            border-radius: 8px; font-size: 14px; background: white;
+        }
+        input[type="file"] { background: #f8fafc; }
+        button {
+            padding: 11px 16px; border: none; border-radius: 8px;
+            cursor: pointer; font-weight: 600; font-size: 14px;
+        }
+        button:disabled { opacity: .6; cursor: not-allowed; }
+        .primary { background: #173d78; color: white; }
+        .secondary { background: #e8eef8; color: #173d78; }
+        .danger { background: #fee2e2; color: #b91c1c; }
+        .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .submit-row { margin-top: 20px; }
+        .message { margin-top: 14px; font-size: 14px; line-height: 1.5; }
+        .success { color: #15803d; }
+        .error { color: #b91c1c; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 720px; }
+        th, td {
+            text-align: left; padding: 14px 12px; border-bottom: 1px solid #edf0f5;
+            font-size: 14px;
+        }
+        th { background: #f8fafc; color: #475569; }
+        .empty { text-align: center; padding: 28px; color: #64748b; }
+        .back {
+            display: inline-block; margin-bottom: 18px; color: #173d78;
+            text-decoration: none; font-weight: 600;
+        }
+        .hint { font-size: 12px; color: #64748b; }
+        @media (max-width: 650px) {
+            body { padding: 16px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .field.full { grid-column: auto; }
+            .panel { padding: 18px; }
+            .header h1 { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a class="back" href="student-dashboard.html">← Back to Student Dashboard</a>
+
+    <div class="header">
+        <h1>Student Study Materials</h1>
+        <p>Upload and manage study documents shared with your assigned teacher.</p>
+    </div>
+
+    <section class="panel" id="uploadPanel">
+        <h2>Upload New Material</h2>
+        <form id="materialForm">
+            <div class="form-grid">
+                <div class="field">
+                    <label for="teacher">Select Teacher</label>
+                    <select id="teacher" name="teacherId" required>
+                        <option value="">Loading assigned teachers...</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="subject">Subject</label>
+                    <select id="subject" name="subject" required disabled>
+                        <option value="">Select a teacher first</option>
+                    </select>
+                </div>
+                <div class="field full">
+                    <label for="chapter">Chapter / Topic</label>
+                    <input id="chapter" name="chapter" type="text" maxlength="150"
+                           placeholder="Enter chapter or topic name" required>
+                </div>
+                <div class="field full">
+                    <label for="file">Choose Document</label>
+                    <input id="file" name="file" type="file"
+                           accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.jpg,.jpeg,.png"
+                           required>
+                    <div class="hint">
+                        PDF, Word, PowerPoint, Excel, TXT, JPG or PNG. Maximum size: 15 MB.
+                    </div>
+                </div>
+            </div>
+            <div class="submit-row">
+                <button class="primary" id="uploadButton" type="submit">Submit Material</button>
+            </div>
+            <div id="formMessage" class="message" role="status" aria-live="polite"></div>
+        </form>
+    </section>
+
+    <section class="panel">
+        <h2>My Uploaded Materials</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Chapter / Topic</th>
+                        <th>Document</th>
+                        <th>Uploaded On</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="materialsBody">
+                    <tr><td colspan="5" class="empty">Loading materials...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="listMessage" class="message" role="status" aria-live="polite"></div>
+    </section>
+</div>
+
+<script>
+    const API_BASE = "https://academy-backend-eat1.onrender.com/api/student-materials";
+
+    const teacherSelect = document.getElementById("teacher");
+    const subjectSelect = document.getElementById("subject");
+    const form = document.getElementById("materialForm");
+    const fileInput = document.getElementById("file");
+    const uploadButton = document.getElementById("uploadButton");
+    const formMessage = document.getElementById("formMessage");
+    const materialsBody = document.getElementById("materialsBody");
+    const listMessage = document.getElementById("listMessage");
+
+    let assignedTeachers = [];
+
+    // Student login uses localStorage. sessionStorage is included as a fallback
+    // for setups (such as the teacher dashboard) that store the JWT there.
+    function getToken() {
+        return localStorage.getItem("token") ||
+               sessionStorage.getItem("token") ||
+               localStorage.getItem("studentToken") ||
+               sessionStorage.getItem("studentToken") ||
+               localStorage.getItem("authToken") ||
+               sessionStorage.getItem("authToken");
+    }
+
+    function getStoredRole() {
+        return localStorage.getItem("role") ||
+               sessionStorage.getItem("role") ||
+               localStorage.getItem("userRole") ||
+               sessionStorage.getItem("userRole");
+    }
+
+    async function apiRequest(path, options = {}) {
+        const token = getToken();
+        if (!token) {
+            throw new Error("Login token not found. Please sign in again.");
+        }
+
+        const headers = { ...(options.headers || {}), Authorization: "Bearer " + token };
+        const response = await fetch(API_BASE + path, { ...options, headers });
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            throw new Error(data.message || ("Request failed (" + response.status + ")."));
+        }
+        return data;
+    }
+
+    function showMessage(element, message, success = false) {
+        element.textContent = message;
+        element.className = "message " + (success ? "success" : "error");
+    }
+
+    function clearMessage(element) {
+        element.textContent = "";
+        element.className = "message";
+    }
+
+    function populateSubjects() {
+        const selectedTeacher = assignedTeachers.find(
+            teacher => String(teacher._id) === teacherSelect.value
+        );
+        subjectSelect.replaceChildren();
+
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+
+        if (!selectedTeacher || !Array.isArray(selectedTeacher.subjects) ||
+            selectedTeacher.subjects.length === 0) {
+            placeholder.textContent = selectedTeacher
+                ? "No assigned subjects available"
+                : "Select a teacher first";
+            subjectSelect.appendChild(placeholder);
+            subjectSelect.disabled = true;
+            return;
+        }
+
+        placeholder.textContent = "Select subject";
+        subjectSelect.appendChild(placeholder);
+
+        selectedTeacher.subjects.forEach(subject => {
+            const option = document.createElement("option");
+            option.value = subject;
+            option.textContent = subject;
+            subjectSelect.appendChild(option);
+        });
+        subjectSelect.disabled = false;
+    }
+
+    async function loadTeachers() {
+        try {
+            const data = await apiRequest("/teachers");
+            assignedTeachers = Array.isArray(data.teachers) ? data.teachers : [];
+            teacherSelect.replaceChildren();
+
+            const placeholder = document.createElement("option");
+            placeholder.value = "";
+            placeholder.textContent = assignedTeachers.length
+                ? "Select teacher"
+                : "No assigned teachers found";
+            teacherSelect.appendChild(placeholder);
+
+            assignedTeachers.forEach(teacher => {
+                const option = document.createElement("option");
+                option.value = teacher._id;
+                option.textContent = teacher.name +
+                    (teacher.teacherId ? " (" + teacher.teacherId + ")" : "");
+                teacherSelect.appendChild(option);
+            });
+            populateSubjects();
+        } catch (error) {
+            teacherSelect.replaceChildren();
+            const option = document.createElement("option");
+            option.value = "";
+            option.textContent = "Unable to load teachers";
+            teacherSelect.appendChild(option);
+            showMessage(formMessage, error.message);
+        }
+    }
+
+    function formatDate(date) {
+        if (!date) return "—";
+        const parsed = new Date(date);
+        return Number.isNaN(parsed.getTime()) ? "—" : parsed.toLocaleDateString();
+    }
+
+    function formatSize(bytes) {
+        if (!Number.isFinite(Number(bytes))) return "—";
+        bytes = Number(bytes);
+        if (bytes < 1024 * 1024) return Math.max(1, Math.round(bytes / 1024)) + " KB";
+        return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+    }
+
+    function addCell(row, value) {
+        const cell = document.createElement("td");
+        cell.textContent = value == null ? "" : String(value);
+        row.appendChild(cell);
+        return cell;
+    }
+
+    async function downloadMaterial(id) {
+        try {
+            const data = await apiRequest("/" + encodeURIComponent(id) + "/download");
+            if (!data.downloadUrl) throw new Error("Download link was not returned.");
+            window.open(data.downloadUrl, "_blank", "noopener,noreferrer");
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
+    async function deleteMaterial(id) {
+        if (!confirm("Delete this uploaded material permanently?")) return;
+        try {
+            const data = await apiRequest("/" + encodeURIComponent(id), { method: "DELETE" });
+            showMessage(listMessage, data.message || "Material deleted successfully.", true);
+            await loadMaterials();
+        } catch (error) {
+            showMessage(listMessage, error.message);
+        }
+    }
+
+    async function loadMaterials() {
+        materialsBody.replaceChildren();
+        const loadingRow = document.createElement("tr");
+        const loadingCell = document.createElement("td");
+        loadingCell.colSpan = 5;
+        loadingCell.className = "empty";
+        loadingCell.textContent = "Loading materials...";
+        loadingRow.appendChild(loadingCell);
+        materialsBody.appendChild(loadingRow);
+
+        try {
+            const data = await apiRequest("");
+            const materials = Array.isArray(data.materials) ? data.materials : [];
+            materialsBody.replaceChildren();
+
+            if (!materials.length) {
+                const row = document.createElement("tr");
+                const cell = document.createElement("td");
+                cell.colSpan = 5;
+                cell.className = "empty";
+                cell.textContent = "You have not uploaded any materials yet.";
+                row.appendChild(cell);
+                materialsBody.appendChild(row);
+                return;
+            }
+
+            materials.forEach(material => {
+                const row = document.createElement("tr");
+                addCell(row, material.subject);
+                addCell(row, material.chapter);
+
+                const fileCell = addCell(row,
+                    (material.originalFileName || "Document") +
+                    " (" + formatSize(material.fileSize) + ")");
+                fileCell.style.overflowWrap = "anywhere";
+                addCell(row, formatDate(material.createdAt));
+
+                const actionCell = document.createElement("td");
+                const actions = document.createElement("div");
+                actions.className = "actions";
+
+                const downloadButton = document.createElement("button");
+                downloadButton.type = "button";
+                downloadButton.className = "secondary";
+                downloadButton.textContent = "Download";
+                downloadButton.addEventListener("click", () => downloadMaterial(material._id));
+
+                const deleteButton = document.createElement("button");
+                deleteButton.type = "button";
+                deleteButton.className = "danger";
+                deleteButton.textContent = "Delete";
+                deleteButton.addEventListener("click", () => deleteMaterial(material._id));
+
+                actions.append(downloadButton, deleteButton);
+                actionCell.appendChild(actions);
+                row.appendChild(actionCell);
+                materialsBody.appendChild(row);
+            });
+        } catch (error) {
+            materialsBody.replaceChildren();
+            const row = document.createElement("tr");
+            const cell = document.createElement("td");
+            cell.colSpan = 5;
+            cell.className = "empty";
+            cell.textContent = error.message;
+            row.appendChild(cell);
+            materialsBody.appendChild(row);
+        }
+    }
+
+    teacherSelect.addEventListener("change", populateSubjects);
+
+    form.addEventListener("submit", async event => {
+        event.preventDefault();
+        clearMessage(formMessage);
+
+        const file = fileInput.files[0];
+        if (!teacherSelect.value || !subjectSelect.value) {
+            showMessage(formMessage, "Please select a teacher and subject.");
+            return;
+        }
+        if (!file) {
+            showMessage(formMessage, "Please choose a document.");
+            return;
+        }
+        if (file.size > 15 * 1024 * 1024) {
+            showMessage(formMessage, "The maximum file size is 15 MB.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("teacherId", teacherSelect.value);
+        formData.append("subject", subjectSelect.value);
+        formData.append("chapter", document.getElementById("chapter").value.trim());
+        formData.append("file", file);
+
+        uploadButton.disabled = true;
+        uploadButton.textContent = "Uploading...";
+
+        try {
+            const data = await apiRequest("/upload", { method: "POST", body: formData });
+            showMessage(formMessage, data.message || "Material uploaded successfully.", true);
+            form.reset();
+            populateSubjects();
+            await loadMaterials();
+        } catch (error) {
+            showMessage(formMessage, error.message);
+        } finally {
+            uploadButton.disabled = false;
+            uploadButton.textContent = "Submit Material";
+        }
+    });
+
+    async function initializePage() {
+        const role = getStoredRole();
+        if (role && role.toLowerCase() !== "student") {
+            document.getElementById("uploadPanel").hidden = true;
+            showMessage(formMessage, "Uploads are available to student accounts only.");
+        }
+        await loadTeachers();
+        await loadMaterials();
+    }
+
+    initializePage();
+</script>
+</body>
+</html>
