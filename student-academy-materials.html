@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Academy Materials | Gopes Pinnacle Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--navy:#101c4d;--blue:#3157d5;--blue2:#5275ed;--ink:#17213c;--muted:#7b849b;--line:#e8ebf3;--surface:#fff;--bg:#f5f7fc;--green:#16845b;--shadow:0 12px 35px rgba(25,42,95,.07)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Inter,Arial,sans-serif;color:var(--ink)}
+button,input,select{font:inherit}
+.layout{min-height:100vh;display:flex}
+.sidebar{width:252px;flex-shrink:0;background:linear-gradient(180deg,#101a49,#17265f);color:#fff;padding:27px 17px;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:11px;padding:0 9px 29px;border-bottom:1px solid rgba(255,255,255,.12)}
+.brand-mark{height:42px;width:42px;border-radius:13px;background:linear-gradient(135deg,#fff,#dfe7ff);color:var(--navy);display:grid;place-items:center;font-size:18px;font-weight:800}
+.brand-name{font-weight:800;font-size:14px;line-height:1.35;letter-spacing:.1px}.brand-name small{display:block;font-size:10px;font-weight:500;color:#c2cbed;margin-top:3px}
+.nav-label{font-size:10px;letter-spacing:1.5px;color:#9eaddf;margin:27px 11px 10px;font-weight:700}
+.nav-item{display:flex;align-items:center;gap:13px;padding:13px 13px;margin:3px 0;border-radius:11px;color:#dbe3ff;font-size:13px;text-decoration:none;cursor:pointer}
+.nav-item i{width:18px;text-align:center;font-size:15px}.nav-item.active{background:linear-gradient(100deg,#4569e6,#304fc1);color:#fff;box-shadow:0 7px 20px rgba(4,10,50,.2)}.nav-item:hover{background:rgba(255,255,255,.09)}
+.sidebar-bottom{margin-top:auto;padding:18px 11px 0;border-top:1px solid rgba(255,255,255,.12);color:#b8c4ed;font-size:11px;line-height:1.7}
+.main{flex:1;min-width:0;padding:31px clamp(18px,3.1vw,46px) 42px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:29px}
+.breadcrumb{font-size:12px;color:var(--muted);margin-bottom:8px}.breadcrumb span{color:#a6adbd;margin:0 7px}
+h1{font-size:clamp(23px,2.2vw,30px);letter-spacing:-.8px;margin:0;font-weight:800;color:#17234c}.subtitle{color:var(--muted);font-size:13px;margin:9px 0 0;line-height:1.6}
+.top-actions{display:flex;gap:10px;align-items:center}.avatar{width:42px;height:42px;border-radius:14px;background:#e4eaff;color:#2749bf;display:grid;place-items:center;font-weight:800}
+.btn{border:1px solid var(--line);background:#fff;color:#36415e;border-radius:10px;padding:11px 14px;cursor:pointer;font-weight:700;font-size:12px;display:inline-flex;align-items:center;gap:8px;transition:.18s}.btn:hover{transform:translateY(-1px);box-shadow:0 5px 14px #15275d12}.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}.btn:disabled{opacity:.55;cursor:wait;transform:none}
+.hero{background:linear-gradient(115deg,#1d2d73,#365ad6 68%,#6d86f0);border-radius:20px;color:white;padding:25px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;position:relative;overflow:hidden;box-shadow:0 12px 28px rgba(47,78,195,.16);margin-bottom:22px}
+.hero:after{content:"";position:absolute;width:230px;height:230px;border:35px solid #ffffff13;border-radius:50%;right:7%;top:-115px}
+.hero-content{position:relative;z-index:1}.eyebrow{font-size:10px;letter-spacing:1.7px;text-transform:uppercase;color:#cbd7ff;font-weight:800}.hero h2{font-size:21px;margin:9px 0 7px;letter-spacing:-.4px}.hero p{font-size:12px;color:#e1e7ff;margin:0;line-height:1.7;max-width:600px}.hero-icon{z-index:1;width:72px;height:72px;flex-shrink:0;border-radius:22px;background:#ffffff1d;display:grid;place-items:center;font-size:29px;border:1px solid #ffffff2b}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin-bottom:22px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:15px;padding:18px 20px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 15px #13285d04}
+.stat-icon{height:43px;width:43px;display:grid;place-items:center;border-radius:13px;background:#edf1ff;color:#385bd2;font-size:17px}.stat:nth-child(2) .stat-icon{background:#e7f8f0;color:#138457}.stat:nth-child(3) .stat-icon{background:#fff2df;color:#bc7413}
+.stat-label{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:6px}.stat-value{font-size:23px;font-weight:800;color:#17234c;letter-spacing:-.5px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:17px;box-shadow:var(--shadow);overflow:hidden}
+.panel-head{padding:22px 23px 17px;display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line)}.panel-title{font-size:15px;font-weight:800;color:#1a2548}.panel-description{font-size:11px;color:var(--muted);margin-top:6px}
+.filters{display:flex;gap:9px;align-items:center;flex-wrap:wrap;padding:17px 23px;border-bottom:1px solid var(--line)}
+.search-wrap{position:relative;flex:1;min-width:200px}.search-wrap i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#9aa2b5;font-size:12px}.search-wrap input{width:100%;padding:11px 12px 11px 35px;border:1px solid #e3e7f0;border-radius:9px;outline:none;font-size:12px;color:var(--ink);background:#fbfcff}.search-wrap input:focus,select:focus{border-color:#8da2fa;box-shadow:0 0 0 3px #4666df12}
+select{padding:11px 30px 11px 12px;border:1px solid #e3e7f0;border-radius:9px;background:#fbfcff;color:#4a5570;outline:none;font-size:12px;max-width:190px}
+.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:760px}thead{background:#fafbfe}th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:#8a93a8;font-weight:800;padding:14px 17px;border-bottom:1px solid var(--line);white-space:nowrap}td{padding:16px 17px;border-bottom:1px solid #eff1f7;font-size:12px;color:#45506a;vertical-align:middle}tbody tr:last-child td{border-bottom:0}tbody tr:hover{background:#fcfdff}
+.student-cell{display:flex;align-items:center;gap:10px;min-width:155px}.student-avatar{width:35px;height:35px;border-radius:11px;display:grid;place-items:center;background:#edf1ff;color:#3154c8;font-size:11px;font-weight:800;flex-shrink:0}.student-name{font-weight:700;color:#263252;font-size:12px}.student-id{font-size:10px;color:#9aa2b3;margin-top:4px}
+.subject-pill{display:inline-block;padding:6px 9px;border-radius:7px;background:#edf2ff;color:#3557c6;font-weight:700;font-size:10px;white-space:nowrap}.chapter-text{font-weight:600;color:#46516c;max-width:180px;line-height:1.5}.file-cell{display:flex;align-items:center;gap:9px;min-width:155px}.file-icon{width:31px;height:35px;border-radius:7px;background:#fff0ef;color:#d64a4a;display:grid;place-items:center;font-size:14px;flex-shrink:0}.file-name{font-size:11px;font-weight:700;color:#303b59;max-width:150px;overflow-wrap:anywhere}.file-size{font-size:10px;color:#9aa2b3;margin-top:4px}.date-text{white-space:nowrap;color:#77819a;font-size:11px}
+.action-btn{border:1px solid #dce4ff;background:#f3f6ff;color:#3155ca;padding:8px 10px;border-radius:8px;font-size:11px;font-weight:800;white-space:nowrap;cursor:pointer}.action-btn:hover{background:#e8edff}.action-btn i{margin-right:5px}
+.state{padding:45px 20px;text-align:center;color:#8a93a8;font-size:12px;line-height:1.7}.state i{font-size:26px;color:#b3bee7;margin-bottom:12px;display:block}.state strong{display:block;color:#4b5673;font-size:14px;margin-bottom:4px}.state .btn{margin-top:12px}
+.panel-foot{padding:13px 23px;border-top:1px solid var(--line);font-size:10px;color:#929bb0;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.toast{position:fixed;right:22px;bottom:22px;background:#17234c;color:#fff;padding:13px 17px;border-radius:11px;box-shadow:0 12px 30px #0c153d30;font-size:12px;z-index:10;display:none;max-width:min(380px,calc(100vw - 40px));line-height:1.5}.toast.show{display:block}.toast.error{background:#a82e3b}
+@media(max-width:900px){.sidebar{width:205px}.main{padding:24px 20px}.stats{gap:10px}.stat{padding:15px}.hero{padding:22px}}
+@media(max-width:680px){.layout{display:block}.sidebar{width:auto;padding:12px 14px;display:block}.brand{padding:0 5px 12px;border:0}.brand-mark{width:36px;height:36px}.nav-label,.sidebar-bottom{display:none}.sidebar nav{display:flex;overflow-x:auto;gap:5px;padding-top:10px}.nav-item{white-space:nowrap;padding:10px 12px;font-size:11px;margin:0}.nav-item i{width:auto}.main{padding:22px 14px 32px}.topbar{align-items:flex-start;margin-bottom:21px}.top-actions .btn{padding:10px}.avatar{display:none}.hero{padding:20px;border-radius:15px}.hero h2{font-size:18px}.hero-icon{width:52px;height:52px;border-radius:16px;font-size:21px}.stats{grid-template-columns:1fr;gap:9px}.stat{padding:13px 15px}.stat-icon{width:39px;height:39px}.stat-value{font-size:20px}.panel-head{padding:18px 16px}.filters{padding:13px 15px}.search-wrap{min-width:100%;flex-basis:100%}select{flex:1;max-width:none}.panel-foot{padding:12px 16px}.subtitle{font-size:12px}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">GP</div>
+      <div class="brand-name">GOPES PINNACLE<small>ACADEMY · TEACHER PORTAL</small></div>
+    </div>
+    <div class="nav-label">TEACHER WORKSPACE</div>
+    <nav>
+      <a class="nav-item" href="teacher-dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a>
+      <a class="nav-item active" href="student-academy-materials.html"><i class="fa-solid fa-folder-open"></i> Student Materials</a>
+    </nav>
+    <div class="sidebar-bottom"><i class="fa-solid fa-shield-halved"></i> Private academic documents<br>Access is restricted to the assigned teacher.</div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <div class="breadcrumb">Teacher Portal <span>/</span> Student Materials</div>
+        <h1>Student Academy Materials</h1>
+        <p class="subtitle">Review study documents submitted by students assigned to you.</p>
+      </div>
+      <div class="top-actions">
+        <button class="btn" id="refreshButton" type="button"><i class="fa-solid fa-rotate"></i><span>Refresh</span></button>
+        <div class="avatar" id="teacherAvatar">T</div>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-content">
+        <div class="eyebrow">ACADEMIC RESOURCE CENTRE</div>
+        <h2>Every student document, in one place.</h2>
+        <p>Find uploaded notes, assignments and supporting documents by student, subject or chapter. Use Download to securely retrieve a document from academy storage.</p>
+      </div>
+      <div class="hero-icon"><i class="fa-solid fa-book-open-reader"></i></div>
+    </section>
+
+    <section class="stats" aria-label="Material summary">
+      <div class="stat"><div class="stat-icon"><i class="fa-solid fa-file-lines"></i></div><div><div class="stat-label">Total Materials</div><div class="stat-value" id="totalCount">—</div></div></div>
+      <div class="stat"><div class="stat-icon"><i class="fa-solid fa-user-graduate"></i></div><div><div class="stat-label">Students</div><div class="stat-value" id="studentCount">—</div></div></div>
+      <div class="stat"><div class="stat-icon"><i class="fa-solid fa-book"></i></div><div><div class="stat-label">Subjects</div><div class="stat-value" id="subjectCount">—</div></div></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div><div class="panel-title">Uploaded Study Materials</div><div class="panel-description">Only documents assigned to your teacher account are returned by the backend.</div></div>
+      </div>
+      <div class="filters">
+        <div class="search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input id="searchInput" type="search" placeholder="Search student, subject, chapter or file…" autocomplete="off" aria-label="Search materials"></div>
+        <select id="subjectFilter" aria-label="Filter by subject"><option value="">All subjects</option></select>
+        <select id="studentFilter" aria-label="Filter by student"><option value="">All students</option></select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Student</th><th>Subject</th><th>Chapter / Topic</th><th>Document</th><th>Uploaded On</th><th>Action</th></tr></thead>
+          <tbody id="materialsBody"><tr><td colspan="6"><div class="state"><i class="fa-solid fa-circle-notch fa-spin"></i>Loading student materials…</div></td></tr></tbody>
+        </table>
+      </div>
+      <div class="panel-foot"><span id="resultCount">Loading materials…</span><span><i class="fa-solid fa-lock"></i> Secure teacher-only access</span></div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  const API_BASE = "https://academy-backend-eatl.onrender.com/api/student-materials";
+  const body = document.getElementById("materialsBody");
+  const searchInput = document.getElementById("searchInput");
+  const subjectFilter = document.getElementById("subjectFilter");
+  const studentFilter = document.getElementById("studentFilter");
+  const refreshButton = document.getElementById("refreshButton");
+  const toast = document.getElementById("toast");
+
+  let materials = [];
+  let toastTimer;
+
+  function getToken() {
+    return sessionStorage.getItem("token") ||
+           localStorage.getItem("token") ||
+           sessionStorage.getItem("authToken") ||
+           localStorage.getItem("authToken");
+  }
+
+  function showToast(message, isError = false) {
+    toast.textContent = message;
+    toast.className = "toast show" + (isError ? " error" : "");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.className = "toast", 4200);
+  }
+
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    })[char]);
+  }
+
+  function getStudentName(material) {
+    const student = material.student;
+    if (student && typeof student === "object") return student.name || student.studentName || "Student";
+    return material.studentName || "Student";
+  }
+
+  function getStudentId(material) {
+    const student = material.student;
+    if (student && typeof student === "object") return student.studentId || "";
+    return material.studentId || "";
+  }
+
+  function getStudentKey(material) {
+    const student = material.student;
+    if (student && typeof student === "object") return String(student._id || student.id || getStudentName(material));
+    return String(student || material.studentId || getStudentName(material));
+  }
+
+  function initials(name) {
+    return String(name || "Student").trim().split(/\s+/).slice(0, 2).map(part => part[0] || "").join("").toUpperCase();
+  }
+
+  function formatDate(value) {
+    if (!value) return "—";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "—";
+    return date.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+  }
+
+  function formatSize(bytes) {
+    const size = Number(bytes);
+    if (!Number.isFinite(size) || size < 0) return "";
+    if (size < 1024) return size + " B";
+    if (size < 1024 * 1024) return (size / 1024).toFixed(1) + " KB";
+    return (size / (1024 * 1024)).toFixed(1) + " MB";
+  }
+
+  function fileIcon(fileName) {
+    const ext = String(fileName || "").split(".").pop().toLowerCase();
+    if (ext === "pdf") return ["fa-file-pdf", "pdf"];
+    if (["doc", "docx"].includes(ext)) return ["fa-file-word", "word"];
+    if (["ppt", "pptx"].includes(ext)) return ["fa-file-powerpoint", "presentation"];
+    if (["xls", "xlsx", "csv"].includes(ext)) return ["fa-file-excel", "spreadsheet"];
+    if (["jpg", "jpeg", "png"].includes(ext)) return ["fa-file-image", "image"];
+    return ["fa-file-lines", "document"];
+  }
+
+  async function apiRequest(path) {
+    const token = getToken();
+    if (!token) throw new Error("Your login session was not found. Please sign in again.");
+    const response = await fetch(API_BASE + path, {
+      method: "GET",
+      headers: { Authorization: "Bearer " + token }
+    });
+    const data = await response.json().catch(() => ({}));
+    if (response.status === 401) throw new Error("Your session has expired. Please sign in again.");
+    if (!response.ok) throw new Error(data.message || "Unable to complete the request.");
+    return data;
+  }
+
+  function setState(icon, title, detail, showRetry = false) {
+    body.innerHTML = `<tr><td colspan="6"><div class="state"><i class="fa-solid ${icon}"></i><strong>${escapeHTML(title)}</strong>${escapeHTML(detail)}${showRetry ? '<br><button class="btn" type="button" id="retryButton"><i class="fa-solid fa-rotate"></i> Try again</button>' : ""}</div></td></tr>`;
+    const retry = document.getElementById("retryButton");
+    if (retry) retry.addEventListener("click", loadMaterials);
+  }
+
+  function populateFilters() {
+    const currentSubject = subjectFilter.value;
+    const currentStudent = studentFilter.value;
+    const subjects = [...new Set(materials.map(item => String(item.subject || "").trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b));
+    const students = new Map();
+    materials.forEach(item => students.set(getStudentKey(item), getStudentName(item)));
+    subjectFilter.innerHTML = '<option value="">All subjects</option>' + subjects.map(subject => `<option value="${escapeHTML(subject)}">${escapeHTML(subject)}</option>`).join("");
+    studentFilter.innerHTML = '<option value="">All students</option>' + [...students.entries()].sort((a,b) => a[1].localeCompare(b[1])).map(([key,name]) => `<option value="${escapeHTML(key)}">${escapeHTML(name)}</option>`).join("");
+    if (subjects.includes(currentSubject)) subjectFilter.value = currentSubject;
+    if (students.has(currentStudent)) studentFilter.value = currentStudent;
+  }
+
+  function updateStats() {
+    document.getElementById("totalCount").textContent = materials.length;
+    document.getElementById("studentCount").textContent = new Set(materials.map(getStudentKey)).size;
+    document.getElementById("subjectCount").textContent = new Set(materials.map(item => String(item.subject || "").trim().toLowerCase()).filter(Boolean)).size;
+  }
+
+  function renderMaterials() {
+    const query = searchInput.value.trim().toLowerCase();
+    const subject = subjectFilter.value;
+    const student = studentFilter.value;
+
+    const filtered = materials.filter(item => {
+      const searchable = [getStudentName(item), getStudentId(item), item.subject, item.chapter, item.originalFileName].join(" ").toLowerCase();
+      return (!query || searchable.includes(query)) &&
+             (!subject || String(item.subject || "").trim() === subject) &&
+             (!student || getStudentKey(item) === student);
+    });
+
+    document.getElementById("resultCount").textContent = `Showing ${filtered.length} of ${materials.length} material${materials.length === 1 ? "" : "s"}`;
+
+    if (!materials.length) {
+      setState("fa-folder-open", "No student materials yet", "Documents uploaded to your assigned teacher account will appear here.");
+      return;
+    }
+    if (!filtered.length) {
+      setState("fa-magnifying-glass", "No matching materials", "Try another search term or clear the filters.");
+      return;
+    }
+
+    body.innerHTML = filtered.map(item => {
+      const name = getStudentName(item);
+      const sid = getStudentId(item);
+      const filename = item.originalFileName || "Student document";
+      const [icon] = fileIcon(filename);
+      const id = item._id || item.id;
+      return `<tr>
+        <td><div class="student-cell"><div class="student-avatar">${escapeHTML(initials(name))}</div><div><div class="student-name">${escapeHTML(name)}</div><div class="student-id">${escapeHTML(sid || "Student")}</div></div></div></td>
+        <td><span class="subject-pill">${escapeHTML(item.subject || "—")}</span></td>
+        <td><div class="chapter-text">${escapeHTML(item.chapter || "—")}</div></td>
+        <td><div class="file-cell"><div class="file-icon"><i class="fa-solid ${icon}"></i></div><div><div class="file-name" title="${escapeHTML(filename)}">${escapeHTML(filename)}</div><div class="file-size">${escapeHTML(formatSize(item.fileSize))}</div></div></div></td>
+        <td><div class="date-text">${escapeHTML(formatDate(item.createdAt || item.uploadedAt))}</div></td>
+        <td><button class="action-btn" type="button" data-download-id="${escapeHTML(id || "")}" ${id ? "" : "disabled"}><i class="fa-solid fa-download"></i>Download</button></td>
+      </tr>`;
+    }).join("");
+
+    body.querySelectorAll("[data-download-id]").forEach(button => {
+      button.addEventListener("click", () => downloadMaterial(button.dataset.downloadId, button));
+    });
+  }
+
+  async function downloadMaterial(id, button) {
+    if (!id) return showToast("This material does not have a valid ID.", true);
+    const original = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>Preparing';
+    try {
+      const data = await apiRequest("/" + encodeURIComponent(id) + "/download");
+      if (!data.downloadUrl) throw new Error("The backend did not return a download link.");
+      const link = document.createElement("a");
+      link.href = data.downloadUrl;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.download = "";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      showToast("Your secure download link is ready.");
+    } catch (error) {
+      showToast(error.message || "Could not download this document.", true);
+      if (/session|sign in/i.test(error.message)) {
+        setTimeout(() => { window.location.href = "teacher-login.html"; }, 1400);
+      }
+    } finally {
+      button.disabled = false;
+      button.innerHTML = original;
+    }
+  }
+
+  async function loadMaterials() {
+    const token = getToken();
+    const role = sessionStorage.getItem("role") || localStorage.getItem("role") ||
+                 sessionStorage.getItem("userRole") || localStorage.getItem("userRole");
+    if (!token) {
+      setState("fa-lock", "Teacher login required", "Please sign in to the teacher portal to view assigned student materials.", true);
+      document.getElementById("retryButton")?.addEventListener("click", () => window.location.href = "teacher-login.html");
+      return;
+    }
+    if (role && role !== "teacher") {
+      setState("fa-user-shield", "Teacher account required", "This page is intended for teacher accounts only.");
+      return;
+    }
+
+    refreshButton.disabled = true;
+    refreshButton.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i><span>Loading</span>';
+    setState("fa-circle-notch fa-spin", "Loading materials", "Connecting securely to the academy server…");
+    try {
+      const data = await apiRequest("");
+      if (data.success === false) throw new Error(data.message || "Unable to load materials.");
+      materials = Array.isArray(data.materials) ? data.materials : [];
+      const teacherName = sessionStorage.getItem("teacherName") || localStorage.getItem("teacherName") || "";
+      if (teacherName) document.getElementById("teacherAvatar").textContent = initials(teacherName);
+      updateStats();
+      populateFilters();
+      renderMaterials();
+    } catch (error) {
+      materials = [];
+      updateStats();
+      document.getElementById("resultCount").textContent = "Could not load materials";
+      setState("fa-triangle-exclamation", "Unable to load materials", error.message || "Please try again in a moment.", true);
+      document.getElementById("retryButton")?.addEventListener("click", loadMaterials);
+      if (/session|sign in/i.test(error.message)) {
+        document.getElementById("retryButton")?.addEventListener("click", () => window.location.href = "teacher-login.html");
+      }
+    } finally {
+      refreshButton.disabled = false;
+      refreshButton.innerHTML = '<i class="fa-solid fa-rotate"></i><span>Refresh</span>';
+    }
+  }
+
+  searchInput.addEventListener("input", renderMaterials);
+  subjectFilter.addEventListener("change", renderMaterials);
+  studentFilter.addEventListener("change", renderMaterials);
+  refreshButton.addEventListener("click", loadMaterials);
+
+  loadMaterials();
+})();
+</script>
+</body>
+</html>
