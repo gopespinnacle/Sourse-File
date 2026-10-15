@@ -113,7 +113,23 @@ window.AnnotationToolbarV1 = (() => {
 
         toolbar.innerHTML = `
 
-            <div class="annotation-toolbar-inner">
+        
+<button
+    type="button"
+    id="annotationToolsToggleV1"
+    aria-expanded="false"
+    aria-controls="annotationToolbarPanelV1"
+    title="Open annotation tools"
+>
+    <span class="tools-toggle-icon">✦</span>
+    <span>TOOLS</span>
+</button>
+
+
+            <div
+    class="annotation-toolbar-inner"
+    id="annotationToolbarPanelV1"
+>
 
 
                 <!-- =====================================
@@ -438,38 +454,20 @@ window.AnnotationToolbarV1 = (() => {
         ===================================================
         */
 
-        toolbar.style.position =
-            "absolute";
-
-        toolbar.style.left =
-            "50%";
-
-        toolbar.style.bottom =
-            "12px";
-
-        toolbar.style.transform =
-            "translateX(-50%)";
-
-        toolbar.style.zIndex =
-            "99999";
-
-        toolbar.style.display =
-            "block";
-
-        toolbar.style.visibility =
-            "visible";
-
-        toolbar.style.opacity =
-            "1";
-
-        toolbar.style.pointerEvents =
-            "auto";
-
-        toolbar.style.width =
-            "auto";
-
-        toolbar.style.height =
-            "auto";
+        
+toolbar.style.position = "absolute";
+toolbar.style.top = "50%";
+toolbar.style.right = "0";
+toolbar.style.left = "auto";
+toolbar.style.bottom = "auto";
+toolbar.style.transform = "translateY(-50%)";
+toolbar.style.zIndex = "99999";
+toolbar.style.display = "block";
+toolbar.style.visibility = "visible";
+toolbar.style.opacity = "1";
+toolbar.style.pointerEvents = "auto";
+toolbar.style.width = "auto";
+toolbar.style.height = "auto";
 
 
         /*
@@ -1299,6 +1297,101 @@ window.AnnotationToolbarV1 = (() => {
 
             }
 
+            
+/* Elite slide-out toolbar */
+#annotationToolbarV1 {
+    position: absolute !important;
+    top: 50% !important;
+    right: 0 !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: translateY(-50%) !important;
+    width: 300px !important;
+    max-width: calc(100% - 44px) !important;
+    z-index: 99999 !important;
+    transition: transform 0.35s cubic-bezier(.22,.8,.25,1);
+}
+
+/* Toolbar panel */
+#annotationToolbarV1 .annotation-toolbar-inner {
+    box-sizing: border-box;
+    max-height: 75vh;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 18px 12px 18px 56px;
+    background: linear-gradient(160deg, #111827, #172554);
+    border: 1px solid #3b82f6;
+    border-radius: 18px 0 0 18px;
+    box-shadow: 0 12px 36px rgba(0,0,0,.30);
+    white-space: normal;
+}
+
+/* Blue vertical tab */
+#annotationToolsToggleV1 {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(-100%, -50%);
+    width: 44px;
+    min-height: 112px;
+    border: 1px solid #60a5fa;
+    border-right: 0;
+    border-radius: 14px 0 0 14px;
+    background: linear-gradient(180deg, #3b82f6, #1d4ed8);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(29,78,216,.35);
+}
+
+#annotationToolsToggleV1 .tools-toggle-icon {
+    font-size: 22px;
+}
+
+#annotationToolsToggleV1:hover {
+    background: linear-gradient(180deg, #60a5fa, #2563eb);
+}
+
+/* Closed state: leave the blue tab visible */
+#annotationToolbarV1.tools-panel-closed {
+    transform: translate(calc(100% - 1px), -50%) !important;
+}
+
+/* Open state */
+#annotationToolbarV1.tools-panel-open {
+    transform: translateY(-50%) !important;
+}
+
+@media (max-width: 600px) {
+    #annotationToolbarV1 {
+        width: 270px !important;
+        max-width: calc(100% - 40px) !important;
+    }
+
+    #annotationToolbarV1 .annotation-toolbar-inner {
+        max-height: 70vh;
+        padding: 14px 8px 14px 48px;
+    }
+
+    #annotationToolsToggleV1 {
+        width: 40px;
+        min-height: 100px;
+    }
+}
+
+
+
+
         `;
 
 
@@ -1316,6 +1409,40 @@ window.AnnotationToolbarV1 = (() => {
     */
 
     function bindEvents() {
+
+
+
+
+
+
+
+        
+    const toolsToggle = document.getElementById(
+        "annotationToolsToggleV1"
+    );
+
+    if (toolsToggle && !toolsToggle.dataset.bound) {
+        toolsToggle.dataset.bound = "true";
+
+        toolsToggle.addEventListener("click", () => {
+            const isOpen = toolbar.classList.contains(
+                "tools-panel-open"
+            );
+
+            toolbar.classList.toggle("tools-panel-open", !isOpen);
+            toolbar.classList.toggle("tools-panel-closed", isOpen);
+
+            toolsToggle.setAttribute(
+                "aria-expanded",
+                String(!isOpen)
+            );
+
+            toolsToggle.title = isOpen
+                ? "Open annotation tools"
+                : "Hide annotation tools";
+        });
+    }
+
 
 
         /*
