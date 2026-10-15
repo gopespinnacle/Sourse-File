@@ -22,6 +22,45 @@
   const secNow = () => nbNow()?.sections.find(s=>s.id===state.selectedSection) || nbNow()?.sections[0];
   const pageNow = () => secNow()?.pages.find(p=>p.id===state.selectedPage) || secNow()?.pages[0];
   const save = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) { console.warn('Notebook browser save unavailable',e); } };
+  // Each notebook page gets its own annotation history and page background.
+  // This is browser-local persistence; server/teacher mapping is a separate backend phase.
+  const PAGE_CONTENT_PREFIX = 'gpa.annotation.notebookPageContent.v1.';
+  let activeContentPageId = null;
+  function captureActivePageContent() {
+    if (!activeContentPageId || !window.AnnotationCanvasV1) return;
+    try {
+      const canvasApi = window.AnnotationCanvasV1;
+      const payload = {
+        history: typeof canvasApi.getHistory === 'function' ? canvasApi.getHistory() : [],
+        background: typeof canvasApi.getPageBackground === 'function' ? canvasApi.getPageBackground() : null,
+        savedAt: new Date().toISOString()
+      };
+      localStorage.setItem(PAGE_CONTENT_PREFIX + activeContentPageId, JSON.stringify(payload));
+    } catch (e) { console.warn('Could not save notebook page content locally.', e); }
+  }
+  function activatePageContent(pageId, clearWhenMissing = true) {
+    if (!pageId || !window.AnnotationCanvasV1) return;
+    const canvasApi = window.AnnotationCanvasV1;
+    try {
+      const raw = localStorage.getItem(PAGE_CONTENT_PREFIX + pageId);
+      const payload = raw ? JSON.parse(raw) : null;
+      // On page switches, an empty page must not inherit the previous page's marks.
+      // On first startup, preserve any annotation already restored by the existing session system.
+      if ((payload || clearWhenMissing) && typeof canvasApi.clear === 'function') canvasApi.clear();
+      if (payload && Array.isArray(payload.history) && typeof canvasApi.loadHistory === 'function') {
+        canvasApi.loadHistory(payload.history);
+      }
+      if (payload && payload.background && typeof canvasApi.setPageBackground === 'function') {
+        canvasApi.setPageBackground(payload.background);
+      }
+      activeContentPageId = pageId;
+      if (typeof canvasApi.saveAnnotationState === 'function') canvasApi.saveAnnotationState();
+      if (!payload && !clearWhenMissing) captureActivePageContent();
+    } catch (e) { console.warn('Could not restore notebook page content.', e); activeContentPageId = pageId; }
+  }
+  // Keep the current page backed up before the tab is closed or refreshed.
+  window.addEventListener('pagehide', captureActivePageContent);
+  window.addEventListener('beforeunload', captureActivePageContent);
   const selectFirst = (nb) => { state.selectedNotebook=nb?.id||null; state.selectedSection=nb?.sections?.[0]?.id||null; state.selectedPage=nb?.sections?.[0]?.pages?.[0]?.id||null; };
   const renameItem = (item, label) => { const name=prompt(`Rename ${label}:`,item.name); if(name && name.trim()) item.name=name.trim(); };
   function render() {
@@ -36,6 +75,7 @@
     updateContext();
   }
   function handleAction(d){
+    const previousPageId = pageNow()?.id || null;
     const nb=state.notebooks.find(n=>n.id===d.nb||n.id===d.id&&d.action.includes('notebook'))||nbNow();
     const sec=nb?.sections.find(s=>s.id===d.sec||s.id===d.id);
     const page=sec?.pages.find(p=>p.id===d.id);
@@ -52,12 +92,18 @@
       case 'rename-page':if(page)renameItem(page,'page');break;
       case 'delete-page':if(page){if(sec.pages.length===1){alert('Keep at least one page in each section.');return;}if(!confirm(`Delete page “${page.name}”?`))return;sec.pages=sec.pages.filter(x=>x.id!==page.id);state.selectedPage=sec.pages[0]?.id||null;}break;
     }
+    if (previousPageId && previousPageId !== pageNow()?.id) captureActivePageContent();
     save();render();
+    if (previousPageId !== pageNow()?.id) activatePageContent(pageNow()?.id || null);
   }
   function updateContext(){const nb=nbNow(),sec=secNow(),page=pageNow();const title=document.getElementById('materialTitle');if(title)title.textContent=[nb?.name,sec?.name,page?.name].filter(Boolean).join('  /  ');}
-  document.getElementById('gpaAddNotebook')?.addEventListener('click',()=>{const name=prompt('Notebook name:','New notebook');if(!name?.trim())return;const nb={id:uid(),name:name.trim(),sections:[{id:uid(),name:'General',pages:[{id:uid(),name:'Welcome page'}]}]};state.notebooks.push(nb);selectFirst(nb);save();render();});
-  document.getElementById('gpaAddSection')?.addEventListener('click',()=>{const nb=nbNow();if(!nb)return;const name=prompt(`New section in “${nb.name}”:`,'New section');if(!name?.trim())return;const sec={id:uid(),name:name.trim(),pages:[{id:uid(),name:'New page'}]};nb.sections.push(sec);state.selectedNotebook=nb.id;state.selectedSection=sec.id;state.selectedPage=sec.pages[0].id;save();render();});
+  document.getElementById('gpaAddNotebook')?.addEventListener('click',()=>{captureActivePageContent();const name=prompt('Notebook name:','New notebook');if(!name?.trim())return;const nb={id:uid(),name:name.trim(),sections:[{id:uid(),name:'General',pages:[{id:uid(),name:'Welcome page'}]}]};state.notebooks.push(nb);selectFirst(nb);save();render();activatePageContent(pageNow()?.id||null);});
+  document.getElementById('gpaAddSection')?.addEventListener('click',()=>{const nb=nbNow();if(!nb)return;const name=prompt(`New section in “${nb.name}”:`,'New section');if(!name?.trim())return;const sec={id:uid(),name:name.trim(),pages:[{id:uid(),name:'New page'}]};nb.sections.push(sec);state.selectedNotebook=nb.id;state.selectedSection=sec.id;state.selectedPage=sec.pages[0].id;save();render();activatePageContent(pageNow()?.id||null);});
   document.getElementById('gpaNotebookSearch')?.addEventListener('input',render);
   document.querySelectorAll('[data-ribbon]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-ribbon]').forEach(b=>b.classList.toggle('active',b===btn));const panel=document.getElementById('annotationToolbarPanelV1');if(panel){panel.style.display='';if(btn.dataset.ribbon==='Draw')window.AnnotationToolbarV1?.show?.();}}));
   selectFirst(nbNow()); save(); render();
+  // Wait until annotationCanvasV1's safe startup has initialized its canvas.
+  const initialPageId = pageNow()?.id || null;
+  const initializePageContent = () => { if (window.AnnotationCanvasV1 && window.AnnotationCanvasV1.getCanvas?.()) { activatePageContent(initialPageId, false); } else { requestAnimationFrame(initializePageContent); } };
+  initializePageContent();
 })();
