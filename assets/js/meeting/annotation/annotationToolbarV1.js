@@ -1558,6 +1558,20 @@ min-height: 100px !important;
 
 
 
+        const imageUploadButton = document.getElementById("annotationImageUploadV1");
+        const imageFileInput = document.getElementById("annotationImageFileV1");
+        if (imageUploadButton && imageFileInput && !imageUploadButton.dataset.bound) {
+            imageUploadButton.dataset.bound = "true";
+            imageUploadButton.addEventListener("click", () => imageFileInput.click());
+            imageFileInput.addEventListener("change", event => {
+                const file = event.target.files && event.target.files[0];
+                if (file && window.AnnotationCanvasV1 && typeof AnnotationCanvasV1.addImageFile === "function") {
+                    AnnotationCanvasV1.addImageFile(file);
+                }
+                event.target.value = "";
+            });
+        }
+
         /*
         ===================================================
         PEN

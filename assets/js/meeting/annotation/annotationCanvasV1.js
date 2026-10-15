@@ -94,6 +94,12 @@ let lastPoint = null;
 
 let initialized = false;
 
+// Image annotations are stored in the same history as strokes and text.
+const imageCache = new Map();
+let imageInteraction = null;
+let selectedImageIndex = -1;
+
+
 
 /*
 ===========================================================
@@ -221,7 +227,12 @@ console.log(
 
 
         /*
-        ===================================================
+    
+
+                    <button type="button" id="annotationImageUploadV1" class="annotation-tool-btn" title="Insert Image" aria-label="Insert Image">
+                        <span class="toolbar-icon">🖼</span>
+                    </button>
+                    <input type="file" id="annotationImageFileV1" accept="image/*" hidden>    ===================================================
         MULTI PAGE DATA
         ===================================================
         */
@@ -1066,6 +1077,7 @@ function init(canvasElement) {
         setupCanvas();
 
 bindPointerEvents();
+bindImagePasteEvents();
 
 
 initialized = true;
@@ -1262,6 +1274,30 @@ function resize() {
 
         const point = getPoint(event);
 
+// If an existing image is clicked, drag it or resize from its bottom-right handle.
+const imageIndex = findImageAtPoint(point);
+if (imageIndex >= 0) {
+    event.preventDefault();
+    const imageItem = history[imageIndex];
+    const nearResizeHandle = point.x >= imageItem.x + imageItem.width - 18 &&
+        point.y >= imageItem.y + imageItem.height - 18;
+    imageInteraction = {
+        index: imageIndex,
+        mode: nearResizeHandle ? "resize" : "move",
+        startX: point.x,
+        startY: point.y,
+        originalX: imageItem.x,
+        originalY: imageItem.y,
+        originalWidth: imageItem.width,
+        originalHeight: imageItem.height
+    };
+    selectedImageIndex = imageIndex;
+    canvas.setPointerCapture(event.pointerId);
+    drawing = false;
+    redraw();
+    return;
+}
+
 const rect = canvas.getBoundingClientRect();
 
 const logicalWidth =
@@ -1366,6 +1402,25 @@ context.moveTo(point.x, point.y);
 
     function pointerMove(event) {
 
+        if (imageInteraction) {
+            event.preventDefault();
+            const point = getPoint(event);
+            const item = history[imageInteraction.index];
+            if (!item || item.type !== "image") return;
+            const dx = point.x - imageInteraction.startX;
+            const dy = point.y - imageInteraction.startY;
+            if (imageInteraction.mode === "move") {
+                item.x = Math.max(0, imageInteraction.originalX + dx);
+                item.y = Math.max(0, imageInteraction.originalY + dy);
+            } else {
+                const ratio = imageInteraction.originalHeight / Math.max(1, imageInteraction.originalWidth);
+                item.width = Math.max(40, imageInteraction.originalWidth + dx);
+                item.height = Math.max(40, item.width * ratio);
+            }
+            redraw();
+            return;
+        }
+
         if (!drawing) return;
 
 
@@ -1419,6 +1474,16 @@ context.moveTo(point.x, point.y);
     */
 
     function pointerUp(event) {
+
+        if (imageInteraction) {
+            event.preventDefault();
+            imageInteraction = null;
+            try { canvas.releasePointerCapture(event.pointerId); } catch (error) {}
+            redraw();
+            saveAnnotationState();
+            if (window.AnnotationPageV1 && typeof AnnotationPageV1.markUnsaved === "function") AnnotationPageV1.markUnsaved();
+            return;
+        }
 
         if (!drawing) return;
 
@@ -2125,6 +2190,72 @@ if (
     =======================================================
     */
 
+    function bindImagePasteEvents() {
+        if (document.documentElement.dataset.annotationImagePasteBound === "true") return;
+        document.documentElement.dataset.annotationImagePasteBound = "true";
+        document.addEventListener("paste", event => {
+            const items = event.clipboardData && event.clipboardData.items;
+            if (!items) return;
+            for (const item of items) {
+                if (item.type && item.type.startsWith("image/")) {
+                    const file = item.getAsFile();
+                    if (file) {
+                        event.preventDefault();
+                        addImageFile(file);
+                        return;
+                    }
+                }
+            }
+        });
+    }
+
+    function addImageFile(file) {
+        if (!file || !file.type || !file.type.startsWith("image/")) {
+            alert("Please choose a valid image file.");
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            alert("Please use an image smaller than 5 MB so it can be saved reliably.");
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+            const dataUrl = String(reader.result || "");
+            const image = new Image();
+            image.onload = () => {
+                if (!canvas) return;
+                const maxWidth = Math.max(100, (canvas.clientWidth || canvas.width) * 0.65);
+                const scale = Math.min(1, maxWidth / image.naturalWidth, 360 / image.naturalHeight);
+                const width = Math.max(40, image.naturalWidth * scale);
+                const height = Math.max(40, image.naturalHeight * scale);
+                const item = {
+                    type: "image", dataUrl, x: Math.max(12, ((canvas.clientWidth || canvas.width) - width) / 2),
+                    y: Math.max(12, ((canvas.clientHeight || canvas.height) - height) / 2), width, height
+                };
+                history = history.slice(0, historyIndex + 1);
+                history.push(item);
+                historyIndex = history.length - 1;
+                imageCache.set(dataUrl, image);
+                redraw();
+                saveAnnotationState();
+                if (window.AnnotationPageV1 && typeof AnnotationPageV1.markUnsaved === "function") AnnotationPageV1.markUnsaved();
+            };
+            image.onerror = () => alert("This image could not be loaded. Please try another image.");
+            image.src = dataUrl;
+        };
+        reader.onerror = () => alert("Could not read this image file.");
+        reader.readAsDataURL(file);
+    }
+
+    function findImageAtPoint(point) {
+        for (let i = Math.min(historyIndex, history.length - 1); i >= 0; i--) {
+            const item = history[i];
+            if (item && item.type === "image" && point.x >= item.x && point.x <= item.x + item.width &&
+                point.y >= item.y && point.y <= item.y + item.height) return i;
+        }
+        return -1;
+    }
+
     function redraw() {
 
         if (!canvas) return;
@@ -2166,6 +2297,34 @@ if (
     function drawStroke(stroke) {
 
         if (!stroke) return;
+
+        if (stroke.type === "image") {
+            let image = imageCache.get(stroke.dataUrl);
+            if (!image) {
+                image = new Image();
+                imageCache.set(stroke.dataUrl, image);
+                image.onload = () => redraw();
+                image.src = stroke.dataUrl;
+            }
+            if (image.complete && image.naturalWidth) {
+                context.save();
+                context.globalCompositeOperation = "source-over";
+                context.drawImage(image, Number(stroke.x) || 0, Number(stroke.y) || 0,
+                    Math.max(1, Number(stroke.width) || image.naturalWidth),
+                    Math.max(1, Number(stroke.height) || image.naturalHeight));
+                if (history[selectedImageIndex] === stroke) {
+                    context.strokeStyle = "#2563eb";
+                    context.lineWidth = 1.5;
+                    context.setLineDash([5, 4]);
+                    context.strokeRect(stroke.x, stroke.y, stroke.width, stroke.height);
+                    context.setLineDash([]);
+                    context.fillStyle = "#2563eb";
+                    context.fillRect(stroke.x + stroke.width - 10, stroke.y + stroke.height - 10, 10, 10);
+                }
+                context.restore();
+            }
+            return;
+        }
 
         if (stroke.type === "text") {
             drawTextAnnotation(stroke);
@@ -2505,6 +2664,8 @@ return history[
     resize,
 
     setTool,
+
+    addImageFile,
 
     setColor,
 
