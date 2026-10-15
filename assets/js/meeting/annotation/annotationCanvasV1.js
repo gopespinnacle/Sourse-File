@@ -1119,6 +1119,13 @@ INITIALIZE
 
 function init(canvasElement) {
 
+        // Safe to call from both the page module and the page-level bootstrap.
+        // Never attach duplicate pointer/paste listeners to the same canvas.
+        if (initialized && canvas && canvas === canvasElement) {
+            resize();
+            return true;
+        }
+
         if (!canvasElement) {
 
             console.error(

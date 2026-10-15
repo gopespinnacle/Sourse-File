@@ -926,7 +926,28 @@ window.socket.on(
 
 <script src="assets/js/meeting/annotation/annotationPageV1.js"></script>
 
-
+<!-- Reliable startup: initialize drawing/paste handlers automatically for every teacher. -->
+<script>
+(function startAnnotationToolsSafely() {
+    function start() {
+        const canvas = document.getElementById("annotationCanvasV1");
+        if (window.AnnotationCanvasV1 && canvas) {
+            window.AnnotationCanvasV1.init(canvas);
+            window.AnnotationCanvasV1.setTool("pen");
+        }
+        if (window.AnnotationToolbarV1) {
+            window.AnnotationToolbarV1.init();
+            window.AnnotationToolbarV1.show();
+            window.AnnotationToolbarV1.setActiveTool("pen");
+        }
+    }
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", start, { once: true });
+    } else {
+        start();
+    }
+})();
+</script>
 
 </body>
 

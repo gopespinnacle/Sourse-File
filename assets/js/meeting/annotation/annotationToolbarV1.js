@@ -1363,7 +1363,7 @@ toolbar.style.height = "auto";
 RIGHT-SIDE SLIDE-OUT ANNOTATION TOOLBAR
 ========================================== */
 #annotationToolbarV1 {
-position: absolute !important;
+position: fixed !important;
 top: 50% !important;
 right: 0 !important;
 left: auto !important;
@@ -2801,73 +2801,27 @@ function showCloseConfirmation() {
 
     function show() {
 
-        if (!toolbar) {
+        if (!toolbar) createToolbar();
+        if (!toolbar) return;
 
-            createToolbar();
-
+        // Keep the toolbar attached to the viewport so it cannot be clipped
+        // by the A4 workspace's overflow:hidden or page scaling.
+        if (toolbar.parentElement !== document.body) {
+            document.body.appendChild(toolbar);
         }
 
-
-        const workspace =
-            document.getElementById(
-                "annotationWorkspaceV1"
-            );
-
-
-        if (
-            workspace &&
-            toolbar
-        ) {
-
-            workspace.style.position =
-                "absolute";
-
-
-            if (
-                toolbar.parentElement !==
-                workspace
-            ) {
-
-                workspace.appendChild(
-                    toolbar
-                );
-
-            }
-
-
-            toolbar.style.position =
-                "absolute";
-
-            toolbar.style.left =
-                "50%";
-
-            toolbar.style.bottom =
-                "12px";
-
-            toolbar.style.transform =
-                "translateX(-50%)";
-
-            toolbar.style.zIndex =
-                "99999";
-
-        }
-
-
-        toolbar.style.display =
-            "block";
-
-        toolbar.style.visibility =
-            "visible";
-
-        toolbar.style.opacity =
-            "1";
-
-        toolbar.style.pointerEvents =
-            "auto";
-
+        toolbar.style.setProperty("position", "fixed", "important");
+        toolbar.style.setProperty("top", "50%", "important");
+        toolbar.style.setProperty("right", "0", "important");
+        toolbar.style.setProperty("left", "auto", "important");
+        toolbar.style.setProperty("bottom", "auto", "important");
+        toolbar.style.setProperty("z-index", "2147483000", "important");
+        toolbar.style.setProperty("display", "block", "important");
+        toolbar.style.setProperty("visibility", "visible", "important");
+        toolbar.style.setProperty("opacity", "1", "important");
+        toolbar.style.setProperty("pointer-events", "auto", "important");
 
         updatePageIndicator();
-
     }
 
 
