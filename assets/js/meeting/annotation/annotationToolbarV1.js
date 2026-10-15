@@ -164,6 +164,17 @@ window.AnnotationToolbarV1 = (() => {
                         <span class="toolbar-icon">⌫</span>
                     </button>
 
+                    <!-- TEXT TOOL -->
+                    <button
+                        type="button"
+                        id="annotationTextV1"
+                        class="annotation-tool-btn"
+                        title="Type Text"
+                        aria-label="Type Text"
+                    >
+                        <span class="toolbar-icon">T</span>
+                    </button>
+
 
                 </div>
 
@@ -1635,6 +1646,26 @@ min-height: 100px !important;
 
         /*
         ===================================================
+        TEXT TOOL
+        ===================================================
+        */
+
+        const textTool = document.getElementById("annotationTextV1");
+
+        if (textTool) {
+            textTool.addEventListener("click", () => {
+                setActiveTool("text");
+
+                if (window.AnnotationCanvasV1 &&
+                    typeof AnnotationCanvasV1.setTool === "function") {
+                    AnnotationCanvasV1.setTool("text");
+                }
+            });
+        }
+
+
+        /*
+        ===================================================
         COLOR
         ===================================================
         */
@@ -2663,6 +2694,9 @@ function showCloseConfirmation() {
                 "annotationEraserV1"
             );
 
+        const textTool =
+            document.getElementById("annotationTextV1");
+
 
         if (pen) {
 
@@ -2681,6 +2715,10 @@ function showCloseConfirmation() {
                 tool === "eraser"
             );
 
+        }
+
+        if (textTool) {
+            textTool.classList.toggle("active", tool === "text");
         }
 
     }

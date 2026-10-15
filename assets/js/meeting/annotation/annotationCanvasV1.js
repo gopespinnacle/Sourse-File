@@ -80,6 +80,8 @@ let annotationPersistenceReady = false;
 
     let currentWidth = 4;
 
+    let currentTextSize = 20;
+
     let eraserWidth = 30;
 
     let currentPoints = [];
@@ -1293,6 +1295,12 @@ if (
     return;
 }
 
+/* TEXT TOOL: place an editable text box instead of drawing a stroke. */
+if (currentTool === "text") {
+    drawing = false;
+    createTextEditor(point);
+    return;
+}
 
 canvas.setPointerCapture(event.pointerId);
 drawing = true;
@@ -1484,6 +1492,146 @@ lastPoint = null;
 
     }
 
+
+    /*
+    =======================================================
+    TEXT TOOL
+    =======================================================
+    */
+
+    function createTextEditor(point) {
+        if (!canvas) return;
+
+        // Finish any existing editor before creating another.
+        const existingEditor = document.getElementById("annotationTextEditorV1");
+        if (existingEditor) {
+            existingEditor.blur();
+            if (document.getElementById("annotationTextEditorV1")) return;
+        }
+
+        const workspace = document.getElementById("annotationWorkspaceV1");
+        if (!workspace) return;
+
+        const editor = document.createElement("textarea");
+        editor.id = "annotationTextEditorV1";
+        editor.setAttribute("aria-label", "Type annotation text");
+        editor.setAttribute("placeholder", "Type here…");
+        editor.rows = 1;
+        editor.value = "";
+        editor.style.cssText = [
+            "position:absolute",
+            "z-index:20",
+            "box-sizing:border-box",
+            "min-width:90px",
+            "width:180px",
+            "min-height:34px",
+            "padding:4px 6px",
+            "margin:0",
+            "border:1px dashed #2563eb",
+            "border-radius:3px",
+            "outline:2px solid rgba(37,99,235,.15)",
+            "background:rgba(255,255,255,.96)",
+            "color:" + currentColor,
+            "font:" + currentTextSize + "px Arial,sans-serif",
+            "line-height:1.35",
+            "resize:both",
+            "overflow:auto",
+            "white-space:pre-wrap",
+            "overflow-wrap:break-word",
+            "touch-action:manipulation"
+        ].join(";");
+
+        editor.style.left = Math.max(0, point.x) + "px";
+        editor.style.top = Math.max(0, point.y) + "px";
+
+        let finished = false;
+
+        function finishText(save) {
+            if (finished) return;
+            finished = true;
+
+            const text = editor.value.trimEnd();
+            const x = parseFloat(editor.style.left) || 0;
+            const y = parseFloat(editor.style.top) || 0;
+
+            if (editor.parentNode) editor.parentNode.removeChild(editor);
+
+            if (save && text.trim()) {
+                history = history.slice(0, historyIndex + 1);
+                history.push({
+                    type: "text",
+                    text: text,
+                    x: x,
+                    y: y,
+                    color: editor.style.color || currentColor,
+                    fontSize: currentTextSize,
+                    fontFamily: "Arial, sans-serif",
+                    maxWidth: Math.max(90, editor.offsetWidth || 180)
+                });
+                historyIndex = history.length - 1;
+                redraw();
+                saveAnnotationState();
+                if (window.AnnotationPageV1 &&
+                    typeof AnnotationPageV1.markUnsaved === "function") {
+                    AnnotationPageV1.markUnsaved();
+                }
+            }
+        }
+
+        editor.addEventListener("input", () => {
+            editor.style.height = "auto";
+            editor.style.height = Math.max(34, editor.scrollHeight) + "px";
+        });
+
+        editor.addEventListener("keydown", event => {
+            if (event.key === "Escape") {
+                event.preventDefault();
+                finishText(false);
+            } else if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+                event.preventDefault();
+                finishText(true);
+            }
+        });
+
+        editor.addEventListener("blur", () => finishText(true));
+        workspace.appendChild(editor);
+        editor.focus();
+    }
+
+    function drawTextAnnotation(item) {
+        if (!item || typeof item.text !== "string") return;
+
+        context.save();
+        context.globalCompositeOperation = "source-over";
+        context.fillStyle = item.color || "#000000";
+        const fontSize = Number(item.fontSize) || 20;
+        context.font = fontSize + "px " + (item.fontFamily || "Arial, sans-serif");
+        context.textBaseline = "top";
+
+        const words = item.text.split("\\n");
+        const lineHeight = fontSize * 1.35;
+        const maxWidth = Math.max(90, Number(item.maxWidth) || 180);
+        let y = Number(item.y) || 0;
+
+        words.forEach(paragraph => {
+            const parts = paragraph.split(/\\s+/);
+            let line = "";
+            parts.forEach(word => {
+                const testLine = line ? line + " " + word : word;
+                if (line && context.measureText(testLine).width > maxWidth) {
+                    context.fillText(line, Number(item.x) || 0, y);
+                    y += lineHeight;
+                    line = word;
+                } else {
+                    line = testLine;
+                }
+            });
+            context.fillText(line, Number(item.x) || 0, y);
+            y += lineHeight;
+        });
+
+        context.restore();
+    }
 
     /*
     =======================================================
@@ -1749,7 +1897,8 @@ lastPoint = null;
 
         if (
             tool !== "pen" &&
-            tool !== "eraser"
+            tool !== "eraser" &&
+            tool !== "text"
         ) {
 
             return;
@@ -1946,14 +2095,18 @@ if (
 
     function drawStroke(stroke) {
 
+        if (!stroke) return;
+
+        if (stroke.type === "text") {
+            drawTextAnnotation(stroke);
+            return;
+        }
+
         if (
-            !stroke ||
             !stroke.points ||
             !stroke.points.length
         ) {
-
             return;
-
         }
 
 
