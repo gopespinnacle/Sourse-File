@@ -1078,6 +1078,7 @@ function init(canvasElement) {
 
 bindPointerEvents();
 bindImagePasteEvents();
+bindImageDeleteEvents();
 
 
 initialized = true;
@@ -2245,6 +2246,37 @@ if (
         };
         reader.onerror = () => alert("Could not read this image file.");
         reader.readAsDataURL(file);
+    }
+
+    // Delete the currently selected image with Delete or Backspace.
+    function bindImageDeleteEvents() {
+        if (document.documentElement.dataset.annotationImageDeleteBound === "true") return;
+        document.documentElement.dataset.annotationImageDeleteBound = "true";
+
+        document.addEventListener("keydown", function (event) {
+            if (selectedImageIndex < 0) return;
+            if (event.key !== "Delete" && event.key !== "Backspace") return;
+
+            const active = document.activeElement;
+            if (active && (active.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(active.tagName))) return;
+
+            const imageItem = history[selectedImageIndex];
+            if (!imageItem || imageItem.type !== "image" || selectedImageIndex > historyIndex) {
+                selectedImageIndex = -1;
+                return;
+            }
+
+            event.preventDefault();
+            history.splice(selectedImageIndex, 1);
+            historyIndex--;
+            selectedImageIndex = -1;
+            imageInteraction = null;
+            redraw();
+            saveAnnotationState();
+            if (window.AnnotationPageV1 && typeof AnnotationPageV1.markUnsaved === "function") {
+                AnnotationPageV1.markUnsaved();
+            }
+        });
     }
 
     function findImageAtPoint(point) {
