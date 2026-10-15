@@ -1258,14 +1258,6 @@ function resize() {
         event.preventDefault();
 
 
-        canvas.setPointerCapture(
-            event.pointerId
-        );
-
-
-        drawing = true;
-
-
         const point = getPoint(event);
 
 const rect = canvas.getBoundingClientRect();
@@ -1287,8 +1279,12 @@ if (
     point.y < marginTop ||
     point.y > logicalHeight - marginBottom
 ) {
+    drawing = false;
     return;
 }
+
+canvas.setPointerCapture(event.pointerId);
+drawing = true;
 
 currentPoints = [point];
 
@@ -1320,12 +1316,20 @@ currentPoints = [point];
         }
 
 
-        context.beginPath();
+        // Restrict this stroke to the four-sided page margin.
+context.save();
 
-        context.moveTo(
-            point.x,
-            point.y
-        );
+context.beginPath();
+context.rect(
+    marginLeft,
+    marginTop,
+    logicalWidth - marginLeft - marginRight,
+    logicalHeight - marginTop - marginBottom
+);
+context.clip();
+
+context.beginPath();
+context.moveTo(point.x, point.y);
 
     }
 
@@ -1416,6 +1420,10 @@ currentPoints = [point];
 
 
         context.closePath();
+
+        context.restore();
+
+
 
 
         /*
