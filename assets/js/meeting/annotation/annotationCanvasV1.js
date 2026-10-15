@@ -1266,13 +1266,31 @@ function resize() {
         drawing = true;
 
 
-        const point =
-            getPoint(event);
+        const point = getPoint(event);
 
+const rect = canvas.getBoundingClientRect();
 
-        currentPoints = [
-            point
-        ];
+const logicalWidth =
+    canvas.clientWidth || rect.width;
+
+const logicalHeight =
+    canvas.clientHeight || rect.height;
+
+const marginLeft = logicalWidth * (15 / 210);
+const marginRight = logicalWidth * (15 / 210);
+const marginTop = logicalHeight * (18 / 297);
+const marginBottom = logicalHeight * (18 / 297);
+
+if (
+    point.x < marginLeft ||
+    point.x > logicalWidth - marginRight ||
+    point.y < marginTop ||
+    point.y > logicalHeight - marginBottom
+) {
+    return;
+}
+
+currentPoints = [point];
 
 
         lastPoint =
