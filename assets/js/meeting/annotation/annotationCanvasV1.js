@@ -1211,9 +1211,11 @@ console.log(
                 "repeating-linear-gradient(to bottom, transparent 0px, transparent 27px, #b9d5f5 27px, #b9d5f5 28px)";
             annotationBackgroundLayer.style.backgroundSize = "100% 28px";
         } else if (type === "four-line") {
+            // Handwriting guide: one red baseline, exactly two blue guides,
+            // then the next red baseline. Wider 60px spacing for writing.
             annotationBackgroundLayer.style.backgroundImage =
-                "repeating-linear-gradient(to bottom, transparent 0px, transparent 7px, #8fb8ec 7px, #8fb8ec 8px, transparent 8px, transparent 15px, #8fb8ec 15px, #8fb8ec 16px, transparent 16px, transparent 23px, #d66f6f 23px, #d66f6f 24px, transparent 24px, transparent 31px, #8fb8ec 31px, #8fb8ec 32px)";
-            annotationBackgroundLayer.style.backgroundSize = "100% 32px";
+                "repeating-linear-gradient(to bottom, #d66f6f 0px, #d66f6f 2px, transparent 2px, transparent 20px, #8fb8ec 20px, #8fb8ec 22px, transparent 22px, transparent 40px, #8fb8ec 40px, #8fb8ec 42px, transparent 42px, transparent 60px)";
+            annotationBackgroundLayer.style.backgroundSize = "100% 60px";
         } else if (type === "grid") {
             annotationBackgroundLayer.style.backgroundImage =
                 "linear-gradient(#d6e2f0 1px, transparent 1px), linear-gradient(90deg, #d6e2f0 1px, transparent 1px)";
