@@ -1608,13 +1608,13 @@ lastPoint = null;
         context.font = fontSize + "px " + (item.fontFamily || "Arial, sans-serif");
         context.textBaseline = "top";
 
-        const words = item.text.split("\\n");
+        const words = item.text.split("\n");
         const lineHeight = fontSize * 1.35;
         const maxWidth = Math.max(90, Number(item.maxWidth) || 180);
         let y = Number(item.y) || 0;
 
         words.forEach(paragraph => {
-            const parts = paragraph.split(/\\s+/);
+            const parts = paragraph.split(/\s+/);
             let line = "";
             parts.forEach(word => {
                 const testLine = line ? line + " " + word : word;
