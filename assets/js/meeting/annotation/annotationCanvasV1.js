@@ -61,6 +61,10 @@ for teacher <-> student socket communication.
 let annotationSessionKey = null;
 
 let annotationPersistenceReady = false;
+let annotationLocalStorageKey = null;
+let annotationLocalBackupRestored = false;
+let annotationLocalBackupHasContent = false;
+let annotationLocalLifecycleBound = false;
 
     /*
     =======================================================
@@ -122,18 +126,121 @@ ANNOTATION PERSISTENCE
 ===========================================================
 */
 
-// Unsaved canvas work is intentionally not restored from browser storage.
-// The Save button in annotationPageV1.js saves learning materials explicitly.
+function buildAnnotationLocalStorageKey() {
+    // If opened directly without ?room=... (as annotation.html),
+    // keep a stable backup key based on this page's path.
+    const pagePath = String(window.location.pathname || "/annotation.html").replace(/[^a-zA-Z0-9_-]/g, "_");
+    const roomOrPage = annotationRoom || ("direct_" + pagePath);
+    const safeRoom = String(roomOrPage).replace(/[^a-zA-Z0-9_-]/g, "_");
+    const safeSession = String(annotationSessionKey || "default").replace(/[^a-zA-Z0-9_-]/g, "_");
+    return "gpa_annotation_backup_v1:" + safeRoom + ":" + safeSession;
+}
+
+function annotationPagesHaveContent(pages, backgrounds) {
+    const hasItems = Array.isArray(pages) && pages.some(page => Array.isArray(page) && page.length > 0);
+    const hasPageStyle = Array.isArray(backgrounds) && backgrounds.some(style => style && style !== "white");
+    return hasItems || hasPageStyle;
+}
+
+function saveLocalAnnotationBackup() {
+    if (!annotationLocalStorageKey) return;
+    try {
+        if (Array.isArray(annotationPages) && annotationPages.length) {
+            annotationPages[currentPageIndex] = getHistory();
+        }
+        const backup = {
+            version: 1,
+            pages: JSON.parse(JSON.stringify(annotationPages)),
+            currentPage: currentPageIndex,
+            pageBackgrounds: annotationPageBackgrounds.slice(),
+            savedAt: Date.now()
+        };
+        sessionStorage.setItem(annotationLocalStorageKey, JSON.stringify(backup));
+        annotationLocalBackupHasContent = annotationPagesHaveContent(backup.pages, backup.pageBackgrounds);
+    } catch (error) {
+        console.warn("ANNOTATION V1: TAB-SESSION BACKUP COULD NOT BE SAVED (storage may be full)", error);
+    }
+}
+
+function restoreLocalAnnotationBackup() {
+    if (!annotationLocalStorageKey) return false;
+    try {
+        const raw = sessionStorage.getItem(annotationLocalStorageKey);
+        if (!raw) return false;
+        const backup = JSON.parse(raw);
+        if (!backup || !Array.isArray(backup.pages)) return false;
+
+        annotationPages = JSON.parse(JSON.stringify(backup.pages));
+        if (!annotationPages.length) annotationPages = [[]];
+        annotationPageBackgrounds = Array.isArray(backup.pageBackgrounds) ? backup.pageBackgrounds.slice() : [];
+        while (annotationPageBackgrounds.length < annotationPages.length) annotationPageBackgrounds.push("white");
+        annotationPageBackgrounds = annotationPageBackgrounds.slice(0, annotationPages.length);
+        currentPageIndex = Number.isInteger(backup.currentPage) ? backup.currentPage : 0;
+        if (currentPageIndex < 0 || currentPageIndex >= annotationPages.length) currentPageIndex = 0;
+        history = JSON.parse(JSON.stringify(annotationPages[currentPageIndex] || []));
+        historyIndex = history.length - 1;
+        annotationLocalBackupRestored = true;
+        annotationLocalBackupHasContent = annotationPagesHaveContent(annotationPages, annotationPageBackgrounds);
+        redraw();
+        console.log("ANNOTATION V1: TAB-SESSION BACKUP RESTORED", currentPageIndex + 1, "/", annotationPages.length);
+        return true;
+    } catch (error) {
+        console.warn("ANNOTATION V1: TAB-SESSION BACKUP COULD NOT BE RESTORED", error);
+        return false;
+    }
+}
 
 function initPersistence() {
-    // Every newly opened annotation tab starts with a blank, unsaved canvas.
-    // Saved learning materials are loaded through the explicit Materials flow.
+    // Establish local backup first. This must work even when the page is
+    // opened directly without classroom URL parameters or a ready socket.
     const params = new URLSearchParams(window.location.search);
     annotationRoom = params.get("room");
     annotationSessionKey = params.get("key");
+    annotationLocalStorageKey = buildAnnotationLocalStorageKey();
 
+    // Keep the drawing when the teacher refreshes this same tab, but do not
+    // carry a previous tab's temporary work into a newly opened annotation page.
+    // sessionStorage survives reloads; a fresh navigation starts a clean session.
+    let navigationType = "navigate";
+    try {
+        const navigationEntries = performance.getEntriesByType("navigation");
+        if (navigationEntries && navigationEntries.length) {
+            navigationType = navigationEntries[0].type || "navigate";
+        }
+    } catch (error) {
+        console.warn("ANNOTATION V1: COULD NOT DETECT NAVIGATION TYPE", error);
+    }
+
+    if (navigationType === "reload") {
+        restoreLocalAnnotationBackup();
+        console.log("ANNOTATION V1: REFRESH DETECTED; RESTORING TAB WORK");
+    } else {
+        try {
+            sessionStorage.removeItem(annotationLocalStorageKey);
+        } catch (error) {
+            console.warn("ANNOTATION V1: COULD NOT CLEAR PREVIOUS TAB BACKUP", error);
+        }
+        annotationLocalBackupRestored = false;
+        annotationLocalBackupHasContent = false;
+        console.log("ANNOTATION V1: NEW PAGE SESSION; STARTING CLEAN");
+    }
+
+    // Last-chance backup allows a refresh of this same tab to restore its work.
+    if (!annotationLocalLifecycleBound) {
+        const backupBeforeExit = () => {
+            try { saveAnnotationState(); } catch (error) {
+                console.warn("ANNOTATION V1: FINAL TAB-SESSION BACKUP FAILED", error);
+            }
+        };
+        window.addEventListener("pagehide", backupBeforeExit);
+        window.addEventListener("beforeunload", backupBeforeExit);
+        annotationLocalLifecycleBound = true;
+    }
+
+    // Server persistence is optional for direct-open mode, but remains
+    // enabled for classroom URLs that provide a room and Socket.IO.
     if (typeof socket === "undefined" || !socket) {
-        console.warn("ANNOTATION V1: SOCKET NOT READY; STARTING WITH A BLANK CANVAS");
+        console.warn("ANNOTATION V1: SOCKET NOT READY; TAB-SESSION BACKUP ENABLED");
         return;
     }
 
@@ -143,7 +250,7 @@ function initPersistence() {
     console.log("ANNOTATION V1: SESSION KEY", annotationSessionKey);
 
     if (!annotationRoom) {
-        console.warn("ANNOTATION V1: ROOM NOT FOUND; STARTING WITH A BLANK CANVAS");
+        console.warn("ANNOTATION V1: ROOM NOT FOUND; USING LOCAL BACKUP ONLY");
         return;
     }
 
@@ -180,6 +287,13 @@ function initPersistence() {
         const serverBackgrounds = data.data && Array.isArray(data.data.pageBackgrounds)
             ? data.data.pageBackgrounds
             : [];
+        if (annotationLocalBackupRestored && annotationLocalBackupHasContent &&
+            !annotationPagesHaveContent(serverPages, serverBackgrounds)) {
+            console.warn("ANNOTATION V1: SERVER DATA EMPTY; KEEPING LOCAL BACKUP AND SYNCING IT");
+            saveAnnotationState();
+            return;
+        }
+
 
         /*
     
@@ -271,6 +385,7 @@ function initPersistence() {
                 "/",
                 annotationPages.length
             );
+            saveLocalAnnotationBackup();
 
             return;
 
@@ -447,19 +562,16 @@ if (
     =======================================================
     */
 
-  // Never restore old room-wide work into a fresh annotation tab.
-  // A unique key is required to request a specific annotation session.
-  if (annotationSessionKey) {
-      annotationSocket.emit(
-        "annotationLoad",
-        {
-            room: annotationRoom,
-            annotationKey: annotationSessionKey
-        }
-      );
-  } else {
-      console.log("ANNOTATION V1: NO SESSION KEY; NOT RESTORING OLD WORK");
-  }
+  annotationSocket.emit(
+    "annotationLoad",
+    {
+        room:
+            annotationRoom,
+
+        annotationKey:
+            annotationSessionKey
+    }
+);
 
     console.log(
         "ANNOTATION V1: PERSISTENCE READY",
@@ -477,6 +589,7 @@ SAVE ANNOTATION STATE
 
 function saveAnnotationState() {
 
+    saveLocalAnnotationBackup();
 
     if (
         !annotationSocket ||
@@ -1032,13 +1145,6 @@ INITIALIZE
 
 function init(canvasElement) {
 
-        // Safe to call from both the page module and the page-level bootstrap.
-        // Never attach duplicate pointer/paste listeners to the same canvas.
-        if (initialized && canvas && canvas === canvasElement) {
-            resize();
-            return true;
-        }
-
         if (!canvasElement) {
 
             console.error(
@@ -1075,49 +1181,14 @@ function init(canvasElement) {
         }
 
 
-        // The A4 workspace can finish sizing after this module is loaded.
-        // Set the backing bitmap now, then keep it synchronized with the
-        // displayed canvas size so pointer coordinates and drawing stay aligned.
         setupCanvas();
 
-        bindPointerEvents();
-        bindImagePasteEvents();
-        bindImageDeleteEvents();
+bindPointerEvents();
+bindImagePasteEvents();
+bindImageDeleteEvents();
 
-        initialized = true;
 
-        // ResizeObserver handles first layout, browser zoom, viewport changes,
-        // and workspace resizing without requiring any teacher console action.
-        if (typeof ResizeObserver !== "undefined") {
-            if (canvas.__gpaAnnotationResizeObserver) {
-                canvas.__gpaAnnotationResizeObserver.disconnect();
-            }
-            canvas.__gpaAnnotationResizeObserver = new ResizeObserver(() => {
-                if (!canvas || !canvas.isConnected) return;
-                const rect = canvas.getBoundingClientRect();
-                if (rect.width > 0 && rect.height > 0 &&
-                    (canvas.width !== Math.round(rect.width * (window.devicePixelRatio || 1)) ||
-                     canvas.height !== Math.round(rect.height * (window.devicePixelRatio || 1)))) {
-                    resize();
-                }
-            });
-            canvas.__gpaAnnotationResizeObserver.observe(canvas);
-        }
-
-        // A second sizing pass after the browser completes layout fixes cases
-        // where the canvas initially reports its default 300 x 150 bitmap.
-        requestAnimationFrame(() => {
-            if (!canvas || !canvas.isConnected) return;
-            const rect = canvas.getBoundingClientRect();
-            if (rect.width > 0 && rect.height > 0) resize();
-        });
-
-        if (!window.__gpaAnnotationResizeListenerBound) {
-            window.__gpaAnnotationResizeListenerBound = true;
-            window.addEventListener("resize", () => {
-                if (canvas) resize();
-            }, { passive: true });
-        }
+initialized = true;
 
 
 /*
@@ -1316,13 +1387,6 @@ function resize() {
     RESIZE CANVAS TO CURRENT PRESENTATION SIZE
     ---------------------------------------------------
     */
-
-    const rect = canvas.getBoundingClientRect();
-    const ratio = window.devicePixelRatio || 1;
-    const expectedWidth = Math.round(rect.width * ratio);
-    const expectedHeight = Math.round(rect.height * ratio);
-    if (rect.width <= 0 || rect.height <= 0) return;
-    if (canvas.width === expectedWidth && canvas.height === expectedHeight) return;
 
     setupCanvas();
 
