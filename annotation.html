@@ -175,37 +175,20 @@ ANNOTATION WORKSPACE
 */
 
 
-#annotationWorkspaceV1 {
 
+/* Four-sided inner page margin */
+#annotationWorkspaceV1::before {
+    content: "";
     position: absolute;
-
-    width: min(210mm, calc(100% - 32px));
-
-    aspect-ratio: 210 / 297;
-
-    height: auto;
-
-    left: 50%;
-
-    top: 20px;
-
-    bottom: auto;
-
-    transform: translateX(-50%);
-
-    background: #ffffff;
-
-    overflow: hidden;
-
+    top: 18mm;
+    right: 15mm;
+    bottom: 18mm;
+    left: 15mm;
     border: 1.5px solid #000000;
-
-    border-radius: 0;
-
-    box-shadow:
-        0 4px 18px
-        rgba(0, 0, 0, .15);
-
+    pointer-events: none;
+    z-index: 10;
 }
+
 
 
 /*
