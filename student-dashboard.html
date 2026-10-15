@@ -1790,6 +1790,102 @@ body {
 }
 
 
+/* ===== CURIOSITY CORNER VIDEO PANEL ===== */
+
+.gp-curiosity-panel {
+    min-width: 0;
+    align-self: stretch;
+}
+
+.gp-curiosity-panel .gp-panel-heading {
+    margin-bottom: 16px;
+}
+
+.gp-curiosity-video-wrap {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    min-height: 180px;
+    overflow: hidden;
+    background: #07152f;
+    border-radius: 12px;
+}
+
+.gp-curiosity-video-wrap video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #07152f;
+}
+
+.gp-curiosity-video-title {
+    margin-top: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: #12213f;
+    overflow-wrap: anywhere;
+}
+
+.gp-curiosity-category {
+    display: inline-block;
+    margin-top: 7px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background: #eaf2ff;
+    color: #2457b5;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.gp-curiosity-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.gp-curiosity-controls button {
+    padding: 10px 12px;
+    border: 1px solid #d8e5f5;
+    border-radius: 9px;
+    background: #f2f7ff;
+    color: #174b9b;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.gp-curiosity-controls button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+#gpCuriosityCounter {
+    color: #64748b;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.gp-curiosity-message {
+    padding: 28px 12px;
+    text-align: center;
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+    .gp-curiosity-panel {
+        width: 100%;
+    }
+
+    .gp-curiosity-video-wrap {
+        aspect-ratio: 16 / 9;
+    }
+}
+
 
 </style>
 
@@ -2009,10 +2105,54 @@ body {
         loading="eager"
         referrerpolicy="same-origin">
       </iframe>
+    
     </div>
   </div>
 
+  <!-- CURIOSITY CORNER VIDEO PANEL -->
+  <div class="gp-panel gp-curiosity-panel">
+
+    <div class="gp-panel-heading">
+      <h2>
+        <span class="gp-heading-icon">
+          <i class="fa-solid fa-lightbulb"></i>
+        </span>
+        Curiosity Corner
+      </h2>
+    </div>
+
+    <div id="gpCuriosityVideoArea">
+      <div class="gp-curiosity-message">
+        Loading videos...
+      </div>
+    </div>
+
+    <div class="gp-curiosity-controls">
+      <button
+        type="button"
+        id="gpCuriosityPrev"
+        aria-label="Previous video"
+        disabled>
+        <i class="fa-solid fa-arrow-left"></i>
+        Previous
+      </button>
+
+      <span id="gpCuriosityCounter">0 / 0</span>
+
+      <button
+        type="button"
+        id="gpCuriosityNext"
+        aria-label="Next video"
+        disabled>
+        Next
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+
+  </div>
+
 </section>
+
 
 
   <section id="academicContinuitySection" class="academic-continuity-section gp-notice-section">
@@ -4023,6 +4163,146 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 
+
+<script>
+/* ===== CURIOSITY CORNER VIDEO NAVIGATION ===== */
+
+(function () {
+    const API_URL =
+        "https://academy-backend-eatl.onrender.com/api/curiosity/all";
+
+    const area = document.getElementById("gpCuriosityVideoArea");
+    const prevButton = document.getElementById("gpCuriosityPrev");
+    const nextButton = document.getElementById("gpCuriosityNext");
+    const counter = document.getElementById("gpCuriosityCounter");
+
+    if (!area || !prevButton || !nextButton || !counter) return;
+
+    let videos = [];
+    let currentIndex = 0;
+
+    function showMessage(message) {
+        area.replaceChildren();
+
+        const text = document.createElement("div");
+        text.className = "gp-curiosity-message";
+        text.textContent = message;
+
+        area.appendChild(text);
+    }
+
+    function updateControls() {
+        const total = videos.length;
+
+        counter.textContent = total
+            ? `${currentIndex + 1} / ${total}`
+            : "0 / 0";
+
+        prevButton.disabled = total < 2 || currentIndex === 0;
+        nextButton.disabled =
+            total < 2 || currentIndex === total - 1;
+    }
+
+    function renderVideo() {
+        if (!videos.length) {
+            showMessage("No Curiosity Corner videos are available yet.");
+            updateControls();
+            return;
+        }
+
+        const item = videos[currentIndex];
+
+        area.replaceChildren();
+
+        const videoWrap = document.createElement("div");
+        videoWrap.className = "gp-curiosity-video-wrap";
+
+        const player = document.createElement("video");
+        player.controls = true;
+        player.preload = "metadata";
+        player.playsInline = true;
+        player.setAttribute("aria-label", item.title || "Curiosity Corner video");
+
+        player.src = item.mediaUrl;
+
+        player.addEventListener("error", function () {
+            const message = document.createElement("div");
+            message.className = "gp-curiosity-message";
+            message.textContent =
+                "This video could not be loaded. Try another video or check its storage URL.";
+
+            videoWrap.replaceChildren(message);
+        });
+
+        videoWrap.appendChild(player);
+        area.appendChild(videoWrap);
+
+        const title = document.createElement("div");
+        title.className = "gp-curiosity-video-title";
+        title.textContent = item.title || "Curiosity Corner";
+        area.appendChild(title);
+
+        const category = document.createElement("span");
+        category.className = "gp-curiosity-category";
+        category.textContent = item.category || "Learning";
+        area.appendChild(category);
+
+        updateControls();
+    }
+
+    prevButton.addEventListener("click", function () {
+        if (currentIndex > 0) {
+            currentIndex--;
+            renderVideo();
+        }
+    });
+
+    nextButton.addEventListener("click", function () {
+        if (currentIndex < videos.length - 1) {
+            currentIndex++;
+            renderVideo();
+        }
+    });
+
+    async function loadCuriosityVideos() {
+        try {
+            const response = await fetch(API_URL);
+
+            if (!response.ok) {
+                throw new Error("Unable to retrieve videos.");
+            }
+
+            const data = await response.json();
+
+            if (!Array.isArray(data)) {
+                throw new Error("Unexpected Curiosity Corner response.");
+            }
+
+            // Include videos from every category; exclude images and PDFs.
+            videos = data.filter(function (item) {
+                return item.mediaType === "video" &&
+                    typeof item.mediaUrl === "string" &&
+                    item.mediaUrl.trim() !== "";
+            });
+
+            // The backend already sorts newest first.
+            currentIndex = 0;
+            renderVideo();
+
+        } catch (error) {
+            console.error("Curiosity Corner error:", error);
+            showMessage(
+                "Curiosity Corner videos could not be loaded. Please try again later."
+            );
+            updateControls();
+        }
+    }
+
+    loadCuriosityVideos();
+})();
+</script>
+</body>
+</html>
 
 
 </body>
