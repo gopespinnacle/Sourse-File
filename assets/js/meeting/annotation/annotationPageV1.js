@@ -11,6 +11,38 @@
     // Older versions saved details under the URL key in localStorage.
     const key = params.get('key');
     if (key) { try { stored = { ...JSON.parse(localStorage.getItem(key) || '{}'), ...stored }; } catch (_) {} }
+
+    // The Attend Class flow may keep the selected period under a separate
+    // session key. Read only explicitly named period-ID fields; never guess
+    // a period from an unrelated MongoDB _id.
+    const explicitPeriodKeys = [
+      'assignedPeriodId', 'currentPeriodId', 'selectedPeriodId',
+      'teacherPeriodId', 'periodId', 'activePeriodId'
+    ];
+    let sessionPeriodId = '';
+    for (const storageKey of explicitPeriodKeys) {
+      const value = sessionStorage.getItem(storageKey);
+      if (value && value !== 'null' && value !== 'undefined') {
+        sessionPeriodId = value;
+        break;
+      }
+    }
+    // Some flows store the selected period as a JSON object rather than a string.
+    if (!sessionPeriodId) {
+      for (const storageKey of ['currentPeriod', 'selectedPeriod', 'assignedPeriod', 'teacherCurrentPeriod']) {
+        try {
+          const value = JSON.parse(sessionStorage.getItem(storageKey) || 'null');
+          if (value && typeof value === 'object') {
+            sessionPeriodId = value.periodId || value.assignedPeriodId || value.currentPeriodId || value._id || '';
+            if (sessionPeriodId) break;
+          }
+        } catch (_) {}
+      }
+    }
+
+    const periodId = stored.periodId || stored.assignedPeriodId || stored.currentPeriodId ||
+      params.get('periodId') || params.get('assignedPeriodId') || params.get('period') || sessionPeriodId || '';
+
     return {
       teacher: stored.teacher || stored.teacherId || sessionStorage.getItem('teacherId') || localStorage.getItem('teacherId') || '',
       teacherName: stored.teacherName || sessionStorage.getItem('teacherName') || localStorage.getItem('teacherName') || '',
@@ -21,8 +53,8 @@
       topic: stored.topic || params.get('topic') || '',
       description: stored.description || params.get('description') || '',
       materialDate: stored.materialDate || new Date().toISOString(),
-      room: stored.room || params.get('room') || ('annotation-' + (params.get('periodId') || 'unassigned')),
-      periodId: stored.periodId || params.get('periodId') || params.get('period') || '',
+      room: stored.room || params.get('room') || ('annotation-' + (periodId || 'unassigned')),
+      periodId,
       studentNames: stored.studentNames || stored.students || []
     };
   }

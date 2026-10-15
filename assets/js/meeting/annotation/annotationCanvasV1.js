@@ -197,35 +197,9 @@ function initPersistence() {
     annotationRoom = params.get("room");
     annotationSessionKey = params.get("key");
     annotationLocalStorageKey = buildAnnotationLocalStorageKey();
+    restoreLocalAnnotationBackup();
 
-    // Keep the drawing when the teacher refreshes this same tab, but do not
-    // carry a previous tab's temporary work into a newly opened annotation page.
-    // sessionStorage survives reloads; a fresh navigation starts a clean session.
-    let navigationType = "navigate";
-    try {
-        const navigationEntries = performance.getEntriesByType("navigation");
-        if (navigationEntries && navigationEntries.length) {
-            navigationType = navigationEntries[0].type || "navigate";
-        }
-    } catch (error) {
-        console.warn("ANNOTATION V1: COULD NOT DETECT NAVIGATION TYPE", error);
-    }
-
-    if (navigationType === "reload") {
-        restoreLocalAnnotationBackup();
-        console.log("ANNOTATION V1: REFRESH DETECTED; RESTORING TAB WORK");
-    } else {
-        try {
-            sessionStorage.removeItem(annotationLocalStorageKey);
-        } catch (error) {
-            console.warn("ANNOTATION V1: COULD NOT CLEAR PREVIOUS TAB BACKUP", error);
-        }
-        annotationLocalBackupRestored = false;
-        annotationLocalBackupHasContent = false;
-        console.log("ANNOTATION V1: NEW PAGE SESSION; STARTING CLEAN");
-    }
-
-    // Last-chance backup allows a refresh of this same tab to restore its work.
+    // Last-chance backup when the tab is refreshed, closed, or navigated away.
     if (!annotationLocalLifecycleBound) {
         const backupBeforeExit = () => {
             try { saveAnnotationState(); } catch (error) {
@@ -1145,6 +1119,13 @@ INITIALIZE
 
 function init(canvasElement) {
 
+        // Safe to call from both the page module and the page-level bootstrap.
+        // Never attach duplicate pointer/paste listeners to the same canvas.
+        if (initialized && canvas && canvas === canvasElement) {
+            resize();
+            return true;
+        }
+
         if (!canvasElement) {
 
             console.error(
@@ -1181,14 +1162,49 @@ function init(canvasElement) {
         }
 
 
+        // The A4 workspace can finish sizing after this module is loaded.
+        // Set the backing bitmap now, then keep it synchronized with the
+        // displayed canvas size so pointer coordinates and drawing stay aligned.
         setupCanvas();
 
-bindPointerEvents();
-bindImagePasteEvents();
-bindImageDeleteEvents();
+        bindPointerEvents();
+        bindImagePasteEvents();
+        bindImageDeleteEvents();
 
+        initialized = true;
 
-initialized = true;
+        // ResizeObserver handles first layout, browser zoom, viewport changes,
+        // and workspace resizing without requiring any teacher console action.
+        if (typeof ResizeObserver !== "undefined") {
+            if (canvas.__gpaAnnotationResizeObserver) {
+                canvas.__gpaAnnotationResizeObserver.disconnect();
+            }
+            canvas.__gpaAnnotationResizeObserver = new ResizeObserver(() => {
+                if (!canvas || !canvas.isConnected) return;
+                const rect = canvas.getBoundingClientRect();
+                if (rect.width > 0 && rect.height > 0 &&
+                    (canvas.width !== Math.round(rect.width * (window.devicePixelRatio || 1)) ||
+                     canvas.height !== Math.round(rect.height * (window.devicePixelRatio || 1)))) {
+                    resize();
+                }
+            });
+            canvas.__gpaAnnotationResizeObserver.observe(canvas);
+        }
+
+        // A second sizing pass after the browser completes layout fixes cases
+        // where the canvas initially reports its default 300 x 150 bitmap.
+        requestAnimationFrame(() => {
+            if (!canvas || !canvas.isConnected) return;
+            const rect = canvas.getBoundingClientRect();
+            if (rect.width > 0 && rect.height > 0) resize();
+        });
+
+        if (!window.__gpaAnnotationResizeListenerBound) {
+            window.__gpaAnnotationResizeListenerBound = true;
+            window.addEventListener("resize", () => {
+                if (canvas) resize();
+            }, { passive: true });
+        }
 
 
 /*
@@ -1387,6 +1403,13 @@ function resize() {
     RESIZE CANVAS TO CURRENT PRESENTATION SIZE
     ---------------------------------------------------
     */
+
+    const rect = canvas.getBoundingClientRect();
+    const ratio = window.devicePixelRatio || 1;
+    const expectedWidth = Math.round(rect.width * ratio);
+    const expectedHeight = Math.round(rect.height * ratio);
+    if (rect.width <= 0 || rect.height <= 0) return;
+    if (canvas.width === expectedWidth && canvas.height === expectedHeight) return;
 
     setupCanvas();
 
