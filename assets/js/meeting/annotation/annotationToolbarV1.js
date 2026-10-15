@@ -1313,104 +1313,179 @@ toolbar.style.height = "auto";
             }
 
             
-/* Elite slide-out toolbar */
-
 /* ==========================================
-   FINAL ELITE RIGHT-SIDE SLIDE-OUT OVERRIDE
-   ========================================== */
-
+RIGHT-SIDE SLIDE-OUT ANNOTATION TOOLBAR
+========================================== */
 #annotationToolbarV1 {
-    position: absolute !important;
-    top: 50% !important;
-    right: 0 !important;
-    left: auto !important;
-    bottom: auto !important;
-    width: 320px !important;
-    max-width: calc(100% - 48px) !important;
-    height: auto !important;
-    transform: translateY(-50%) !important;
-    z-index: 99999 !important;
-    transition: transform 0.35s ease !important;
+position: absolute !important;
+top: 50% !important;
+right: 0 !important;
+left: auto !important;
+bottom: auto !important;
+width: 340px !important;
+max-width: calc(100% - 44px) !important;
+height: auto !important;
+box-sizing: border-box !important;
+transform: translateY(-50%) !important;
+z-index: 99999 !important;
+transition: transform 0.3s ease !important;
 }
-
-/* Premium navy panel */
+/* Main navy panel */
 #annotationToolbarV1 .annotation-toolbar-inner {
-    box-sizing: border-box !important;
-    display: flex !important;
-    flex-wrap: wrap !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 9px !important;
-    max-height: 72vh !important;
-    overflow-y: auto !important;
-    padding: 18px 14px 18px 54px !important;
-    background: linear-gradient(145deg, #111827, #172554) !important;
-    border: 1px solid #3b82f6 !important;
-    border-radius: 18px 0 0 18px !important;
-    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.28) !important;
-    white-space: normal !important;
+width: 100% !important;
+max-height: 78vh !important;
+box-sizing: border-box !important;
+display: flex !important;
+flex-direction: column !important;
+align-items: stretch !important;
+justify-content: flex-start !important;
+flex-wrap: nowrap !important;
+gap: 12px !important;
+padding: 18px 14px !important;
+overflow-x: hidden !important;
+overflow-y: auto !important;
+background: linear-gradient(160deg, #073b80, #061d49) !important;
+border: 1px solid #3b82f6 !important;
+border-radius: 18px !important;
+box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25) !important;
+white-space: normal !important;
 }
-
+/* Drawing tools row */
+#annotationToolbarV1 .annotation-toolbar-group {
+display: flex !important;
+align-items: center !important;
+justify-content: space-between !important;
+gap: 10px !important;
+width: 100% !important;
+}
+/* Keep buttons aligned */
+#annotationToolbarV1 .annotation-tool-btn,
+#annotationToolbarV1 .annotation-action-btn,
+#annotationToolbarV1 .annotation-page-btn {
+flex-shrink: 0 !important;
+min-width: 40px !important;
+min-height: 40px !important;
+border-radius: 10px !important;
+}
+/* Controls use the available panel width */
+#annotationToolbarV1 .annotation-control {
+width: 100% !important;
+min-height: 42px !important;
+height: auto !important;
+box-sizing: border-box !important;
+justify-content: space-between !important;
+padding: 5px 10px !important;
+background: #ffffff !important;
+border: 1px solid #dbeafe !important;
+border-radius: 10px !important;
+}
+#annotationToolbarV1 .control-label {
+font-size: 12px !important;
+color: #16366c !important;
+}
+#annotationToolbarV1 .annotation-select {
+max-width: 150px !important;
+font-size: 13px !important;
+}
+/* Color picker */
+#annotationToolbarV1 .annotation-color-control {
+width: 100% !important;
+min-height: 42px !important;
+box-sizing: border-box !important;
+justify-content: flex-start !important;
+gap: 10px !important;
+padding: 6px 10px !important;
+background: #ffffff !important;
+border: 1px solid #dbeafe !important;
+border-radius: 10px !important;
+}
+#annotationToolbarV1 .toolbar-divider {
+width: 100% !important;
+height: 1px !important;
+flex: 0 0 1px !important;
+margin: 0 !important;
+background: rgba(255, 255, 255, 0.25) !important;
+}
+/* Save button */
+#annotationToolbarV1 .annotation-save-btn {
+width: 100% !important;
+min-height: 44px !important;
+box-sizing: border-box !important;
+border: none !important;
+border-radius: 10px !important;
+background: #075bea !important;
+color: #ffffff !important;
+font-size: 14px !important;
+}
+/* Page controls stay on one aligned row */
+#annotationToolbarV1 #annotationPreviousPageV1,
+#annotationToolbarV1 #annotationNextPageV1,
+#annotationToolbarV1 #annotationAddPageV1,
+#annotationToolbarV1 #annotationDeletePageV1 {
+flex: 1 1 0 !important;
+}
+#annotationToolbarV1 .annotation-page-indicator {
+flex: 2 1 auto !important;
+min-width: 90px !important;
+box-sizing: border-box !important;
+}
 /* Blue TOOLS tab */
 #annotationToolsToggleV1 {
-    position: absolute !important;
-    top: 50% !important;
-    left: 0 !important;
-    transform: translate(-100%, -50%) !important;
-    width: 44px !important;
-    min-height: 112px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 9px !important;
-    padding: 10px 4px !important;
-    border: 1px solid #60a5fa !important;
-    border-right: 0 !important;
-    border-radius: 14px 0 0 14px !important;
-    background: linear-gradient(180deg, #3b82f6, #1d4ed8) !important;
-    color: #fff !important;
-    font-size: 11px !important;
-    font-weight: 800 !important;
-    letter-spacing: 1px !important;
-    cursor: pointer !important;
-    box-shadow: 0 8px 24px rgba(29, 78, 216, 0.3) !important;
+position: absolute !important;
+top: 50% !important;
+left: 0 !important;
+transform: translate(-100%, -50%) !important;
+width: 44px !important;
+min-height: 112px !important;
+display: flex !important;
+flex-direction: column !important;
+align-items: center !important;
+justify-content: center !important;
+gap: 9px !important;
+padding: 10px 4px !important;
+border: 1px solid #60a5fa !important;
+border-right: 0 !important;
+border-radius: 14px 0 0 14px !important;
+background: linear-gradient(180deg, #2679f5, #0646cc) !important;
+color: #ffffff !important;
+font-size: 11px !important;
+font-weight: 800 !important;
+letter-spacing: 1px !important;
+cursor: pointer !important;
+box-shadow: 0 8px 22px rgba(29, 78, 216, 0.3) !important;
 }
-
 #annotationToolsToggleV1 .tools-toggle-icon {
-    font-size: 21px !important;
+font-size: 21px !important;
 }
-
-#annotationToolsToggleV1:hover {
-    background: linear-gradient(180deg, #60a5fa, #2563eb) !important;
-}
-
-/* Closed: only the blue tab remains visible */
+/* Closed: panel slides away, tab remains visible */
 #annotationToolbarV1.tools-panel-closed {
-    transform: translate(calc(100% - 1px), -50%) !important;
+transform: translate(calc(100% - 1px), -50%) !important;
 }
-
-/* Open: slide the panel into view */
+/* Open: panel returns to the right edge */
 #annotationToolbarV1.tools-panel-open {
-    transform: translateY(-50%) !important;
+transform: translateY(-50%) !important;
 }
-
+/* Smaller screens */
 @media (max-width: 600px) {
-    #annotationToolbarV1 {
-        width: 280px !important;
-        max-width: calc(100% - 44px) !important;
-    }
-
-    #annotationToolbarV1 .annotation-toolbar-inner {
-        max-height: 68vh !important;
-        padding: 14px 9px 14px 48px !important;
-        gap: 7px !important;
-    }
-
-    #annotationToolsToggleV1 {
-        width: 40px !important;
-        min-height: 100px !important;
-    }
+#annotationToolbarV1 {
+width: 300px !important;
+max-width: calc(100% - 44px) !important;
+}
+#annotationToolbarV1 .annotation-toolbar-inner {
+max-height: 72vh !important;
+gap: 9px !important;
+padding: 12px !important;
+}
+#annotationToolbarV1 .annotation-tool-btn,
+#annotationToolbarV1 .annotation-action-btn,
+#annotationToolbarV1 .annotation-page-btn {
+min-width: 34px !important;
+min-height: 36px !important;
+}
+#annotationToolsToggleV1 {
+width: 40px !important;
+min-height: 100px !important;
+}
 }
 
 
