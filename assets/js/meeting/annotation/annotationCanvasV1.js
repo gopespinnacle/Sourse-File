@@ -1273,6 +1273,15 @@ const marginRight = logicalWidth * (15 / 210);
 const marginTop = logicalHeight * (18 / 297);
 const marginBottom = logicalHeight * (18 / 297);
 
+// Keep writing at least 0.50 mm inside the margin line.
+const writingGapX = logicalWidth * (0.5 / 210);
+const writingGapY = logicalHeight * (0.5 / 297);
+
+const writingLeft = marginLeft + writingGapX;
+const writingRight = logicalWidth - marginRight - writingGapX;
+const writingTop = marginTop + writingGapY;
+const writingBottom = logicalHeight - marginBottom - writingGapY;
+
 if (
     point.x < marginLeft ||
     point.x > logicalWidth - marginRight ||
