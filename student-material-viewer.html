@@ -957,129 +957,32 @@ async function loadMaterial(){
         );
 
 
-        /*
-        -----------------------------------------------------
-        GET ALL STUDENT MATERIALS
-        -----------------------------------------------------
-        */
+        const materialEndpoint =
+    `${API_BASE}/api/annotation-materials/${encodeURIComponent(materialId)}`;
 
-        let materialEndpoint;
+const response = await fetch(materialEndpoint, {
+    method: "GET",
+    headers: {
+        "Authorization": "Bearer " + token
+    }
+});
 
+console.log("MATERIAL VIEWER: RESPONSE STATUS", response.status);
 
-/*
----------------------------------------------------------
-STUDENT MATERIAL ENDPOINT
----------------------------------------------------------
-*/
+const result = await response.json();
 
-if(
-    viewerMode === "student"
-){
-
-    materialEndpoint =
-        `${API_BASE}/api/annotation-materials/student/${encodeURIComponent(studentId)}`;
-
+if (!response.ok) {
+    console.error("MATERIAL VIEWER: SERVER ERROR", result);
+    throw new Error(result.message || "Unable to load learning material.");
 }
 
+material = result.material;
 
-/*
----------------------------------------------------------
-TEACHER MATERIAL ENDPOINT
----------------------------------------------------------
-*/
-
-if(
-    viewerMode === "teacher"
-){
-
-    materialEndpoint =
-        `${API_BASE}/api/annotation-materials/teacher/${encodeURIComponent(teacherId)}`;
-
+if (!material || String(material._id || material.id) !== String(materialId)) {
+    throw new Error("Learning material was not found.");
 }
 
-
-const response =
-    await fetch(
-
-        materialEndpoint,
-
-        {
-
-            method:"GET",
-
-            headers:{
-
-                "Authorization":
-                    "Bearer " + token
-
-            }
-
-        }
-
-    );
-
-
-        console.log(
-            "MATERIAL VIEWER: RESPONSE",
-            response.status
-        );
-
-
-        if(!response.ok){
-
-            throw new Error(
-                "Unable to load materials."
-            );
-
-        }
-
-
-        const result =
-            await response.json();
-
-
-        const materials =
-            Array.isArray(result)
-                ? result
-                : (
-                    Array.isArray(result.materials)
-                        ? result.materials
-                        : (
-                            Array.isArray(result.data)
-                                ? result.data
-                                : []
-                        )
-                );
-
-
-        /*
-        -----------------------------------------------------
-        FIND REQUESTED MATERIAL
-        -----------------------------------------------------
-        */
-
-        material =
-            materials.find(
-                item =>
-
-                    String(
-                        item._id ||
-                        item.id
-                    )
-                    ===
-                    String(
-                        materialId
-                    )
-            );
-
-
-        if(!material){
-
-            throw new Error(
-                "Learning material was not found."
-            );
-
-        }
+console.log("MATERIAL VIEWER: MATERIAL FOUND", material);
 
 
         console.log(
