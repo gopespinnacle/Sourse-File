@@ -175,37 +175,35 @@ ANNOTATION WORKSPACE
 */
 
 
-#annotationWorkspaceV1 {
 
+#annotationWorkspaceV1 {
     position: absolute;
 
     width: min(210mm, calc(100% - 32px));
-
     aspect-ratio: 210 / 297;
-
     height: auto;
 
     left: 50%;
-
     top: 20px;
-
     bottom: auto;
-
     transform: translateX(-50%);
 
     background: #ffffff;
-
     overflow: hidden;
 
     border: 1.5px solid #000000;
-
     border-radius: 0;
 
-    box-shadow:
-        0 4px 18px
-        rgba(0, 0, 0, .15);
-
+    box-shadow: 0 4px 18px rgba(0, 0, 0, .15);
 }
+
+/* Keep the canvas filling the A4 page */
+#annotationCanvasV1 {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
 
 
 /*
