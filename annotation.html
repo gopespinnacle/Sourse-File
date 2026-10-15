@@ -205,6 +205,22 @@ ANNOTATION WORKSPACE
 }
 
 
+/* A4 page inner margin — all four sides */
+#annotationWorkspaceV1::before {
+    content: "";
+    position: absolute;
+    top: 18mm;
+    right: 15mm;
+    bottom: 18mm;
+    left: 15mm;
+    border: 1.5px solid #000;
+    box-sizing: border-box;
+    pointer-events: none;
+    z-index: 10;
+}
+
+
+
 
 /*
 =====================================================
