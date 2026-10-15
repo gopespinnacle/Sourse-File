@@ -139,7 +139,7 @@
         // Logo stays at the top-left.
         if (logo) {
           try { 
-pdf.addImage(logo, 'PNG', margin, 8, 38, 17, undefined, 'FAST'); }
+pdf.addImage(logo, 'PNG', margin, 8, 38, 15, undefined, 'FAST'); }
           catch (_) { pdf.setTextColor(23, 59, 103); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(8); pdf.text('GOPES PINNACLE', margin, 17); }
         } else {
           pdf.setTextColor(23, 59, 103); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(8); pdf.text('GOPES PINNACLE', margin, 15);
