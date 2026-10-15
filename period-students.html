@@ -141,6 +141,60 @@ font-weight:bold;
 margin-bottom:15px;
 }
 
+
+/* CREATE LEARNING MATERIAL POPUP */
+.learning-material-overlay{
+    position:fixed; inset:0; z-index:99999;
+    background:rgba(0,0,0,.72);
+    display:none; align-items:center; justify-content:center;
+    padding:16px; box-sizing:border-box;
+}
+.learning-material-modal{
+    width:min(100%,448px); max-height:90vh; overflow:auto;
+    background:#fff; color:#111; border-radius:12px;
+    padding:24px 22px 22px; box-sizing:border-box;
+    box-shadow:0 18px 55px rgba(0,0,0,.35);
+    font-family:Arial,sans-serif;
+}
+.learning-material-brand{
+    text-align:center; font-size:10px; letter-spacing:1.5px;
+    color:#666; margin-bottom:5px;
+}
+.learning-material-modal h2{
+    text-align:center; font-size:20px; margin:0 0 24px;
+}
+.learning-material-modal label{
+    display:block; font-size:12px; color:#444;
+    margin:0 0 6px; font-weight:600;
+}
+.learning-material-modal input,
+.learning-material-modal textarea{
+    width:100%; box-sizing:border-box; border:1px solid #ccc;
+    border-radius:7px; padding:10px; margin-bottom:14px;
+    font:12px Arial,sans-serif; color:#222; background:#fff;
+}
+.learning-material-modal input[readonly],
+.learning-material-modal textarea[readonly]{
+    background:#f5f5f5; color:#444;
+}
+.learning-material-modal textarea{min-height:58px; resize:vertical;}
+.learning-material-actions{
+    display:flex; justify-content:flex-end; gap:9px; margin-top:5px;
+}
+.learning-material-actions button{
+    border:1px solid #ccc; border-radius:7px; padding:10px 18px;
+    cursor:pointer; font-weight:600; background:#fff; color:#111;
+}
+.learning-material-actions .continue{
+    background:#111; color:#fff; border-color:#111;
+}
+.learning-material-note{
+    font-size:11px; color:#666; margin:-6px 0 13px;
+}
+@media(max-width:480px){
+    .learning-material-modal{padding:20px 16px;}
+}
+
 </style>
 </head>
 
@@ -247,6 +301,45 @@ box-shadow:0 2px 8px rgba(0,0,0,0.1);
 </table>
 <hr style="margin:40px 0;">
 
+<!-- CREATE LEARNING MATERIAL POPUP: shown before Google Meet opens -->
+<div id="learningMaterialOverlay" class="learning-material-overlay" role="dialog" aria-modal="true" aria-labelledby="learningMaterialTitle">
+  <div class="learning-material-modal">
+    <div class="learning-material-brand">GOPES PINNACLE ACADEMY</div>
+    <h2 id="learningMaterialTitle">Create Learning Material</h2>
+
+    <label for="materialDate">Date</label>
+    <input id="materialDate" type="text" readonly>
+
+    <label for="materialSubject">Subject</label>
+    <input id="materialSubject" type="text" readonly>
+
+    <label for="materialGrade">Grade</label>
+    <input id="materialGrade" type="text" readonly>
+
+    <label for="materialStudents">Assigned Students</label>
+    <textarea id="materialStudents" readonly rows="2"></textarea>
+    <div class="learning-material-note">All students assigned to this teacher and period are filled automatically.</div>
+
+    <label for="materialChapterNumber">Chapter No : Example ( 4 )</label>
+    <input id="materialChapterNumber" type="text" placeholder="Chapter number">
+
+    <label for="materialChapterName">Chapter Name</label>
+    <input id="materialChapterName" type="text" placeholder="Enter chapter name">
+
+    <label for="materialTopic">Topic</label>
+    <input id="materialTopic" type="text" placeholder="Enter topic">
+
+    <label for="materialDescription">Description (Optional)</label>
+    <textarea id="materialDescription" placeholder="Enter a short description of this topic"></textarea>
+
+    <div class="learning-material-actions">
+      <button type="button" onclick="cancelLearningMaterial()">Cancel</button>
+      <button type="button" class="continue" onclick="continueToGoogleMeet()">Continue</button>
+    </div>
+  </div>
+</div>
+
+
 
 
 <script>
@@ -255,6 +348,8 @@ const token = sessionStorage.getItem("token");
 let attendanceMarked = false;
 
 let meetWindow = null;
+let attendanceSubmittedForJoin = false;
+let learningMaterialPopupOpen = false;
 
 let periodStudents = [];
 /* GET URL PARAMS */
@@ -656,9 +751,10 @@ params.get("eca") ||
 const token = sessionStorage.getItem("token");
 const teacherId = sessionStorage.getItem("teacherId");
 
-/* API */
+/* API: submit attendance once for this page session */
+if(!attendanceSubmittedForJoin){
 try{
-await fetch("https://academy-backend-eatl.onrender.com/api/teacher/attendance",{
+const attendanceResponse = await fetch("https://academy-backend-eatl.onrender.com/api/teacher/attendance",{
 method:"POST",
 headers:{
 "Content-Type":"application/json",
@@ -669,20 +765,23 @@ teacherId,
 className,
 subject,
 day,
-startTime,   
+startTime,
 date: new Date().toISOString(),
-
-joinTime: new Date().toISOString(),  
-endTime: null,                        
-
+joinTime: new Date().toISOString(),
+endTime: null,
 status: "Present"
 })
 });
 
+if(attendanceResponse.ok){
+attendanceSubmittedForJoin = true;
 console.log("Attendance Marked ✅");
-
+}else{
+console.error("Attendance API returned:", attendanceResponse.status);
+}
 }catch(err){
 console.log("Attendance Error ❌", err);
+}
 }
 
 // Save teacher join time
@@ -742,118 +841,139 @@ sessionStorage.setItem(
     )
 );
 
-/* ================= OPEN TEACHER GOOGLE MEET ================= */
-
-meetWindow = window.open("about:blank", "_blank");
-
-if(!meetWindow){
-
-    alert(
-        "Please allow pop-ups for this website to join the class."
-    );
-
-    return;
+/* Show Create Learning Material before opening Google Meet */
+    populateLearningMaterialPopup(subject);
+    document.getElementById("learningMaterialOverlay").style.display = "flex";
+    learningMaterialPopupOpen = true;
 }
 
-try{
+function getPeriodGrade(){
+    const params = new URLSearchParams(window.location.search);
+    // The className query parameter is the period's grade/class label in this page.
+    const className = (params.get("className") || "").trim();
+    if(className) return className;
 
-    const token =
-        sessionStorage.getItem("token");
+    // Fallbacks in case the period-students API provides an explicit grade field.
+    const first = Array.isArray(periodStudents) ? periodStudents[0] : null;
+    return (
+        first?.grade ||
+        first?.student?.grade ||
+        first?.student?.className ||
+        first?.student?.standard ||
+        "Not available"
+    );
+}
 
-    /* GET LOGGED-IN TEACHER MEETING LINK */
+function populateLearningMaterialPopup(subjectValue){
+    const now = new Date();
+    const dateText = now.toLocaleDateString("en-GB");
+    const names = (Array.isArray(periodStudents) ? periodStudents : [])
+        .map(item => item?.student?.name)
+        .filter(Boolean);
 
-    const meetingResponse = await fetch(
+    document.getElementById("materialDate").value = dateText;
+    document.getElementById("materialSubject").value = subjectValue || "General";
+    document.getElementById("materialGrade").value = getPeriodGrade();
+    document.getElementById("materialStudents").value =
+        names.length ? names.join("\n") : "No assigned students found";
+}
 
-        "https://academy-backend-eatl.onrender.com/api/teacher/my-meeting-link",
+function cancelLearningMaterial(){
+    document.getElementById("learningMaterialOverlay").style.display = "none";
+    learningMaterialPopupOpen = false;
+    alert("Google Meet has not been opened. Click Attend Class again when you are ready to continue.");
+}
 
-        {
-            method:"GET",
+function continueToGoogleMeet(){
+    // Kept the existing button handler name to avoid changing the popup markup,
+    // but Continue now navigates to annotation.html as requested.
+    if(!learningMaterialPopupOpen) return;
 
-            headers:{
-                "Authorization":
-                    "Bearer " + token
+    const chapterNumber = document.getElementById("materialChapterNumber").value.trim();
+    const chapterName = document.getElementById("materialChapterName").value.trim();
+    const topic = document.getElementById("materialTopic").value.trim();
+    const description = document.getElementById("materialDescription").value.trim();
+    const date = document.getElementById("materialDate").value;
+    const materialSubject = document.getElementById("materialSubject").value.trim();
+    const grade = document.getElementById("materialGrade").value.trim();
+    const students = document.getElementById("materialStudents").value.split("\n").filter(Boolean);
+
+    if(!chapterNumber || !chapterName || !topic){
+        alert("Please enter the chapter number, chapter name, and topic before continuing.");
+        return;
+    }
+
+    const details = {
+        date,
+        subject: materialSubject,
+        grade,
+        students,
+        chapterNumber,
+        chapterName,
+        topic,
+        description
+    };
+    sessionStorage.setItem("learningMaterialDetails", JSON.stringify(details));
+
+    // Pass the header fields in the URL so they are still visible after refresh.
+    const annotationParams = new URLSearchParams({
+        subject: materialSubject,
+        chapterNumber,
+        chapterName,
+        topic,
+        grade,
+        date
+    });
+
+    // Open the annotation workspace in this tab. Do not open Google Meet here.
+    window.location.href = "annotation.html?" + annotationParams.toString();
+}
+
+async function openTeacherGoogleMeet(){
+    /* ================= OPEN TEACHER GOOGLE MEET ================= */
+
+    meetWindow = window.open("about:blank", "_blank");
+
+    if(!meetWindow){
+        alert("Please allow pop-ups for this website to join the class.");
+        return;
+    }
+
+    try{
+        const token = sessionStorage.getItem("token");
+
+        const meetingResponse = await fetch(
+            "https://academy-backend-eatl.onrender.com/api/teacher/my-meeting-link",
+            {
+                method:"GET",
+                headers:{ "Authorization":"Bearer " + token }
             }
+        );
+
+        const meetingData = await meetingResponse.json();
+
+        if(!meetingResponse.ok){
+            meetWindow.close();
+            alert(meetingData.message || "Teacher meeting link not available.");
+            return;
         }
 
-    );
+        if(!meetingData.meetingLink){
+            meetWindow.close();
+            alert("Google Meet link is not configured for this teacher.");
+            return;
+        }
 
-    const meetingData =
-        await meetingResponse.json();
-
-    /* BACKEND ERROR */
-
-    if(!meetingResponse.ok){
-
-        meetWindow.close();
-
-        alert(
-            meetingData.message ||
-            "Teacher meeting link not available."
-        );
-
-        return;
+        meetWindow.location.href = meetingData.meetingLink;
+        sessionStorage.setItem("teacherMeetingLink", meetingData.meetingLink);
+        attendanceMarked = true;
+        document.getElementById("endClassBtn").style.display = "block";
+    }catch(err){
+        console.error("MEETING LINK ERROR:", err);
+        if(meetWindow && !meetWindow.closed) meetWindow.close();
+        alert("Unable to open the teacher's Google Meet.");
     }
 
-    /* CHECK MEETING LINK */
-
-    if(!meetingData.meetingLink){
-
-        meetWindow.close();
-
-        alert(
-            "Google Meet link is not configured for this teacher."
-        );
-
-        return;
-    }
-
-    console.log(
-        "Teacher:",
-        meetingData.teacherName
-    );
-
-    console.log(
-        "Meeting Link:",
-        meetingData.meetingLink
-    );
-
-    /* OPEN THIS TEACHER'S GOOGLE MEET */
-
-    meetWindow.location.href =
-        meetingData.meetingLink;
-
-    /* SAVE LINK */
-
-    sessionStorage.setItem(
-        "teacherMeetingLink",
-        meetingData.meetingLink
-    );
-
-    attendanceMarked = true;
-
-    document.getElementById(
-        "endClassBtn"
-    ).style.display = "block";
-
-}
-catch(err){
-
-    console.error(
-        "MEETING LINK ERROR:",
-        err
-    );
-
-    if(meetWindow && !meetWindow.closed){
-
-        meetWindow.close();
-
-    }
-
-    alert(
-        "Unable to open the teacher's Google Meet."
-    );
-
-}
 }
 async function endClass(){
 

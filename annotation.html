@@ -148,6 +148,36 @@
 
         }
 
+        #annotationTopActions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 14px;
+            min-width: 0;
+        }
+
+        #joinClassFromAnnotation {
+            border: 0;
+            border-radius: 8px;
+            padding: 10px 16px;
+            background: #16a34a;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 2px 6px rgba(0,0,0,.18);
+        }
+
+        #joinClassFromAnnotation:hover { background: #15803d; }
+        #joinClassFromAnnotation:disabled { opacity: .65; cursor: wait; }
+
+        @media (max-width: 700px) {
+            #annotationTopActions { gap: 8px; }
+            #joinClassFromAnnotation { padding: 8px 10px; font-size: 12px; }
+            #annotationStatus { gap: 5px; font-size: 11px; }
+        }
+
 
         /*
         =====================================================
@@ -275,32 +305,27 @@ ANNOTATION TOOLBAR V1
         #materialInfo {
 
     position: absolute;
-
     top: 10px;
-
     left: 50%;
-
-    transform:
-        translateX(-50%);
-
+    transform: translateX(-50%);
     z-index: 1100;
-
-    padding: 7px 18px;
-
-    background:
-        rgba(17, 24, 39, .92);
-
+    padding: 8px 20px;
+    background: rgba(17, 24, 39, .94);
     border-radius: 20px;
-
     font-size: 13px;
-
+    line-height: 1.25;
     text-align: center;
-
     pointer-events: none;
-
-    white-space: nowrap;
-
+    max-width: calc(100% - 24px);
+    white-space: normal;
+    overflow-wrap: anywhere;
+    box-shadow: 0 2px 8px rgba(0,0,0,.16);
 }
+
+#materialInfo > div { margin: 1px 0; }
+#materialSubject { font-weight: 700; }
+#materialChapterNumber { font-size: 12px; color: #e5e7eb; }
+#materialTopic { font-size: 12px; color: #f3f4f6; }
 
 
         /*
@@ -597,17 +622,29 @@ MOBILE
         </div>
 
 
-        <div id="annotationStatus">
+        <div id="annotationTopActions">
 
-            <span
-                id="annotationStatusDot"
-            ></span>
-
-            <span
-                id="annotationStatusText"
+            <button
+                id="joinClassFromAnnotation"
+                type="button"
+                onclick="joinClassFromAnnotation()"
             >
-                Annotation Active
-            </span>
+                Join Class
+            </button>
+
+            <div id="annotationStatus">
+
+                <span
+                    id="annotationStatusDot"
+                ></span>
+
+                <span
+                    id="annotationStatusText"
+                >
+                    Annotation Active
+                </span>
+
+            </div>
 
         </div>
 
@@ -639,14 +676,12 @@ MOBILE
         <div id="materialInfo">
 
             <div>
-                <strong id="materialSubject">
-                    Subject
-                </strong>
+                <strong id="materialSubject">Subject</strong>
             </div>
 
-            <div id="materialTopic">
-                Topic
-            </div>
+            <div id="materialChapterNumber">Chapter No.</div>
+
+            <div id="materialTopic">Topic</div>
 
             
         </div>
@@ -662,6 +697,92 @@ MOBILE
 
 </div>
 
+
+<!-- Learning material header values passed from period-students.html -->
+<script>
+(function populateAnnotationMaterialHeader(){
+    const params = new URLSearchParams(window.location.search);
+    let saved = {};
+    try {
+        saved = JSON.parse(sessionStorage.getItem("learningMaterialDetails") || "{}");
+    } catch (error) {
+        saved = {};
+    }
+
+    const subject = params.get("subject") || saved.subject || "Subject";
+    const chapterNumber = params.get("chapterNumber") || saved.chapterNumber || "";
+    const topic = params.get("topic") || saved.topic || "Topic";
+
+    const subjectElement = document.getElementById("materialSubject");
+    const chapterElement = document.getElementById("materialChapterNumber");
+    const topicElement = document.getElementById("materialTopic");
+
+    if (subjectElement) subjectElement.textContent = subject;
+    if (chapterElement) chapterElement.textContent = chapterNumber ? "Chapter No. " + chapterNumber : "";
+    if (topicElement) topicElement.textContent = topic;
+})();
+</script>
+
+<script>
+/*
+===========================================================
+JOIN THE LOGGED-IN TEACHER'S GOOGLE MEET FROM ANNOTATION
+Uses the same backend endpoint as the existing Attend Class flow.
+===========================================================
+*/
+async function joinClassFromAnnotation() {
+    const button = document.getElementById("joinClassFromAnnotation");
+    if (!button || button.disabled) return;
+
+    // Open synchronously from the button click to avoid popup blockers.
+    const meetWindow = window.open("about:blank", "_blank");
+    if (!meetWindow) {
+        alert("Please allow pop-ups for this website to join the class.");
+        return;
+    }
+
+    button.disabled = true;
+    const originalText = button.textContent;
+    button.textContent = "Connecting...";
+
+    try {
+        const token = sessionStorage.getItem("token");
+        if (!token) {
+            meetWindow.close();
+            alert("Your login session was not found. Please sign in again, then reopen the annotation page.");
+            return;
+        }
+
+        const meetingResponse = await fetch(
+            "https://academy-backend-eatl.onrender.com/api/teacher/my-meeting-link",
+            {
+                method: "GET",
+                headers: { "Authorization": "Bearer " + token }
+            }
+        );
+
+        let meetingData = {};
+        try { meetingData = await meetingResponse.json(); } catch (_) {}
+
+        if (!meetingResponse.ok || !meetingData.meetingLink) {
+            meetWindow.close();
+            alert(meetingData.message || "Google Meet link is not available for the logged-in teacher.");
+            return;
+        }
+
+        // This endpoint resolves the unique meeting link for the logged-in teacher.
+        meetWindow.location.href = meetingData.meetingLink;
+        sessionStorage.setItem("teacherMeetingLink", meetingData.meetingLink);
+    } catch (error) {
+        console.error("ANNOTATION JOIN CLASS ERROR:", error);
+        if (meetWindow && !meetWindow.closed) meetWindow.close();
+        alert("Unable to open Google Meet. Please try again.");
+    } finally {
+        button.disabled = false;
+        button.textContent = originalText;
+    }
+}
+</script>
 
 <!-- =====================================================
      SOCKET.IO
