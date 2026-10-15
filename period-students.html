@@ -702,6 +702,16 @@ const params = new URLSearchParams(window.location.search);
 const periodId = params.get("periodId");
 const startTime = params.get("startTime");
 
+// Preserve the exact MongoDB period ID through the entire Attend Class flow.
+if (!periodId) {
+    alert("This page is missing its assigned period ID. Please return to My Timetable and open this period again.");
+    return;
+}
+sessionStorage.setItem("assignedPeriodId", periodId);
+sessionStorage.setItem("currentPeriodId", periodId);
+sessionStorage.setItem("periodId", periodId);
+sessionStorage.setItem("annotationPeriodId", periodId);
+
 
 const now = new Date();
 const [hour, minute] = startTime.split(":");
@@ -885,8 +895,6 @@ function cancelLearningMaterial(){
 }
 
 function continueToGoogleMeet(){
-    // Kept the existing button handler name to avoid changing the popup markup,
-    // but Continue now navigates to annotation.html as requested.
     if(!learningMaterialPopupOpen) return;
 
     const chapterNumber = document.getElementById("materialChapterNumber").value.trim();
@@ -903,46 +911,56 @@ function continueToGoogleMeet(){
         return;
     }
 
+    // Always take the period ID from the actual period-students page URL first.
+    const pageParams = new URLSearchParams(window.location.search);
+    const periodId = pageParams.get("periodId") ||
+        sessionStorage.getItem("assignedPeriodId") ||
+        sessionStorage.getItem("currentPeriodId") ||
+        sessionStorage.getItem("periodId");
+
+    if(!periodId || periodId === "null" || periodId === "undefined"){
+        alert("The assigned period ID is missing. Return to My Timetable and open this period using Attend Class.");
+        return;
+    }
+
+    // Keep a single canonical ID available to the annotation page and its save controller.
+    ["assignedPeriodId", "currentPeriodId", "periodId", "annotationPeriodId"].forEach(key => sessionStorage.setItem(key, periodId));
+
+    const teacherName = sessionStorage.getItem("teacherName") || localStorage.getItem("teacherName") || "";
+    const teacherId = sessionStorage.getItem("teacherId") || localStorage.getItem("teacherId") || "";
     const details = {
         date,
-        subject: materialSubject,
+        materialDate: date,
+        subject: materialSubject || "General",
         grade,
+        className: grade,
         students,
+        studentNames: students,
         chapterNumber,
+        chapterNo: chapterNumber,
         chapterName,
         topic,
-        description
+        description,
+        periodId,
+        assignedPeriodId: periodId,
+        teacherId,
+        teacher: teacherId,
+        teacherName,
+        room: "period-" + periodId
     };
     sessionStorage.setItem("learningMaterialDetails", JSON.stringify(details));
 
-    // Pass the header fields in the URL so they are still visible after refresh.
-    
-const annotationParams = new URLSearchParams({
-    subject: materialSubject,
-    chapterNumber,
-    chapterName,
-    topic,
-    grade,
-    date
-});
+    const annotationParams = new URLSearchParams({
+        subject: details.subject,
+        chapterNumber,
+        chapterName,
+        topic,
+        grade,
+        className: grade,
+        date,
+        periodId
+    });
 
-// Preserve the assigned period ID for annotation saving.
-const periodId =
-    params.get("periodId") ||
-    sessionStorage.getItem("periodId");
-
-if (periodId) {
-    annotationParams.set("periodId", periodId);
-} else {
-    alert(
-        "The assigned period ID is missing. " +
-        "Please reopen annotation from Attend Class."
-    );
-    return;
-}
-
-
-    // Open the annotation workspace in this tab. Do not open Google Meet here.
     window.location.href = "annotation.html?" + annotationParams.toString();
 }
 

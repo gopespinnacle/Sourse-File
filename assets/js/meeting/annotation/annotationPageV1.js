@@ -16,7 +16,7 @@
     // session key. Read only explicitly named period-ID fields; never guess
     // a period from an unrelated MongoDB _id.
     const explicitPeriodKeys = [
-      'assignedPeriodId', 'currentPeriodId', 'selectedPeriodId',
+      'annotationPeriodId', 'assignedPeriodId', 'currentPeriodId', 'selectedPeriodId',
       'teacherPeriodId', 'periodId', 'activePeriodId'
     ];
     let sessionPeriodId = '';
@@ -112,7 +112,8 @@
         periodId: details.periodId,
         pages: pages.map(p => p.history), pageBackgrounds: pages.map(p => p.background)
       };
-      const existingId = sessionStorage.getItem('gopesAnnotationMaterialId');
+      const materialIdKey = 'gopesAnnotationMaterialId:' + details.periodId;
+      const existingId = sessionStorage.getItem(materialIdKey);
       const response = await fetch(existingId ? `${API}/${encodeURIComponent(existingId)}` : API, {
         method: existingId ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -120,7 +121,7 @@
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok || !result.success) throw new Error(result.message || 'The learning material could not be saved.');
-      if (result.material && result.material._id) sessionStorage.setItem('gopesAnnotationMaterialId', result.material._id);
+      if (result.material && result.material._id) sessionStorage.setItem(materialIdKey, result.material._id);
       markSaved();
       if (window.AnnotationCanvasV1 && typeof window.AnnotationCanvasV1.saveAnnotationState === 'function') window.AnnotationCanvasV1.saveAnnotationState();
       alert('Learning material saved successfully. All pages have been sent to the server.');
