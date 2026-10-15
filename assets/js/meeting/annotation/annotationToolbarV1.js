@@ -164,6 +164,17 @@ window.AnnotationToolbarV1 = (() => {
                         <span class="toolbar-icon">⌫</span>
                     </button>
 
+                    <!-- LOCK / UNLOCK SELECTED IMAGE -->
+                    <button
+                        type="button"
+                        id="annotationLockImageV1"
+                        class="annotation-tool-btn"
+                        title="Lock selected image"
+                        aria-label="Lock selected image"
+                    >
+                        <span class="toolbar-icon">🔓</span>
+                    </button>
+
                     <!-- TEXT TOOL -->
                     <button
                         type="button"
@@ -377,23 +388,6 @@ window.AnnotationToolbarV1 = (() => {
 
 
                 <!-- =====================================
-                     NOTEBOOK PAGE STYLE
-                     ===================================== -->
-
-                <label class="annotation-page-style-control" title="Notebook Page Style">
-                    <span class="control-label">Page</span>
-                    <select id="annotationPageStyleV1" class="annotation-select" aria-label="Notebook Page Style">
-                        <option value="white">White</option>
-                        <option value="ruled">One-Line</option>
-                        <option value="four-line">Four-Line</option>
-                        <option value="grid">Grid</option>
-                        <option value="dots">Dotted</option>
-                    </select>
-                </label>
-
-                <div class="toolbar-divider"></div>
-
-                <!-- =====================================
                      PAGE CONTROLS
                      ===================================== -->
 
@@ -550,7 +544,6 @@ toolbar.style.height = "auto";
 
         
         bindEvents();
-        updatePageIndicator();
 
         // Start with the toolbar panel closed.
         toolbar.classList.remove("tools-panel-open");
@@ -838,10 +831,7 @@ toolbar.style.height = "auto";
             */
 
             #annotationToolbarV1
-            .annotation-control,
-
-            #annotationToolbarV1
-            .annotation-page-style-control {
+            .annotation-control {
 
                 height: 34px;
 
@@ -864,18 +854,6 @@ toolbar.style.height = "auto";
 
             }
 
-
-
-            #annotationToolbarV1 .annotation-page-style-control {
-                height: 34px;
-                display: flex;
-                align-items: center;
-                gap: 5px;
-                padding: 0 7px;
-                border: 1px solid #d1d5db;
-                border-radius: 8px;
-                background: #f9fafb;
-            }
 
             /*
             =============================================
@@ -1328,12 +1306,10 @@ toolbar.style.height = "auto";
                 }
 
                 #annotationToolbarV1
-                .annotation-control,
+                .annotation-control {
 
-                #annotationToolbarV1
-                .annotation-page-style-control {
-
-                    display: none;
+                    display:
+                        none;
 
                 }
 
@@ -1363,7 +1339,7 @@ toolbar.style.height = "auto";
 RIGHT-SIDE SLIDE-OUT ANNOTATION TOOLBAR
 ========================================== */
 #annotationToolbarV1 {
-position: fixed !important;
+position: absolute !important;
 top: 50% !important;
 right: 0 !important;
 left: auto !important;
@@ -1548,6 +1524,26 @@ min-height: 100px !important;
     }
 
 
+    function updateImageLockButton() {
+        const button = document.getElementById("annotationLockImageV1");
+        if (!button) return;
+        const info = window.AnnotationCanvasV1 && typeof AnnotationCanvasV1.getSelectedImageInfo === "function"
+            ? AnnotationCanvasV1.getSelectedImageInfo() : null;
+        if (!info) {
+            button.innerHTML = '<span class="toolbar-icon">🔓</span>';
+            button.title = "Click an image, then lock it";
+            button.setAttribute("aria-label", "No image selected");
+            button.classList.remove("active");
+            return;
+        }
+        button.innerHTML = info.locked
+            ? '<span class="toolbar-icon">🔒</span>'
+            : '<span class="toolbar-icon">🔓</span>';
+        button.title = info.locked ? "Unlock selected image" : "Lock selected image";
+        button.setAttribute("aria-label", button.title);
+        button.classList.toggle("active", info.locked);
+    }
+
     /*
     =======================================================
     BIND EVENTS
@@ -1593,17 +1589,14 @@ min-height: 100px !important;
 
 
 
-        const imageUploadButton = document.getElementById("annotationImageUploadV1");
-        const imageFileInput = document.getElementById("annotationImageFileV1");
-        if (imageUploadButton && imageFileInput && !imageUploadButton.dataset.bound) {
-            imageUploadButton.dataset.bound = "true";
-            imageUploadButton.addEventListener("click", () => imageFileInput.click());
-            imageFileInput.addEventListener("change", event => {
-                const file = event.target.files && event.target.files[0];
-                if (file && window.AnnotationCanvasV1 && typeof AnnotationCanvasV1.addImageFile === "function") {
-                    AnnotationCanvasV1.addImageFile(file);
+        const lockImageButton = document.getElementById("annotationLockImageV1");
+        if (lockImageButton && !lockImageButton.dataset.bound) {
+            lockImageButton.dataset.bound = "true";
+            lockImageButton.addEventListener("click", () => {
+                if (window.AnnotationCanvasV1 && typeof AnnotationCanvasV1.toggleSelectedImageLock === "function") {
+                    AnnotationCanvasV1.toggleSelectedImageLock();
                 }
-                event.target.value = "";
+                updateImageLockButton();
             });
         }
 
@@ -2024,21 +2017,6 @@ else {
 
         }
 
-
-
-        /*
-        ===================================================
-        NOTEBOOK PAGE STYLE
-        ===================================================
-        */
-        const pageStyle = document.getElementById("annotationPageStyleV1");
-        if (pageStyle) {
-            pageStyle.addEventListener("change", () => {
-                if (window.AnnotationCanvasV1 && typeof AnnotationCanvasV1.setPageBackground === "function") {
-                    AnnotationCanvasV1.setPageBackground(pageStyle.value);
-                }
-            });
-        }
 
         /*
         ===================================================
@@ -2734,11 +2712,6 @@ function showCloseConfirmation() {
             " / " +
             pageInfo.totalPages;
 
-        const pageStyle = document.getElementById("annotationPageStyleV1");
-        if (pageStyle && window.AnnotationCanvasV1 && typeof AnnotationCanvasV1.getPageBackground === "function") {
-            pageStyle.value = AnnotationCanvasV1.getPageBackground();
-        }
-
     }
 
 
@@ -2801,27 +2774,73 @@ function showCloseConfirmation() {
 
     function show() {
 
-        if (!toolbar) createToolbar();
-        if (!toolbar) return;
+        if (!toolbar) {
 
-        // Keep the toolbar attached to the viewport so it cannot be clipped
-        // by the A4 workspace's overflow:hidden or page scaling.
-        if (toolbar.parentElement !== document.body) {
-            document.body.appendChild(toolbar);
+            createToolbar();
+
         }
 
-        toolbar.style.setProperty("position", "fixed", "important");
-        toolbar.style.setProperty("top", "50%", "important");
-        toolbar.style.setProperty("right", "0", "important");
-        toolbar.style.setProperty("left", "auto", "important");
-        toolbar.style.setProperty("bottom", "auto", "important");
-        toolbar.style.setProperty("z-index", "2147483000", "important");
-        toolbar.style.setProperty("display", "block", "important");
-        toolbar.style.setProperty("visibility", "visible", "important");
-        toolbar.style.setProperty("opacity", "1", "important");
-        toolbar.style.setProperty("pointer-events", "auto", "important");
+
+        const workspace =
+            document.getElementById(
+                "annotationWorkspaceV1"
+            );
+
+
+        if (
+            workspace &&
+            toolbar
+        ) {
+
+            workspace.style.position =
+                "absolute";
+
+
+            if (
+                toolbar.parentElement !==
+                workspace
+            ) {
+
+                workspace.appendChild(
+                    toolbar
+                );
+
+            }
+
+
+            toolbar.style.position =
+                "absolute";
+
+            toolbar.style.left =
+                "50%";
+
+            toolbar.style.bottom =
+                "12px";
+
+            toolbar.style.transform =
+                "translateX(-50%)";
+
+            toolbar.style.zIndex =
+                "99999";
+
+        }
+
+
+        toolbar.style.display =
+            "block";
+
+        toolbar.style.visibility =
+            "visible";
+
+        toolbar.style.opacity =
+            "1";
+
+        toolbar.style.pointerEvents =
+            "auto";
+
 
         updatePageIndicator();
+
     }
 
 
@@ -2860,7 +2879,9 @@ function showCloseConfirmation() {
 
         hide,
 
-        setActiveTool
+        setActiveTool,
+
+        updateImageLockButton
 
     };
 

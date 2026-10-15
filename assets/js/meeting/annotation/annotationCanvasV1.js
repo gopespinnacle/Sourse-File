@@ -1119,13 +1119,6 @@ INITIALIZE
 
 function init(canvasElement) {
 
-        // Safe to call from both the page module and the page-level bootstrap.
-        // Never attach duplicate pointer/paste listeners to the same canvas.
-        if (initialized && canvas && canvas === canvasElement) {
-            resize();
-            return true;
-        }
-
         if (!canvasElement) {
 
             console.error(
@@ -1162,49 +1155,14 @@ function init(canvasElement) {
         }
 
 
-        // The A4 workspace can finish sizing after this module is loaded.
-        // Set the backing bitmap now, then keep it synchronized with the
-        // displayed canvas size so pointer coordinates and drawing stay aligned.
         setupCanvas();
 
-        bindPointerEvents();
-        bindImagePasteEvents();
-        bindImageDeleteEvents();
+bindPointerEvents();
+bindImagePasteEvents();
+bindImageDeleteEvents();
 
-        initialized = true;
 
-        // ResizeObserver handles first layout, browser zoom, viewport changes,
-        // and workspace resizing without requiring any teacher console action.
-        if (typeof ResizeObserver !== "undefined") {
-            if (canvas.__gpaAnnotationResizeObserver) {
-                canvas.__gpaAnnotationResizeObserver.disconnect();
-            }
-            canvas.__gpaAnnotationResizeObserver = new ResizeObserver(() => {
-                if (!canvas || !canvas.isConnected) return;
-                const rect = canvas.getBoundingClientRect();
-                if (rect.width > 0 && rect.height > 0 &&
-                    (canvas.width !== Math.round(rect.width * (window.devicePixelRatio || 1)) ||
-                     canvas.height !== Math.round(rect.height * (window.devicePixelRatio || 1)))) {
-                    resize();
-                }
-            });
-            canvas.__gpaAnnotationResizeObserver.observe(canvas);
-        }
-
-        // A second sizing pass after the browser completes layout fixes cases
-        // where the canvas initially reports its default 300 x 150 bitmap.
-        requestAnimationFrame(() => {
-            if (!canvas || !canvas.isConnected) return;
-            const rect = canvas.getBoundingClientRect();
-            if (rect.width > 0 && rect.height > 0) resize();
-        });
-
-        if (!window.__gpaAnnotationResizeListenerBound) {
-            window.__gpaAnnotationResizeListenerBound = true;
-            window.addEventListener("resize", () => {
-                if (canvas) resize();
-            }, { passive: true });
-        }
+initialized = true;
 
 
 /*
@@ -1404,13 +1362,6 @@ function resize() {
     ---------------------------------------------------
     */
 
-    const rect = canvas.getBoundingClientRect();
-    const ratio = window.devicePixelRatio || 1;
-    const expectedWidth = Math.round(rect.width * ratio);
-    const expectedHeight = Math.round(rect.height * ratio);
-    if (rect.width <= 0 || rect.height <= 0) return;
-    if (canvas.width === expectedWidth && canvas.height === expectedHeight) return;
-
     setupCanvas();
 
 
@@ -1509,28 +1460,36 @@ function resize() {
 
         const point = getPoint(event);
 
-// If an existing image is clicked, drag it or resize from its bottom-right handle.
+// Select an image when clicked. Unlocked images can be moved/resized;
+// locked images stay fixed and pointer input continues to the drawing tools.
 const imageIndex = findImageAtPoint(point);
 if (imageIndex >= 0) {
-    event.preventDefault();
     const imageItem = history[imageIndex];
-    const nearResizeHandle = point.x >= imageItem.x + imageItem.width - 18 &&
-        point.y >= imageItem.y + imageItem.height - 18;
-    imageInteraction = {
-        index: imageIndex,
-        mode: nearResizeHandle ? "resize" : "move",
-        startX: point.x,
-        startY: point.y,
-        originalX: imageItem.x,
-        originalY: imageItem.y,
-        originalWidth: imageItem.width,
-        originalHeight: imageItem.height
-    };
     selectedImageIndex = imageIndex;
-    canvas.setPointerCapture(event.pointerId);
-    drawing = false;
+    if (window.AnnotationToolbarV1 && typeof AnnotationToolbarV1.updateImageLockButton === "function") {
+        AnnotationToolbarV1.updateImageLockButton();
+    }
+    if (!imageItem.locked) {
+        event.preventDefault();
+        const nearResizeHandle = point.x >= imageItem.x + imageItem.width - 18 &&
+            point.y >= imageItem.y + imageItem.height - 18;
+        imageInteraction = {
+            index: imageIndex,
+            mode: nearResizeHandle ? "resize" : "move",
+            startX: point.x,
+            startY: point.y,
+            originalX: imageItem.x,
+            originalY: imageItem.y,
+            originalWidth: imageItem.width,
+            originalHeight: imageItem.height
+        };
+        canvas.setPointerCapture(event.pointerId);
+        drawing = false;
+        redraw();
+        return;
+    }
+    // Locked: don't start image drag. Continue below to draw on top of it.
     redraw();
-    return;
 }
 
 const rect = canvas.getBoundingClientRect();
@@ -2513,6 +2472,31 @@ if (
         });
     }
 
+    function toggleSelectedImageLock() {
+        const item = history[selectedImageIndex];
+        if (!item || item.type !== "image" || selectedImageIndex > historyIndex) {
+            alert("Please click an image first, then use Lock Image.");
+            return false;
+        }
+        item.locked = !item.locked;
+        imageInteraction = null;
+        redraw();
+        saveAnnotationState();
+        if (window.AnnotationPageV1 && typeof AnnotationPageV1.markUnsaved === "function") {
+            AnnotationPageV1.markUnsaved();
+        }
+        if (window.AnnotationToolbarV1 && typeof AnnotationToolbarV1.updateImageLockButton === "function") {
+            AnnotationToolbarV1.updateImageLockButton();
+        }
+        return item.locked;
+    }
+
+    function getSelectedImageInfo() {
+        const item = history[selectedImageIndex];
+        if (!item || item.type !== "image" || selectedImageIndex > historyIndex) return null;
+        return { locked: !!item.locked, index: selectedImageIndex };
+    }
+
     function findImageAtPoint(point) {
         for (let i = Math.min(historyIndex, history.length - 1); i >= 0; i--) {
             const item = history[i];
@@ -2585,8 +2569,18 @@ if (
                     context.setLineDash([5, 4]);
                     context.strokeRect(stroke.x, stroke.y, stroke.width, stroke.height);
                     context.setLineDash([]);
-                    context.fillStyle = "#2563eb";
-                    context.fillRect(stroke.x + stroke.width - 10, stroke.y + stroke.height - 10, 10, 10);
+                    if (stroke.locked) {
+                        context.fillStyle = "#16366c";
+                        context.fillRect(stroke.x + stroke.width - 22, stroke.y + 4, 18, 18);
+                        context.fillStyle = "#ffffff";
+                        context.font = "bold 13px Arial";
+                        context.textAlign = "center";
+                        context.textBaseline = "middle";
+                        context.fillText("🔒", stroke.x + stroke.width - 13, stroke.y + 13);
+                    } else {
+                        context.fillStyle = "#2563eb";
+                        context.fillRect(stroke.x + stroke.width - 10, stroke.y + stroke.height - 10, 10, 10);
+                    }
                 }
                 context.restore();
             }
@@ -2933,6 +2927,10 @@ return history[
     setTool,
 
     addImageFile,
+
+    toggleSelectedImageLock,
+
+    getSelectedImageInfo,
 
     setColor,
 
