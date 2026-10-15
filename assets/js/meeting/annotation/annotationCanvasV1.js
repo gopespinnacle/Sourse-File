@@ -1282,15 +1282,17 @@ const writingRight = logicalWidth - marginRight - writingGapX;
 const writingTop = marginTop + writingGapY;
 const writingBottom = logicalHeight - marginBottom - writingGapY;
 
+
 if (
-    point.x < marginLeft ||
-    point.x > logicalWidth - marginRight ||
-    point.y < marginTop ||
-    point.y > logicalHeight - marginBottom
+    point.x < writingLeft ||
+    point.x > writingRight ||
+    point.y < writingTop ||
+    point.y > writingBottom
 ) {
     drawing = false;
     return;
 }
+
 
 canvas.setPointerCapture(event.pointerId);
 drawing = true;
