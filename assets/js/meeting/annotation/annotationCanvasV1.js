@@ -307,6 +307,8 @@ console.log(
                 history.length - 1;
 
 
+            ensurePageBackgroundLayer();
+            applyPageBackground();
             redraw();
 
 
@@ -435,6 +437,8 @@ console.log(
         history.length - 1;
 
 
+    ensurePageBackgroundLayer();
+    applyPageBackground();
     redraw();
 
 
@@ -1153,7 +1157,6 @@ console.log(
     */
 
     function ensurePageBackgroundLayer() {
-        if (annotationBackgroundLayer && annotationBackgroundLayer.isConnected) return;
         const workspace = document.getElementById("annotationWorkspaceV1");
         if (!workspace || !canvas) return;
 
@@ -1164,15 +1167,27 @@ console.log(
             annotationBackgroundLayer.setAttribute("aria-hidden", "true");
             workspace.insertBefore(annotationBackgroundLayer, canvas);
         }
+
+        // Always re-apply the layer styles. The toolbar/workspace may have
+        // been moved or restyled before the canvas module initializes.
         Object.assign(annotationBackgroundLayer.style, {
             position: "absolute",
-            inset: "0",
+            top: "0",
+            right: "0",
+            bottom: "0",
+            left: "0",
+            display: "block",
+            width: "100%",
+            height: "100%",
+            boxSizing: "border-box",
             zIndex: "0",
             pointerEvents: "none",
             backgroundColor: "#ffffff"
         });
         canvas.style.position = "relative";
         canvas.style.zIndex = "1";
+        canvas.style.backgroundColor = "transparent";
+        canvas.style.background = "transparent";
         applyPageBackground();
     }
 
@@ -1197,7 +1212,7 @@ console.log(
             annotationBackgroundLayer.style.backgroundSize = "100% 28px";
         } else if (type === "four-line") {
             annotationBackgroundLayer.style.backgroundImage =
-                "repeating-linear-gradient(to bottom, transparent 0px, transparent 7px, #b6d1f2 7px, #b6d1f2 8px, transparent 8px, transparent 15px, #b6d1f2 15px, #b6d1f2 16px, transparent 16px, transparent 23px, #d88b8b 23px, #d88b8b 24px, transparent 24px, transparent 31px, #b6d1f2 31px, #b6d1f2 32px)";
+                "repeating-linear-gradient(to bottom, transparent 0px, transparent 7px, #8fb8ec 7px, #8fb8ec 8px, transparent 8px, transparent 15px, #8fb8ec 15px, #8fb8ec 16px, transparent 16px, transparent 23px, #d66f6f 23px, #d66f6f 24px, transparent 24px, transparent 31px, #8fb8ec 31px, #8fb8ec 32px)";
             annotationBackgroundLayer.style.backgroundSize = "100% 32px";
         } else if (type === "grid") {
             annotationBackgroundLayer.style.backgroundImage =
