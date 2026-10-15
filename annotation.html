@@ -593,6 +593,172 @@ MOBILE
 
     </style>
 
+
+<style id="gpa-elite-annotation-theme">
+/* GPA ELITE ANNOTATION WORKSPACE — visual layer only */
+:root {
+  --gpa-ink: #172554;
+  --gpa-indigo: #4338ca;
+  --gpa-violet: #6d28d9;
+  --gpa-muted: #64748b;
+  --gpa-line: #dbe3f0;
+  --gpa-panel: rgba(255,255,255,.96);
+}
+html, body {
+  background: #edf1f8 !important;
+  color: #172033 !important;
+  font-family: Inter, "Segoe UI", Arial, sans-serif !important;
+}
+#annotationApp { background: #edf1f8 !important; }
+#annotationTopBar {
+  min-height: 72px !important;
+  height: 72px !important;
+  padding: 0 26px !important;
+  background: linear-gradient(115deg, #111b3b 0%, #202b57 58%, #35216d 100%) !important;
+  border-bottom: 1px solid rgba(255,255,255,.13) !important;
+  box-shadow: 0 8px 28px rgba(20, 30, 70, .18) !important;
+}
+#academyTitle {
+  font-size: 15px !important;
+  letter-spacing: 1.15px !important;
+  font-weight: 800 !important;
+}
+#materialTitle {
+  margin-top: 5px !important;
+  font-size: 12px !important;
+  color: #c7d2fe !important;
+  letter-spacing: .25px !important;
+}
+#annotationStatus {
+  color: #e2e8f0 !important;
+  padding: 8px 12px !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  background: rgba(255,255,255,.08) !important;
+  border-radius: 999px !important;
+}
+#annotationStatusDot { box-shadow: 0 0 0 4px rgba(34,197,94,.15) !important; }
+#joinClassFromAnnotation {
+  border-radius: 10px !important;
+  padding: 11px 17px !important;
+  background: linear-gradient(135deg,#16a34a,#15803d) !important;
+  box-shadow: 0 5px 14px rgba(22,163,74,.22) !important;
+}
+#annotationMain {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(99,102,241,.08), transparent 52%),
+    linear-gradient(135deg,#f5f7fc,#e8edf6) !important;
+  overflow: auto !important;
+  padding: 30px 20px 104px !important;
+  scrollbar-color: #a8b4cc #e9edf5;
+}
+#annotationWorkspaceV1 {
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  margin: 0 auto !important;
+  width: min(210mm, calc(100% - 8px)) !important;
+  max-width: 794px !important;
+  aspect-ratio: 210 / 297 !important;
+  height: auto !important;
+  flex: 0 0 auto !important;
+  background: #fff !important;
+  border: 1px solid #d3dbea !important;
+  border-radius: 2px !important;
+  box-shadow: 0 22px 58px rgba(25, 39, 77, .16), 0 3px 10px rgba(25,39,77,.08) !important;
+}
+#annotationWorkspaceV1::before {
+  border-color: #dce3ef !important;
+  border-width: 1px !important;
+}
+#annotationPageBackgroundV1 { background-color: #fff !important; }
+#materialInfo {
+  position: fixed !important;
+  top: 84px !important;
+  left: auto !important;
+  right: 20px !important;
+  transform: none !important;
+  padding: 11px 15px !important;
+  color: #26345c !important;
+  background: rgba(255,255,255,.94) !important;
+  border: 1px solid #dfe5f0 !important;
+  border-radius: 13px !important;
+  box-shadow: 0 8px 24px rgba(25,39,77,.08) !important;
+  text-align: left !important;
+  max-width: 240px !important;
+  backdrop-filter: blur(12px) !important;
+}
+#materialChapterNumber, #materialTopic { color: #64748b !important; }
+#annotationToolbarV1 .annotation-toolbar-inner {
+  gap: 7px !important;
+  padding: 10px 12px !important;
+  border: 1px solid #dce3ef !important;
+  border-radius: 17px !important;
+  background: rgba(255,255,255,.97) !important;
+  box-shadow: 0 15px 40px rgba(20,30,70,.18) !important;
+  backdrop-filter: blur(18px) !important;
+}
+#annotationToolbarV1 .annotation-tool-btn,
+#annotationToolbarV1 .annotation-action-btn,
+#annotationToolbarV1 .annotation-page-btn {
+  border-radius: 10px !important;
+  transition: background .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease !important;
+}
+#annotationToolbarV1 .annotation-tool-btn:hover,
+#annotationToolbarV1 .annotation-action-btn:hover,
+#annotationToolbarV1 .annotation-page-btn:hover {
+  transform: translateY(-1px);
+  background: #eef2ff !important;
+  color: #3730a3 !important;
+}
+#annotationToolbarV1 .annotation-tool-btn.active {
+  background: #e0e7ff !important;
+  color: #3730a3 !important;
+  box-shadow: inset 0 0 0 1px #c7d2fe !important;
+}
+#annotationToolbarV1 .annotation-select {
+  border: 1px solid #dbe3f0 !important;
+  border-radius: 8px !important;
+  background: #f8faff !important;
+  color: #253252 !important;
+}
+#annotationToolbarV1 #annotationToolsToggleV1 {
+  border-radius: 12px !important;
+  border: 1px solid #d7def0 !important;
+  background: linear-gradient(135deg,#4338ca,#6d28d9) !important;
+  box-shadow: 0 8px 20px rgba(67,56,202,.24) !important;
+}
+.annotationCloseDialogV1 {
+  background: #fff !important;
+  color: #172033 !important;
+  border: 1px solid #dce3ef !important;
+  box-shadow: 0 25px 80px rgba(15,23,42,.28) !important;
+}
+.annotationCloseTitleV1 { color: #172033 !important; }
+.annotationCloseMessageV1 { color: #526079 !important; }
+.annotationCloseCancelButtonV1 { background: #f1f5f9 !important; color: #334155 !important; border-color: #dbe3f0 !important; }
+@media (max-width: 900px) {
+  #annotationTopBar { padding: 0 14px !important; }
+  #materialInfo { top: 82px !important; right: 10px !important; max-width: 180px !important; font-size: 11px !important; }
+  #annotationMain { padding: 18px 10px 125px !important; }
+  #annotationWorkspaceV1 { width: min(210mm, calc(100% - 2px)) !important; }
+  #annotationToolbarV1 { max-width: calc(100vw - 16px) !important; }
+  #annotationToolbarV1 .annotation-toolbar-inner { max-width: calc(100vw - 16px) !important; overflow-x: auto !important; justify-content: flex-start !important; }
+}
+@media (max-width: 560px) {
+  #annotationTopBar { min-height: 60px !important; height: 60px !important; }
+  #academyTitle { font-size: 11px !important; letter-spacing: .65px !important; }
+  #materialTitle { font-size: 11px !important; }
+  #joinClassFromAnnotation { padding: 8px 9px !important; font-size: 11px !important; }
+  #annotationStatus { padding: 6px 8px !important; }
+  #annotationStatusText { display: none !important; }
+  #materialInfo { position: sticky !important; top: 6px !important; left: auto !important; right: auto !important; margin: 0 0 10px auto !important; width: fit-content !important; max-width: 55% !important; }
+  #annotationWorkspaceV1 { width: min(210mm, calc(100% - 2px)) !important; }
+}
+</style>
+
 </head>
 
 
