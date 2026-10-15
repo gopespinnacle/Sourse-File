@@ -520,9 +520,24 @@ toolbar.style.height = "auto";
         ===================================================
         */
 
+        
         bindEvents();
 
+        // Start with the toolbar panel closed.
+        toolbar.classList.remove("tools-panel-open");
+        toolbar.classList.add("tools-panel-closed");
+
+        const toolsToggle = document.getElementById(
+            "annotationToolsToggleV1"
+        );
+
+        if (toolsToggle) {
+            toolsToggle.setAttribute("aria-expanded", "false");
+            toolsToggle.title = "Open annotation tools";
+        }
+
     }
+
 
 
     /*
@@ -1299,95 +1314,105 @@ toolbar.style.height = "auto";
 
             
 /* Elite slide-out toolbar */
+
+/* ==========================================
+   FINAL ELITE RIGHT-SIDE SLIDE-OUT OVERRIDE
+   ========================================== */
+
 #annotationToolbarV1 {
     position: absolute !important;
     top: 50% !important;
     right: 0 !important;
     left: auto !important;
     bottom: auto !important;
+    width: 320px !important;
+    max-width: calc(100% - 48px) !important;
+    height: auto !important;
     transform: translateY(-50%) !important;
-    width: 300px !important;
-    max-width: calc(100% - 44px) !important;
     z-index: 99999 !important;
-    transition: transform 0.35s cubic-bezier(.22,.8,.25,1);
+    transition: transform 0.35s ease !important;
 }
 
-/* Toolbar panel */
+/* Premium navy panel */
 #annotationToolbarV1 .annotation-toolbar-inner {
-    box-sizing: border-box;
-    max-height: 75vh;
-    overflow-y: auto;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 8px;
-    padding: 18px 12px 18px 56px;
-    background: linear-gradient(160deg, #111827, #172554);
-    border: 1px solid #3b82f6;
-    border-radius: 18px 0 0 18px;
-    box-shadow: 0 12px 36px rgba(0,0,0,.30);
-    white-space: normal;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 9px !important;
+    max-height: 72vh !important;
+    overflow-y: auto !important;
+    padding: 18px 14px 18px 54px !important;
+    background: linear-gradient(145deg, #111827, #172554) !important;
+    border: 1px solid #3b82f6 !important;
+    border-radius: 18px 0 0 18px !important;
+    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.28) !important;
+    white-space: normal !important;
 }
 
-/* Blue vertical tab */
+/* Blue TOOLS tab */
 #annotationToolsToggleV1 {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    transform: translate(-100%, -50%);
-    width: 44px;
-    min-height: 112px;
-    border: 1px solid #60a5fa;
-    border-right: 0;
-    border-radius: 14px 0 0 14px;
-    background: linear-gradient(180deg, #3b82f6, #1d4ed8);
-    color: #fff;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 1px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    cursor: pointer;
-    box-shadow: 0 8px 24px rgba(29,78,216,.35);
+    position: absolute !important;
+    top: 50% !important;
+    left: 0 !important;
+    transform: translate(-100%, -50%) !important;
+    width: 44px !important;
+    min-height: 112px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 9px !important;
+    padding: 10px 4px !important;
+    border: 1px solid #60a5fa !important;
+    border-right: 0 !important;
+    border-radius: 14px 0 0 14px !important;
+    background: linear-gradient(180deg, #3b82f6, #1d4ed8) !important;
+    color: #fff !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    letter-spacing: 1px !important;
+    cursor: pointer !important;
+    box-shadow: 0 8px 24px rgba(29, 78, 216, 0.3) !important;
 }
 
 #annotationToolsToggleV1 .tools-toggle-icon {
-    font-size: 22px;
+    font-size: 21px !important;
 }
 
 #annotationToolsToggleV1:hover {
-    background: linear-gradient(180deg, #60a5fa, #2563eb);
+    background: linear-gradient(180deg, #60a5fa, #2563eb) !important;
 }
 
-/* Closed state: leave the blue tab visible */
+/* Closed: only the blue tab remains visible */
 #annotationToolbarV1.tools-panel-closed {
     transform: translate(calc(100% - 1px), -50%) !important;
 }
 
-/* Open state */
+/* Open: slide the panel into view */
 #annotationToolbarV1.tools-panel-open {
     transform: translateY(-50%) !important;
 }
 
 @media (max-width: 600px) {
     #annotationToolbarV1 {
-        width: 270px !important;
-        max-width: calc(100% - 40px) !important;
+        width: 280px !important;
+        max-width: calc(100% - 44px) !important;
     }
 
     #annotationToolbarV1 .annotation-toolbar-inner {
-        max-height: 70vh;
-        padding: 14px 8px 14px 48px;
+        max-height: 68vh !important;
+        padding: 14px 9px 14px 48px !important;
+        gap: 7px !important;
     }
 
     #annotationToolsToggleV1 {
-        width: 40px;
-        min-height: 100px;
+        width: 40px !important;
+        min-height: 100px !important;
     }
 }
+
 
 
 
@@ -1417,31 +1442,33 @@ toolbar.style.height = "auto";
 
 
         
-    const toolsToggle = document.getElementById(
-        "annotationToolsToggleV1"
-    );
+    
+        const toolsToggle = document.getElementById(
+            "annotationToolsToggleV1"
+        );
 
-    if (toolsToggle && !toolsToggle.dataset.bound) {
-        toolsToggle.dataset.bound = "true";
+        if (toolsToggle && !toolsToggle.dataset.bound) {
+            toolsToggle.dataset.bound = "true";
 
-        toolsToggle.addEventListener("click", () => {
-            const isOpen = toolbar.classList.contains(
-                "tools-panel-open"
-            );
+            toolsToggle.addEventListener("click", () => {
+                const isOpen = toolbar.classList.contains(
+                    "tools-panel-open"
+                );
 
-            toolbar.classList.toggle("tools-panel-open", !isOpen);
-            toolbar.classList.toggle("tools-panel-closed", isOpen);
+                toolbar.classList.toggle("tools-panel-open", !isOpen);
+                toolbar.classList.toggle("tools-panel-closed", isOpen);
 
-            toolsToggle.setAttribute(
-                "aria-expanded",
-                String(!isOpen)
-            );
+                toolsToggle.setAttribute(
+                    "aria-expanded",
+                    String(!isOpen)
+                );
 
-            toolsToggle.title = isOpen
-                ? "Open annotation tools"
-                : "Hide annotation tools";
-        });
-    }
+                toolsToggle.title = isOpen
+                    ? "Open annotation tools"
+                    : "Hide annotation tools";
+            });
+        }
+
 
 
 
