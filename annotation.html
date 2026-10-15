@@ -197,8 +197,19 @@ ANNOTATION WORKSPACE
     box-shadow: 0 4px 18px rgba(0, 0, 0, .15);
 }
 
+/* Notebook background is a separate layer and is never erased */
+#annotationPageBackgroundV1 {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-color: #fff;
+}
+
 /* Keep the canvas filling the A4 page */
 #annotationCanvasV1 {
+    position: relative;
+    z-index: 1;
     display: block;
     width: 100%;
     height: 100%;
@@ -607,6 +618,7 @@ MOBILE
     id="annotationWorkspaceV1"
 >
 
+    <div id="annotationPageBackgroundV1" aria-hidden="true"></div>
     <canvas
         id="annotationCanvasV1"
     ></canvas>

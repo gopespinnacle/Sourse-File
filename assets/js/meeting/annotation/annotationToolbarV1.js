@@ -377,6 +377,23 @@ window.AnnotationToolbarV1 = (() => {
 
 
                 <!-- =====================================
+                     NOTEBOOK PAGE STYLE
+                     ===================================== -->
+
+                <label class="annotation-page-style-control" title="Notebook Page Style">
+                    <span class="control-label">Page</span>
+                    <select id="annotationPageStyleV1" class="annotation-select" aria-label="Notebook Page Style">
+                        <option value="white">White</option>
+                        <option value="ruled">One-Line</option>
+                        <option value="four-line">Four-Line</option>
+                        <option value="grid">Grid</option>
+                        <option value="dots">Dotted</option>
+                    </select>
+                </label>
+
+                <div class="toolbar-divider"></div>
+
+                <!-- =====================================
                      PAGE CONTROLS
                      ===================================== -->
 
@@ -533,6 +550,7 @@ toolbar.style.height = "auto";
 
         
         bindEvents();
+        updatePageIndicator();
 
         // Start with the toolbar panel closed.
         toolbar.classList.remove("tools-panel-open");
@@ -820,7 +838,10 @@ toolbar.style.height = "auto";
             */
 
             #annotationToolbarV1
-            .annotation-control {
+            .annotation-control,
+
+            #annotationToolbarV1
+            .annotation-page-style-control {
 
                 height: 34px;
 
@@ -843,6 +864,18 @@ toolbar.style.height = "auto";
 
             }
 
+
+
+            #annotationToolbarV1 .annotation-page-style-control {
+                height: 34px;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                padding: 0 7px;
+                border: 1px solid #d1d5db;
+                border-radius: 8px;
+                background: #f9fafb;
+            }
 
             /*
             =============================================
@@ -1295,10 +1328,12 @@ toolbar.style.height = "auto";
                 }
 
                 #annotationToolbarV1
-                .annotation-control {
+                .annotation-control,
 
-                    display:
-                        none;
+                #annotationToolbarV1
+                .annotation-page-style-control {
+
+                    display: none;
 
                 }
 
@@ -1989,6 +2024,21 @@ else {
 
         }
 
+
+
+        /*
+        ===================================================
+        NOTEBOOK PAGE STYLE
+        ===================================================
+        */
+        const pageStyle = document.getElementById("annotationPageStyleV1");
+        if (pageStyle) {
+            pageStyle.addEventListener("change", () => {
+                if (window.AnnotationCanvasV1 && typeof AnnotationCanvasV1.setPageBackground === "function") {
+                    AnnotationCanvasV1.setPageBackground(pageStyle.value);
+                }
+            });
+        }
 
         /*
         ===================================================
@@ -2683,6 +2733,11 @@ function showCloseConfirmation() {
             pageInfo.currentPage +
             " / " +
             pageInfo.totalPages;
+
+        const pageStyle = document.getElementById("annotationPageStyleV1");
+        if (pageStyle && window.AnnotationCanvasV1 && typeof AnnotationCanvasV1.getPageBackground === "function") {
+            pageStyle.value = AnnotationCanvasV1.getPageBackground();
+        }
 
     }
 

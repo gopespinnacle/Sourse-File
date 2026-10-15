@@ -112,6 +112,8 @@ let annotationPages = [
 ];
 
 let currentPageIndex = 0;
+let annotationPageBackgrounds = ["white"];
+let annotationBackgroundLayer = null;
 
 
 /*
@@ -251,6 +253,15 @@ console.log(
                     )
                 );
 
+            annotationPageBackgrounds = Array.isArray(data.data.pageBackgrounds)
+                ? data.data.pageBackgrounds.slice()
+                : [];
+
+            while (annotationPageBackgrounds.length < annotationPages.length) {
+                annotationPageBackgrounds.push("white");
+            }
+            annotationPageBackgrounds = annotationPageBackgrounds.slice(0, annotationPages.length);
+
 
             if (
                 annotationPages.length === 0
@@ -332,7 +343,7 @@ console.log(
                     )
                 )
             ];
-
+            annotationPageBackgrounds = ["white"];
 
             currentPageIndex = 0;
 
@@ -380,6 +391,15 @@ console.log(
                 data.data.pages
             )
         );
+
+    annotationPageBackgrounds = Array.isArray(data.data.pageBackgrounds)
+        ? data.data.pageBackgrounds.slice()
+        : [];
+
+    while (annotationPageBackgrounds.length < annotationPages.length) {
+        annotationPageBackgrounds.push("white");
+    }
+    annotationPageBackgrounds = annotationPageBackgrounds.slice(0, annotationPages.length);
 
 
     currentPageIndex =
@@ -567,7 +587,10 @@ function saveAnnotationState() {
                 ),
 
             currentPage:
-                currentPageIndex
+                currentPageIndex,
+
+            pageBackgrounds:
+                annotationPageBackgrounds.slice()
 
         }
 
@@ -633,6 +656,8 @@ function loadPage(pageIndex) {
     currentPageIndex =
         pageIndex;
 
+    applyPageBackground();
+
 
     /*
     -------------------------------------------------------
@@ -652,6 +677,9 @@ function loadPage(pageIndex) {
 
     historyIndex =
         history.length - 1;
+
+    selectedImageIndex = -1;
+    applyPageBackground();
 
 
     /*
@@ -695,6 +723,7 @@ function addPage() {
     */
 
     annotationPages.push([]);
+    annotationPageBackgrounds.push("white");
 
 
     /*
@@ -710,6 +739,8 @@ function addPage() {
     history = [];
 
     historyIndex = -1;
+    selectedImageIndex = -1;
+    applyPageBackground();
 
 
     /*
@@ -861,6 +892,7 @@ function deletePage() {
         currentPageIndex,
         1
     );
+    annotationPageBackgrounds.splice(currentPageIndex, 1);
 
 
     /*
@@ -1054,6 +1086,8 @@ function init(canvasElement) {
         canvas =
             canvasElement;
 
+        ensurePageBackgroundLayer();
+
         context =
             canvas.getContext(
                 "2d",
@@ -1108,6 +1142,93 @@ console.log(
     CANVAS SIZE
     =======================================================
     */
+
+
+    /*
+    =======================================================
+    NOTEBOOK PAGE BACKGROUNDS
+    Backgrounds live on a separate layer, never in the
+    annotation canvas history, so the eraser cannot remove them.
+    =======================================================
+    */
+
+    function ensurePageBackgroundLayer() {
+        if (annotationBackgroundLayer && annotationBackgroundLayer.isConnected) return;
+        const workspace = document.getElementById("annotationWorkspaceV1");
+        if (!workspace || !canvas) return;
+
+        annotationBackgroundLayer = document.getElementById("annotationPageBackgroundV1");
+        if (!annotationBackgroundLayer) {
+            annotationBackgroundLayer = document.createElement("div");
+            annotationBackgroundLayer.id = "annotationPageBackgroundV1";
+            annotationBackgroundLayer.setAttribute("aria-hidden", "true");
+            workspace.insertBefore(annotationBackgroundLayer, canvas);
+        }
+        Object.assign(annotationBackgroundLayer.style, {
+            position: "absolute",
+            inset: "0",
+            zIndex: "0",
+            pointerEvents: "none",
+            backgroundColor: "#ffffff"
+        });
+        canvas.style.position = "relative";
+        canvas.style.zIndex = "1";
+        applyPageBackground();
+    }
+
+    function getCurrentPageBackground() {
+        return annotationPageBackgrounds[currentPageIndex] || "white";
+    }
+
+    function applyPageBackground() {
+        if (!annotationBackgroundLayer) {
+            annotationBackgroundLayer = document.getElementById("annotationPageBackgroundV1");
+        }
+        if (!annotationBackgroundLayer) return;
+
+        const type = getCurrentPageBackground();
+        annotationBackgroundLayer.style.backgroundColor = "#ffffff";
+        annotationBackgroundLayer.style.backgroundImage = "none";
+        annotationBackgroundLayer.style.backgroundSize = "auto";
+
+        if (type === "ruled") {
+            annotationBackgroundLayer.style.backgroundImage =
+                "repeating-linear-gradient(to bottom, transparent 0px, transparent 27px, #b9d5f5 27px, #b9d5f5 28px)";
+            annotationBackgroundLayer.style.backgroundSize = "100% 28px";
+        } else if (type === "four-line") {
+            annotationBackgroundLayer.style.backgroundImage =
+                "repeating-linear-gradient(to bottom, transparent 0px, transparent 7px, #b6d1f2 7px, #b6d1f2 8px, transparent 8px, transparent 15px, #b6d1f2 15px, #b6d1f2 16px, transparent 16px, transparent 23px, #d88b8b 23px, #d88b8b 24px, transparent 24px, transparent 31px, #b6d1f2 31px, #b6d1f2 32px)";
+            annotationBackgroundLayer.style.backgroundSize = "100% 32px";
+        } else if (type === "grid") {
+            annotationBackgroundLayer.style.backgroundImage =
+                "linear-gradient(#d6e2f0 1px, transparent 1px), linear-gradient(90deg, #d6e2f0 1px, transparent 1px)";
+            annotationBackgroundLayer.style.backgroundSize = "24px 24px";
+        } else if (type === "dots") {
+            annotationBackgroundLayer.style.backgroundImage =
+                "radial-gradient(#b9cde2 1px, transparent 1.2px)";
+            annotationBackgroundLayer.style.backgroundSize = "18px 18px";
+        }
+    }
+
+    function setPageBackground(type) {
+        const allowed = ["white", "ruled", "four-line", "grid", "dots"];
+        if (!allowed.includes(type)) return;
+        while (annotationPageBackgrounds.length < annotationPages.length) {
+            annotationPageBackgrounds.push("white");
+        }
+        annotationPageBackgrounds[currentPageIndex] = type;
+        applyPageBackground();
+        const pageStyleControl = document.getElementById("annotationPageStyleV1");
+        if (pageStyleControl) pageStyleControl.value = type;
+        saveAnnotationState();
+        if (window.AnnotationPageV1 && typeof AnnotationPageV1.markUnsaved === "function") {
+            AnnotationPageV1.markUnsaved();
+        }
+    }
+
+    function getPageBackground() {
+        return getCurrentPageBackground();
+    }
 
     function setupCanvas() {
 
@@ -2292,6 +2413,7 @@ if (
 
         if (!canvas) return;
 
+        applyPageBackground();
 
         const rect =
             canvas.getBoundingClientRect();
@@ -2744,7 +2866,11 @@ loadPage,
 
 getPageInfo,
 
-getAllPages
+getAllPages,
+
+setPageBackground,
+
+getPageBackground
 
 };
 
