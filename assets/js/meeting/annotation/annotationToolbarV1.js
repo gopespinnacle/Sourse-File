@@ -121,7 +121,7 @@ window.AnnotationToolbarV1 = (() => {
     aria-controls="annotationToolbarPanelV1"
     title="Open annotation tools"
 >
-    <span class="tools-toggle-icon">✦</span>
+    <span class="tools-toggle-icon">T</span>
     <span>TOOLS</span>
 </button>
 
