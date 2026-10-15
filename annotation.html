@@ -172,29 +172,39 @@ ANNOTATION WORKSPACE
 =====================================================
 */
 
+
 #annotationWorkspaceV1 {
 
     position: absolute;
 
-    left: 24px;
+    width: min(210mm, calc(100% - 32px));
 
-    right: 24px;
+    aspect-ratio: 210 / 297;
+
+    height: auto;
+
+    left: 50%;
 
     top: 20px;
 
-    bottom: 20px;
+    bottom: auto;
+
+    transform: translateX(-50%);
 
     background: #ffffff;
 
     overflow: hidden;
 
-    border-radius: 8px;
+    border: 1.5px solid #000000;
+
+    border-radius: 0;
 
     box-shadow:
         0 4px 18px
         rgba(0, 0, 0, .15);
 
 }
+
 
 /*
 =====================================================
