@@ -1235,16 +1235,14 @@ function showSubjectMaterials(
                 }
 
 
-                <button
-                    class="view-button"
-                    onclick="viewMaterial('${
-                        material._id ||
-                        material.id ||
-                        ""
-                    }')"
-                >
-                    👁 View Document
-                </button>
+                
+<button
+    class="view-button"
+    onclick="downloadMaterialPDF('${material._id || material.id || ""}', this)"
+>
+    <i class="fa-solid fa-download"></i> Download PDF
+</button>
+
 
             `;
 
