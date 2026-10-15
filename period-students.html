@@ -916,14 +916,31 @@ function continueToGoogleMeet(){
     sessionStorage.setItem("learningMaterialDetails", JSON.stringify(details));
 
     // Pass the header fields in the URL so they are still visible after refresh.
-    const annotationParams = new URLSearchParams({
-        subject: materialSubject,
-        chapterNumber,
-        chapterName,
-        topic,
-        grade,
-        date
-    });
+    
+const annotationParams = new URLSearchParams({
+    subject: materialSubject,
+    chapterNumber,
+    chapterName,
+    topic,
+    grade,
+    date
+});
+
+// Preserve the assigned period ID for annotation saving.
+const periodId =
+    params.get("periodId") ||
+    sessionStorage.getItem("periodId");
+
+if (periodId) {
+    annotationParams.set("periodId", periodId);
+} else {
+    alert(
+        "The assigned period ID is missing. " +
+        "Please reopen annotation from Attend Class."
+    );
+    return;
+}
+
 
     // Open the annotation workspace in this tab. Do not open Google Meet here.
     window.location.href = "annotation.html?" + annotationParams.toString();
