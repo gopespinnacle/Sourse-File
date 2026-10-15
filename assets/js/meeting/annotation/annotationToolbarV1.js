@@ -2912,15 +2912,12 @@ function showCloseConfirmation() {
 
 })();
 
-
 /*
 ===========================================================
 AUTO-INITIALIZE THE TOOLBAR
 ===========================================================
-
-The toolbar module previously defined init() but did not call it.
-As a result, the toolbar container remained empty on annotation.html.
-Initialize automatically after the document is ready.
+Initialize only the toolbar UI after the page DOM is ready.
+Keep the original toolbar implementation and its existing tool handlers intact.
 ===========================================================
 */
 
@@ -2930,8 +2927,6 @@ if (document.readyState === "loading") {
             window.AnnotationToolbarV1.init();
         }
     }, { once: true });
-} else {
-    if (window.AnnotationToolbarV1) {
-        window.AnnotationToolbarV1.init();
-    }
+} else if (window.AnnotationToolbarV1) {
+    window.AnnotationToolbarV1.init();
 }
