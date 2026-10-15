@@ -591,172 +591,44 @@ MOBILE
 
 }
 
-    </style>
+    
+/* ELITE NOTEBOOK WORKSPACE */
+:root{--gpa-ink:#172554;--gpa-indigo:#4338ca;--gpa-purple:#6d28d9;--gpa-line:#e5e7eb;--gpa-panel:#ffffff;--gpa-muted:#64748b}
+html,body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:#f1f5f9;color:#0f172a}
+#annotationTopBar{height:72px;padding:0 24px;background:linear-gradient(110deg,#111b3c,#27245b 65%,#3730a3);border-bottom:1px solid #3730a3;box-shadow:0 8px 24px #17255422}
+#academyTitle{letter-spacing:.8px;font-size:15px}
+#materialTitle{color:#c7d2fe;margin-top:5px;font-size:12px;letter-spacing:.3px}
+#annotationMain{background:radial-gradient(ellipse at 72% 20%,#e0e7ff 0,transparent 36%),#f1f5f9;padding-left:258px}
+#annotationWorkspaceV1{left:calc(50% + 129px);width:min(210mm,calc(100% - 300px));border:1px solid #d1d5db;box-shadow:0 22px 60px #0f172a20,0 3px 10px #0f172a0b}
+#annotationToolbarV1{left:calc(50% + 129px);bottom:20px;max-width:calc(100% - 290px)}
+#materialInfo{background:rgba(23,37,84,.92);backdrop-filter:blur(12px);border:1px solid #ffffff30;box-shadow:0 10px 28px #0f172a25}
+#joinClassFromAnnotation{background:linear-gradient(135deg,#16a34a,#15803d);border-radius:10px;padding:11px 17px}
+#gpaNotebookSidebar{position:absolute;z-index:1200;left:0;top:0;bottom:0;width:250px;background:#fff;border-right:1px solid #e2e8f0;box-shadow:8px 0 30px #0f172a08;display:flex;flex-direction:column;color:#0f172a}
+.gpa-side-head{padding:18px 16px 14px;border-bottom:1px solid #edf0f6}
+.gpa-side-brand{font-size:11px;font-weight:800;letter-spacing:1.1px;color:#4338ca;text-transform:uppercase}
+.gpa-side-subtitle{font-size:18px;font-weight:750;margin-top:7px;color:#172554}
+.gpa-side-search{margin-top:13px;width:100%;padding:10px 11px;border:1px solid #e2e8f0;border-radius:10px;background:#f8fafc;outline:none;font:inherit;font-size:12px}
+.gpa-side-search:focus{border-color:#818cf8;box-shadow:0 0 0 3px #6366f11a}
+.gpa-side-actions{display:flex;gap:7px;margin-top:10px}
+.gpa-side-btn{border:1px solid #e0e7ff;background:#eef2ff;color:#3730a3;border-radius:9px;padding:8px 9px;font-size:11px;font-weight:700;cursor:pointer;flex:1}
+.gpa-side-btn.primary{background:#4338ca;color:#fff;border-color:#4338ca}
+.gpa-side-label{padding:15px 16px 7px;color:#94a3b8;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+#gpaNotebookTree{overflow:auto;padding:0 8px 16px;flex:1}
+.gpa-notebook-row,.gpa-section-row,.gpa-page-row{width:100%;display:flex;align-items:center;gap:9px;border:0;background:transparent;text-align:left;cursor:pointer;color:#334155;border-radius:8px;padding:10px;font:inherit;font-size:12px}
+.gpa-notebook-row{font-weight:750}.gpa-notebook-row:hover,.gpa-section-row:hover,.gpa-page-row:hover{background:#f1f5f9}
+.gpa-notebook-row.selected,.gpa-section-row.selected,.gpa-page-row.selected{background:#eef2ff;color:#3730a3}
+.gpa-tree-children{margin-left:14px;border-left:1px solid #e2e8f0;padding-left:5px}
+.gpa-section-row{font-weight:650;padding:8px 9px}.gpa-page-row{font-size:11px;padding:7px 9px;color:#64748b}
+.gpa-tree-icon{width:16px;display:inline-flex;justify-content:center;flex-shrink:0}
+.gpa-empty{padding:14px 10px;color:#64748b;font-size:12px;line-height:1.6}
+.gpa-side-foot{border-top:1px solid #edf0f6;padding:11px 14px;color:#94a3b8;font-size:10px;line-height:1.5}
+.gpa-ribbon{height:42px;flex-shrink:0;display:flex;align-items:center;gap:5px;padding:0 14px 0 270px;background:#fff;border-bottom:1px solid #e2e8f0;overflow-x:auto;white-space:nowrap}
+.gpa-ribbon button{border:1px solid transparent;border-radius:7px;background:transparent;padding:7px 10px;color:#475569;font-size:11px;font-weight:700;cursor:pointer}
+.gpa-ribbon button:hover{background:#eef2ff;color:#4338ca}
+.gpa-ribbon .active{background:#eef2ff;color:#4338ca;border-color:#e0e7ff}
+@media(max-width:800px){#gpaNotebookSidebar{width:210px}#annotationMain{padding-left:0}#annotationWorkspaceV1{left:calc(50% + 100px);width:calc(100% - 230px)}#annotationToolbarV1{left:calc(50% + 100px);max-width:calc(100% - 220px)}.gpa-ribbon{padding-left:220px}}
+@media(max-width:600px){#gpaNotebookSidebar{width:48px;overflow:hidden}#gpaNotebookSidebar .gpa-side-head{padding:12px 6px}#gpaNotebookSidebar .gpa-side-brand,#gpaNotebookSidebar .gpa-side-subtitle,#gpaNotebookSidebar .gpa-side-search,#gpaNotebookSidebar .gpa-side-actions,#gpaNotebookSidebar .gpa-side-label,#gpaNotebookSidebar #gpaNotebookTree,#gpaNotebookSidebar .gpa-side-foot{display:none}#gpaNotebookSidebar:focus-within{width:250px}#annotationMain{padding-left:0}#annotationWorkspaceV1{left:calc(50% + 24px);width:calc(100% - 60px);top:12px}#annotationToolbarV1{left:calc(50% + 24px);max-width:calc(100% - 56px);bottom:10px}.gpa-ribbon{padding-left:54px}#annotationTopBar{padding:0 10px}#academyTitle{font-size:12px}}
 
-
-<style id="gpa-elite-annotation-theme">
-/* GPA ELITE ANNOTATION WORKSPACE — visual layer only */
-:root {
-  --gpa-ink: #172554;
-  --gpa-indigo: #4338ca;
-  --gpa-violet: #6d28d9;
-  --gpa-muted: #64748b;
-  --gpa-line: #dbe3f0;
-  --gpa-panel: rgba(255,255,255,.96);
-}
-html, body {
-  background: #edf1f8 !important;
-  color: #172033 !important;
-  font-family: Inter, "Segoe UI", Arial, sans-serif !important;
-}
-#annotationApp { background: #edf1f8 !important; }
-#annotationTopBar {
-  min-height: 72px !important;
-  height: 72px !important;
-  padding: 0 26px !important;
-  background: linear-gradient(115deg, #111b3b 0%, #202b57 58%, #35216d 100%) !important;
-  border-bottom: 1px solid rgba(255,255,255,.13) !important;
-  box-shadow: 0 8px 28px rgba(20, 30, 70, .18) !important;
-}
-#academyTitle {
-  font-size: 15px !important;
-  letter-spacing: 1.15px !important;
-  font-weight: 800 !important;
-}
-#materialTitle {
-  margin-top: 5px !important;
-  font-size: 12px !important;
-  color: #c7d2fe !important;
-  letter-spacing: .25px !important;
-}
-#annotationStatus {
-  color: #e2e8f0 !important;
-  padding: 8px 12px !important;
-  border: 1px solid rgba(255,255,255,.16) !important;
-  background: rgba(255,255,255,.08) !important;
-  border-radius: 999px !important;
-}
-#annotationStatusDot { box-shadow: 0 0 0 4px rgba(34,197,94,.15) !important; }
-#joinClassFromAnnotation {
-  border-radius: 10px !important;
-  padding: 11px 17px !important;
-  background: linear-gradient(135deg,#16a34a,#15803d) !important;
-  box-shadow: 0 5px 14px rgba(22,163,74,.22) !important;
-}
-#annotationMain {
-  background:
-    radial-gradient(ellipse at 50% 0%, rgba(99,102,241,.08), transparent 52%),
-    linear-gradient(135deg,#f5f7fc,#e8edf6) !important;
-  overflow: auto !important;
-  padding: 30px 20px 104px !important;
-  scrollbar-color: #a8b4cc #e9edf5;
-}
-#annotationWorkspaceV1 {
-  position: relative !important;
-  left: auto !important;
-  right: auto !important;
-  top: auto !important;
-  bottom: auto !important;
-  transform: none !important;
-  margin: 0 auto !important;
-  width: min(210mm, calc(100% - 8px)) !important;
-  max-width: 794px !important;
-  aspect-ratio: 210 / 297 !important;
-  height: auto !important;
-  flex: 0 0 auto !important;
-  background: #fff !important;
-  border: 1px solid #d3dbea !important;
-  border-radius: 2px !important;
-  box-shadow: 0 22px 58px rgba(25, 39, 77, .16), 0 3px 10px rgba(25,39,77,.08) !important;
-}
-#annotationWorkspaceV1::before {
-  border-color: #dce3ef !important;
-  border-width: 1px !important;
-}
-#annotationPageBackgroundV1 { background-color: #fff !important; }
-#materialInfo {
-  position: fixed !important;
-  top: 84px !important;
-  left: auto !important;
-  right: 20px !important;
-  transform: none !important;
-  padding: 11px 15px !important;
-  color: #26345c !important;
-  background: rgba(255,255,255,.94) !important;
-  border: 1px solid #dfe5f0 !important;
-  border-radius: 13px !important;
-  box-shadow: 0 8px 24px rgba(25,39,77,.08) !important;
-  text-align: left !important;
-  max-width: 240px !important;
-  backdrop-filter: blur(12px) !important;
-}
-#materialChapterNumber, #materialTopic { color: #64748b !important; }
-#annotationToolbarV1 .annotation-toolbar-inner {
-  gap: 7px !important;
-  padding: 10px 12px !important;
-  border: 1px solid #dce3ef !important;
-  border-radius: 17px !important;
-  background: rgba(255,255,255,.97) !important;
-  box-shadow: 0 15px 40px rgba(20,30,70,.18) !important;
-  backdrop-filter: blur(18px) !important;
-}
-#annotationToolbarV1 .annotation-tool-btn,
-#annotationToolbarV1 .annotation-action-btn,
-#annotationToolbarV1 .annotation-page-btn {
-  border-radius: 10px !important;
-  transition: background .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease !important;
-}
-#annotationToolbarV1 .annotation-tool-btn:hover,
-#annotationToolbarV1 .annotation-action-btn:hover,
-#annotationToolbarV1 .annotation-page-btn:hover {
-  transform: translateY(-1px);
-  background: #eef2ff !important;
-  color: #3730a3 !important;
-}
-#annotationToolbarV1 .annotation-tool-btn.active {
-  background: #e0e7ff !important;
-  color: #3730a3 !important;
-  box-shadow: inset 0 0 0 1px #c7d2fe !important;
-}
-#annotationToolbarV1 .annotation-select {
-  border: 1px solid #dbe3f0 !important;
-  border-radius: 8px !important;
-  background: #f8faff !important;
-  color: #253252 !important;
-}
-#annotationToolbarV1 #annotationToolsToggleV1 {
-  border-radius: 12px !important;
-  border: 1px solid #d7def0 !important;
-  background: linear-gradient(135deg,#4338ca,#6d28d9) !important;
-  box-shadow: 0 8px 20px rgba(67,56,202,.24) !important;
-}
-.annotationCloseDialogV1 {
-  background: #fff !important;
-  color: #172033 !important;
-  border: 1px solid #dce3ef !important;
-  box-shadow: 0 25px 80px rgba(15,23,42,.28) !important;
-}
-.annotationCloseTitleV1 { color: #172033 !important; }
-.annotationCloseMessageV1 { color: #526079 !important; }
-.annotationCloseCancelButtonV1 { background: #f1f5f9 !important; color: #334155 !important; border-color: #dbe3f0 !important; }
-@media (max-width: 900px) {
-  #annotationTopBar { padding: 0 14px !important; }
-  #materialInfo { top: 82px !important; right: 10px !important; max-width: 180px !important; font-size: 11px !important; }
-  #annotationMain { padding: 18px 10px 125px !important; }
-  #annotationWorkspaceV1 { width: min(210mm, calc(100% - 2px)) !important; }
-  #annotationToolbarV1 { max-width: calc(100vw - 16px) !important; }
-  #annotationToolbarV1 .annotation-toolbar-inner { max-width: calc(100vw - 16px) !important; overflow-x: auto !important; justify-content: flex-start !important; }
-}
-@media (max-width: 560px) {
-  #annotationTopBar { min-height: 60px !important; height: 60px !important; }
-  #academyTitle { font-size: 11px !important; letter-spacing: .65px !important; }
-  #materialTitle { font-size: 11px !important; }
-  #joinClassFromAnnotation { padding: 8px 9px !important; font-size: 11px !important; }
-  #annotationStatus { padding: 6px 8px !important; }
-  #annotationStatusText { display: none !important; }
-  #materialInfo { position: sticky !important; top: 6px !important; left: auto !important; right: auto !important; margin: 0 0 10px auto !important; width: fit-content !important; max-width: 55% !important; }
-  #annotationWorkspaceV1 { width: min(210mm, calc(100% - 2px)) !important; }
-}
 </style>
 
 </head>
@@ -827,7 +699,16 @@ html, body {
          MAIN ANNOTATION AREA
          ================================================= -->
 
-    <div id="annotationMain">
+    <div class="gpa-ribbon" id="gpaRibbon" role="toolbar" aria-label="Notebook tabs">
+  <button class="active" type="button" data-ribbon="Home">Home</button><button type="button" data-ribbon="Insert">Insert</button><button type="button" data-ribbon="Draw">Draw</button><button type="button" data-ribbon="View">View</button>
+  <span style="margin-left:auto;color:#94a3b8;font-size:10px">A4 PORTRAIT · AUTO-SAVE STATUS DEPENDS ON CONNECTION</span>
+</div>
+<div id="annotationMain">
+<aside id="gpaNotebookSidebar" aria-label="Teacher notebooks">
+ <div class="gpa-side-head"><div class="gpa-side-brand">Gopes Pinnacle Academy</div><div class="gpa-side-subtitle">My notebooks</div><input id="gpaNotebookSearch" class="gpa-side-search" type="search" placeholder="Search notebooks…" aria-label="Search notebooks"><div class="gpa-side-actions"><button class="gpa-side-btn primary" id="gpaAddNotebook" type="button">＋ Notebook</button><button class="gpa-side-btn" id="gpaAddSection" type="button">＋ Section</button></div></div>
+ <div class="gpa-side-label">Notebook library</div><div id="gpaNotebookTree"><div class="gpa-empty">Loading your notebook workspace…</div></div>
+ <div class="gpa-side-foot">Notebook list is currently stored in this browser. Teacher-mapped notebooks require the academy backend connection.</div>
+</aside>
 
 
       <div
@@ -1115,6 +996,7 @@ window.socket.on(
 })();
 </script>
 
+<script src="assets/js/meeting/annotation/notebookWorkspaceV1.js"></script>
 </body>
 
 </html>
