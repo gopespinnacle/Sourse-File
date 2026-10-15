@@ -208,6 +208,7 @@ ANNOTATION WORKSPACE
 
 #annotationWorkspaceV1 {
     position: absolute;
+    isolation: isolate;
 
     width: min(210mm, calc(100% - 32px));
     aspect-ratio: 210 / 297;
@@ -245,12 +246,16 @@ ANNOTATION WORKSPACE
 
 /* Keep the canvas filling the A4 page */
 #annotationCanvasV1 {
-    position: relative;
-    z-index: 1;
+    position: absolute !important;
+    inset: 0;
+    z-index: 2 !important;
     display: block;
     width: 100%;
     height: 100%;
+    pointer-events: auto !important;
+    touch-action: none;
     background: transparent !important;
+    cursor: crosshair;
 }
 
 

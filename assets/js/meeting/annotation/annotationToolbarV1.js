@@ -2911,22 +2911,3 @@ function showCloseConfirmation() {
     };
 
 })();
-
-/*
-===========================================================
-AUTO-INITIALIZE THE TOOLBAR
-===========================================================
-Initialize only the toolbar UI after the page DOM is ready.
-Keep the original toolbar implementation and its existing tool handlers intact.
-===========================================================
-*/
-
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => {
-        if (window.AnnotationToolbarV1) {
-            window.AnnotationToolbarV1.init();
-        }
-    }, { once: true });
-} else if (window.AnnotationToolbarV1) {
-    window.AnnotationToolbarV1.init();
-}
