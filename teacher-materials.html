@@ -1252,18 +1252,12 @@ function showSubjectMaterials(
                 </div>
 
 
-                <button
-                    class="view-button"
-                    onclick="viewMaterial('${
-                        material._id ||
-                        material.id ||
-                        ""
-                    }')"
-                >
+                
+<button class="view-button"
+    onclick="downloadMaterialPDF('${material._id || material.id || ""}', this)">
+    <i class="fa-solid fa-download"></i> Download PDF
+</button>
 
-                    👁 View Document
-
-                </button>
 
             `;
 
@@ -1451,6 +1445,9 @@ function logout(){
 loadTeacherMaterials();
 
 </script>
+
+
+<script src="assets/js/teacher-materials-pdf-download.js"></script>
 
 
 </body>
