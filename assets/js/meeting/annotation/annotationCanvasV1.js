@@ -61,6 +61,9 @@ for teacher <-> student socket communication.
 let annotationSessionKey = null;
 
 let annotationPersistenceReady = false;
+let annotationLocalStorageKey = null;
+let annotationLocalBackupRestored = false;
+let annotationLocalBackupHasContent = false;
 
     /*
     =======================================================
@@ -121,6 +124,66 @@ let annotationBackgroundLayer = null;
 ANNOTATION PERSISTENCE
 ===========================================================
 */
+
+function buildAnnotationLocalStorageKey() {
+    const safeRoom = String(annotationRoom || "default").replace(/[^a-zA-Z0-9_-]/g, "_");
+    const safeSession = String(annotationSessionKey || "default").replace(/[^a-zA-Z0-9_-]/g, "_");
+    return "gpa_annotation_backup_v1:" + safeRoom + ":" + safeSession;
+}
+
+function annotationPagesHaveContent(pages, backgrounds) {
+    const hasItems = Array.isArray(pages) && pages.some(page => Array.isArray(page) && page.length > 0);
+    const hasPageStyle = Array.isArray(backgrounds) && backgrounds.some(style => style && style !== "white");
+    return hasItems || hasPageStyle;
+}
+
+function saveLocalAnnotationBackup() {
+    if (!annotationLocalStorageKey) return;
+    try {
+        if (Array.isArray(annotationPages) && annotationPages.length) {
+            annotationPages[currentPageIndex] = getHistory();
+        }
+        const backup = {
+            version: 1,
+            pages: JSON.parse(JSON.stringify(annotationPages)),
+            currentPage: currentPageIndex,
+            pageBackgrounds: annotationPageBackgrounds.slice(),
+            savedAt: Date.now()
+        };
+        localStorage.setItem(annotationLocalStorageKey, JSON.stringify(backup));
+        annotationLocalBackupHasContent = annotationPagesHaveContent(backup.pages, backup.pageBackgrounds);
+    } catch (error) {
+        console.warn("ANNOTATION V1: LOCAL BACKUP COULD NOT BE SAVED (storage may be full)", error);
+    }
+}
+
+function restoreLocalAnnotationBackup() {
+    if (!annotationLocalStorageKey) return false;
+    try {
+        const raw = localStorage.getItem(annotationLocalStorageKey);
+        if (!raw) return false;
+        const backup = JSON.parse(raw);
+        if (!backup || !Array.isArray(backup.pages)) return false;
+
+        annotationPages = JSON.parse(JSON.stringify(backup.pages));
+        if (!annotationPages.length) annotationPages = [[]];
+        annotationPageBackgrounds = Array.isArray(backup.pageBackgrounds) ? backup.pageBackgrounds.slice() : [];
+        while (annotationPageBackgrounds.length < annotationPages.length) annotationPageBackgrounds.push("white");
+        annotationPageBackgrounds = annotationPageBackgrounds.slice(0, annotationPages.length);
+        currentPageIndex = Number.isInteger(backup.currentPage) ? backup.currentPage : 0;
+        if (currentPageIndex < 0 || currentPageIndex >= annotationPages.length) currentPageIndex = 0;
+        history = JSON.parse(JSON.stringify(annotationPages[currentPageIndex] || []));
+        historyIndex = history.length - 1;
+        annotationLocalBackupRestored = true;
+        annotationLocalBackupHasContent = annotationPagesHaveContent(annotationPages, annotationPageBackgrounds);
+        redraw();
+        console.log("ANNOTATION V1: LOCAL BACKUP RESTORED", currentPageIndex + 1, "/", annotationPages.length);
+        return true;
+    } catch (error) {
+        console.warn("ANNOTATION V1: LOCAL BACKUP COULD NOT BE RESTORED", error);
+        return false;
+    }
+}
 
 function initPersistence() {
 
@@ -189,6 +252,9 @@ console.log(
 
     }
 
+    annotationLocalStorageKey = buildAnnotationLocalStorageKey();
+    restoreLocalAnnotationBackup();
+
 
     if (
         annotationPersistenceReady
@@ -226,6 +292,19 @@ console.log(
         console.log(
             "ANNOTATION V1: SAVED DATA RECEIVED"
         );
+
+        const serverPages = data.data && Array.isArray(data.data.pages)
+            ? data.data.pages
+            : (Array.isArray(data.data) ? [data.data] : []);
+        const serverBackgrounds = data.data && Array.isArray(data.data.pageBackgrounds)
+            ? data.data.pageBackgrounds
+            : [];
+        if (annotationLocalBackupRestored && annotationLocalBackupHasContent &&
+            !annotationPagesHaveContent(serverPages, serverBackgrounds)) {
+            console.warn("ANNOTATION V1: SERVER DATA EMPTY; KEEPING LOCAL BACKUP AND SYNCING IT");
+            saveAnnotationState();
+            return;
+        }
 
 
         /*
@@ -318,7 +397,7 @@ console.log(
                 "/",
                 annotationPages.length
             );
-
+            saveLocalAnnotationBackup();
 
             return;
 
@@ -521,6 +600,8 @@ SAVE ANNOTATION STATE
 */
 
 function saveAnnotationState() {
+
+    saveLocalAnnotationBackup();
 
     if (
         !annotationSocket ||
