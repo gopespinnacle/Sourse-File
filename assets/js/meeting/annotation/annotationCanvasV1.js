@@ -1295,10 +1295,15 @@ if (
     return;
 }
 
-/* TEXT TOOL: place an editable text box instead of drawing a stroke. */
+/* TEXT TOOL: click existing text to edit it, or click blank space to add text. */
 if (currentTool === "text") {
     drawing = false;
-    createTextEditor(point);
+    const existingTextIndex = findTextAnnotationAtPoint(point);
+    if (existingTextIndex >= 0) {
+        createTextEditor(point, existingTextIndex);
+    } else {
+        createTextEditor(point, -1);
+    }
     return;
 }
 
@@ -1499,7 +1504,57 @@ lastPoint = null;
     =======================================================
     */
 
-    function createTextEditor(point) {
+    function findTextAnnotationAtPoint(point) {
+        if (!point || !Array.isArray(history)) return -1;
+
+        // Search newest-first so overlapping text selects the topmost annotation.
+        for (let i = Math.min(historyIndex, history.length - 1); i >= 0; i--) {
+            const item = history[i];
+            if (!item || item.type !== "text" || typeof item.text !== "string" || !item.text.trim()) continue;
+
+            const fontSize = Number(item.fontSize) || 20;
+            const maxWidth = Math.max(90, Number(item.maxWidth) || 180);
+            context.save();
+            context.font = fontSize + "px " + (item.fontFamily || "Arial, sans-serif");
+            const lineHeight = fontSize * 1.35;
+            let lineCount = 0;
+            let widestLine = 0;
+
+            item.text.split("\n").forEach(paragraph => {
+                const words = paragraph.split(/\s+/);
+                let line = "";
+                if (!words.length || (words.length === 1 && words[0] === "")) {
+                    lineCount++;
+                    return;
+                }
+                words.forEach(word => {
+                    const candidate = line ? line + " " + word : word;
+                    if (line && context.measureText(candidate).width > maxWidth) {
+                        widestLine = Math.max(widestLine, context.measureText(line).width);
+                        lineCount++;
+                        line = word;
+                    } else {
+                        line = candidate;
+                    }
+                });
+                widestLine = Math.max(widestLine, context.measureText(line).width);
+                lineCount++;
+            });
+            context.restore();
+
+            const left = Number(item.x) || 0;
+            const top = Number(item.y) || 0;
+            const hitWidth = Math.max(12, Math.min(maxWidth, widestLine + 8));
+            const hitHeight = Math.max(lineHeight, lineCount * lineHeight);
+            if (point.x >= left - 4 && point.x <= left + hitWidth &&
+                point.y >= top - 4 && point.y <= top + hitHeight + 4) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    function createTextEditor(point, editIndex) {
         if (!canvas) return;
 
         // Finish any existing editor before creating another.
@@ -1512,12 +1567,13 @@ lastPoint = null;
         const workspace = document.getElementById("annotationWorkspaceV1");
         if (!workspace) return;
 
+        const editingItem = editIndex >= 0 ? history[editIndex] : null;
         const editor = document.createElement("textarea");
         editor.id = "annotationTextEditorV1";
-        editor.setAttribute("aria-label", "Type annotation text");
+        editor.setAttribute("aria-label", editingItem ? "Edit annotation text" : "Type annotation text");
         editor.setAttribute("placeholder", "Type here…");
         editor.rows = 1;
-        editor.value = "";
+        editor.value = editingItem && typeof editingItem.text === "string" ? editingItem.text : "";
         editor.style.cssText = [
             "position:absolute",
             "z-index:20",
@@ -1531,8 +1587,8 @@ lastPoint = null;
             "border-radius:3px",
             "outline:2px solid rgba(37,99,235,.15)",
             "background:rgba(255,255,255,.96)",
-            "color:" + currentColor,
-            "font:" + currentTextSize + "px Arial,sans-serif",
+            "color:" + (editingItem && editingItem.color ? editingItem.color : currentColor),
+            "font:" + (editingItem && Number(editingItem.fontSize) ? Number(editingItem.fontSize) : currentTextSize) + "px " + (editingItem && editingItem.fontFamily ? editingItem.fontFamily : "Arial,sans-serif"),
             "line-height:1.35",
             "resize:both",
             "overflow:auto",
@@ -1541,8 +1597,11 @@ lastPoint = null;
             "touch-action:manipulation"
         ].join(";");
 
-        editor.style.left = Math.max(0, point.x) + "px";
-        editor.style.top = Math.max(0, point.y) + "px";
+        editor.style.left = Math.max(0, editingItem ? Number(editingItem.x) || 0 : point.x) + "px";
+        editor.style.top = Math.max(0, editingItem ? Number(editingItem.y) || 0 : point.y) + "px";
+        if (editingItem && Number(editingItem.maxWidth)) {
+            editor.style.width = Math.max(90, Number(editingItem.maxWidth)) + "px";
+        }
 
         let finished = false;
 
@@ -1557,18 +1616,26 @@ lastPoint = null;
             if (editor.parentNode) editor.parentNode.removeChild(editor);
 
             if (save && text.trim()) {
-                history = history.slice(0, historyIndex + 1);
-                history.push({
+                const updatedText = {
                     type: "text",
                     text: text,
                     x: x,
                     y: y,
                     color: editor.style.color || currentColor,
-                    fontSize: currentTextSize,
-                    fontFamily: "Arial, sans-serif",
-                    maxWidth: Math.max(90, editor.offsetWidth || 180)
-                });
-                historyIndex = history.length - 1;
+                    fontSize: editingItem && Number(editingItem.fontSize) ? Number(editingItem.fontSize) : currentTextSize,
+                    fontFamily: editingItem && editingItem.fontFamily ? editingItem.fontFamily : "Arial, sans-serif",
+                    maxWidth: Math.max(90, editor.offsetWidth || (editingItem && Number(editingItem.maxWidth)) || 180)
+                };
+
+                if (editingItem && editIndex >= 0 && history[editIndex] === editingItem) {
+                    // Replace the existing history item in place so it remains one undoable annotation.
+                    history[editIndex] = updatedText;
+                } else {
+                    history = history.slice(0, historyIndex + 1);
+                    history.push(updatedText);
+                    historyIndex = history.length - 1;
+                }
+
                 redraw();
                 saveAnnotationState();
                 if (window.AnnotationPageV1 &&
@@ -1582,6 +1649,9 @@ lastPoint = null;
             editor.style.height = "auto";
             editor.style.height = Math.max(34, editor.scrollHeight) + "px";
         });
+        // Expand immediately when reopening an existing multi-line annotation.
+        editor.style.height = "auto";
+        editor.style.height = Math.max(34, editor.scrollHeight) + "px";
 
         editor.addEventListener("keydown", event => {
             if (event.key === "Escape") {
