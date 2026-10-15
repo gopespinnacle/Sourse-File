@@ -141,7 +141,7 @@
         if (i > 0) pdf.addPage('a4', 'portrait');
         pdf.setFillColor(255, 255, 255); pdf.rect(0, 0, pageW, pageH, 'F');
         if (logo) {
-          try { pdf.addImage(logo, 'PNG', margin, 8, 22, 18, undefined, 'FAST'); }
+          try { pdf.addImage(logo, 'PNG', margin, 8, 38, 13, undefined, 'FAST'); }
           catch (_) { pdf.setTextColor(23, 59, 103); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(8); pdf.text('GOPES PINNACLE', margin, 17); }
         } else {
           pdf.setTextColor(23, 59, 103); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(8); pdf.text('GOPES PINNACLE', margin, 17);
