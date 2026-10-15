@@ -64,6 +64,7 @@ let annotationPersistenceReady = false;
 let annotationLocalStorageKey = null;
 let annotationLocalBackupRestored = false;
 let annotationLocalBackupHasContent = false;
+let annotationLocalLifecycleBound = false;
 
     /*
     =======================================================
@@ -126,7 +127,11 @@ ANNOTATION PERSISTENCE
 */
 
 function buildAnnotationLocalStorageKey() {
-    const safeRoom = String(annotationRoom || "default").replace(/[^a-zA-Z0-9_-]/g, "_");
+    // If opened directly without ?room=... (as annotation.html),
+    // keep a stable backup key based on this page's path.
+    const pagePath = String(window.location.pathname || "/annotation.html").replace(/[^a-zA-Z0-9_-]/g, "_");
+    const roomOrPage = annotationRoom || ("direct_" + pagePath);
+    const safeRoom = String(roomOrPage).replace(/[^a-zA-Z0-9_-]/g, "_");
     const safeSession = String(annotationSessionKey || "default").replace(/[^a-zA-Z0-9_-]/g, "_");
     return "gpa_annotation_backup_v1:" + safeRoom + ":" + safeSession;
 }
@@ -186,88 +191,45 @@ function restoreLocalAnnotationBackup() {
 }
 
 function initPersistence() {
-
-    if (
-        typeof socket === "undefined" ||
-        !socket
-    ) {
-
-        console.warn(
-            "ANNOTATION V1: SOCKET NOT READY"
-        );
-
-        return;
-
-    }
-
-
-    annotationSocket =
-        socket;
-
-        console.log(
-    "ANNOTATION V1: SOCKET CONNECTED"
-);
-
-
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
-
-
-    annotationRoom =
-        params.get("room");
-
-
-          console.log(
-    "ANNOTATION V1: ROOM",
-    annotationRoom
-);
-
-        /*
-===========================================================
-GET UNIQUE ANNOTATION SESSION KEY
-===========================================================
-*/
-
-annotationSessionKey =
-    params.get("key");
-
-
-console.log(
-    "ANNOTATION V1: SESSION KEY",
-    annotationSessionKey
-);
-
-      
-
-
-    if (!annotationRoom) {
-
-        console.warn(
-            "ANNOTATION V1: ROOM NOT FOUND"
-        );
-
-        return;
-
-    }
-
+    // Establish local backup first. This must work even when the page is
+    // opened directly without classroom URL parameters or a ready socket.
+    const params = new URLSearchParams(window.location.search);
+    annotationRoom = params.get("room");
+    annotationSessionKey = params.get("key");
     annotationLocalStorageKey = buildAnnotationLocalStorageKey();
     restoreLocalAnnotationBackup();
 
-
-    if (
-        annotationPersistenceReady
-    ) {
-
-        return;
-
+    // Last-chance backup when the tab is refreshed, closed, or navigated away.
+    if (!annotationLocalLifecycleBound) {
+        const backupBeforeExit = () => {
+            try { saveAnnotationState(); } catch (error) {
+                console.warn("ANNOTATION V1: FINAL LOCAL BACKUP FAILED", error);
+            }
+        };
+        window.addEventListener("pagehide", backupBeforeExit);
+        window.addEventListener("beforeunload", backupBeforeExit);
+        annotationLocalLifecycleBound = true;
     }
 
+    // Server persistence is optional for direct-open mode, but remains
+    // enabled for classroom URLs that provide a room and Socket.IO.
+    if (typeof socket === "undefined" || !socket) {
+        console.warn("ANNOTATION V1: SOCKET NOT READY; LOCAL BACKUP ENABLED");
+        return;
+    }
 
-    annotationPersistenceReady =
-        true;
+    annotationSocket = socket;
+    console.log("ANNOTATION V1: SOCKET CONNECTED");
+    console.log("ANNOTATION V1: ROOM", annotationRoom);
+    console.log("ANNOTATION V1: SESSION KEY", annotationSessionKey);
 
+    if (!annotationRoom) {
+        console.warn("ANNOTATION V1: ROOM NOT FOUND; USING LOCAL BACKUP ONLY");
+        return;
+    }
+
+    if (annotationPersistenceReady) return;
+    annotationPersistenceReady = true;
 
     /*
     =======================================================
