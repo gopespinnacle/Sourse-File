@@ -35,7 +35,7 @@ window.AnnotationCanvasV1 = (() => {
 
     /*
 ===========================================================
-ANNOTATION PERSISTENCE V1
+ANNOTATION PERSISTENCE (TAB-SESSION RECOVERY) V1
 ===========================================================
 */
 
@@ -155,17 +155,17 @@ function saveLocalAnnotationBackup() {
             pageBackgrounds: annotationPageBackgrounds.slice(),
             savedAt: Date.now()
         };
-        localStorage.setItem(annotationLocalStorageKey, JSON.stringify(backup));
+        sessionStorage.setItem(annotationLocalStorageKey, JSON.stringify(backup));
         annotationLocalBackupHasContent = annotationPagesHaveContent(backup.pages, backup.pageBackgrounds);
     } catch (error) {
-        console.warn("ANNOTATION V1: LOCAL BACKUP COULD NOT BE SAVED (storage may be full)", error);
+        console.warn("ANNOTATION V1: TAB-SESSION BACKUP COULD NOT BE SAVED (storage may be full)", error);
     }
 }
 
 function restoreLocalAnnotationBackup() {
     if (!annotationLocalStorageKey) return false;
     try {
-        const raw = localStorage.getItem(annotationLocalStorageKey);
+        const raw = sessionStorage.getItem(annotationLocalStorageKey);
         if (!raw) return false;
         const backup = JSON.parse(raw);
         if (!backup || !Array.isArray(backup.pages)) return false;
@@ -182,10 +182,10 @@ function restoreLocalAnnotationBackup() {
         annotationLocalBackupRestored = true;
         annotationLocalBackupHasContent = annotationPagesHaveContent(annotationPages, annotationPageBackgrounds);
         redraw();
-        console.log("ANNOTATION V1: LOCAL BACKUP RESTORED", currentPageIndex + 1, "/", annotationPages.length);
+        console.log("ANNOTATION V1: TAB-SESSION BACKUP RESTORED", currentPageIndex + 1, "/", annotationPages.length);
         return true;
     } catch (error) {
-        console.warn("ANNOTATION V1: LOCAL BACKUP COULD NOT BE RESTORED", error);
+        console.warn("ANNOTATION V1: TAB-SESSION BACKUP COULD NOT BE RESTORED", error);
         return false;
     }
 }
@@ -203,7 +203,7 @@ function initPersistence() {
     if (!annotationLocalLifecycleBound) {
         const backupBeforeExit = () => {
             try { saveAnnotationState(); } catch (error) {
-                console.warn("ANNOTATION V1: FINAL LOCAL BACKUP FAILED", error);
+                console.warn("ANNOTATION V1: FINAL TAB-SESSION BACKUP FAILED", error);
             }
         };
         window.addEventListener("pagehide", backupBeforeExit);
@@ -214,7 +214,7 @@ function initPersistence() {
     // Server persistence is optional for direct-open mode, but remains
     // enabled for classroom URLs that provide a room and Socket.IO.
     if (typeof socket === "undefined" || !socket) {
-        console.warn("ANNOTATION V1: SOCKET NOT READY; LOCAL BACKUP ENABLED");
+        console.warn("ANNOTATION V1: SOCKET NOT READY; TAB-SESSION BACKUP ENABLED");
         return;
     }
 
@@ -1286,8 +1286,12 @@ console.log(
         }
     }
 
-    function getPageBackground() {
-        return getCurrentPageBackground();
+    function getPageBackground(pageIndex) {
+        return Number.isInteger(pageIndex) ? (annotationPageBackgrounds[pageIndex] || "white") : getCurrentPageBackground();
+    }
+
+    function getAllPageBackgrounds() {
+        return annotationPageBackgrounds.slice();
     }
 
     function setupCanvas() {
@@ -2930,7 +2934,9 @@ getAllPages,
 
 setPageBackground,
 
-getPageBackground
+getPageBackground,
+
+getAllPageBackgrounds
 
 };
 
