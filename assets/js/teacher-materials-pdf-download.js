@@ -127,7 +127,7 @@
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
       const logo = await loadImage(new URL('images/logo.png', window.location.href).href);
       const pageW = 210, pageH = 297, margin = 12;
-      const headerH = 32, contentTop = 39, contentBottom = 284;
+      const headerH = 36, contentTop = 43, contentBottom = 284;
       const subject = String(material.subject || 'Learning Material');
       const chapter = `Chapter ${material.chapterNo || ''}${material.chapterName ? ' — ' + material.chapterName : ''}`.trim();
       const topic = material.topic ? `Topic: ${material.topic}` : '';
@@ -135,23 +135,45 @@
       for (let i = 0; i < pages.length; i++) {
         if (i > 0) pdf.addPage('a4', 'portrait');
         pdf.setFillColor(255, 255, 255); pdf.rect(0, 0, pageW, pageH, 'F');
+
+        // Logo stays at the top-left.
         if (logo) {
           try { pdf.addImage(logo, 'PNG', margin, 8, 22, 18, undefined, 'FAST'); }
-          catch (_) { pdf.setTextColor(23, 59, 103); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(10); pdf.text('GOPES PINNACLE', margin, 17); }
+          catch (_) { pdf.setTextColor(23, 59, 103); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(8); pdf.text('GOPES PINNACLE', margin, 17); }
         } else {
-          pdf.setTextColor(23, 59, 103); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(10); pdf.text('GOPES PINNACLE ACADEMY', margin, 16);
+          pdf.setTextColor(23, 59, 103); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(8); pdf.text('GOPES PINNACLE', margin, 15);
         }
-        const textX = logo ? 39 : margin;
-        pdf.setTextColor(23, 59, 103); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(13);
-        pdf.text(subject, textX, 11);
-        pdf.setFontSize(9); pdf.setTextColor(35, 45, 60);
-        pdf.text(pdf.splitTextToSize(chapter || 'Learning Material', pageW - textX - margin), textX, 17);
-        let topicY = 23;
-        const chapterLines = pdf.splitTextToSize(chapter || 'Learning Material', pageW - textX - margin).length;
-        topicY += Math.max(0, chapterLines - 1) * 3.5;
-        if (topic) pdf.text(pdf.splitTextToSize(topic, pageW - textX - margin), textX, topicY);
-        pdf.setFont('helvetica', 'normal'); pdf.setFontSize(8); pdf.setTextColor(90, 100, 115);
-        pdf.text(`Teacher: ${teacher}`, textX, 31);
+
+        // Academy heading is centered; the document details sit on the right.
+        pdf.setTextColor(23, 59, 103);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(13);
+        pdf.text('Gopes Pinnacle Academy', pageW / 2, 14, { align: 'center' });
+        pdf.setFontSize(10);
+        pdf.text('Class Meterial', pageW / 2, 21, { align: 'center' });
+
+        const detailX = pageW - margin;
+        const detailWidth = 75;
+        let detailY = 11;
+        pdf.setTextColor(35, 45, 60);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(8);
+        const subjectLines = pdf.splitTextToSize(subject, detailWidth);
+        pdf.text(subjectLines, detailX, detailY, { align: 'right', maxWidth: detailWidth });
+        detailY += Math.max(4, subjectLines.length * 3.5);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(7.5);
+        const chapterLines = pdf.splitTextToSize(chapter || 'Learning Material', detailWidth);
+        pdf.text(chapterLines, detailX, detailY, { align: 'right', maxWidth: detailWidth });
+        detailY += Math.max(4, chapterLines.length * 3.2);
+        if (topic) {
+          const topicLines = pdf.splitTextToSize(topic, detailWidth);
+          pdf.text(topicLines, detailX, detailY, { align: 'right', maxWidth: detailWidth });
+          detailY += Math.max(4, topicLines.length * 3.2);
+        }
+        pdf.setFontSize(7.5);
+        const teacherLines = pdf.splitTextToSize(`Teacher: ${teacher}`, detailWidth);
+        pdf.text(teacherLines, detailX, detailY, { align: 'right', maxWidth: detailWidth });
         pdf.setDrawColor(190, 202, 218); pdf.setLineWidth(0.4); pdf.line(margin, headerH, pageW - margin, headerH);
         const canvas = await renderSavedPage(pages[i]);
         const maxW = pageW - margin * 2, maxH = contentBottom - contentTop;
