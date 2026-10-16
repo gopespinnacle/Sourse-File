@@ -344,7 +344,7 @@ document.getElementById("registerMonth").addEventListener("change",render);
 document.getElementById("studentFilter").addEventListener("change",render);
 document.getElementById("exportPdf").addEventListener("click",exportRegisterPDF);
 
-fetch("sidebar.html")
+fetch("teacher-sidebar.html")
   .then(response => { if(!response.ok) throw new Error("Sidebar not found"); return response.text(); })
   .then(html => { document.getElementById("sidebar-container").innerHTML = html; })
   .catch(() => { /* Keep the page usable if sidebar loading fails. */ });
