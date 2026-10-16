@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register Summary | Gopes Pinnacle Academy</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<style>
+:root{--navy:#101b46;--blue:#2549a8;--gold:#c89b3c;--ink:#1d2742;--muted:#73809a;--line:#e7ebf3;--bg:#f4f6fb;--white:#fff;--green:#17835d;--red:#c44747}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,"Segoe UI",Arial,sans-serif}
+.main-content{margin-left:260px;padding:28px;min-height:100vh;transition:margin .2s}
+.page-wrap{max-width:1600px;margin:0 auto}
+.hero{position:relative;overflow:hidden;background:linear-gradient(120deg,#111b46 0%,#213e8c 68%,#3158b7 100%);border-radius:22px;padding:28px 30px;color:#fff;box-shadow:0 14px 35px #1a2a5b20}
+.hero:after{content:"";position:absolute;width:260px;height:260px;border:1px solid #ffffff22;border-radius:50%;right:-65px;top:-110px;box-shadow:0 0 0 28px #ffffff08,0 0 0 58px #ffffff06}
+.hero-top{display:flex;align-items:center;gap:16px;position:relative;z-index:1}
+.hero-icon{width:58px;height:58px;border-radius:17px;display:grid;place-items:center;background:#ffffff19;border:1px solid #ffffff32;font-size:25px;color:#f4d58a}
+.hero h1{font-size:clamp(24px,3vw,32px);margin:0 0 7px;font-weight:750;letter-spacing:-.5px}
+.hero p{margin:0;color:#dce5ff;font-size:14px;line-height:1.6}
+.hero-note{margin-top:19px;display:inline-flex;align-items:center;gap:8px;padding:8px 12px;background:#ffffff12;border:1px solid #ffffff25;border-radius:30px;font-size:12px;color:#f5f7ff;position:relative;z-index:1}
+.panel{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:21px;margin-top:20px;box-shadow:0 5px 18px #172a5510}
+.panel-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.panel-heading h2{font-size:16px;margin:0;color:var(--navy);display:flex;align-items:center;gap:10px}
+.panel-heading h2 i{color:var(--blue)}
+.panel-heading span{font-size:12px;color:var(--muted)}
+.filters{display:grid;grid-template-columns:1.2fr 1.5fr auto auto;gap:14px;align-items:end}
+.filter-group label{display:block;font-size:12px;font-weight:700;color:#5d6881;margin:0 0 8px}
+.filter-group input,.filter-group select{height:44px;width:100%;border:1px solid #dfe5f0;background:#fbfcff;border-radius:10px;padding:0 12px;color:var(--ink);font:inherit;font-size:13px;outline:none}
+.filter-group input:focus,.filter-group select:focus{border-color:#6e8be0;box-shadow:0 0 0 3px #3158b715}
+.btn{height:44px;border:0;border-radius:10px;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;gap:9px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;transition:transform .15s,filter .15s}
+.btn:hover{filter:brightness(1.06);transform:translateY(-1px)}
+.btn-primary{background:var(--blue);color:#fff;box-shadow:0 5px 12px #2549a826}
+.btn-light{background:#f0f3fa;color:#34415e;border:1px solid #e2e7f1}
+.btn-gold{background:#8c6424;color:#fff}
+.summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin-top:20px}
+.stat-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:19px;display:flex;align-items:center;gap:15px;box-shadow:0 5px 18px #172a5508}
+.stat-icon{height:48px;width:48px;border-radius:14px;display:grid;place-items:center;font-size:19px;flex-shrink:0}
+.stat-icon.blue{background:#edf2ff;color:#3158b7}.stat-icon.green{background:#e8f7f0;color:#17835d}.stat-icon.red{background:#fff0f0;color:#c44747}
+.stat-label{font-size:12px;color:var(--muted);font-weight:650;margin-bottom:5px}
+.stat-value{font-size:27px;font-weight:800;color:var(--navy);letter-spacing:-.6px;line-height:1}
+.table-panel{padding:0;overflow:hidden}
+.table-head{padding:20px 21px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line)}
+.table-head h2{font-size:16px;margin:0;color:var(--navy);display:flex;align-items:center;gap:10px}
+.table-head h2 i{color:var(--blue)}
+.result-count{font-size:12px;color:var(--muted);background:#f3f5fa;border-radius:20px;padding:7px 10px;white-space:nowrap}
+.table-scroll{overflow:auto;width:100%}
+table{width:100%;border-collapse:separate;border-spacing:0;min-width:1050px}
+thead th{background:#f8f9fd;color:#68748d;text-transform:uppercase;letter-spacing:.55px;font-size:10px;font-weight:800;text-align:left;padding:14px 15px;border-bottom:1px solid var(--line);white-space:nowrap}
+tbody td{padding:15px;border-bottom:1px solid #edf0f6;font-size:12px;vertical-align:middle;color:#35405a}
+tbody tr:hover{background:#fafbff}
+tbody tr:last-child td{border-bottom:0}
+.date-main{font-weight:750;color:var(--navy);white-space:nowrap}
+.date-sub{font-size:10px;color:#8b95a9;margin-top:4px}
+.time-cell{white-space:nowrap;font-weight:650}
+.grade-pill{display:inline-block;background:#eef2ff;color:#3151a0;border-radius:7px;padding:5px 8px;font-weight:750;white-space:nowrap}
+.student-name{font-weight:750;color:#202d4b}
+.student-id{font-size:10px;color:#8490a5;margin-top:4px}
+.status-pill{display:inline-flex;align-items:center;gap:5px;border-radius:30px;padding:6px 9px;font-size:10px;font-weight:800;white-space:nowrap}
+.status-present{background:#e8f7f0;color:#14734f}.status-absent{background:#fff0f0;color:#b63838}.status-neutral{background:#eef1f6;color:#66728a}
+.topic{max-width:220px;line-height:1.45;overflow-wrap:anywhere}
+.message-row{text-align:center;padding:36px!important;color:#7d879c!important;font-size:13px!important}
+.message-row i{display:block;font-size:23px;margin-bottom:10px;color:#a0abc0}
+.notice{display:none;margin-top:14px;padding:12px 14px;border-radius:10px;background:#fff2f0;color:#a33832;font-size:13px}
+.footer-note{font-size:11px;color:#8a94a8;text-align:right;padding:13px 20px;border-top:1px solid var(--line)}
+@media(max-width:1100px){.main-content{margin-left:0;padding:18px}.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.summary-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:650px){.main-content{padding:12px}.hero{padding:22px 18px;border-radius:16px}.hero-icon{width:48px;height:48px}.panel{padding:16px}.filters{grid-template-columns:1fr}.summary-grid{grid-template-columns:1fr;gap:10px}.stat-card{padding:14px}.table-head{padding:16px;align-items:flex-start}.panel-heading{align-items:flex-start;flex-direction:column}.btn{width:100%}}
+</style>
+</head>
+<body>
+<div id="sidebar-container"></div>
+<main class="main-content">
+<div class="page-wrap">
+<section class="hero">
+  <div class="hero-top">
+    <div class="hero-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+    <div>
+      <h1>Register Summary</h1>
+      <p>Review your recorded classes, student attendance and topics covered.</p>
+    </div>
+  </div>
+  <div class="hero-note"><i class="fa-solid fa-shield-halved"></i> Private teacher view · Displays only your own register records</div>
+</section>
+
+<section class="panel">
+  <div class="panel-heading">
+    <h2><i class="fa-solid fa-sliders"></i> Find register records</h2>
+    <span>Choose a month or student, then apply filters.</span>
+  </div>
+  <div class="filters">
+    <div class="filter-group">
+      <label for="registerMonth">Month</label>
+      <input type="month" id="registerMonth">
+    </div>
+    <div class="filter-group">
+      <label for="studentFilter">Student</label>
+      <select id="studentFilter"><option value="">All students</option></select>
+    </div>
+    <button class="btn btn-primary" type="button" id="applyFilters"><i class="fa-solid fa-magnifying-glass"></i> View Register</button>
+    <button class="btn btn-gold" type="button" id="exportPdf"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
+  </div>
+  <div id="notice" class="notice" role="alert"></div>
+</section>
+
+<section class="summary-grid" aria-label="Register summary statistics">
+  <div class="stat-card"><div class="stat-icon blue"><i class="fa-solid fa-calendar-check"></i></div><div><div class="stat-label">Class Sessions</div><div class="stat-value" id="sessionCount">—</div></div></div>
+  <div class="stat-card"><div class="stat-icon green"><i class="fa-solid fa-chalkboard-user"></i></div><div><div class="stat-label">Conducted Classes</div><div class="stat-value" id="conductedCount">—</div></div></div>
+  <div class="stat-card"><div class="stat-icon red"><i class="fa-solid fa-calendar-xmark"></i></div><div><div class="stat-label">Teacher Leave</div><div class="stat-value" id="leaveCount">—</div></div></div>
+</section>
+
+<section class="panel table-panel">
+  <div class="table-head">
+    <h2><i class="fa-solid fa-list-check"></i> Your daily class register</h2>
+    <div class="result-count" id="resultCount">Loading records…</div>
+  </div>
+  <div class="table-scroll">
+    <table>
+      <thead><tr>
+        <th>Date</th><th>Time</th><th>Grade</th><th>Subject</th><th>Student</th><th>Student ID</th><th>Attendance</th><th>Topic Covered</th><th>Teacher Status</th>
+      </tr></thead>
+      <tbody id="registerTableBody"><tr><td colspan="9" class="message-row"><i class="fa-solid fa-spinner fa-spin"></i>Loading your register…</td></tr></tbody>
+    </table>
+  </div>
+  <div class="footer-note">Gopes Pinnacle Academy · Teacher Register Summary</div>
+</section>
+</div>
+</main>
+<script>
+"use strict";
+
+const API_BASE = "https://academy-backend-eatl.onrender.com";
+const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+let allRegisters = [];
+let visibleRows = [];
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[ch]));
+}
+function showNotice(message) {
+  const notice = document.getElementById("notice");
+  notice.textContent = message || "";
+  notice.style.display = message ? "block" : "none";
+}
+function asDate(value) {
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+function formatDate(value) {
+  const d = asDate(value);
+  return d ? d.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}) : "—";
+}
+function formatTime(value) {
+  if (!value) return "—";
+  const raw = String(value);
+  const match = raw.match(/^(\d{1,2}):(\d{2})/);
+  if (!match) return raw;
+  let hour = Number(match[1]), minute = match[2];
+  const suffix = hour >= 12 ? "PM" : "AM";
+  hour = hour % 12 || 12;
+  return `${hour}:${minute} ${suffix}`;
+}
+function teacherStatus(register) {
+  return String(register.teacherStatus || register.status || "").toLowerCase();
+}
+function studentRows(register) {
+  const students = Array.isArray(register.students) ? register.students : [];
+  if (!students.length) return [{register,student:null}];
+  return students.map(student => ({register,student}));
+}
+function allFlatRows(registers) {
+  return registers.flatMap(studentRows);
+}
+function registerId(register) {
+  return register._id || `${register.date || ""}-${register.periodAssignment?._id || ""}-${register.scheduledStartTime || ""}`;
+}
+function fillStudentFilter(registers) {
+  const select = document.getElementById("studentFilter");
+  const previous = select.value;
+  const students = new Map();
+  allFlatRows(registers).forEach(({student}) => {
+    if (!student) return;
+    const id = student.studentId || student.student?._id || student.student || student.studentName || student.student?.name;
+    const name = student.studentName || student.student?.name || "Student";
+    if (id != null) students.set(String(id), name);
+  });
+  select.innerHTML = '<option value="">All students</option>';
+  [...students.entries()].sort((a,b)=>a[1].localeCompare(b[1])).forEach(([id,name]) => {
+    const option = document.createElement("option");
+    option.value = id;
+    option.textContent = name;
+    select.appendChild(option);
+  });
+  if ([...select.options].some(option=>option.value===previous)) select.value = previous;
+}
+function getFilteredRows() {
+  const month = document.getElementById("registerMonth").value;
+  const studentId = document.getElementById("studentFilter").value;
+  const filteredRegisters = allRegisters.filter(register => {
+    if (!month) return true;
+    const d = asDate(register.date);
+    return d && `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}` === month;
+  });
+  return allFlatRows(filteredRegisters).filter(({student}) => {
+    if (!studentId) return true;
+    if (!student) return false;
+    const id = student.studentId || student.student?._id || student.student || student.studentName;
+    return String(id) === studentId;
+  });
+}
+function render() {
+  visibleRows = getFilteredRows();
+  const matchingRegisters = new Map();
+  visibleRows.forEach(({register}) => matchingRegisters.set(registerId(register),register));
+  const registers = [...matchingRegisters.values()];
+  document.getElementById("sessionCount").textContent = registers.length;
+  document.getElementById("conductedCount").textContent = registers.filter(r => teacherStatus(r) === "present").length;
+  document.getElementById("leaveCount").textContent = registers.filter(r => teacherStatus(r) === "absent").length;
+  document.getElementById("resultCount").textContent = `${visibleRows.length} student record${visibleRows.length===1?"":"s"} · ${registers.length} session${registers.length===1?"":"s"}`;
+
+  const tbody = document.getElementById("registerTableBody");
+  if (!visibleRows.length) {
+    tbody.innerHTML = '<tr><td colspan="9" class="message-row"><i class="fa-regular fa-folder-open"></i>No register records match these filters.</td></tr>';
+    return;
+  }
+  const sorted = [...visibleRows].sort((a,b) => {
+    const da = asDate(a.register.date)?.getTime() || 0;
+    const db = asDate(b.register.date)?.getTime() || 0;
+    return db-da || String(a.register.scheduledStartTime||"").localeCompare(String(b.register.scheduledStartTime||""));
+  });
+  tbody.innerHTML = sorted.map(({register,student}) => {
+    const start = register.scheduledStartTime || register.actualStartTime;
+    const end = register.scheduledEndTime || register.actualEndTime;
+    const time = [formatTime(start),formatTime(end)].filter(x=>x!=="—").join(" – ") || "—";
+    const assignment = register.periodAssignment && typeof register.periodAssignment === "object" ? register.periodAssignment : {};
+    const grade = register.className || assignment.className || assignment.grade || "—";
+    const subject = register.subject || assignment.subject || "—";
+    const attendance = String(student?.attendance || "—").toLowerCase();
+    const teacher = teacherStatus(register);
+    const attendanceClass = attendance === "present" ? "status-present" : attendance === "absent" ? "status-absent" : "status-neutral";
+    const teacherClass = teacher === "present" ? "status-present" : teacher === "absent" ? "status-absent" : "status-neutral";
+    const studentName = student ? (student.studentName || student.student?.name || "Student") : "No student entries";
+    const studentId = student ? (student.studentId || student.student?.studentId || "—") : "—";
+    return `<tr>
+      <td><div class="date-main">${escapeHtml(formatDate(register.date))}</div><div class="date-sub">${escapeHtml(asDate(register.date)?.toLocaleDateString("en-IN",{weekday:"short"}) || "")}</div></td>
+      <td class="time-cell">${escapeHtml(time)}</td>
+      <td><span class="grade-pill">${escapeHtml(grade)}</span></td>
+      <td>${escapeHtml(subject)}</td>
+      <td><div class="student-name">${escapeHtml(studentName)}</div></td>
+      <td><div class="student-id">${escapeHtml(studentId)}</div></td>
+      <td><span class="status-pill ${attendanceClass}">${escapeHtml(student?.attendance || "Not recorded")}</span></td>
+      <td><div class="topic">${escapeHtml(register.topicCovered || "—")}</div></td>
+      <td><span class="status-pill ${teacherClass}">${escapeHtml(register.teacherStatus || "Not recorded")}</span></td>
+    </tr>`;
+  }).join("");
+}
+async function loadRegister() {
+  if (!token) {
+    window.location.href = "teacher-login.html";
+    return;
+  }
+  showNotice("");
+  const tbody = document.getElementById("registerTableBody");
+  tbody.innerHTML = '<tr><td colspan="9" class="message-row"><i class="fa-solid fa-spinner fa-spin"></i>Loading your register…</td></tr>';
+  try {
+    const response = await fetch(`${API_BASE}/api/teacher/daily-class-register`, {
+      method:"GET",
+      headers:{"Authorization":`Bearer ${token}`,"Accept":"application/json"}
+    });
+    const payload = await response.json().catch(()=>({}));
+    if (response.status === 401 || response.status === 403) {
+      throw new Error(payload.message || "Your session is not authorized. Please sign in again.");
+    }
+    if (!response.ok) throw new Error(payload.message || "Could not load your register records.");
+    const records = Array.isArray(payload) ? payload : (payload.data || payload.registers || []);
+    if (!Array.isArray(records)) throw new Error("The server returned an unexpected register format.");
+    allRegisters = records;
+    fillStudentFilter(allRegisters);
+    render();
+  } catch (error) {
+    tbody.innerHTML = `<tr><td colspan="9" class="message-row"><i class="fa-solid fa-triangle-exclamation"></i>${escapeHtml(error.message || "Unable to load records.")}</td></tr>`;
+    document.getElementById("sessionCount").textContent = "—";
+    document.getElementById("conductedCount").textContent = "—";
+    document.getElementById("leaveCount").textContent = "—";
+    document.getElementById("resultCount").textContent = "Unable to load";
+    showNotice(error.message || "Unable to load your register. Please try again.");
+  }
+}
+function exportRegisterPDF() {
+  if (!visibleRows.length) {
+    showNotice("There are no register records to export for the selected filters.");
+    return;
+  }
+  if (!window.jspdf || !window.jspdf.jsPDF) {
+    showNotice("PDF export could not load. Check your internet connection and try again.");
+    return;
+  }
+  const {jsPDF} = window.jspdf;
+  const doc = new jsPDF({orientation:"landscape",unit:"mm",format:"a4"});
+  doc.setFillColor(16,27,70);
+  doc.rect(0,0,297,25,"F");
+  doc.setTextColor(255,255,255);
+  doc.setFont("helvetica","bold");
+  doc.setFontSize(16);
+  doc.text("Gopes Pinnacle Academy",14,10);
+  doc.setFontSize(11);
+  doc.text("Teacher Register Summary",14,17);
+  doc.setFont("helvetica","normal");
+  doc.setFontSize(9);
+  doc.text(`Generated: ${new Date().toLocaleString("en-IN")}`,283,17,{align:"right"});
+  const rows = visibleRows.map(({register,student}) => {
+    const assignment = register.periodAssignment && typeof register.periodAssignment==="object" ? register.periodAssignment : {};
+    return [
+      formatDate(register.date),
+      `${formatTime(register.scheduledStartTime || register.actualStartTime)} - ${formatTime(register.scheduledEndTime || register.actualEndTime)}`,
+      register.className || assignment.className || assignment.grade || "—",
+      register.subject || assignment.subject || "—",
+      student?.studentName || student?.student?.name || (student ? "Student" : "No student entries"),
+      student?.studentId || "—",
+      student?.attendance || "—",
+      register.topicCovered || "—",
+      register.teacherStatus || "—"
+    ];
+  });
+  doc.autoTable({
+    startY:30,
+    head:[["Date","Time","Grade","Subject","Student","Student ID","Attendance","Topic Covered","Teacher Status"]],
+    body:rows,
+    theme:"grid",
+    styles:{font:"helvetica",fontSize:7,cellPadding:2.2,overflow:"linebreak",textColor:[42,52,75],lineColor:[225,230,240]},
+    headStyles:{fillColor:[37,73,168],textColor:255,fontStyle:"bold"},
+    alternateRowStyles:{fillColor:[247,249,253]},
+    margin:{left:10,right:10},
+    didDrawPage:()=>{doc.setFontSize(8);doc.setTextColor(110,120,140);doc.text("Gopes Pinnacle Academy · Teacher Register Summary",10,203);}
+  });
+  const month = document.getElementById("registerMonth").value || "all-records";
+  doc.save(`teacher-register-summary-${month}.pdf`);
+  showNotice("");
+}
+document.getElementById("applyFilters").addEventListener("click",render);
+document.getElementById("registerMonth").addEventListener("change",render);
+document.getElementById("studentFilter").addEventListener("change",render);
+document.getElementById("exportPdf").addEventListener("click",exportRegisterPDF);
+
+fetch("sidebar.html")
+  .then(response => { if(!response.ok) throw new Error("Sidebar not found"); return response.text(); })
+  .then(html => { document.getElementById("sidebar-container").innerHTML = html; })
+  .catch(() => { /* Keep the page usable if sidebar loading fails. */ });
+
+loadRegister();
+</script>
+</body>
+</html>
