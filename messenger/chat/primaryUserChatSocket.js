@@ -216,13 +216,44 @@ this.socket.on(
             }
         }
 
-        // Compare the authenticated user's ID with the sender.
-        const direction =
-            currentUserId &&
-            message.senderId &&
-            String(currentUserId) === String(message.senderId)
-                ? "outgoing"
-                : "incoming";
+
+const liveSenderId =
+    message.senderId ||
+    message.sender?._id ||
+    message.sender;
+
+const liveReceiverId =
+    message.receiverId ||
+    message.receiver?._id ||
+    message.receiver;
+
+let direction = "incoming";
+
+// Teacher's own messages appear on the RIGHT.
+if (
+    currentUserId &&
+    liveSenderId &&
+    String(currentUserId) === String(liveSenderId)
+) {
+    direction = "outgoing";
+}
+// Messages received by the teacher appear on the LEFT.
+else if (
+    currentUserId &&
+    liveReceiverId &&
+    String(currentUserId) === String(liveReceiverId)
+) {
+    direction = "incoming";
+}
+// If the receiver is another user, this is an outgoing message.
+else if (
+    currentUserId &&
+    liveReceiverId &&
+    String(currentUserId) !== String(liveReceiverId)
+) {
+    direction = "outgoing";
+}
+
 
         window.GPAPrimaryUserChat.displayMessage({
             id: message.id || message.messageId,
