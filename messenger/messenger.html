@@ -345,7 +345,7 @@
         src="https://cdn.socket.io/4.8.1/socket.io.min.js"
     ></script>
 
-    </script>     <script src="chat/messengerWebNotifications.js"></script>
+    <script src="chat/messengerWebNotifications.js"></script>
 
 
     <!-- =====================================================
@@ -902,10 +902,10 @@ const token =
             "gpaPrimaryConversation"
         );
 
-    if (conversationContainer) {
-
+    if (window.GPAPrimaryUserChat && typeof window.GPAPrimaryUserChat.clearConversation === "function") {
+        window.GPAPrimaryUserChat.clearConversation();
+    } else if (conversationContainer) {
         conversationContainer.innerHTML = "";
-
     }
 
     if (

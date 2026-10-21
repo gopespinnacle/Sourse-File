@@ -1,534 +1,210 @@
 /**
- * ============================================================
- * GPA MESSENGER
- * MODULE 1
- * PRIMARY USER CHAT
- * ============================================================
- *
- * PURPOSE:
- *
- * The Primary User sends a message.
- *
- * The message immediately appears in the Primary User's
- * conversation area.
- *
- * This module is FRONTEND ONLY.
- *
- * ============================================================
+ * GPA MESSENGER — PRIMARY CHAT UI
+ * Complete replacement module.
+ * Direction rule: authenticated current user sent it => RIGHT;
+ * otherwise => LEFT. The same rule is used for optimistic, live and history messages.
  */
-
 (function () {
-
     "use strict";
 
+    function decodeTokenPayload(token) {
+        if (!token || typeof token !== "string") return null;
+        try {
+            const part = token.split(".")[1];
+            if (!part) return null;
+            const base64 = part.replace(/-/g, "+").replace(/_/g, "/");
+            const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+            return JSON.parse(atob(padded));
+        } catch (error) {
+            console.warn("[GPA CHAT] Could not decode login token.", error);
+            return null;
+        }
+    }
 
-    // ============================================================
-    // PRIMARY USER CHAT
-    // ============================================================
+    function getCurrentUserId() {
+        const explicit = window.GPACurrentUserId;
+        if (explicit) return String(explicit).trim();
+        const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+        const payload = decodeTokenPayload(token);
+        const id = payload && (payload.id || payload._id || payload.userId || payload.sub);
+        if (id) {
+            window.GPACurrentUserId = String(id);
+            return String(id).trim();
+        }
+        return "";
+    }
+
+    function normalizeId(value) {
+        if (value == null || value === "") return "";
+        if (typeof value === "object") {
+            return String(value._id || value.id || value.userId || "").trim();
+        }
+        return String(value).trim();
+    }
+
+    function getSenderId(message) {
+        return normalizeId(
+            message.senderId ??
+            message.sender?._id ??
+            message.sender?.id ??
+            message.sender?.userId ??
+            message.fromUserId ??
+            message.from
+        );
+    }
 
     class PrimaryUserChat {
-
         constructor() {
-
-            this.conversation =
-                document.getElementById(
-                    "gpaPrimaryConversation"
-                );
-
-            this.input =
-                document.getElementById(
-                    "gpaPrimaryMessageInput"
-                );
-
-            this.sendButton =
-                document.getElementById(
-                    "gpaPrimarySendButton"
-                );
-
-
-            console.log(
-                "[GPA PRIMARY CHAT] Module loaded."
-            );
+            this.conversation = document.getElementById("gpaPrimaryConversation");
+            this.input = document.getElementById("gpaPrimaryMessageInput");
+            this.sendButton = document.getElementById("gpaPrimarySendButton");
+            this.renderedIds = new Set();
         }
-
-
-        // ========================================================
-        // INITIALIZE
-        // ========================================================
 
         initialize() {
-
-            if (!this.conversation) {
-
-                console.error(
-                    "[GPA PRIMARY CHAT] " +
-                    "Conversation element not found."
-                );
-
+            if (!this.conversation || !this.input || !this.sendButton) {
+                console.error("[GPA CHAT] Required chat elements are missing.");
                 return;
             }
-
-
-            if (!this.input) {
-
-                console.error(
-                    "[GPA PRIMARY CHAT] " +
-                    "Message input not found."
-                );
-
-                return;
-            }
-
-
-            if (!this.sendButton) {
-
-                console.error(
-                    "[GPA PRIMARY CHAT] " +
-                    "Send button not found."
-                );
-
-                return;
-            }
-
-
-            // ----------------------------------------------------
-            // SEND BUTTON
-            // ----------------------------------------------------
-
-            this.sendButton.addEventListener(
-                "click",
-                () => {
-
+            this.sendButton.addEventListener("click", () => this.sendMessage());
+            this.input.addEventListener("keydown", (event) => {
+                if (event.key === "Enter" && !event.shiftKey) {
+                    event.preventDefault();
                     this.sendMessage();
-
                 }
-            );
-
-
-            // ----------------------------------------------------
-            // ENTER KEY
-            // ----------------------------------------------------
-
-            this.input.addEventListener(
-                "keydown",
-                (event) => {
-
-                    if (
-                        event.key === "Enter" &&
-                        !event.shiftKey
-                    ) {
-
-                        event.preventDefault();
-
-                        this.sendMessage();
-
-                    }
-
-                }
-            );
-
-
-            console.log(
-                "[GPA PRIMARY CHAT] " +
-                "Module initialized successfully."
-            );
+            });
+            getCurrentUserId();
+            console.log("[GPA CHAT] Chat UI ready.");
         }
-
-
-        // ========================================================
-        // SEND MESSAGE
-        // ========================================================
 
         sendMessage() {
+            const text = String(this.input.value || "").trim();
+            if (!text) return;
 
-            const messageText =
-                this.input.value.trim();
-
-
-            // ----------------------------------------------------
-            // DO NOTHING IF EMPTY
-            // ----------------------------------------------------
-
-            if (!messageText) {
-
+            const currentUserId = getCurrentUserId();
+            const conversation = window.GPAMessengerConversation;
+            const conversationId = window.GPAMessengerConversationId || conversation?._id;
+            if (!conversationId) {
+                console.warn("[GPA CHAT] Select a conversation before sending a message.");
+                return;
+            }
+            if (!currentUserId) {
+                console.error("[GPA CHAT] Cannot identify the logged-in user from the login token.");
                 return;
             }
 
-
-            console.log(
-                "[GPA PRIMARY CHAT] " +
-                "Primary user sending:",
-                messageText
-            );
-
-
-            // ----------------------------------------------------
-            // CREATE MESSAGE
-            // ----------------------------------------------------
-
             const message = {
-
-                id:
-                    this.createMessageId(),
-
-                text:
-                    messageText,
-
-                sender:
-                    "primary-user",
-
-                createdAt:
-                    new Date().toISOString(),
-
-                // =================================================
-                // MESSAGE DIRECTION
-                // =================================================
-                // This message was created by the current user.
-                //
-                // Therefore it must appear on the RIGHT.
-                // =================================================
-
-                direction:
-                    "outgoing"
-
+                id: this.createMessageId(),
+                messageId: null,
+                conversationId: String(conversationId),
+                senderId: currentUserId,
+                receiverId: normalizeId(window.GPAMessengerReceiverId),
+                text,
+                sender: "primary-user",
+                createdAt: new Date().toISOString(),
+                direction: "outgoing",
+                deliveryStatus: "sent"
             };
 
-
-            // ----------------------------------------------------
-            // IMPORTANT
-            //
-            // Display the message IMMEDIATELY.
-            //
-            // We are intentionally not waiting for any server.
-            // ----------------------------------------------------
-
-            this.displayMessage(
-                message
-            );
-
-
-            // ----------------------------------------------------
-            // CLEAR INPUT
-            // ----------------------------------------------------
-
+            // Render immediately. Sender ID is included so the same direction logic applies.
+            this.displayMessage(message);
             this.input.value = "";
-
-
-            // ----------------------------------------------------
-            // RETURN FOCUS TO INPUT
-            // ----------------------------------------------------
-
             this.input.focus();
 
-
-            // ========================================================
-            // MODULE 2
-            // SEND MESSAGE TO BACKEND SOCKET
-            // ========================================================
-
-            if (
-                window.GPAPrimaryUserSocket &&
-                typeof window.GPAPrimaryUserSocket.sendMessage ===
-                    "function"
-            ) {
-
-                window.GPAPrimaryUserSocket.sendMessage(
-                    message
-                );
-
+            const socketModule = window.GPAPrimaryUserSocket;
+            if (socketModule && typeof socketModule.sendMessage === "function") {
+                socketModule.sendMessage(message);
+            } else {
+                console.error("[GPA CHAT] Socket module is unavailable; message was shown locally only.");
             }
-
-
-            console.log(
-                "[GPA PRIMARY CHAT] " +
-                "Message displayed immediately."
-            );
         }
-
-
-        // ========================================================
-        // DISPLAY MESSAGE
-        // ========================================================
 
         displayMessage(message) {
+            if (!this.conversation || !message) return null;
 
-            // ----------------------------------------------------
-            // MESSAGE ROW
-            // ----------------------------------------------------
+            const id = normalizeId(message.id || message.messageId || message._id);
+            if (id && this.renderedIds.has(id)) return null;
 
-            const messageRow =
-                document.createElement(
-                    "div"
-                );
+            const currentUserId = getCurrentUserId();
+            const senderId = getSenderId(message);
+            let direction;
 
+            // Sender identity is authoritative for live and stored messages.
+            if (currentUserId && senderId) {
+                direction = senderId === currentUserId ? "outgoing" : "incoming";
+            } else {
+                direction = String(message.direction || "").toLowerCase() === "outgoing"
+                    ? "outgoing"
+                    : "incoming";
+                if (!senderId && !message.direction) {
+                    console.warn("[GPA CHAT] Message direction could not be verified; defaulting left.", message);
+                }
+            }
 
-            messageRow.className =
-                "gpa-primary-message-row";
+            const row = document.createElement("div");
+            row.className = `gpa-primary-message-row ${direction}`;
+            if (id) {
+                row.dataset.messageId = id;
+                this.renderedIds.add(id);
+            }
 
-                if (message.id) {
-    messageRow.dataset.messageId = message.id;
-}
+            const bubble = document.createElement("div");
+            bubble.className = "gpa-primary-message-bubble";
 
+            const text = document.createElement("span");
+            text.className = "gpa-primary-message-text";
+            text.textContent = String(message.text || "");
+            bubble.appendChild(text);
 
-            // ====================================================
-            // MESSAGE DIRECTION
-            // ====================================================
+            if (direction === "outgoing") {
+                const tick = document.createElement("span");
+                tick.className = "gpa-primary-message-status";
+                this.setTick(tick, message.deliveryStatus || "sent");
+                bubble.appendChild(tick);
+            }
 
-            /*
-             *
-             * outgoing
-             * --------
-             * Current user's message.
-             *
-             * This will be displayed on the RIGHT.
-             *
-             *
-             * incoming
-             * --------
-             * Other person's message.
-             *
-             * This will be displayed on the LEFT.
-             *
-             */
-
-            // ====================================================
-// MESSAGE DIRECTION — REFRESH-SAFE ALIGNMENT
-// ====================================================
-
-
-
-const getId = (value) => {
-    if (!value) return "";
-
-    if (typeof value === "object") {
-        return String(
-            value._id ||
-            value.id ||
-            ""
-        ).trim();
-    }
-
-    return String(value).trim();
-};
-
-const currentUserId = getId(
-    window.GPACurrentUserId ||
-    localStorage.getItem("userId") ||
-    sessionStorage.getItem("userId")
-);
-
-const senderId = getId(
-    message.senderId ||
-    message.sender ||
-    message.from
-);
-
-const isOutgoing =
-    currentUserId !== "" &&
-    senderId !== "" &&
-    senderId === currentUserId;
-
-messageRow.classList.remove(
-    "incoming",
-    "outgoing"
-);
-
-messageRow.classList.add(
-    isOutgoing ? "outgoing" : "incoming"
-);
-
-
-
-            // ----------------------------------------------------
-            // MESSAGE BUBBLE
-            // ----------------------------------------------------
-
-            const messageBubble =
-                document.createElement(
-                    "div"
-                );
-
-
-            messageBubble.className =
-                "gpa-primary-message-bubble";
-
-
-            /*
-             * IMPORTANT:
-             *
-             * textContent is used instead of innerHTML.
-             *
-             * This prevents the user from inserting HTML or
-             * JavaScript into the conversation.
-             */
-
-            
-const messageText = document.createElement("span");
-messageText.textContent = message.text || "";
-messageBubble.appendChild(messageText);
-
-if (isOutgoing) {
-    const statusTick = document.createElement("span");
-
-    statusTick.className = "gpa-primary-message-status";
-    statusTick.textContent = "✓";
-    statusTick.dataset.status = message.deliveryStatus || "sent";
-    statusTick.setAttribute("aria-label", "Sent");
-
-    if (message.deliveryStatus === "delivered" ||
-        message.deliveryStatus === "read") {
-        statusTick.textContent = "✓✓";
-        statusTick.classList.add(message.deliveryStatus);
-        statusTick.setAttribute(
-            "aria-label",
-            message.deliveryStatus === "read" ? "Read" : "Delivered"
-        );
-    }
-
-    messageBubble.appendChild(statusTick);
-}
-
-
-
-            // ----------------------------------------------------
-            // ADD BUBBLE TO ROW
-            // ----------------------------------------------------
-
-            messageRow.appendChild(
-                messageBubble
-            );
-
-
-            // ----------------------------------------------------
-            // ADD ROW TO CONVERSATION
-            // ----------------------------------------------------
-
-            this.conversation.appendChild(
-                messageRow
-            );
-
-
-            // ----------------------------------------------------
-            // SCROLL TO LATEST MESSAGE
-            // ----------------------------------------------------
-
-            this.conversation.scrollTop =
-                this.conversation.scrollHeight;
+            row.appendChild(bubble);
+            this.conversation.appendChild(row);
+            this.conversation.scrollTop = this.conversation.scrollHeight;
+            return row;
         }
 
-        
-
-updateMessageStatus(messageId, deliveryStatus) {
-
-    if (!messageId) return;
-
-    const rows = this.conversation.querySelectorAll(
-        ".gpa-primary-message-row"
-    );
-
-    rows.forEach((row) => {
-
-        if (row.dataset.messageId !== String(messageId)) {
-            return;
+        setTick(tick, status) {
+            tick.classList.remove("delivered", "read");
+            tick.dataset.status = status;
+            tick.textContent = (status === "delivered" || status === "read") ? "✓✓" : "✓";
+            tick.setAttribute("aria-label", status === "read" ? "Read" : status === "delivered" ? "Delivered" : "Sent");
+            if (status === "delivered" || status === "read") tick.classList.add(status);
         }
 
-        const tick = row.querySelector(
-            ".gpa-primary-message-status"
-        );
-
-        if (!tick) return;
-
-        tick.classList.remove("delivered", "read");
-
-        if (deliveryStatus === "read") {
-
-            tick.textContent = "✓✓";
-            tick.classList.add("read");
-            tick.setAttribute("aria-label", "Read");
-
-        } else if (deliveryStatus === "delivered") {
-
-            tick.textContent = "✓✓";
-            tick.classList.add("delivered");
-            tick.setAttribute("aria-label", "Delivered");
-
-        } else {
-
-            tick.textContent = "✓";
-            tick.setAttribute("aria-label", "Sent");
-
+        updateMessageStatus(messageId, deliveryStatus) {
+            if (!messageId || !this.conversation) return;
+            const row = Array.from(this.conversation.querySelectorAll(".gpa-primary-message-row"))
+                .find((item) => item.dataset.messageId === String(messageId));
+            const tick = row && row.querySelector(".gpa-primary-message-status");
+            if (tick) this.setTick(tick, deliveryStatus || "sent");
         }
 
-        tick.dataset.status = deliveryStatus;
-    });
-}
-
-
-
-
-        // ========================================================
-        // MESSAGE ID
-        // ========================================================
+        clearConversation() {
+            if (this.conversation) this.conversation.replaceChildren();
+            this.renderedIds.clear();
+        }
 
         createMessageId() {
-
-            return (
-                "primary_" +
-                Date.now() +
-                "_" +
-                Math.random()
-                    .toString(36)
-                    .substring(2, 10)
-            );
+            return `primary_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
         }
-
     }
 
-
-    // ============================================================
-    // START MODULE
-    // ============================================================
-
-    function startPrimaryUserChat() {
-
-        const primaryUserChat =
-            new PrimaryUserChat();
-
-
-        primaryUserChat.initialize();
-
-
-        /*
-         * Make the module available globally.
-         *
-         * Later modules can communicate with this module
-         * without modifying this module's internal code.
-         */
-
-        window.GPAPrimaryUserChat =
-            primaryUserChat;
+    function start() {
+        if (window.GPAPrimaryUserChat) return;
+        const chat = new PrimaryUserChat();
+        window.GPAPrimaryUserChat = chat;
+        chat.initialize();
     }
 
-
-    // ============================================================
-    // DOM READY
-    // ============================================================
-
-    if (
-        document.readyState ===
-        "loading"
-    ) {
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            startPrimaryUserChat
-        );
-
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", start, { once: true });
+    } else {
+        start();
     }
-    else {
-
-        startPrimaryUserChat();
-
-    }
-
 })();

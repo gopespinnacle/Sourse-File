@@ -1,903 +1,261 @@
 /**
- * ============================================================
- * GPA MESSENGER
- * MODULE 2
- * PRIMARY USER CHAT SOCKET
- * ============================================================
- *
- * FRONTEND SOCKET CONNECTION
- *
- * ============================================================
+ * GPA MESSENGER — SOCKET CLIENT
+ * Complete replacement module compatible with existing backend event names.
  */
-
 (function () {
-
     "use strict";
 
-    class PrimaryUserChatSocket {
+    const BACKEND_URL = "https://academy-backend-eatl.onrender.com";
 
+    function decodeTokenPayload(token) {
+        if (!token || typeof token !== "string") return null;
+        try {
+            const part = token.split(".")[1];
+            if (!part) return null;
+            const base64 = part.replace(/-/g, "+").replace(/_/g, "/");
+            const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+            return JSON.parse(atob(padded));
+        } catch (error) {
+            console.error("[GPA CHAT SOCKET] Could not decode login token.", error);
+            return null;
+        }
+    }
+
+    function getToken() {
+        return sessionStorage.getItem("token") || localStorage.getItem("token") || "";
+    }
+
+    function getCurrentUserId() {
+        const payload = decodeTokenPayload(getToken());
+        const id = payload && (payload.id || payload._id || payload.userId || payload.sub);
+        if (id) window.GPACurrentUserId = String(id);
+        return id ? String(id) : "";
+    }
+
+    function normalizeId(value) {
+        if (value == null || value === "") return "";
+        if (typeof value === "object") return String(value._id || value.id || value.userId || "");
+        return String(value);
+    }
+
+    function directionFor(message, currentUserId) {
+        const senderId = normalizeId(
+            message.senderId ?? message.sender?._id ?? message.sender?.id ?? message.sender?.userId ?? message.fromUserId
+        );
+        if (currentUserId && senderId) return senderId === currentUserId ? "outgoing" : "incoming";
+        return String(message.direction || "").toLowerCase() === "outgoing" ? "outgoing" : "incoming";
+    }
+
+    class PrimaryUserChatSocket {
         constructor() {
             this.socket = null;
             this.connected = false;
+            this.pendingHistoryConversationId = "";
         }
 
         initialize() {
-
-            if (
-                typeof io !==
-                "function"
-            ) {
-                console.error(
-                    "[GPA PRIMARY CHAT SOCKET] " +
-                    "Socket.IO client is not available."
-                );
+            if (typeof window.io !== "function") {
+                console.error("[GPA CHAT SOCKET] Socket.IO client script is not loaded.");
+                return;
+            }
+            const token = getToken();
+            if (!token) {
+                console.error("[GPA CHAT SOCKET] Login token is missing.");
                 return;
             }
 
-            this.socket = io(
-    "https://academy-backend-eatl.onrender.com",
-    {
-        transports: [
-            "websocket",
-            "polling"
-        ],
+            this.socket = window.io(BACKEND_URL, {
+                transports: ["websocket", "polling"],
+                withCredentials: true,
+                auth: { token }
+            });
 
-        withCredentials: true,
+            this.socket.on("connect", () => {
+                this.connected = true;
+                console.log("[GPA CHAT SOCKET] Connected:", this.socket.id);
+                const conversationId = window.GPAMessengerConversationId || this.pendingHistoryConversationId;
+                if (conversationId) this.loadConversationHistory(conversationId);
+            });
 
-        auth: {
-            token:
-                sessionStorage.getItem("token") ||
-                localStorage.getItem("token")
-        }
-    }
-);
+            this.socket.on("disconnect", (reason) => {
+                this.connected = false;
+                console.warn("[GPA CHAT SOCKET] Disconnected:", reason);
+            });
 
-            this.socket.on(
-                "connect",
-                () => {
+            this.socket.on("connect_error", (error) => {
+                this.connected = false;
+                console.error("[GPA CHAT SOCKET] Connection error:", error.message || error);
+            });
 
-                    this.connected = true;
-
-                    console.log(
-                        "[GPA PRIMARY CHAT SOCKET] " +
-                        "Connected:",
-                        this.socket.id
-                    );
-
+            this.socket.on("gpa:primary:notification:message", (message) => {
+                const notifier = window.GPAMessengerWebNotifications;
+                if (notifier && typeof notifier.handleIncomingMessage === "function") {
+                    notifier.handleIncomingMessage(message);
                 }
-            );
+            });
 
-            // ========================================================
-            // DESKTOP NOTIFICATIONS
-            // This separate event covers messages from conversations
-            // that are not currently open in the Messenger UI.
-            // ========================================================
-
-            this.socket.on(
-                "gpa:primary:notification:message",
-                (message) => {
-                    if (
-                        window.GPAMessengerWebNotifications &&
-                        typeof window.GPAMessengerWebNotifications
-                            .handleIncomingMessage === "function"
-                    ) {
-                        window.GPAMessengerWebNotifications
-                            .handleIncomingMessage(message);
-                    }
+            this.socket.on("gpa:primary:message:received", (message) => {
+                // Backend confirmation only; the optimistic bubble is already shown.
+                if (!message) return;
+                const conversationId = String(message.conversationId || "");
+                if (conversationId !== String(window.GPAMessengerConversationId || "")) return;
+                if (message.id && message.deliveryStatus && window.GPAPrimaryUserChat) {
+                    window.GPAPrimaryUserChat.updateMessageStatus(message.id, message.deliveryStatus);
                 }
-            );
+            });
 
-            // ========================================================
-            // MESSAGE CONFIRMATION
-            // ========================================================
-
-            this.socket.on(
-                "gpa:primary:message:received",
-
-                
-                (message) => {
-
-                    console.log(
-                        "[GPA PRIMARY CHAT SOCKET] " +
-                        "Backend confirmed message:",
-                        message
-                    );
-
+            this.socket.on("gpa:primary:message:status", (receipt) => {
+                if (!receipt) return;
+                if (String(receipt.conversationId) !== String(window.GPAMessengerConversationId || "")) return;
+                const chat = window.GPAPrimaryUserChat;
+                if (chat && typeof chat.updateMessageStatus === "function") {
+                    chat.updateMessageStatus(receipt.messageId, receipt.deliveryStatus);
                 }
-            );
-
-            
-/* Update outgoing message ticks when backend confirms status */
-this.socket.on(
-    "gpa:primary:message:status",
-    (receipt) => {
-        if (!receipt) return;
-
-        if (
-            String(receipt.conversationId) !==
-            String(window.GPAMessengerConversationId)
-        ) {
-            return;
-        }
-
-        if (
-            window.GPAPrimaryUserChat &&
-            typeof window.GPAPrimaryUserChat.updateMessageStatus === "function"
-        ) {
-            window.GPAPrimaryUserChat.updateMessageStatus(
-                receipt.messageId,
-                receipt.deliveryStatus
-            );
-        }
-    }
-);
-
-
-            // ========================================================
-// REAL-TIME CONVERSATION MESSAGE
-// ========================================================
-
-this.socket.on(
-    "gpa:primary:conversation:message",
-    (message) => {
-
-        console.log(
-            "[GPA PRIMARY CHAT SOCKET] " +
-            "Real-time conversation message received:",
-            message
-        );
-
-        if (!message) {
-            return;
-        }
-
-        if (
-            !window.GPAMessengerConversationId ||
-            message.conversationId !==
-                window.GPAMessengerConversationId
-        ) {
-
-            console.log(
-                "[GPA PRIMARY CHAT SOCKET] " +
-                "Message belongs to another conversation."
-            );
-
-            return;
-        }
-
-        if (
-            !window.GPAPrimaryUserChat ||
-            typeof window.GPAPrimaryUserChat.displayMessage !==
-                "function"
-        ) {
-
-            console.warn(
-                "[GPA PRIMARY CHAT SOCKET] " +
-                "Primary User Chat is not available."
-            );
-
-            return;
-        }
-
-       
-        // Ignore the broadcast on the exact socket that sent it.
-        // The sender's other devices will still receive the message.
-        if (
-            message.socketId &&
-            this.socket &&
-            message.socketId === this.socket.id
-        ) {
-            return;
-        }
-
-        // Determine the currently logged-in user.
-        const token =
-            localStorage.getItem("token") ||
-            sessionStorage.getItem("token");
-
-        let currentUserId = null;
-
-        if (token) {
-            try {
-                const tokenPayload = JSON.parse(
-                    atob(
-                        token.split(".")[1]
-                            .replace(/-/g, "+")
-                            .replace(/_/g, "/")
-                    )
-                );
-
-                currentUserId = tokenPayload.id;
-            } catch (error) {
-                console.error(
-                    "[GPA PRIMARY CHAT SOCKET] Unable to read current user ID:",
-                    error
-                );
-            }
-        }
-
-
-
-const getMessageUserId = (value) => {
-    if (!value) return "";
-
-    if (typeof value === "object") {
-        return String(
-            value._id ||
-            value.id ||
-            value.userId ||
-            ""
-        );
-    }
-
-    return String(value);
-};
-
-const liveSenderId =
-    message.senderId ||
-    message.sender?._id ||
-    message.sender?.id ||
-    message.sender;
-
-const liveReceiverId =
-    message.receiverId ||
-    message.receiver?._id ||
-    message.receiver?.id ||
-    message.receiver;
-
-let direction = "incoming";
-
-// If the logged-in user sent the message, show it on the RIGHT.
-if (
-    currentUserId &&
-    liveSenderId &&
-    String(
-        typeof liveSenderId === "object"
-            ? liveSenderId._id || liveSenderId.id
-            : liveSenderId
-    ) === String(currentUserId)
-) {
-    direction = "outgoing";
-}
-// If the logged-in user received the message, show it on the LEFT.
-else if (
-    currentUserId &&
-    liveReceiverId &&
-    String(
-        typeof liveReceiverId === "object"
-            ? liveReceiverId._id || liveReceiverId.id
-            : liveReceiverId
-    ) === String(currentUserId)
-) {
-    direction = "incoming";
-}
-
-
-
-        window.GPAPrimaryUserChat.displayMessage({
-    id: message.id || message.messageId || message._id,
-    text: message.text,
-
-    // Pass the actual IDs supplied by the backend.
-    senderId: message.senderId,
-    receiverId: message.receiverId,
-
-    sender: message.sender,
-    createdAt: message.sentAt || message.receivedAt,
-
-    // Preserve the direction calculated by the socket handler.
-    direction: direction,
-
-    deliveryStatus: message.deliveryStatus || "sent"
-});
-
-
-
-        // Acknowledge delivery to the sender
-        
-        // Mark the incoming message as read
-        if (
-            this.socket &&
-            this.socket.connected &&
-            message.id &&
-            message.conversationId
-        ) {
-            this.socket.emit(
-                "gpa:primary:message:read",
-                {
-                    messageId: message.id,
-                    conversationId: message.conversationId
-                }
-            );
-        }
-
-
-
-    }
-);
-
-            // ========================================================
-// MESSAGE HISTORY RECEIVED
-// ========================================================
-
-    this.socket.on(
-    "gpa:primary:message:history:received",
-    (messages) => {
-
-        console.log(
-            "[GPA PRIMARY MESSAGE HISTORY] " +
-            "History received:",
-            messages
-        );
-
-
-        // ====================================================
-        // VALIDATE HISTORY
-        // ====================================================
-
-        if (!Array.isArray(messages)) {
-
-            console.warn(
-                "[GPA PRIMARY MESSAGE HISTORY] " +
-                "Invalid history received."
-            );
-
-            return;
-        }
-
-
-        // ====================================================
-        // CHECK CHAT MODULE
-        // ====================================================
-
-        if (
-            !window.GPAPrimaryUserChat ||
-            typeof window.GPAPrimaryUserChat.displayMessage !==
-                "function"
-        ) {
-
-            console.warn(
-                "[GPA PRIMARY MESSAGE HISTORY] " +
-                "Primary User Chat is not available."
-            );
-
-            return;
-        }
-
-
-        // ====================================================
-        // GET CURRENT USER ID
-        // ====================================================
-
-        const token =
-            localStorage.getItem("token") ||
-            sessionStorage.getItem("token");
-
-
-        let currentUserId =
-            null;
-
-
-        if (token) {
-
-            try {
-
-                const tokenPayload =
-                    JSON.parse(
-                        atob(
-                            token
-                                .split(".")[1]
-                                .replace(/-/g, "+")
-                                .replace(/_/g, "/")
-                        )
-                    );
-
-
-                currentUserId =
-                    tokenPayload.id;
-
-
-                console.log(
-                    "[GPA PRIMARY MESSAGE HISTORY] " +
-                    "Current user ID:",
-                    currentUserId
-                );
-
-            }
-            catch (error) {
-
-                console.error(
-                    "[GPA PRIMARY MESSAGE HISTORY] " +
-                    "Unable to read current user ID:",
-                    error
-                );
-
-                return;
-            }
-
-        }
-        else {
-
-            console.warn(
-                "[GPA PRIMARY MESSAGE HISTORY] " +
-                "Login token is missing."
-            );
-
-            return;
-        }
-
-
-        // ====================================================
-        // DISPLAY HISTORY
-        // ====================================================
-
-        messages.forEach(
-            (message) => {
-
-                // ==================================================
-                // DETERMINE MESSAGE DIRECTION
-                // ==================================================
-                //
-                // receiverId === currentUserId
-                //
-                // Someone else sent this message.
-                //
-                // INCOMING → LEFT
-                //
-                //
-                // receiverId !== currentUserId
-                //
-                // Current user sent this message.
-                //
-                // OUTGOING → RIGHT
-                // ==================================================
-
-                // Determine direction from the actual message sender.
-// Current user sent it = RIGHT.
-// Another user sent it = LEFT.
-
-
-
-let messageDirection = "incoming";
-
-const historySenderId =
-    message.senderId ||
-    message.sender?._id ||
-    message.sender?.id ||
-    message.sender;
-
-const historyReceiverId =
-    message.receiverId ||
-    message.receiver?._id ||
-    message.receiver?.id ||
-    message.receiver;
-
-// Messages sent by the logged-in user appear on the RIGHT.
-if (
-    currentUserId &&
-    historySenderId &&
-    String(
-        typeof historySenderId === "object"
-            ? historySenderId._id || historySenderId.id
-            : historySenderId
-    ) === String(currentUserId)
-) {
-    messageDirection = "outgoing";
-}
-// Messages sent by another user to the logged-in user appear on the LEFT.
-else if (
-    currentUserId &&
-    historyReceiverId &&
-    String(
-        typeof historyReceiverId === "object"
-            ? historyReceiverId._id || historyReceiverId.id
-            : historyReceiverId
-    ) === String(currentUserId)
-) {
-    messageDirection = "incoming";
-}
-
-                console.log(
-                    "[GPA PRIMARY MESSAGE HISTORY] " +
-                    "Message direction:",
-                    {
-                        messageId:
-                            message.messageId,
-
-                        receiverId:
-                            message.receiverId,
-
-                        currentUserId:
-                            currentUserId,
-
-                        direction:
-                            messageDirection
-                    }
-                );
-
-
-                // ==================================================
-                // DISPLAY MESSAGE
-                // ==================================================
-
-                
-const restoredStatus =
-    message.readAt ||
-    message.read === true ||
-    message.deliveryStatus === "read"
-        ? "read"
-        : message.deliveredAt ||
-          message.deliveryStatus === "delivered"
-            ? "delivered"
-            : "sent";
-
-window.GPAPrimaryUserChat.displayMessage({
-    id: message.messageId || message.id || message._id,
-    text: message.text,
-
-    senderId: message.senderId,
-    receiverId: message.receiverId,
-
-    sender: message.sender,
-    createdAt: message.sentAt,
-    direction: messageDirection,
-    deliveryStatus: restoredStatus
-});
-
-                
-                // Mark previously received messages as read
-                // when this conversation's history is opened.
+            });
+
+            this.socket.on("gpa:primary:conversation:message", (message) => {
+                if (!message) return;
+                if (String(message.conversationId || "") !== String(window.GPAMessengerConversationId || "")) return;
+                // Backend includes socketId. Ignore the same socket's own broadcast.
+                if (message.socketId && this.socket && message.socketId === this.socket.id) return;
+
+                const chat = window.GPAPrimaryUserChat;
+                if (!chat || typeof chat.displayMessage !== "function") return;
+
+                const currentUserId = getCurrentUserId();
+                const direction = directionFor(message, currentUserId);
+                const messageId = message.id || message.messageId || message._id;
+
+                chat.displayMessage({
+                    id: messageId,
+                    messageId,
+                    conversationId: message.conversationId,
+                    senderId: normalizeId(message.senderId || message.sender?._id || message.sender?.id),
+                    receiverId: normalizeId(message.receiverId || message.receiver?._id || message.receiver?.id),
+                    sender: message.sender,
+                    text: message.text,
+                    createdAt: message.sentAt || message.receivedAt || message.createdAt,
+                    direction,
+                    deliveryStatus: message.deliveryStatus || "sent"
+                });
+
+                // Acknowledge only messages actually addressed to this logged-in user.
                 if (
-                    messageDirection === "incoming" &&
-                    this.socket &&
-                    this.socket.connected &&
-                    message.messageId &&
-                    window.GPAMessengerConversationId
+                    direction === "incoming" && this.socket && this.socket.connected &&
+                    messageId && message.conversationId
                 ) {
-                    this.socket.emit(
-                        "gpa:primary:message:read",
-                        {
-                            messageId: message.messageId,
-                            conversationId:
-                                window.GPAMessengerConversationId
-                        }
-                    );
+                    this.socket.emit("gpa:primary:message:delivered", {
+                        messageId,
+                        conversationId: message.conversationId
+                    });
+                    this.socket.emit("gpa:primary:message:read", {
+                        messageId,
+                        conversationId: message.conversationId
+                    });
                 }
+            });
 
-
-            }
-        );
-
-    }
-);
-
-            // ========================================================
-            // DISCONNECT
-            // ========================================================
-
-            this.socket.on(
-                "disconnect",
-                (reason) => {
-
-                    this.connected = false;
-
-                    console.log(
-                        "[GPA PRIMARY CHAT SOCKET] " +
-                        "Disconnected:",
-                        reason
-                    );
-
+            this.socket.on("gpa:primary:message:history:received", (messages) => {
+                if (!Array.isArray(messages)) {
+                    console.warn("[GPA CHAT SOCKET] Invalid message history received.");
+                    return;
                 }
-            );
+                const chat = window.GPAPrimaryUserChat;
+                if (!chat || typeof chat.displayMessage !== "function") return;
 
-            // ========================================================
-            // CONNECTION ERROR
-            // ========================================================
+                const currentUserId = getCurrentUserId();
+                messages.forEach((message) => {
+                    if (!message) return;
+                    const senderId = normalizeId(message.senderId || message.sender?._id || message.sender?.id);
+                    const receiverId = normalizeId(message.receiverId || message.receiver?._id || message.receiver?.id);
+                    const direction = directionFor(message, currentUserId);
+                    const status = message.readAt || message.read === true || message.deliveryStatus === "read"
+                        ? "read"
+                        : message.deliveredAt || message.deliveryStatus === "delivered"
+                            ? "delivered"
+                            : message.deliveryStatus || "sent";
+                    const id = message.messageId || message.id || message._id;
 
-            this.socket.on(
-                "connect_error",
-                (error) => {
+                    chat.displayMessage({
+                        id,
+                        messageId: id,
+                        conversationId: message.conversationId || window.GPAMessengerConversationId,
+                        senderId,
+                        receiverId,
+                        sender: message.sender,
+                        text: message.text,
+                        createdAt: message.sentAt || message.createdAt,
+                        direction,
+                        deliveryStatus: status
+                    });
 
-                    console.error(
-                        "[GPA PRIMARY CHAT SOCKET] " +
-                        "Connection error:",
-                        error
-                    );
+                    if (direction === "incoming" && id && window.GPAMessengerConversationId && this.socket?.connected) {
+                        this.socket.emit("gpa:primary:message:delivered", {
+                            messageId: id,
+                            conversationId: window.GPAMessengerConversationId
+                        });
+                        this.socket.emit("gpa:primary:message:read", {
+                            messageId: id,
+                            conversationId: window.GPAMessengerConversationId
+                        });
+                    }
+                });
+            });
 
-                }
-            );
-
+            console.log("[GPA CHAT SOCKET] Module initialized.");
         }
-
-        // ========================================================
-        // LOAD SELECTED CONVERSATION HISTORY
-        // ========================================================
 
         loadConversationHistory(conversationId) {
-
-            if (!this.socket) {
-
-                console.warn(
-                    "[GPA PRIMARY CHAT SOCKET] " +
-                    "Socket is not initialized."
-                );
-
-                return;
-            }
-
-            if (!this.connected) {
-
-                console.warn(
-                    "[GPA PRIMARY CHAT SOCKET] " +
-                    "Socket is not connected."
-                );
-
-                return;
-            }
-
-            if (!conversationId) {
-
-                console.warn(
-                    "[GPA PRIMARY CHAT SOCKET] " +
-                    "Conversation ID is missing."
-                );
-
-                return;
-            }
-
-            console.log(
-                "[GPA PRIMARY MESSAGE HISTORY] " +
-                "Requesting history for conversation:",
-                conversationId
-            );
-
-
-            // ========================================================
-// JOIN CURRENT CONVERSATION ROOM
-// ========================================================
-
-console.log(
-    "[GPA PRIMARY CHAT SOCKET] " +
-    "Joining conversation room:",
-    conversationId
-);
-
-this.socket.emit(
-    "gpa:primary:conversation:join",
-    {
-        conversationId:
-            conversationId
-    }
-);
-
-            this.socket.emit(
-                "gpa:primary:message:history",
-                {
-                    conversationId:
-                        conversationId
-                }
-            );
-
+            if (!conversationId) return;
+            this.pendingHistoryConversationId = String(conversationId);
+            if (!this.socket || !this.connected) return;
+            this.socket.emit("gpa:primary:conversation:join", { conversationId: String(conversationId) });
+            this.socket.emit("gpa:primary:message:history", { conversationId: String(conversationId) });
         }
-
-        // ========================================================
-        // SEND MESSAGE
-        // ========================================================
 
         sendMessage(message) {
-
-            if (!this.socket) {
-
-                console.warn(
-                    "[GPA PRIMARY CHAT SOCKET] " +
-                    "Socket is not initialized."
-                );
-
-                return;
+            if (!this.socket || !this.connected) {
+                console.error("[GPA CHAT SOCKET] Socket is not connected. Message was not sent to backend.");
+                return false;
             }
-
-            if (!this.connected) {
-
-                console.warn(
-                    "[GPA PRIMARY CHAT SOCKET] " +
-                    "Socket is not connected."
-                );
-
-                return;
+            const conversation = window.GPAMessengerConversation;
+            const conversationId = window.GPAMessengerConversationId || conversation?._id;
+            const currentUserId = getCurrentUserId();
+            if (!conversationId || !currentUserId) {
+                console.error("[GPA CHAT SOCKET] Conversation or authenticated user ID is missing.");
+                return false;
             }
-
-            // ========================================================
-            // ACTIVE CONVERSATION
-            // ========================================================
-
-            const conversation =
-                window.GPAMessengerConversation;
-
-            if (
-                !conversation ||
-                !conversation._id
-            ) {
-
-                console.warn(
-                    "[GPA PRIMARY CHAT SOCKET] " +
-                    "No active conversation selected."
-                );
-
-                return;
+            const participants = Array.isArray(conversation?.participants) ? conversation.participants : [];
+            const receiverId = normalizeId(window.GPAMessengerReceiverId) || participants
+                .map(normalizeId)
+                .find((id) => id && id !== currentUserId) || "";
+            if (!receiverId) {
+                console.error("[GPA CHAT SOCKET] Receiver ID could not be determined.");
+                return false;
             }
-
-            const participants =
-                conversation.participants || [];
-
-            if (
-                !Array.isArray(participants) ||
-                participants.length < 2
-            ) {
-
-                console.warn(
-                    "[GPA PRIMARY CHAT SOCKET] " +
-                    "Conversation participants are missing."
-                );
-
-                return;
-            }
-
-            
-
-          // ========================================================
-// FIND THE OTHER PARTICIPANT
-// ========================================================
-
-const token =
-    localStorage.getItem("token") ||
-    sessionStorage.getItem("token");
-
-if (!token) {
-    console.warn(
-        "[GPA PRIMARY CHAT SOCKET] " +
-        "Login token is missing."
-    );
-    return;
-}
-
-
-// ========================================================
-// READ CURRENT USER ID FROM JWT
-// ========================================================
-
-let currentUserId;
-
-try {
-
-    const tokenPayload =
-        JSON.parse(
-            atob(
-                token.split(".")[1]
-                    .replace(/-/g, "+")
-                    .replace(/_/g, "/")
-            )
-        );
-
-    currentUserId =
-        tokenPayload.id;
-
-}
-catch (error) {
-
-    console.error(
-        "[GPA PRIMARY CHAT SOCKET] " +
-        "Unable to read user ID from token:",
-        error
-    );
-
-    return;
-
-}
-
-
-// ========================================================
-// FIND RECEIVER
-// ========================================================
-
-const receiverId =
-    participants.find(
-        participant =>
-            String(participant) !==
-            String(currentUserId)
-    );
-
-if (!receiverId) {
-
-    console.warn(
-        "[GPA PRIMARY CHAT SOCKET] " +
-        "Receiver could not be determined."
-    );
-
-    return;
-
-}
-
-console.log(
-    "[GPA PRIMARY CHAT SOCKET] " +
-    "Current user:",
-    currentUserId
-);
-
-console.log(
-    "[GPA PRIMARY CHAT SOCKET] " +
-    "Receiver:",
-    receiverId
-);
-
-            // ========================================================
-            // ADD CONVERSATION INFORMATION
-            // ========================================================
-
-            const messageWithConversation = {
-
-                ...message,
-
-                conversationId:
-                    conversation._id,
-
-                receiverId:
-                    receiverId
-
-            };
-
-            // ========================================================
-            // SEND TO BACKEND
-            // ========================================================
-
-            this.socket.emit(
-                "gpa:primary:message",
-                messageWithConversation
-            );
-
-            console.log(
-                "[GPA PRIMARY CHAT SOCKET] " +
-                "Message sent to backend:",
-                messageWithConversation
-            );
-
+            this.socket.emit("gpa:primary:message", {
+                id: message.id,
+                text: String(message.text || "").trim(),
+                sender: "primary-user",
+                senderId: currentUserId,
+                receiverId,
+                conversationId: String(conversationId),
+                receivedAt: new Date().toISOString()
+            });
+            return true;
         }
-
     }
-
-    // ============================================================
-    // CREATE SOCKET INSTANCE
-    // ============================================================
-
-    const primaryUserChatSocket =
-        new PrimaryUserChatSocket();
-
-    window.GPAPrimaryUserSocket =
-        primaryUserChatSocket;
-
-    // ============================================================
-    // START
-    // ============================================================
 
     function start() {
-
-        primaryUserChatSocket.initialize();
-
+        if (window.GPAPrimaryUserSocket) return;
+        const socketModule = new PrimaryUserChatSocket();
+        window.GPAPrimaryUserSocket = socketModule;
+        socketModule.initialize();
     }
 
-    if (
-        document.readyState ===
-        "loading"
-    ) {
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            start
-        );
-
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", start, { once: true });
     } else {
-
         start();
-
     }
-
 })();
