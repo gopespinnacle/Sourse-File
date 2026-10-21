@@ -398,9 +398,11 @@
             // GET EXISTING ACADEMY LOGIN TOKEN
             // =================================================
 
-            const token =
-    localStorage.getItem("token") ||
-    sessionStorage.getItem("token");
+           
+const token =
+    sessionStorage.getItem("token") ||
+    localStorage.getItem("token");
+
 
 
             if (!token) {
@@ -752,9 +754,11 @@ async function selectMessengerContact(
     // FIND CONTACT DATA
     // =================================================
 
-    const token =
-    localStorage.getItem("token") ||
-    sessionStorage.getItem("token");
+   
+const token =
+    sessionStorage.getItem("token") ||
+    localStorage.getItem("token");
+
 
 
     // Contacts are stored from the API response.
@@ -805,8 +809,9 @@ async function selectMessengerContact(
 
 
     const conversationToken =
-    localStorage.getItem("token") ||
-    sessionStorage.getItem("token");
+    sessionStorage.getItem("token") ||
+    localStorage.getItem("token");
+
 
 
     if (!conversationToken) {
