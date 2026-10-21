@@ -398,14 +398,33 @@ this.socket.on(
 // Current user sent it = RIGHT.
 // Another user sent it = LEFT.
 
+
 let messageDirection = "incoming";
 
+// If this message was sent TO the current user,
+// it belongs on the LEFT.
 if (
+    message.receiverId &&
+    String(message.receiverId) === String(currentUserId)
+) {
+    messageDirection = "incoming";
+}
+// If this message was sent TO another user,
+// it belongs on the RIGHT.
+else if (
+    message.receiverId &&
+    String(message.receiverId) !== String(currentUserId)
+) {
+    messageDirection = "outgoing";
+}
+// Fallback for records that have no receiverId.
+else if (
     message.senderId &&
     String(message.senderId) === String(currentUserId)
 ) {
     messageDirection = "outgoing";
 }
+
 
 
                 console.log(
