@@ -78,14 +78,19 @@
    ============================================================ */
 
 .gpa-primary-message-row {
-
-    width: 100%;
-
     display: flex;
-
+    flex: 0 0 auto;
+    width: 100%;
     justify-content: flex-end;
-
     box-sizing: border-box;
+}
+
+.gpa-primary-message-row.outgoing {
+    justify-content: flex-end !important;
+}
+
+.gpa-primary-message-row.incoming {
+    justify-content: flex-start !important;
 }
 
 

@@ -296,49 +296,47 @@
 // ====================================================
 
 
-const currentUserId = String(
-    window.GPACurrentUserId ||
-    localStorage.getItem("userId") ||
-    sessionStorage.getItem("userId") ||
-    ""
-).trim();
 
 const getId = (value) => {
     if (!value) return "";
+
     if (typeof value === "object") {
-        return String(value._id || value.id || "").trim();
+        return String(
+            value._id ||
+            value.id ||
+            ""
+        ).trim();
     }
+
     return String(value).trim();
 };
 
+const currentUserId = getId(
+    window.GPACurrentUserId ||
+    localStorage.getItem("userId") ||
+    sessionStorage.getItem("userId")
+);
+
 const senderId = getId(
     message.senderId ||
-    message.sender
+    message.sender ||
+    message.from
 );
 
-const receiverId = getId(
-    message.receiverId ||
-    message.receiver
+const isOutgoing =
+    currentUserId !== "" &&
+    senderId !== "" &&
+    senderId === currentUserId;
+
+messageRow.classList.remove(
+    "incoming",
+    "outgoing"
 );
 
-// Determine alignment from the actual sender first.
-// The logged-in teacher's own messages go RIGHT.
-if (currentUserId && senderId) {
-    if (senderId === currentUserId) {
-        messageRow.classList.add("outgoing");
-    } else {
-        messageRow.classList.add("incoming");
-    }
-} else {
-    // Fallback only when sender identity is unavailable.
-    const direction = String(message.direction || "").toLowerCase();
+messageRow.classList.add(
+    isOutgoing ? "outgoing" : "incoming"
+);
 
-    if (direction === "outgoing") {
-        messageRow.classList.add("outgoing");
-    } else {
-        messageRow.classList.add("incoming");
-    }
-}
 
 
             // ----------------------------------------------------
@@ -369,7 +367,7 @@ const messageText = document.createElement("span");
 messageText.textContent = message.text || "";
 messageBubble.appendChild(messageText);
 
-if (message.direction !== "incoming") {
+if (isOutgoing) {
     const statusTick = document.createElement("span");
 
     statusTick.className = "gpa-primary-message-status";
@@ -419,38 +417,6 @@ if (message.direction !== "incoming") {
         }
 
         
-updateMessageStatus(messageId, deliveryStatus) {
-    if (!messageId) return;
-
-    const rows = this.conversation.querySelectorAll(
-        ".gpa-primary-message-row"
-    );
-
-    rows.forEach((row) => {
-        if (row.dataset.messageId !== String(messageId)) return;
-
-        const tick = row.querySelector(".gpa-primary-message-status");
-        if (!tick) return;
-
-        tick.classList.remove("delivered", "read");
-
-        if (deliveryStatus === "read") {
-            tick.textContent = "✓✓";
-            tick.classList.add("read");
-            tick.setAttribute("aria-label", "Read");
-        } else if (deliveryStatus === "delivered") {
-            tick.textContent = "✓✓";
-            tick.classList.add("delivered");
-            tick.setAttribute("aria-label", "Delivered");
-        } else {
-            tick.textContent = "✓";
-            tick.setAttribute("aria-label", "Sent");
-        }
-
-        tick.dataset.status = deliveryStatus;
-    });
-}
-
 
 updateMessageStatus(messageId, deliveryStatus) {
 
