@@ -233,44 +233,43 @@ const getMessageUserId = (value) => {
     return String(value);
 };
 
-const liveSenderId = getMessageUserId(
+const liveSenderId =
     message.senderId ||
-    message.sender
-);
+    message.sender?._id ||
+    message.sender?.id ||
+    message.sender;
 
-const liveReceiverId = getMessageUserId(
+const liveReceiverId =
     message.receiverId ||
-    message.receiver
-);
-
-const loggedInUserId = String(currentUserId || "");
+    message.receiver?._id ||
+    message.receiver?.id ||
+    message.receiver;
 
 let direction = "incoming";
 
-// A message sent by the logged-in teacher goes RIGHT.
+// If the logged-in user sent the message, show it on the RIGHT.
 if (
-    loggedInUserId &&
+    currentUserId &&
     liveSenderId &&
-    liveSenderId === loggedInUserId
+    String(
+        typeof liveSenderId === "object"
+            ? liveSenderId._id || liveSenderId.id
+            : liveSenderId
+    ) === String(currentUserId)
 ) {
     direction = "outgoing";
 }
-// A message addressed to the logged-in teacher goes LEFT.
+// If the logged-in user received the message, show it on the LEFT.
 else if (
-    loggedInUserId &&
+    currentUserId &&
     liveReceiverId &&
-    liveReceiverId === loggedInUserId
+    String(
+        typeof liveReceiverId === "object"
+            ? liveReceiverId._id || liveReceiverId.id
+            : liveReceiverId
+    ) === String(currentUserId)
 ) {
     direction = "incoming";
-}
-// Fallback only when the sender ID is unavailable.
-else if (
-    !liveSenderId &&
-    loggedInUserId &&
-    liveReceiverId &&
-    liveReceiverId !== loggedInUserId
-) {
-    direction = "outgoing";
 }
 
 
@@ -453,34 +452,42 @@ else if (
 
 let messageDirection = "incoming";
 
-// The logged-in user's own messages must appear on the RIGHT.
-if (
-    message.senderId &&
-    String(message.senderId) === String(currentUserId)
-) {
-    messageDirection = "outgoing";
-}
-// Messages sent by the other person must appear on the LEFT.
-else if (
-    message.senderId &&
-    String(message.senderId) !== String(currentUserId)
-) {
-    messageDirection = "incoming";
-}
-// Fallback when senderId is missing.
-else if (
-    message.receiverId &&
-    String(message.receiverId) === String(currentUserId)
-) {
-    messageDirection = "incoming";
-}
-else if (
-    message.receiverId &&
-    String(message.receiverId) !== String(currentUserId)
-) {
-    messageDirection = "outgoing";
-}
+const historySenderId =
+    message.senderId ||
+    message.sender?._id ||
+    message.sender?.id ||
+    message.sender;
 
+const historyReceiverId =
+    message.receiverId ||
+    message.receiver?._id ||
+    message.receiver?.id ||
+    message.receiver;
+
+// Messages sent by the logged-in user appear on the RIGHT.
+if (
+    currentUserId &&
+    historySenderId &&
+    String(
+        typeof historySenderId === "object"
+            ? historySenderId._id || historySenderId.id
+            : historySenderId
+    ) === String(currentUserId)
+) {
+    messageDirection = "outgoing";
+}
+// Messages sent by another user to the logged-in user appear on the LEFT.
+else if (
+    currentUserId &&
+    historyReceiverId &&
+    String(
+        typeof historyReceiverId === "object"
+            ? historyReceiverId._id || historyReceiverId.id
+            : historyReceiverId
+    ) === String(currentUserId)
+) {
+    messageDirection = "incoming";
+}
 
                 console.log(
                     "[GPA PRIMARY MESSAGE HISTORY] " +
