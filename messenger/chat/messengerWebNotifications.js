@@ -1,266 +1,165 @@
-/*
-============================================================
-GPA MESSENGER — WEB NOTIFICATIONS
-============================================================
-- Uses the existing Messenger Socket.IO connection.
-- Requests permission only after the user clicks Enable Notifications.
-- Notifies only when the current user is the message recipient.
-- Suppresses notifications when the matching conversation is visible.
-============================================================
-*/
-
+/* GPA Messenger Web Push + desktop notification registration. */
 (function () {
     "use strict";
 
-    const GPAMessengerWebNotifications = {
+    const BACKEND_URL = "https://academy-backend-eatl.onrender.com";
+    const SW_URL = "/messenger-sw.js";
+
+    function getToken() {
+        return localStorage.getItem("token") || sessionStorage.getItem("token") || "";
+    }
+    function decodeUserId() {
+        try {
+            const token = getToken();
+            const part = token.split(".")[1];
+            if (!part) return "";
+            const base64 = part.replace(/-/g, "+").replace(/_/g, "/");
+            const padded = base64 + "=".repeat((4 - base64.length % 4) % 4);
+            const payload = JSON.parse(atob(padded));
+            return String(payload.id || payload._id || payload.userId || payload.sub || "");
+        } catch (_) { return ""; }
+    }
+    function urlBase64ToUint8Array(base64String) {
+        const padding = "=".repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+        const raw = atob(base64);
+        const output = new Uint8Array(raw.length);
+        for (let i = 0; i < raw.length; i++) output[i] = raw.charCodeAt(i);
+        return output;
+    }
+
+    const notifications = {
         initialized: false,
-        currentUserId: null,
-        activeConversationId: null,
-        enableButton: null,
+        currentUserId: "",
+        activeConversationId: "",
+        pushEnabled: false,
+        button: null,
 
-        getToken() {
-            return localStorage.getItem("token") ||
-                sessionStorage.getItem("token");
-        },
-
-        readCurrentUserId() {
-            if (this.currentUserId) return this.currentUserId;
-
-            const token = this.getToken();
-            if (!token) return null;
-
-            try {
-                const payloadPart = token.split(".")[1];
-                if (!payloadPart) return null;
-
-                const normalized = payloadPart
-                    .replace(/-/g, "+")
-                    .replace(/_/g, "/");
-
-                const payload = JSON.parse(atob(normalized));
-                this.currentUserId = payload.id
-                    ? String(payload.id)
-                    : null;
-            } catch (error) {
-                console.warn(
-                    "[GPA WEB NOTIFICATIONS] Could not read login token."
-                );
-            }
-
-            return this.currentUserId;
-        },
-
-        initialize() {
+        async initialize() {
             if (this.initialized) return this;
-
-            if (!("Notification" in window)) {
-                console.warn(
-                    "[GPA WEB NOTIFICATIONS] Browser notifications are unsupported."
-                );
+            this.initialized = true;
+            this.currentUserId = decodeUserId();
+            if (!("Notification" in window) || !("serviceWorker" in navigator) || !("PushManager" in window)) {
+                console.warn("[GPA WEB PUSH] This browser does not support Web Push notifications.");
                 return this;
             }
-
-            this.initialized = true;
-            this.activeConversationId =
-                window.GPAMessengerConversationId
-                    ? String(window.GPAMessengerConversationId)
-                    : null;
-
-            this.addEnableButton();
-            this.updateButtonState();
-
-            console.log(
-                "[GPA WEB NOTIFICATIONS] Module initialized."
-            );
-
+            this.activeConversationId = String(window.GPAMessengerConversationId || "");
+            try {
+                await navigator.serviceWorker.register(SW_URL, { scope: "/" });
+                console.log("[GPA WEB PUSH] Service worker registered.");
+            } catch (error) {
+                console.error("[GPA WEB PUSH] Service worker registration failed:", error);
+            }
+            this.addButton();
+            await this.refreshSubscriptionState();
             return this;
         },
 
-        addEnableButton() {
-            const header = document.querySelector(
-                ".gpa-primary-messenger-header"
-            );
-
-            if (!header || this.enableButton) return;
-
+        addButton() {
+            const header = document.querySelector(".gpa-primary-messenger-header");
+            if (!header || this.button) return;
             const button = document.createElement("button");
             button.type = "button";
             button.className = "gpa-web-notifications-enable";
-            button.textContent = "Enable Notifications";
-            button.style.cssText =
-                "float:right;margin:0 12px;padding:8px 12px;" +
-                "border:1px solid #d5dced;border-radius:8px;" +
-                "background:#fff;color:#23468c;font-weight:600;" +
-                "cursor:pointer;font-size:12px;";
-
-            button.addEventListener("click", async () => {
-                const granted = await this.requestPermission();
-
-                if (granted) {
-                    button.textContent = "Notifications Enabled";
-                    button.disabled = true;
-                    button.style.cursor = "default";
-                    button.style.opacity = "0.75";
-                } else if (Notification.permission === "denied") {
-                    button.textContent = "Allow in Browser Settings";
-                    button.disabled = true;
-                    button.style.cursor = "default";
-                } else {
-                    button.textContent = "Enable Notifications";
-                }
-            });
-
+            button.textContent = "Enable Desktop Notifications";
+            button.style.cssText = "float:right;margin:0 12px;padding:8px 12px;border:1px solid #d5dced;border-radius:8px;background:#fff;color:#23468c;font-weight:600;cursor:pointer;font-size:12px;";
+            button.addEventListener("click", () => this.enablePush());
             header.appendChild(button);
-            this.enableButton = button;
+            this.button = button;
         },
 
-        updateButtonState() {
-            if (!this.enableButton || !("Notification" in window)) return;
-
-            if (Notification.permission === "granted") {
-                this.enableButton.textContent = "Notifications Enabled";
-                this.enableButton.disabled = true;
-                this.enableButton.style.cursor = "default";
-                this.enableButton.style.opacity = "0.75";
-            } else if (Notification.permission === "denied") {
-                this.enableButton.textContent = "Allow in Browser Settings";
-                this.enableButton.disabled = true;
-                this.enableButton.style.cursor = "default";
-            }
-        },
-
-        requestPermission() {
-            if (!("Notification" in window)) {
-                return Promise.resolve(false);
-            }
-
-            if (Notification.permission === "granted") {
-                return Promise.resolve(true);
-            }
-
+        async refreshSubscriptionState() {
+            if (!this.button) return;
             if (Notification.permission === "denied") {
-                console.warn(
-                    "[GPA WEB NOTIFICATIONS] Permission is blocked in browser settings."
-                );
-                return Promise.resolve(false);
-            }
-
-            return Notification.requestPermission().then(
-                (permission) => permission === "granted"
-            );
-        },
-
-        setCurrentUser(userId) {
-            this.currentUserId = userId ? String(userId) : null;
-        },
-
-        setActiveConversation(conversationId) {
-            this.activeConversationId = conversationId
-                ? String(conversationId)
-                : null;
-        },
-
-        handleIncomingMessage(message) {
-            if (!message || typeof message !== "object") return;
-            if (!("Notification" in window)) return;
-            if (Notification.permission !== "granted") return;
-
-            const currentUserId = this.readCurrentUserId();
-            if (!currentUserId) return;
-
-            // The backend message should identify the actual recipient.
-            // Do not notify unless this logged-in user is the recipient.
-            if (message.receiverId) {
-                if (String(message.receiverId) !== currentUserId) return;
-            } else {
-                // Fallback only when sender identity is explicitly available.
-                const senderId = message.senderId ||
-                    message.sender?._id ||
-                    message.sender?.id;
-
-                if (!senderId || String(senderId) === currentUserId) return;
-            }
-
-            const conversationId =
-                message.conversationId ||
-                message.conversation?._id ||
-                message.conversation?.id;
-
-            const activeConversationId =
-                window.GPAMessengerConversationId ||
-                this.activeConversationId;
-
-            // No notification when this conversation is open in the
-            // visible Messenger tab.
-            if (
-                document.visibilityState === "visible" &&
-                conversationId &&
-                activeConversationId &&
-                String(conversationId) === String(activeConversationId)
-            ) {
+                this.button.textContent = "Allow Notifications in Browser Settings";
                 return;
             }
-
-            let senderName =
-                message.senderName ||
-                message.sender?.name ||
-                message.sender?.fullName ||
-                message.sender?.username;
-
-            if (!senderName && message.senderId &&
-                Array.isArray(window.GPAMessengerContacts)) {
-                const contact = window.GPAMessengerContacts.find(
-                    (item) =>
-                        String(item._id) === String(message.senderId)
-                );
-                if (contact) senderName = contact.name;
-            }
-
-            const messageText =
-                message.text ||
-                message.message ||
-                message.content ||
-                "You received a new message.";
-
             try {
-                const notification = new Notification(
-                    String(senderName || "GPA Messenger"),
-                    {
-                        body: String(messageText).slice(0, 180),
-                        tag: conversationId
-                            ? "gpa-chat-" + String(conversationId)
-                            : undefined,
-                        icon: "/favicon.ico"
+                const registration = await navigator.serviceWorker.ready;
+                const subscription = await registration.pushManager.getSubscription();
+                if (subscription && Notification.permission === "granted") {
+                    // Re-register on login/page load so the server can recover
+                    // if its subscription record was removed or restored.
+                    const response = await fetch(BACKEND_URL + "/api/messenger/push/subscribe", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+                        body: JSON.stringify({ subscription: subscription.toJSON() })
+                    });
+                    if (response.ok) {
+                        this.pushEnabled = true;
+                        this.button.textContent = "Desktop Notifications Enabled";
+                        this.button.disabled = true;
+                        this.button.style.opacity = "0.75";
                     }
-                );
-
-                notification.onclick = () => {
-                    window.focus();
-                    notification.close();
-                };
+                }
             } catch (error) {
-                console.error(
-                    "[GPA WEB NOTIFICATIONS] Could not show notification:",
-                    error
-                );
+                console.warn("[GPA WEB PUSH] Could not inspect subscription:", error.message);
             }
+        },
+
+        async enablePush() {
+            if (!getToken()) {
+                alert("Please sign in again before enabling desktop notifications.");
+                return;
+            }
+            if (Notification.permission === "denied") {
+                alert("Notifications are blocked for this site. Allow them in your browser's site settings, then try again.");
+                return;
+            }
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission !== "granted") {
+                    if (this.button) this.button.textContent = "Notifications Permission Needed";
+                    return;
+                }
+                const registration = await navigator.serviceWorker.ready;
+                let subscription = await registration.pushManager.getSubscription();
+                if (!subscription) {
+                    const keyResponse = await fetch(BACKEND_URL + "/api/messenger/push/vapid-public-key");
+                    const keyData = await keyResponse.json();
+                    if (!keyResponse.ok || !keyData.publicKey) throw new Error(keyData.message || "Server Web Push key is not configured.");
+                    subscription = await registration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array(keyData.publicKey)
+                    });
+                }
+                const response = await fetch(BACKEND_URL + "/api/messenger/push/subscribe", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() },
+                    body: JSON.stringify({ subscription: subscription.toJSON() })
+                });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok || !result.success) throw new Error(result.message || "The server could not save this device.");
+                this.pushEnabled = true;
+                if (this.button) {
+                    this.button.textContent = "Desktop Notifications Enabled";
+                    this.button.disabled = true;
+                    this.button.style.opacity = "0.75";
+                }
+                alert("Desktop notifications are enabled on this device.");
+            } catch (error) {
+                console.error("[GPA WEB PUSH] Could not enable notifications:", error);
+                alert("Could not enable desktop notifications. " + (error.message || "Please try again."));
+            }
+        },
+
+        setCurrentUser(userId) { this.currentUserId = userId ? String(userId) : decodeUserId(); },
+        setActiveConversation(conversationId) { this.activeConversationId = conversationId ? String(conversationId) : ""; },
+
+        handleIncomingMessage(message) {
+            // Socket notification is the fallback for an open but backgrounded tab.
+            // When Web Push is registered, the service worker owns background/closed delivery.
+            if (!message || !("Notification" in window) || Notification.permission !== "granted") return;
+            if (this.pushEnabled || document.visibilityState === "visible") return;
+            const userId = this.currentUserId || decodeUserId();
+            if (!userId || String(message.receiverId || "") !== userId) return;
+            const title = message.senderName || message.sender?.name || message.sender?.fullName || "New message";
+            const body = String(message.text || "You have a new message").slice(0, 160);
+            const notification = new Notification(title, { body, icon: "/images/logo.png", tag: "gpa-messenger-" + String(message.id || message.messageId || Date.now()) });
+            notification.onclick = () => { window.focus(); notification.close(); };
         }
     };
 
-    window.GPAMessengerWebNotifications =
-        GPAMessengerWebNotifications;
-
-    function initializeNotifications() {
-        GPAMessengerWebNotifications.initialize();
-    }
-
-    if (document.readyState === "loading") {
-        document.addEventListener(
-            "DOMContentLoaded",
-            initializeNotifications,
-            { once: true }
-        );
-    } else {
-        initializeNotifications();
-    }
+    window.GPAMessengerWebNotifications = notifications;
+    document.addEventListener("DOMContentLoaded", () => notifications.initialize());
 })();
