@@ -402,33 +402,33 @@ this.socket.on(
 
 let messageDirection = "incoming";
 
-const messageSenderId =
-    message.senderId ||
-    message.sender?._id ||
-    message.sender;
-
-const messageReceiverId =
-    message.receiverId ||
-    message.receiver?._id ||
-    message.receiver;
-
-// If the logged-in user received the message,
-// display it on the LEFT.
+// The logged-in user's own messages must appear on the RIGHT.
 if (
-    messageReceiverId &&
-    String(messageReceiverId) === String(currentUserId)
-) {
-    messageDirection = "incoming";
-}
-// If the logged-in user sent the message,
-// display it on the RIGHT.
-else if (
-    messageSenderId &&
-    String(messageSenderId) === String(currentUserId)
+    message.senderId &&
+    String(message.senderId) === String(currentUserId)
 ) {
     messageDirection = "outgoing";
 }
-
+// Messages sent by the other person must appear on the LEFT.
+else if (
+    message.senderId &&
+    String(message.senderId) !== String(currentUserId)
+) {
+    messageDirection = "incoming";
+}
+// Fallback when senderId is missing.
+else if (
+    message.receiverId &&
+    String(message.receiverId) === String(currentUserId)
+) {
+    messageDirection = "incoming";
+}
+else if (
+    message.receiverId &&
+    String(message.receiverId) !== String(currentUserId)
+) {
+    messageDirection = "outgoing";
+}
 
 
                 console.log(
