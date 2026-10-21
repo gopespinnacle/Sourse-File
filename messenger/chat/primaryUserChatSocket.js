@@ -68,6 +68,26 @@
             );
 
             // ========================================================
+            // DESKTOP NOTIFICATIONS
+            // This separate event covers messages from conversations
+            // that are not currently open in the Messenger UI.
+            // ========================================================
+
+            this.socket.on(
+                "gpa:primary:notification:message",
+                (message) => {
+                    if (
+                        window.GPAMessengerWebNotifications &&
+                        typeof window.GPAMessengerWebNotifications
+                            .handleIncomingMessage === "function"
+                    ) {
+                        window.GPAMessengerWebNotifications
+                            .handleIncomingMessage(message);
+                    }
+                }
+            );
+
+            // ========================================================
             // MESSAGE CONFIRMATION
             // ========================================================
 
