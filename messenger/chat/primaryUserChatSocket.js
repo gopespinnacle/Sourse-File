@@ -402,25 +402,31 @@ this.socket.on(
 
 let messageDirection = "incoming";
 
-// The message sender determines which side it belongs on.
+const messageSenderId =
+    message.senderId ||
+    message.sender?._id ||
+    message.sender;
+
+const messageReceiverId =
+    message.receiverId ||
+    message.receiver?._id ||
+    message.receiver;
+
+// If the logged-in user received the message,
+// display it on the LEFT.
 if (
-    message.senderId &&
-    String(message.senderId) === String(currentUserId)
+    messageReceiverId &&
+    String(messageReceiverId) === String(currentUserId)
 ) {
-    // Sent by the logged-in user: RIGHT
+    messageDirection = "incoming";
+}
+// If the logged-in user sent the message,
+// display it on the RIGHT.
+else if (
+    messageSenderId &&
+    String(messageSenderId) === String(currentUserId)
+) {
     messageDirection = "outgoing";
-} else if (
-    message.senderId &&
-    String(message.senderId) !== String(currentUserId)
-) {
-    // Sent by the other person: LEFT
-    messageDirection = "incoming";
-} else if (
-    message.receiverId &&
-    String(message.receiverId) === String(currentUserId)
-) {
-    // Fallback: received by the logged-in user
-    messageDirection = "incoming";
 }
 
 
