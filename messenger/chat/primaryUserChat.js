@@ -295,40 +295,49 @@
 // MESSAGE DIRECTION — REFRESH-SAFE ALIGNMENT
 // ====================================================
 
+
 const currentUserId = String(
     window.GPACurrentUserId ||
     localStorage.getItem("userId") ||
     sessionStorage.getItem("userId") ||
     ""
-);
+).trim();
 
-const senderId = String(
+const getId = (value) => {
+    if (!value) return "";
+    if (typeof value === "object") {
+        return String(value._id || value.id || "").trim();
+    }
+    return String(value).trim();
+};
+
+const senderId = getId(
     message.senderId ||
-    message.sender?._id ||
-    (
-        typeof message.sender === "object"
-            ? ""
-            : message.sender
-    ) ||
-    ""
+    message.sender
 );
 
-const direction = String(
-    message.direction || ""
-).toLowerCase();
+const receiverId = getId(
+    message.receiverId ||
+    message.receiver
+);
 
-if (direction === "incoming") {
-    messageRow.classList.add("incoming");
-} else if (direction === "outgoing") {
-    messageRow.classList.add("outgoing");
-} else if (
-    currentUserId &&
-    senderId &&
-    senderId === currentUserId
-) {
-    messageRow.classList.add("outgoing");
+// Determine alignment from the actual sender first.
+// The logged-in teacher's own messages go RIGHT.
+if (currentUserId && senderId) {
+    if (senderId === currentUserId) {
+        messageRow.classList.add("outgoing");
+    } else {
+        messageRow.classList.add("incoming");
+    }
 } else {
-    messageRow.classList.add("incoming");
+    // Fallback only when sender identity is unavailable.
+    const direction = String(message.direction || "").toLowerCase();
+
+    if (direction === "outgoing") {
+        messageRow.classList.add("outgoing");
+    } else {
+        messageRow.classList.add("incoming");
+    }
 }
 
 
