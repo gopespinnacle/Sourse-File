@@ -394,20 +394,18 @@ this.socket.on(
                 // OUTGOING → RIGHT
                 // ==================================================
 
-                let messageDirection =
-                    "outgoing";
+                // Determine direction from the actual message sender.
+// Current user sent it = RIGHT.
+// Another user sent it = LEFT.
 
+let messageDirection = "incoming";
 
-                if (
-                    message.receiverId &&
-                    String(message.receiverId) ===
-                        String(currentUserId)
-                ) {
-
-                    messageDirection =
-                        "incoming";
-
-                }
+if (
+    message.senderId &&
+    String(message.senderId) === String(currentUserId)
+) {
+    messageDirection = "outgoing";
+}
 
 
                 console.log(
