@@ -46,8 +46,8 @@
 
         auth: {
             token:
-                localStorage.getItem("token") ||
-                sessionStorage.getItem("token")
+                sessionStorage.getItem("token") ||
+                localStorage.getItem("token")
         }
     }
 );
