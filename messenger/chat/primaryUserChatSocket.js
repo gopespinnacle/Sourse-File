@@ -275,13 +275,21 @@ else if (
 
 
         window.GPAPrimaryUserChat.displayMessage({
-            id: message.id || message.messageId,
-            text: message.text,
-            sender: message.sender,
-            createdAt: message.receivedAt,
-            direction: direction,
-            deliveryStatus: message.deliveryStatus || "sent"
-        });
+    id: message.id || message.messageId || message._id,
+    text: message.text,
+
+    // Pass the actual IDs supplied by the backend.
+    senderId: message.senderId,
+    receiverId: message.receiverId,
+
+    sender: message.sender,
+    createdAt: message.sentAt || message.receivedAt,
+
+    // Preserve the direction calculated by the socket handler.
+    direction: direction,
+
+    deliveryStatus: message.deliveryStatus || "sent"
+});
 
 
 
@@ -524,25 +532,16 @@ const restoredStatus =
             : "sent";
 
 window.GPAPrimaryUserChat.displayMessage({
+    id: message.messageId || message.id || message._id,
+    text: message.text,
 
-    id:
-        message.messageId || message.id || message._id,
+    senderId: message.senderId,
+    receiverId: message.receiverId,
 
-    text:
-        message.text,
-
-    sender:
-        message.sender,
-
-    createdAt:
-        message.sentAt,
-
-    direction:
-        messageDirection,
-
-    deliveryStatus:
-        restoredStatus
-
+    sender: message.sender,
+    createdAt: message.sentAt,
+    direction: messageDirection,
+    deliveryStatus: restoredStatus
 });
 
                 
