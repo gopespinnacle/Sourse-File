@@ -217,42 +217,62 @@ this.socket.on(
         }
 
 
-const liveSenderId =
-    message.senderId ||
-    message.sender?._id ||
-    message.sender;
 
-const liveReceiverId =
+const getMessageUserId = (value) => {
+    if (!value) return "";
+
+    if (typeof value === "object") {
+        return String(
+            value._id ||
+            value.id ||
+            value.userId ||
+            ""
+        );
+    }
+
+    return String(value);
+};
+
+const liveSenderId = getMessageUserId(
+    message.senderId ||
+    message.sender
+);
+
+const liveReceiverId = getMessageUserId(
     message.receiverId ||
-    message.receiver?._id ||
-    message.receiver;
+    message.receiver
+);
+
+const loggedInUserId = String(currentUserId || "");
 
 let direction = "incoming";
 
-// Teacher's own messages appear on the RIGHT.
+// A message sent by the logged-in teacher goes RIGHT.
 if (
-    currentUserId &&
+    loggedInUserId &&
     liveSenderId &&
-    String(currentUserId) === String(liveSenderId)
+    liveSenderId === loggedInUserId
 ) {
     direction = "outgoing";
 }
-// Messages received by the teacher appear on the LEFT.
+// A message addressed to the logged-in teacher goes LEFT.
 else if (
-    currentUserId &&
+    loggedInUserId &&
     liveReceiverId &&
-    String(currentUserId) === String(liveReceiverId)
+    liveReceiverId === loggedInUserId
 ) {
     direction = "incoming";
 }
-// If the receiver is another user, this is an outgoing message.
+// Fallback only when the sender ID is unavailable.
 else if (
-    currentUserId &&
+    !liveSenderId &&
+    loggedInUserId &&
     liveReceiverId &&
-    String(currentUserId) !== String(liveReceiverId)
+    liveReceiverId !== loggedInUserId
 ) {
     direction = "outgoing";
 }
+
 
 
         window.GPAPrimaryUserChat.displayMessage({
