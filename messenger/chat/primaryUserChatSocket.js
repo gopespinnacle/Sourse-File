@@ -262,7 +262,7 @@ this.socket.on(
 // MESSAGE HISTORY RECEIVED
 // ========================================================
 
-this.socket.on(
+    this.socket.on(
     "gpa:primary:message:history:received",
     (messages) => {
 
