@@ -291,32 +291,44 @@
              *
              */
 
-            const direction =
-    String(message.direction || "").toLowerCase();
+            // ====================================================
+// MESSAGE DIRECTION — REFRESH-SAFE ALIGNMENT
+// ====================================================
+
+const currentUserId = String(
+    window.GPACurrentUserId ||
+    localStorage.getItem("userId") ||
+    sessionStorage.getItem("userId") ||
+    ""
+);
+
+const senderId = String(
+    message.senderId ||
+    message.sender?._id ||
+    (
+        typeof message.sender === "object"
+            ? ""
+            : message.sender
+    ) ||
+    ""
+);
+
+const direction = String(
+    message.direction || ""
+).toLowerCase();
 
 if (direction === "incoming") {
     messageRow.classList.add("incoming");
 } else if (direction === "outgoing") {
     messageRow.classList.add("outgoing");
+} else if (
+    currentUserId &&
+    senderId &&
+    senderId === currentUserId
+) {
+    messageRow.classList.add("outgoing");
 } else {
-    // Fallback: use the sender ID to determine alignment.
-    const currentUserId =
-        window.GPACurrentUserId ||
-        localStorage.getItem("userId") ||
-        sessionStorage.getItem("userId");
-
-    const senderId = String(
-        message.senderId ||
-        message.sender?._id ||
-        message.sender ||
-        ""
-    );
-
-    if (currentUserId && senderId === String(currentUserId)) {
-        messageRow.classList.add("outgoing");
-    } else {
-        messageRow.classList.add("incoming");
-    }
+    messageRow.classList.add("incoming");
 }
 
 
