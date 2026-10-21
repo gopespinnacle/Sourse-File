@@ -291,23 +291,33 @@
              *
              */
 
-            if (
-                message.direction ===
-                "incoming"
-            ) {
+            const direction =
+    String(message.direction || "").toLowerCase();
 
-                messageRow.classList.add(
-                    "incoming"
-                );
+if (direction === "incoming") {
+    messageRow.classList.add("incoming");
+} else if (direction === "outgoing") {
+    messageRow.classList.add("outgoing");
+} else {
+    // Fallback: use the sender ID to determine alignment.
+    const currentUserId =
+        window.GPACurrentUserId ||
+        localStorage.getItem("userId") ||
+        sessionStorage.getItem("userId");
 
-            }
-            else {
+    const senderId = String(
+        message.senderId ||
+        message.sender?._id ||
+        message.sender ||
+        ""
+    );
 
-                messageRow.classList.add(
-                    "outgoing"
-                );
-
-            }
+    if (currentUserId && senderId === String(currentUserId)) {
+        messageRow.classList.add("outgoing");
+    } else {
+        messageRow.classList.add("incoming");
+    }
+}
 
 
             // ----------------------------------------------------
