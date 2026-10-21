@@ -399,31 +399,31 @@ this.socket.on(
 // Another user sent it = LEFT.
 
 
+
 let messageDirection = "incoming";
 
-// If this message was sent TO the current user,
-// it belongs on the LEFT.
+// Current user's messages appear on the RIGHT.
 if (
-    message.receiverId &&
-    String(message.receiverId) === String(currentUserId)
-) {
-    messageDirection = "incoming";
-}
-// If this message was sent TO another user,
-// it belongs on the RIGHT.
-else if (
-    message.receiverId &&
-    String(message.receiverId) !== String(currentUserId)
-) {
-    messageDirection = "outgoing";
-}
-// Fallback for records that have no receiverId.
-else if (
     message.senderId &&
     String(message.senderId) === String(currentUserId)
 ) {
     messageDirection = "outgoing";
 }
+// Other user's messages appear on the LEFT.
+else if (
+    message.senderId &&
+    String(message.senderId) !== String(currentUserId)
+) {
+    messageDirection = "incoming";
+}
+// Fallback when senderId is missing.
+else if (message.receiverId) {
+    messageDirection =
+        String(message.receiverId) === String(currentUserId)
+            ? "incoming"
+            : "outgoing";
+}
+
 
 
 
