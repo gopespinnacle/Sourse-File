@@ -202,6 +202,21 @@
                 });
             });
 
+            this.socket.on("gpa:primary:conversation:typing", (data) => {
+    if (!data) return;
+
+    if (
+        String(data.conversationId || "") !==
+        String(window.GPAMessengerConversationId || "")
+    ) return;
+
+    const chat = window.GPAPrimaryUserChat;
+
+    if (chat && typeof chat.showTypingIndicator === "function") {
+        chat.showTypingIndicator(data);
+    }
+});
+
             console.log("[GPA CHAT SOCKET] Module initialized.");
         }
 
@@ -243,6 +258,20 @@
                 receivedAt: new Date().toISOString()
             });
             return true;
+        }
+                sendTyping(isTyping) {
+            if (!this.socket || !this.socket.connected) return;
+
+            const conversationId = String(
+                window.GPAMessengerConversationId || ""
+            );
+
+            if (!conversationId) return;
+
+            this.socket.emit("gpa:primary:typing", {
+                conversationId,
+                isTyping: Boolean(isTyping)
+            });
         }
     }
 

@@ -59,6 +59,9 @@
             this.input = document.getElementById("gpaPrimaryMessageInput");
             this.sendButton = document.getElementById("gpaPrimarySendButton");
             this.renderedIds = new Set();
+
+            this.isTyping = false;
+this.typingTimer = null;
         }
 
         initialize() {
@@ -73,6 +76,22 @@
                     this.sendMessage();
                 }
             });
+            this.input.addEventListener("input", () => {
+    const socketModule = window.GPAPrimaryUserSocket;
+    if (!socketModule || typeof socketModule.sendTyping !== "function") return;
+
+    if (!this.isTyping) {
+        this.isTyping = true;
+        socketModule.sendTyping(true);
+    }
+
+    clearTimeout(this.typingTimer);
+
+    this.typingTimer = setTimeout(() => {
+        this.isTyping = false;
+        socketModule.sendTyping(false);
+    }, 1200);
+});
             getCurrentUserId();
             console.log("[GPA CHAT] Chat UI ready.");
         }
@@ -184,6 +203,43 @@
             const tick = row && row.querySelector(".gpa-primary-message-status");
             if (tick) this.setTick(tick, deliveryStatus || "sent");
         }
+
+        showTypingIndicator(data) {
+    if (!this.conversation || !data) return;
+
+    // Remove any previous typing indicator.
+    const existing = this.conversation.querySelector(
+        ".gpa-primary-typing-indicator"
+    );
+
+    if (existing) existing.remove();
+
+    // Only display the indicator while the other user is typing.
+    if (data.isTyping !== true) return;
+
+    const indicator = document.createElement("div");
+    indicator.className =
+        "gpa-primary-message-row incoming gpa-primary-typing-indicator";
+
+    const bubble = document.createElement("div");
+    bubble.className = "gpa-primary-message-bubble";
+
+    const text = document.createElement("span");
+    text.className = "gpa-primary-message-text";
+    text.textContent = "Typing…";
+
+    bubble.appendChild(text);
+    indicator.appendChild(bubble);
+    this.conversation.appendChild(indicator);
+    this.conversation.scrollTop = this.conversation.scrollHeight;
+
+    // Automatically remove the indicator if a stop event is missed.
+    clearTimeout(this.typingIndicatorTimer);
+
+    this.typingIndicatorTimer = setTimeout(() => {
+        indicator.remove();
+    }, 3000);
+}
 
         clearConversation() {
             if (this.conversation) this.conversation.replaceChildren();
