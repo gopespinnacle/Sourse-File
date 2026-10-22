@@ -1,3 +1,53 @@
+
+
+importScripts(
+    "https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"
+);
+importScripts(
+    "https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js"
+);
+
+
+firebase.initializeApp({
+    apiKey: "AIzaSyCBpiA8270xJXQiLfreO-F4GqKdWhXXdkE",
+    authDomain: "gopes-pinnacle-academy.firebaseapp.com",
+    projectId: "gopes-pinnacle-academy",
+    storageBucket: "gopes-pinnacle-academy.firebasestorage.app",
+    messagingSenderId: "445901611941",
+    appId: "1:445901611941:web:0f595217e4780839fb3e4c"
+});
+
+const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage(function (payload) {
+    const notification = payload.notification || {};
+    const data = payload.data || {};
+
+    const title =
+        notification.title ||
+        data.title ||
+        "Gopes Pinnacle Academy";
+
+    const options = {
+        body:
+            notification.body ||
+            data.body ||
+            "You have a new message",
+        icon: "/images/logo.png",
+        badge: "/images/logo.png",
+        tag: data.messageId
+            ? "gpa-message-" + data.messageId
+            : "gpa-fcm-message",
+        data: {
+            url: data.url || "/messenger/messenger.html",
+            conversationId: data.conversationId || ""
+        }
+    };
+
+    return self.registration.showNotification(title, options);
+});
+
+
 /* GPA Messenger service worker: handles Web Push while the page is hidden/closed. */
 self.addEventListener("push", (event) => {
     let payload = {};

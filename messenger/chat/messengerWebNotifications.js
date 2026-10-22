@@ -28,6 +28,91 @@
         return output;
     }
 
+    
+async function registerGPAFCMToken() {
+    const authToken =
+        localStorage.getItem("token") ||
+        sessionStorage.getItem("token") ||
+        "";
+
+    if (!authToken) {
+        console.warn("[GPA FCM] User is not logged in.");
+        return false;
+    }
+
+    if (!window.firebase || !firebase.messaging) {
+        console.error("[GPA FCM] Firebase SDK is not loaded.");
+        return false;
+    }
+
+    try {
+        // Initialize Firebase only once.
+        const firebaseConfig = {
+            apiKey: "AIzaSyCBpiA8270xJXQiLfreO-F4GqKdWhXXdkE",
+            authDomain: "gopes-pinnacle-academy.firebaseapp.com",
+            projectId: "gopes-pinnacle-academy",
+            storageBucket: "gopes-pinnacle-academy.firebasestorage.app",
+            messagingSenderId: "445901611941",
+            appId: "1:445901611941:web:0f595217e4780839fb3e4c"
+        };
+
+        const app =
+            firebase.apps.length > 0
+                ? firebase.app()
+                : firebase.initializeApp(firebaseConfig);
+
+        const messaging = firebase.messaging(app);
+
+        const permission = await Notification.requestPermission();
+
+        if (permission !== "granted") {
+            console.warn("[GPA FCM] Notification permission was not granted.");
+            return false;
+        }
+
+        const registration = await navigator.serviceWorker.ready;
+
+        const vapidKey = "PASTE_YOUR_VAPID_PUBLIC_KEY";
+
+        const fcmToken = await messaging.getToken({
+            vapidKey,
+            serviceWorkerRegistration: registration
+        });
+
+        if (!fcmToken) {
+            console.error("[GPA FCM] Firebase did not return a token.");
+            return false;
+        }
+
+        const response = await fetch(
+            BACKEND_URL + "/api/fcm/register-token",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + authToken
+                },
+                body: JSON.stringify({ fcmToken })
+            }
+        );
+
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok || !result.success) {
+            throw new Error(
+                result.message || "Backend could not save the FCM token."
+            );
+        }
+
+        console.log("[GPA FCM] Browser token registered successfully.");
+        return true;
+    } catch (error) {
+        console.error("[GPA FCM] Registration failed:", error);
+        return false;
+    }
+}
+
+
     const notifications = {
         initialized: false,
         currentUserId: "",
@@ -107,11 +192,25 @@
                 return;
             }
             try {
-                const permission = await Notification.requestPermission();
-                if (permission !== "granted") {
-                    if (this.button) this.button.textContent = "Notifications Permission Needed";
-                    return;
-                }
+                
+const permission = await Notification.requestPermission();
+
+if (permission !== "granted") {
+    if (this.button) {
+        this.button.textContent = "Notifications Permission Needed";
+    }
+    return;
+}
+
+// Register this browser with Firebase Cloud Messaging.
+const fcmRegistered = await registerGPAFCMToken();
+
+if (!fcmRegistered) {
+    console.warn(
+        "[GPA FCM] Registration failed; continuing with existing Web Push."
+    );
+}
+
                 const registration = await navigator.serviceWorker.ready;
                 let subscription = await registration.pushManager.getSubscription();
                 if (!subscription) {
