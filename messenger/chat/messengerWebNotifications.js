@@ -72,7 +72,7 @@ async function registerGPAFCMToken() {
 
         const registration = await navigator.serviceWorker.ready;
 
-        const vapidKey = "PASTE_YOUR_VAPID_PUBLIC_KEY";
+        const vapidKey = "BI6SwaAVxhppd01Rt8EKJGV4Gl8qQ55irUIsvSX4FGirZ5FbvyB800fyQDYQxy0KqVYKExn43I5vIiky2_XTThU";
 
         const fcmToken = await messaging.getToken({
             vapidKey,
