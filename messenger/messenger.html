@@ -1047,17 +1047,18 @@ const token =
             return;
         }
 
-        const response = await fetch(
-            "https://academy-backend.onrender.com/api/fcm/register-token",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + authToken
-                },
-                body: JSON.stringify({ fcmToken: token })
-            }
-        );
+        
+const response = await fetch(
+    "https://academy-backend-eatl.onrender.com/api/fcm/register-token",
+    {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + authToken
+        },
+        body: JSON.stringify({ fcmToken: token })
+    }
+);
 
         const result = await response.json();
 
