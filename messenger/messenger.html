@@ -1038,14 +1038,20 @@ const token =
             return;
         }
 
-        const authToken =
-            localStorage.getItem("token") ||
-            localStorage.getItem("authToken");
+        
+const authToken =
+    sessionStorage.getItem("token") ||
+    localStorage.getItem("token") ||
+    sessionStorage.getItem("authToken") ||
+    localStorage.getItem("authToken");
 
-        if (!authToken) {
-            console.error("[GPA FCM] Login token not found. Cannot register FCM token.");
-            return;
-        }
+if (!authToken) {
+    console.error(
+        "[GPA FCM] Login token not found in sessionStorage or localStorage."
+    );
+    return;
+}
+
 
         
 const response = await fetch(
