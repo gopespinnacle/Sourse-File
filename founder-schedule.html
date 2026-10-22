@@ -1016,33 +1016,45 @@ function suggestNextSlot() {
 
     const last = schedules[schedules.length - 1];
 
-    let [h,m] = last.endTime.split(":").map(Number);
+    
+let [h, m] = last.endTime.split(":").map(Number);
 
-    // 🔥 ADD BUFFER
-    m += 10;
+// ADD 2-MINUTE BUFFER
+m += 2;
 
-    if(m >= 60){
-        h += 1;
-        m -= 60;
-    }
+if (m >= 60) {
+    h += Math.floor(m / 60);
+    m = m % 60;
+}
 
-    const start =
-        String(h).padStart(2,"0") + ":" + String(m).padStart(2,"0");
+if (h >= 24) {
+    h = h % 24;
+}
 
-    document.getElementById("startTime").value = start;
+const start =
+    String(h).padStart(2, "0") + ":" +
+    String(m).padStart(2, "0");
 
-    // 🔥 ADD DEFAULT CLASS DURATION (40 min)
-    m += 40;
+document.getElementById("startTime").value = start;
 
-    if(m >= 60){
-        h += 1;
-        m -= 60;
-    }
+// DEFAULT CLASS DURATION: 40 MINUTES
+m += 40;
 
-    const end =
-        String(h).padStart(2,"0") + ":" + String(m).padStart(2,"0");
+if (m >= 60) {
+    h += Math.floor(m / 60);
+    m = m % 60;
+}
 
-    document.getElementById("endTime").value = end;
+if (h >= 24) {
+    h = h % 24;
+}
+
+const end =
+    String(h).padStart(2, "0") + ":" +
+    String(m).padStart(2, "0");
+
+document.getElementById("endTime").value = end;
+
 }
 </script>
 
