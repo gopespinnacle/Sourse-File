@@ -20,6 +20,7 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
+
 messaging.onBackgroundMessage(function (payload) {
     console.log(
         "[GPA FCM] Background message received:",
@@ -52,6 +53,7 @@ messaging.onBackgroundMessage(function (payload) {
 
     return self.registration.showNotification(title, options);
 });
+
 
 self.addEventListener("notificationclick", function (event) {
     event.notification.close();
