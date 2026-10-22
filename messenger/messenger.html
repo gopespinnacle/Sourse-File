@@ -165,6 +165,24 @@
 
         }
 
+        /* Messenger online and last-seen status */
+
+#gpaMessengerContactName {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gpa-messenger-presence-status {
+    margin-top: 3px;
+    font-size: 12px;
+    color: #777;
+    min-height: 14px;
+}
+
+.gpa-messenger-presence-status.online {
+    color: #16803c;
+}
+
 
         #gpaPrimaryConversation {
 
@@ -289,13 +307,12 @@
                  HEADER
                  ============================================= -->
 
-            <div
-                class="gpa-primary-messenger-header"
-            >
-
-                GPA Messenger
-
-            </div>
+            <div class="gpa-primary-messenger-header">
+    <div id="gpaMessengerContactName">GPA Messenger</div>
+    <div id="gpaMessengerPresenceStatus" class="gpa-messenger-presence-status">
+        <!-- Online status or last seen will appear here -->
+    </div>
+</div>
 
 
             <!-- =============================================
@@ -922,6 +939,17 @@ const token =
 
     }
 
+    
+    if (
+        window.GPAPrimaryUserSocket &&
+        typeof window.GPAPrimaryUserSocket.requestContactPresence === "function"
+    ) {
+        window.GPAPrimaryUserSocket.requestContactPresence(
+            selectedMessengerContact._id
+        );
+    }
+
+
 
 } else {
 
@@ -953,17 +981,32 @@ const token =
 
 
     if (
-        header &&
-        selectedMessengerContact
-    ) {
+    header &&
+    selectedMessengerContact
+) {
+    const nameElement = document.getElementById(
+        "gpaMessengerContactName"
+    );
 
-        header.textContent =
-            selectedMessengerContact.name;
-
+    if (nameElement) {
+        nameElement.textContent =
+            selectedMessengerContact.name || "Unknown";
     }
 
+    if (
+        typeof window.updateGPAMessengerPresenceDisplay ===
+        "function"
+    ) {
+        window.updateGPAMessengerPresenceDisplay(
+            selectedMessengerContact._id
+        );
+    }
 }
-        function escapeMessengerText(
+
+}
+        
+
+function escapeMessengerText(
             value
         ) {
 
@@ -978,6 +1021,75 @@ const token =
             return div.innerHTML;
 
         }
+
+        // ================================================
+// GPA MESSENGER - ONLINE / LAST SEEN DISPLAY
+// ================================================
+
+window.updateGPAMessengerPresenceDisplay = function (contactId) {
+    const statusElement = document.getElementById(
+        "gpaMessengerPresenceStatus"
+    );
+
+    if (!statusElement) return;
+
+    const presence = window.GPAMessengerPresence || {};
+    const contactPresence = presence[String(contactId)];
+
+    statusElement.classList.remove("online");
+
+    if (!contactPresence) {
+        statusElement.textContent = "";
+        return;
+    }
+
+    if (contactPresence.isOnline) {
+        statusElement.textContent = "● Online";
+        statusElement.classList.add("online");
+        return;
+    }
+
+    if (contactPresence.lastSeenAt) {
+        const lastSeenDate = new Date(
+            contactPresence.lastSeenAt
+        );
+
+        if (!Number.isNaN(lastSeenDate.getTime())) {
+            statusElement.textContent =
+                "Last seen " +
+                lastSeenDate.toLocaleString([], {
+                    day: "2-digit",
+                    month: "short",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                });
+
+            return;
+        }
+    }
+
+    statusElement.textContent = "Offline";
+};
+
+
+// Refresh the selected contact's status when a socket update arrives.
+window.addEventListener(
+    "gpa:primary:presence:update",
+    function (event) {
+        const selectedId =
+            window.GPAMessengerReceiverId;
+
+        if (
+            selectedId &&
+            event.detail &&
+            String(event.detail.userId) === String(selectedId)
+        ) {
+            window.updateGPAMessengerPresenceDisplay(
+                selectedId
+            );
+        }
+    }
+);
 
     </script>
 

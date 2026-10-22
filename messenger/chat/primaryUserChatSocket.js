@@ -218,9 +218,46 @@
 });
 
             console.log("[GPA CHAT SOCKET] Module initialized.");
+
+            
+this.socket.on("gpa:primary:presence:update", (data) => {
+    if (!data || !data.userId) return;
+
+    if (!window.GPAMessengerPresence) {
+        window.GPAMessengerPresence = {};
+    }
+
+    window.GPAMessengerPresence[String(data.userId)] = {
+        isOnline: Boolean(data.isOnline),
+        lastSeenAt: data.lastSeenAt || null
+    };
+
+    window.dispatchEvent(
+        new CustomEvent("gpa:primary:presence:update", {
+            detail: data
+        })
+    );
+
+    console.log("[GPA CHAT SOCKET] Presence updated:", data);
+});
+
         }
 
+        
+        requestContactPresence(contactId) {
+            if (!contactId || !this.socket || !this.socket.connected) {
+                return;
+            }
+
+            this.socket.emit("gpa:primary:presence:request", {
+                contactId: String(contactId)
+            });
+        }
+
+
         loadConversationHistory(conversationId) {
+
+            
             if (!conversationId) return;
             this.pendingHistoryConversationId = String(conversationId);
             if (!this.socket || !this.connected) return;
