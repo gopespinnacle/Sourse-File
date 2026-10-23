@@ -249,7 +249,7 @@ if (!fcmRegistered) {
             // Socket notification is the fallback for an open but backgrounded tab.
             // When Web Push is registered, the service worker owns background/closed delivery.
             if (!message || !("Notification" in window) || Notification.permission !== "granted") return;
-            if (this.pushEnabled || document.visibilityState === "visible") return;
+            if (this.pushEnabled) return;
             const userId = this.currentUserId || decodeUserId();
             if (!userId || String(message.receiverId || "") !== userId) return;
             const title = message.senderName || message.sender?.name || message.sender?.fullName || "New message";
