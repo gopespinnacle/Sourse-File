@@ -88,6 +88,34 @@
 
         }
 
+        
+/* GPA Messenger unread message badge */
+.gpa-messenger-unread-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 21px;
+    height: 21px;
+    padding: 0 6px;
+    border-radius: 12px;
+    background: #25d366;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+.gpa-messenger-contact-name-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+}
+
+
 
         .gpa-messenger-contact-info {
 
@@ -624,14 +652,22 @@ const parents =
         onclick="selectMessengerContact('${contact._id}')"
     >
 
-        <div
-            class="gpa-messenger-contact-name"
-        >
-            ${escapeMessengerText(
-                contact.name ||
-                "Unknown"
-            )}
-        </div>
+       
+<div class="gpa-messenger-contact-name-row">
+    <div class="gpa-messenger-contact-name">
+        ${escapeMessengerText(
+            contact.name ||
+            "Unknown"
+        )}
+    </div>
+
+    <span
+        class="gpa-messenger-unread-badge"
+        data-unread-contact-id="${contact._id}"
+        style="display: none;"
+    >0</span>
+</div>
+
 
 
         <div
@@ -1021,6 +1057,34 @@ function escapeMessengerText(
             return div.innerHTML;
 
         }
+
+        
+/* ================================================
+   GPA MESSENGER - UNREAD COUNT BADGES
+   ================================================ */
+
+window.updateGPAMessengerUnreadCounts = function (counts) {
+    const badges = document.querySelectorAll(
+        ".gpa-messenger-unread-badge"
+    );
+
+    badges.forEach(function (badge) {
+        const contactId = String(
+            badge.getAttribute("data-unread-contact-id")
+        );
+
+        const count = Number(counts[contactId] || 0);
+
+        if (count > 0) {
+            badge.textContent = count > 99 ? "99+" : String(count);
+            badge.style.display = "inline-flex";
+        } else {
+            badge.textContent = "0";
+            badge.style.display = "none";
+        }
+    });
+};
+
 
         // ================================================
 // GPA MESSENGER - ONLINE / LAST SEEN DISPLAY

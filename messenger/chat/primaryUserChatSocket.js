@@ -87,6 +87,17 @@
                 console.error("[GPA CHAT SOCKET] Connection error:", error.message || error);
             });
 
+            
+this.socket.on("gpa:primary:unread:counts", (counts) => {
+    if (
+        typeof window.updateGPAMessengerUnreadCounts ===
+        "function"
+    ) {
+        window.updateGPAMessengerUnreadCounts(counts || {});
+    }
+});
+
+
             this.socket.on("gpa:primary:notification:message", (message) => {
                 const notifier = window.GPAMessengerWebNotifications;
                 if (notifier && typeof notifier.handleIncomingMessage === "function") {
