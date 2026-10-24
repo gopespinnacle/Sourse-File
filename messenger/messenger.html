@@ -742,6 +742,10 @@ const parents =
         parents
     );
 
+    window.updateGPAMessengerUnreadCounts(
+    window.GPAMessengerUnreadCounts || {}
+);
+
 }
 
 // =====================================================
@@ -1063,7 +1067,13 @@ function escapeMessengerText(
    GPA MESSENGER - UNREAD COUNT BADGES
    ================================================ */
 
+
+/* GPA Messenger - unread count badges */
+window.GPAMessengerUnreadCounts = {};
+
 window.updateGPAMessengerUnreadCounts = function (counts) {
+    window.GPAMessengerUnreadCounts = counts || {};
+
     const badges = document.querySelectorAll(
         ".gpa-messenger-unread-badge"
     );
@@ -1073,7 +1083,9 @@ window.updateGPAMessengerUnreadCounts = function (counts) {
             badge.getAttribute("data-unread-contact-id")
         );
 
-        const count = Number(counts[contactId] || 0);
+        const count = Number(
+            window.GPAMessengerUnreadCounts[contactId] || 0
+        );
 
         if (count > 0) {
             badge.textContent = count > 99 ? "99+" : String(count);
@@ -1084,6 +1096,7 @@ window.updateGPAMessengerUnreadCounts = function (counts) {
         }
     });
 };
+
 
 
         // ================================================
