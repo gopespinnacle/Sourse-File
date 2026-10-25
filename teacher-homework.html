@@ -711,6 +711,52 @@ submissions.forEach(sub=>{
 
 });
 
+
+if (Object.keys(studentGroups).length === 0) {
+    plan.lessons.forEach((lesson) => {
+        if (
+            filterStatus &&
+            filterStatus !== "Pending"
+        ) {
+            return;
+        }
+
+        const homeworkDocs = (lesson.homeworkDocuments || [])
+            .map(file => `
+                <div>
+                    <a href="${file.s3Url}" target="_blank">
+                        📄 ${file.fileName}
+                    </a>
+                </div>
+            `).join("") || "-";
+
+        html += `
+            <tr>
+                <td>${plan.date || "-"}</td>
+                <td>-</td>
+                <td>${plan.className || "-"}</td>
+                <td>${lesson.subject || plan.subject || "-"}</td>
+                <td>${lesson.topic || "-"}</td>
+                <td>${lesson.topicSummary || "-"}</td>
+                <td>${lesson.homework || "-"}</td>
+                <td>${homeworkDocs}</td>
+                <td>${(lesson.classMaterials || []).length} File(s)</td>
+                <td>${(lesson.videoLinks || []).length} Link(s)</td>
+                <td>-</td>
+                <td>-</td>
+                <td>
+                    <button
+                        onclick="editLessonPlan('${plan._id}')"
+                        style="background:#f39c12;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;">
+                        ✏ Edit
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+
 Object.values(studentGroups).forEach((student,index)=>{
 
 html += `
