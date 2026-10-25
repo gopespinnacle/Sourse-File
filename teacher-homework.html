@@ -1037,7 +1037,7 @@ if (Object.keys(studentGroups).length === 0) {
                 <td>${plan.date || "-"}</td>
                 <td>-</td>
                 <td>${plan.className || "-"}</td>
-                <td>${lesson.subject || "-"}</td>
+                <td>${lesson.subject || "Subject not saved"}</td>
                 <td>${lesson.topic || "-"}</td>
                 <td>${lesson.topicSummary || "-"}</td>
                 <td>${lesson.homework || "-"}</td>
@@ -1120,8 +1120,7 @@ plan.lessons.forEach((lesson)=>{
 
         <td>${plan.className}</td>
 
-        
-<td>${lesson.subject || "-"}</td>
+        <td>${lesson.subject || "Subject not saved"}</td>
 
 
         <td>${lesson.topic || "-"}</td>
@@ -2610,12 +2609,26 @@ selectedSubjects.forEach(subject => {
     }
     async function saveHomeworkDraft(){
 
+        const selectedSubjects = Array.from(
+    document.querySelectorAll(".hwSubjectCheckbox:checked")
+);
+
+if (selectedSubjects.length === 0) {
+    alert("Please select at least one subject.");
+    return;
+}
+
     const lessons=[];
 
     document.querySelectorAll("#topicContainer > div").forEach((card,index)=>{
 
     const topic=
     card.querySelector(".topicName").value;
+
+    if (!card.dataset.subject) {
+    alert("A topic is missing its subject. Please select the subject again.");
+    return;
+}
 
     const topicSummary=
     card.querySelector(".topicDescription").value;
@@ -2635,10 +2648,7 @@ selectedSubjects.forEach(subject => {
 
     });
 
-        const subjectCode =
-    (document.querySelector(".hwSubjectCheckbox:checked")?.value || "HW")
-    .substring(0,3)
-    .toUpperCase();
+        const subjectCode = (card.dataset.subject || "HW").substring(0, 3).toUpperCase();
 
     const dateCode =
     document.getElementById("hwDate")
@@ -2651,7 +2661,7 @@ selectedSubjects.forEach(subject => {
 
     lessons.push({
     topicId,
-    subject: card.dataset.subject || "",
+    subject: card.dataset.subject || card.querySelector("h2").textContent.replace("Topic:", "").trim(),
     topic,
     topicSummary,
     homework,
