@@ -414,15 +414,14 @@ body{
 <div class="form-group">
     <label>Subjects / ECA / Language</label>
 
-    <select
-        id="subject"
-        multiple
-        size="4"
-        style="min-height:110px;"
-    >
-    </select>
-
-    <small>Hold Ctrl (Windows) to select multiple options.</small>
+    <div id="subjectCheckboxes"
+         style="border:1px solid #ced4da;
+                border-radius:6px;
+                padding:10px;
+                background:white;
+                max-height:180px;
+                overflow-y:auto;">
+    </div>
 </div>
 
 
@@ -940,8 +939,10 @@ function getScheduleOptions(value) {
 }
 
 
+
 function populateSubjectOptions(schedule) {
-    const select = document.getElementById("subject");
+
+    const container = document.getElementById("subjectCheckboxes");
 
     const options = [
         ...getScheduleOptions(schedule.subject),
@@ -953,22 +954,36 @@ function populateSubjectOptions(schedule) {
         options.filter(value => value && value.trim())
     )];
 
-    select.innerHTML = "";
+    container.innerHTML = "";
 
     uniqueOptions.forEach(value => {
-        const option = document.createElement("option");
-        option.value = value;
-        option.textContent = value;
-        select.appendChild(option);
+
+        const label = document.createElement("label");
+        label.style.display = "flex";
+        label.style.alignItems = "center";
+        label.style.gap = "8px";
+        label.style.padding = "5px 0";
+        label.style.cursor = "pointer";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = value;
+        checkbox.name = "selectedSubjects";
+
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(value));
+
+        container.appendChild(label);
     });
 }
 
 function getSelectedSubjects() {
     return Array.from(
-        document.getElementById("subject").selectedOptions
-    ).map(option => option.value);
+        document.querySelectorAll(
+            '#subjectCheckboxes input[name="selectedSubjects"]:checked'
+        )
+    ).map(checkbox => checkbox.value);
 }
-
 /* =====================================================
    LOAD SELECTED CLASS
    ===================================================== */
@@ -987,7 +1002,7 @@ function loadSelectedClass(){
             null;
 
 
-       document.getElementById("subject").innerHTML = "";
+       document.getElementById("subjectCheckboxes").innerHTML = "";
 
 
         document.getElementById(
