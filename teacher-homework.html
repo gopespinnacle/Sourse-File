@@ -1006,6 +1006,16 @@ submissions.forEach(sub=>{
 
 if (Object.keys(studentGroups).length === 0) {
     plan.lessons.forEach((lesson) => {
+
+        if (
+    filterSubject &&
+    (lesson.subject || plan.subject || "")
+        .split(",")
+        .map(subject => subject.trim())
+        .indexOf(filterSubject) === -1
+) {
+    return;
+}
         if (
             filterStatus &&
             filterStatus !== "Pending"
@@ -1076,6 +1086,16 @@ ${student.studentName}
 `;
 
 plan.lessons.forEach((lesson)=>{
+
+    if (
+    filterSubject &&
+    (lesson.subject || plan.subject || "")
+        .split(",")
+        .map(subject => subject.trim())
+        .indexOf(filterSubject) === -1
+) {
+    return;
+}
 
     const topicSubmissions = student.submissions.filter(
     sub => sub.topicId === lesson.topicId
