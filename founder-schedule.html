@@ -744,51 +744,9 @@ location.reload();
 
 let currentEditId = null;
 
-function editSchedule(id){
-
-    const schedule = allSchedules.find(s => s._id === id);
-    if(!schedule) return;
-
-    currentEditId = id;
-
-    // basic values
-    document.getElementById("editDay").value = schedule.day;
-    document.getElementById("editClass").value = schedule.className;
-    document.getElementById("editStart").value = schedule.startTime;
-    document.getElementById("editEnd").value = schedule.endTime;
-
-    // 🔥 get teacher data
-    const teacher = teachers.find(t => t._id === schedule.teacher._id);
-
-    // SUBJECT dropdown
-    const sub = document.getElementById("editSubject");
-    sub.innerHTML = '<option value="">Select Subject</option>';
-    (teacher.subject || []).forEach(s=>{
-        sub.innerHTML += `<option value="${s}">${s}</option>`;
-    });
-
-    // ECA dropdown
-    const eca = document.getElementById("editEca");
-    eca.innerHTML = '<option value="">Select ECA</option>';
-    (teacher.eca || []).forEach(e=>{
-        eca.innerHTML += `<option value="${e}">${e}</option>`;
-    });
-
-    // LANGUAGE dropdown
-    const lang = document.getElementById("editLanguage");
-    lang.innerHTML = '<option value="">Select Language</option>';
-    (teacher.language || []).forEach(l=>{
-        lang.innerHTML += `<option value="${l}">${l}</option>`;
-    });
-
-    // set selected value
-    document.getElementById("editSubject").value = schedule.subject || "";
-    document.getElementById("editEca").value = schedule.eca || "";
-    document.getElementById("editLanguage").value = schedule.language || "";
-
-    document.getElementById("schedulePopup").style.display = "flex";
+function editSchedule(id) {
+    // Edit functionality temporarily disabled.
 }
-
 function loadTeacherOptions(){
 
 const teacherId = document.getElementById("teacher").value;
