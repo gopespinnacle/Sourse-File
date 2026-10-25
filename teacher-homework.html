@@ -1037,7 +1037,7 @@ if (Object.keys(studentGroups).length === 0) {
                 <td>${plan.date || "-"}</td>
                 <td>-</td>
                 <td>${plan.className || "-"}</td>
-                <td>${lesson.subject || plan.subject || "-"}</td>
+                <td>${lesson.subject || "-"}</td>
                 <td>${lesson.topic || "-"}</td>
                 <td>${lesson.topicSummary || "-"}</td>
                 <td>${lesson.homework || "-"}</td>
@@ -1121,7 +1121,7 @@ plan.lessons.forEach((lesson)=>{
         <td>${plan.className}</td>
 
         
-<td>${lesson.subject || plan.subject || "-"}</td>
+<td>${lesson.subject || "-"}</td>
 
 
         <td>${lesson.topic || "-"}</td>
@@ -1870,7 +1870,7 @@ separateSubjects.forEach(subject => {
 
 
 
-    addTopicCard();
+    addTopicCard(lesson.subject || "");
 
     const card =
 
