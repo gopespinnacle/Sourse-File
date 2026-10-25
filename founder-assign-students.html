@@ -108,29 +108,45 @@ let row = `<div style="margin-top:20px"><h4>${day}</h4>`;
 
 (data.schedule || data)
 .filter(s => s.day === day)
-.forEach(s=>{
+.forEach(s => {
 
-row += `
-<div onclick="openPeriod('${day}','${s.className}','${s.subject || s.eca || s.language}','${s.startTime}','${s.endTime}')"
-style="
-display:inline-block;
-background:#4CAF50;
-color:white;
-padding:10px;
-margin:5px;
-border-radius:8px;
-cursor:pointer;
-">
+    const subjects = Array.isArray(s.subject)
+        ? s.subject
+        : (s.subject ? [s.subject] : []);
 
-${s.className}<br>
-${s.subject || s.eca || s.language}<br>
-${formatTime(s.startTime)} - ${formatTime(s.endTime)}
+    const ecas = Array.isArray(s.eca)
+        ? s.eca
+        : (s.eca ? [s.eca] : []);
 
-</div>
-`;
+    const languages = Array.isArray(s.language)
+        ? s.language
+        : (s.language ? [s.language] : []);
+
+    const allActivities = [...subjects, ...ecas, ...languages]
+        .filter(Boolean);
+
+    const displayActivities = allActivities.join(", ");
+
+    row += `
+    <div onclick="openPeriod('${day}','${s.className}','${displayActivities.replace(/'/g, "\\'")}','${s.startTime}','${s.endTime}')"
+    style="
+        display:inline-block;
+        background:#4CAF50;
+        color:white;
+        padding:10px;
+        margin:5px;
+        border-radius:8px;
+        cursor:pointer;
+    ">
+
+    ${s.className}<br>
+    ${displayActivities || "No subject assigned"}<br>
+    ${formatTime(s.startTime)} - ${formatTime(s.endTime)}
+
+    </div>
+    `;
 
 });
-
 row += `</div>`;
 container.innerHTML += row;
 
