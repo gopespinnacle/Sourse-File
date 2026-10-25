@@ -877,12 +877,17 @@ plan.date !== filterDate
 return;
 }
 
-if(
-filterSubject &&
-plan.subject !== filterSubject
-){
-return;
+
+if (
+    filterSubject &&
+    !(lesson.subject || plan.subject || "")
+        .split(",")
+        .map(subject => subject.trim())
+        .includes(filterSubject)
+) {
+    return;
 }
+
 
 if(
 filterStatus &&
@@ -897,7 +902,7 @@ html += `
 
 <td>${plan.date}</td>
 
-<td>${plan.subject}</td>
+<td>${lesson.subject || plan.subject}</td>
 
 <td>${lesson.topic || "-"}</td>
 
