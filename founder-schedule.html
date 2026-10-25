@@ -1,824 +1,3327 @@
 <!DOCTYPE html>
 
+
+
+
+
+
+
 <html>
+
+
+
 <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+
+
 <meta charset="UTF-8">
+
+
+
 <title>Teacher Schedule</title>
+
+
+
 <link rel="stylesheet" href="style.css">
+
+
+
+
+
+<style id="gpa-schedule-premium">
+
+:root{--gpa-navy:#10264a;--gpa-navy2:#173866;--gpa-gold:#c7a45b;--gpa-ink:#17243a;--gpa-soft:#f4f7fb;--gpa-line:#dbe3ef}
+
+body.dashboard-page .main-content{padding:28px; color:var(--gpa-ink)}
+
+body.dashboard-page .main-content h2{color:var(--gpa-navy);font-weight:800;letter-spacing:.2px;margin:8px 0 22px}
+
+#gpaScheduleForm{background:#fff;border:1px solid var(--gpa-line);border-top:4px solid var(--gpa-gold);border-radius:16px;padding:22px;box-shadow:0 10px 28px rgba(16,38,74,.08);display:grid;grid-template-columns:repeat(3,minmax(150px,1fr));gap:13px;margin-bottom:22px}
+
+#gpaScheduleForm select,#gpaScheduleForm input{width:100%;min-height:42px;padding:9px 11px;border:1px solid #cbd6e5;border-radius:9px;background:#fff;color:var(--gpa-ink);box-sizing:border-box}
+
+#gpaScheduleForm select[multiple]{min-height:88px}
+
+#gpaScheduleForm button{border:0;border-radius:9px;background:var(--gpa-navy);color:#fff;font-weight:700;padding:12px 18px;cursor:pointer}
+
+#gpaScheduleForm button:hover{background:var(--gpa-navy2)}
+
+#gpaStudentPicker{grid-column:1/-1;border:1px solid var(--gpa-line);border-radius:12px;background:var(--gpa-soft);padding:14px}
+
+#gpaStudentPicker h3{margin:0 0 8px;color:var(--gpa-navy)}
+
+#gpaStudentPicker .hint{color:#65748b;font-size:13px;margin:0 0 12px}
+
+#gpaStudentCards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;max-height:390px;overflow:auto}
+
+.gpa-student-card{background:white;border:1px solid var(--gpa-line);border-radius:10px;padding:12px}
+
+.gpa-student-top{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--gpa-navy)}
+
+.gpa-student-options{display:grid;grid-template-columns:1fr;gap:7px;margin:10px 0 0 25px}
+
+.gpa-option-group{font-size:12px;color:#53647c}.gpa-option-group strong{display:block;color:var(--gpa-navy);margin-bottom:3px}
+
+.gpa-option-group label{display:inline-flex;align-items:center;gap:4px;margin:2px 8px 2px 0;font-size:12px}
+
+.schedule-filter-box{background:#fff;border:1px solid var(--gpa-line);border-radius:12px;padding:15px;margin:18px 0;box-shadow:0 4px 16px rgba(16,38,74,.04)}
+
+#scheduleTable{border-collapse:separate;border-spacing:0;background:#fff;border:1px solid var(--gpa-line);border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(16,38,74,.06)}
+
+#scheduleTable th{background:var(--gpa-navy);color:#fff;padding:12px 10px;text-align:left;font-size:13px}
+
+#scheduleTable td{padding:11px 10px;border-bottom:1px solid #e7edf5;font-size:13px;vertical-align:top}
+
+#scheduleTable tr:last-child td{border-bottom:0}#scheduleTable tr:hover td{background:#f8faff}
+
+#scheduleTable button{border:0;border-radius:7px;padding:7px 10px;background:var(--gpa-navy);color:#fff;cursor:pointer;margin:2px}
+
+#clashWarning{grid-column:1/-1!important}
+
+@media(max-width:900px){#gpaScheduleForm{grid-template-columns:1fr 1fr}.main-content{overflow-x:auto}}
+
+@media(max-width:600px){#gpaScheduleForm{grid-template-columns:1fr}body.dashboard-page .main-content{padding:12px}}
+
+</style>
+
+
+
 </head>
+
+
+
+
+
+
 
 <body class="dashboard-page">
 
+
+
+
+
+
+
 <div id="sidebar-container"></div>
 
+
+
+
+
+
+
 <script>
+
+
+
 fetch("sidebar.html")
+
+
+
 .then(res => res.text())
+
+
+
 .then(data => {
+
+
+
 document.getElementById("sidebar-container").innerHTML = data;
+
+
+
 });
+
+
+
 </script>
+
+
+
+
+
+
 
 <div class="main-content">
 
+
+
+
+
+
+
 <h2>Teacher Weekly Timetable</h2>
+
+
+
+
+
+
+
+<form id="gpaScheduleForm" onsubmit="event.preventDefault(); addSchedule();">
 
 <select id="teacher"></select>
 
+
+
+
+
+
+
 <select id="day">
+
+
+
 <option>Monday</option>
+
+
+
 <option>Tuesday</option>
+
+
+
 <option>Wednesday</option>
+
+
+
 <option>Thursday</option>
+
+
+
 <option>Friday</option>
+
+
+
 <option>Saturday</option>
+
+
+
 <option>Sunday</option>
+
+
+
 </select>
+
+
+
+
+
+
 
 <select id="className">
-    <option value="">Select Class</option>
-    <option value="Pre.KG">Pre.KG</option>
-    <option value="LKG">LKG</option>
-    <option value="Grade - 1">Grade - 1</option>
-    <option value="Grade - 2">Grade - 2</option>
-    <option value="Grade - 3">Grade - 3</option>
-    <option value="Grade - 4">Grade - 4</option>
-    <option value="Grade - 5">Grade - 5</option>
-    <option value="Grade - 6">Grade - 6</option>
-    <option value="Grade - 7">Grade - 7</option>
-    <option value="Grade - 8">Grade - 8</option>
-    <option value="Grade - 9">Grade - 9</option>
-    <option value="Grade - 10">Grade - 10</option>
-    <option value="Grade - 11">Grade - 11</option>
-    <option value="Grade - 12">Grade - 12</option>
+
+
+
+    <option value="">Select Class</option>
+
+
+
+    <option value="Pre.KG">Pre.KG</option>
+
+
+
+    <option value="LKG">LKG</option>
+
+
+
+    <option value="Grade - 1">Grade - 1</option>
+
+
+
+    <option value="Grade - 2">Grade - 2</option>
+
+
+
+    <option value="Grade - 3">Grade - 3</option>
+
+
+
+    <option value="Grade - 4">Grade - 4</option>
+
+
+
+    <option value="Grade - 5">Grade - 5</option>
+
+
+
+    <option value="Grade - 6">Grade - 6</option>
+
+
+
+    <option value="Grade - 7">Grade - 7</option>
+
+
+
+    <option value="Grade - 8">Grade - 8</option>
+
+
+
+    <option value="Grade - 9">Grade - 9</option>
+
+
+
+    <option value="Grade - 10">Grade - 10</option>
+
+
+
+    <option value="Grade - 11">Grade - 11</option>
+
+
+
+    <option value="Grade - 12">Grade - 12</option>
+
+
+
 </select>
+
+
+
+
+
+
 
 <select id="subject" multiple size="1">
+
+
+
 </select>
+
+
+
+
+
+
 
 <select id="eca" multiple size="1">
+
+
+
 </select>
 
+
+
+
+
+
+
 <select id="language" multiple size="1">
+
+
+
 </select>
+
+
+
+
+
+
 
 <input type="time" id="startTime">
 
-<input type="time" id="endTime">
-<div id="clashWarning" style="
-    display:none;
-    color:white;
-    background:red;
-    padding:8px;
-    margin-top:10px;
-    border-radius:5px;
-">
-</div>
-<button onclick="addSchedule()">Add Schedule</button>
 
-<!-- =========================================================
-     TIMETABLE FILTER
-========================================================= -->
+
+
+
+
+
+<input type="time" id="endTime">
+
+
+
+<div id="clashWarning" style="
+
+
+
+    display:none;
+
+
+
+    color:white;
+
+
+
+    background:red;
+
+
+
+    padding:8px;
+
+
+
+    margin-top:10px;
+
+
+
+    border-radius:5px;
+
+
+
+">
+
+
+
+</div>
+
+
+
+<div id="gpaStudentPicker">
+
+<h3>Assign students to this period</h3>
+
+<p class="hint">Choose students and select the subjects, languages, and ECA activities applicable to each student. This is saved with the schedule.</p>
+
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+
+<button type="button" onclick="selectAllGpaStudents(true)">Select all students</button>
+
+<button type="button" onclick="selectAllGpaStudents(false)" style="background:#64748b">Clear selection</button>
+
+<button type="button" onclick="loadGpaStudents()" style="background:#9b7a35">Reload students</button>
+
+</div>
+
+<div id="gpaStudentCards"><span>Loading students…</span></div>
+
+</div>
+
+<div><button type="submit">Add Schedule + Student Mapping</button></div>
+
+</form>
 
 <div class="schedule-filter-box">
+<strong>Filter Timetable</strong>
 
-    <strong>Filter Timetable</strong>
 
-    <select id="filterTeacher">
-        <option value="all">All Teachers</option>
-    </select>
+    <select id="filterTeacher">
 
-    <select id="filterDay">
-        <option value="all">All Days</option>
-        <option value="Monday">Monday</option>
-        <option value="Tuesday">Tuesday</option>
-        <option value="Wednesday">Wednesday</option>
-        <option value="Thursday">Thursday</option>
-        <option value="Friday">Friday</option>
-        <option value="Saturday">Saturday</option>
-        <option value="Sunday">Sunday</option>
-    </select>
 
-    <select id="filterClass">
-    <option value="all">All Classes</option>
-    <option value="Pre.KG">Pre.KG</option>
-    <option value="LKG">LKG</option>
-    <option value="Grade - 1">Grade - 1</option>
-    <option value="Grade - 2">Grade - 2</option>
-    <option value="Grade - 3">Grade - 3</option>
-    <option value="Grade - 4">Grade - 4</option>
-    <option value="Grade - 5">Grade - 5</option>
-    <option value="Grade - 6">Grade - 6</option>
-    <option value="Grade - 7">Grade - 7</option>
-    <option value="Grade - 8">Grade - 8</option>
-    <option value="Grade - 9">Grade - 9</option>
-    <option value="Grade - 10">Grade - 10</option>
-    <option value="Grade - 11">Grade - 11</option>
-    <option value="Grade - 12">Grade - 12</option>
+       <option value="all">All Teachers</option>
+
+
+    </select>
+
+
+    <select id="filterDay">
+        <option value="all">All Days</option>
+
+
+
+        <option value="Monday">Monday</option>
+
+
+
+        <option value="Tuesday">Tuesday</option>
+
+
+
+        <option value="Wednesday">Wednesday</option>
+
+
+
+        <option value="Thursday">Thursday</option>
+
+
+
+        <option value="Friday">Friday</option>
+
+
+
+        <option value="Saturday">Saturday</option>
+
+
+
+        <option value="Sunday">Sunday</option>
+
+
+
+    </select>
+
+
+
+
+
+
+
+    <select id="filterClass">
+
+
+
+    <option value="all">All Classes</option>
+
+
+
+    <option value="Pre.KG">Pre.KG</option>
+
+
+
+    <option value="LKG">LKG</option>
+
+
+
+    <option value="Grade - 1">Grade - 1</option>
+
+
+
+    <option value="Grade - 2">Grade - 2</option>
+
+
+
+    <option value="Grade - 3">Grade - 3</option>
+
+
+
+    <option value="Grade - 4">Grade - 4</option>
+
+
+
+    <option value="Grade - 5">Grade - 5</option>
+
+
+
+    <option value="Grade - 6">Grade - 6</option>
+
+
+
+    <option value="Grade - 7">Grade - 7</option>
+
+
+
+    <option value="Grade - 8">Grade - 8</option>
+
+
+
+    <option value="Grade - 9">Grade - 9</option>
+
+
+
+    <option value="Grade - 10">Grade - 10</option>
+
+
+
+    <option value="Grade - 11">Grade - 11</option>
+
+
+
+    <option value="Grade - 12">Grade - 12</option>
+
+
+
 </select>
 
-    <button type="button" onclick="applyScheduleFilters()">
-        Apply Filter
-    </button>
 
-    <button
-        type="button"
-        onclick="clearScheduleFilters()"
-        style="background:#555;"
-    >
-        Clear
-    </button>
+
+
+
+
+
+    <button type="button" onclick="applyScheduleFilters()">
+
+
+
+        Apply Filter
+
+
+
+    </button>
+
+
+
+
+
+
+
+    <button
+
+
+
+        type="button"
+
+
+
+        onclick="clearScheduleFilters()"
+
+
+
+        style="background:#555;"
+
+
+
+    >
+
+
+
+        Clear
+
+
+
+    </button>
+
+
+
+
+
+
 
 </div>
+
+
+
+
+
+
 
 <table border="1" width="100%" id="scheduleTable">
 
+
+
+
+
+
+
 <thead>
+
+
+
 <tr>
+
+
+
 <th>Teacher</th>
+
+
+
 <th>Teacher ID</th>
+
+
+
 <th>Day</th>
+
+
+
 <th>Class</th>
+
+
+
 <th>Subject</th>
+
+
+
 <th>ECA</th>
+
+
+
 <th>Language</th>
+
+<th>Mapped Students</th>
+
+
+
 <th>Start</th>
+
+
+
 <th>End</th>
+
+
+
 <th>Action</th>
+
+
+
 </tr>
+
+
+
 </thead>
 
+
+
+
 <tbody></tbody>
+
+
+
 
 </table>
 
 
+
+
+
+
+
 <!-- EDIT SCHEDULE POPUP -->
+
+
+
 <div id="editSchedulePopup" style="
-    display:none;
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,0.6);
-    z-index:9999;
-    justify-content:center;
-    align-items:center;
+
+
+
+    display:none;
+
+
+
+    position:fixed;
+
+
+
+    top:0;
+
+
+
+    left:0;
+
+
+
+    width:100%;
+
+
+
+    height:100%;
+
+
+
+    background:rgba(0,0,0,0.6);
+
+
+
+    z-index:9999;
+
+
+
+    justify-content:center;
+
+
+
+    align-items:center;
+
+
+
 ">
-    <div style="
-        background:white;
-        padding:25px;
-        border-radius:10px;
-        width:90%;
-        max-width:500px;
-        max-height:85vh;
-        overflow-y:auto;
-    ">
-        <h2>Edit Existing Schedule</h2>
 
-        <label>Teacher</label>
-        <select id="editTeacher" style="width:100%;margin-bottom:12px;"></select>
 
-        <label>Day</label>
-        <select id="editDay" style="width:100%;margin-bottom:12px;">
-            <option>Monday</option>
-            <option>Tuesday</option>
-            <option>Wednesday</option>
-            <option>Thursday</option>
-            <option>Friday</option>
-            <option>Saturday</option>
-            <option>Sunday</option>
-        </select>
 
-        <label>Class</label>
-        <select id="editClass" style="width:100%;margin-bottom:12px;">
-            <option value="Pre.KG">Pre.KG</option>
-            <option value="LKG">LKG</option>
-            <option value="Grade - 1">Grade - 1</option>
-            <option value="Grade - 2">Grade - 2</option>
-            <option value="Grade - 3">Grade - 3</option>
-            <option value="Grade - 4">Grade - 4</option>
-            <option value="Grade - 5">Grade - 5</option>
-            <option value="Grade - 6">Grade - 6</option>
-            <option value="Grade - 7">Grade - 7</option>
-            <option value="Grade - 8">Grade - 8</option>
-            <option value="Grade - 9">Grade - 9</option>
-            <option value="Grade - 10">Grade - 10</option>
-            <option value="Grade - 11">Grade - 11</option>
-            <option value="Grade - 12">Grade - 12</option>
-        </select>
+    <div style="
 
-        <label>Subjects</label>
-        <select id="editSubject" multiple size="4" style="width:100%;margin-bottom:12px;"></select>
 
-        <label>ECA</label>
-        <select id="editEca" multiple size="3" style="width:100%;margin-bottom:12px;"></select>
 
-        <label>Languages</label>
-        <select id="editLanguage" multiple size="3" style="width:100%;margin-bottom:12px;"></select>
+        background:white;
 
-        <label>Start Time</label>
-        <input type="time" id="editStart" style="width:100%;margin-bottom:12px;">
 
-        <label>End Time</label>
-        <input type="time" id="editEnd" style="width:100%;margin-bottom:18px;">
 
-        <div>
-            <button type="button" onclick="saveScheduleEdit()">Save Changes</button>
-            <button type="button" onclick="closeSchedulePopup()" style="background:#666;">Cancel</button>
-        </div>
-    </div>
+        padding:25px;
+
+
+
+        border-radius:10px;
+
+
+
+        width:90%;
+
+
+
+        max-width:500px;
+
+
+
+        max-height:85vh;
+
+
+
+        overflow-y:auto;
+
+
+
+    ">
+
+
+
+        <h2>Edit Existing Schedule</h2>
+
+
+
+        <label>Teacher</label>
+
+
+
+        <select id="editTeacher" style="width:100%;margin-bottom:12px;"></select>
+
+
+
+
+
+
+
+        <label>Day</label>
+
+
+
+        <select id="editDay" style="width:100%;margin-bottom:12px;">
+
+
+
+            <option>Monday</option>
+
+
+
+            <option>Tuesday</option>
+
+
+
+            <option>Wednesday</option>
+
+
+
+            <option>Thursday</option>
+
+
+
+            <option>Friday</option>
+
+
+
+            <option>Saturday</option>
+
+
+
+            <option>Sunday</option>
+
+
+
+        </select>
+
+
+
+
+
+
+
+        <label>Class</label>
+
+
+
+        <select id="editClass" style="width:100%;margin-bottom:12px;">
+
+
+
+            <option value="Pre.KG">Pre.KG</option>
+
+
+
+            <option value="LKG">LKG</option>
+
+
+
+            <option value="Grade - 1">Grade - 1</option>
+
+
+
+            <option value="Grade - 2">Grade - 2</option>
+
+
+
+            <option value="Grade - 3">Grade - 3</option>
+
+
+
+            <option value="Grade - 4">Grade - 4</option>
+
+
+
+            <option value="Grade - 5">Grade - 5</option>
+
+
+
+            <option value="Grade - 6">Grade - 6</option>
+
+
+
+            <option value="Grade - 7">Grade - 7</option>
+
+
+
+            <option value="Grade - 8">Grade - 8</option>
+
+
+
+            <option value="Grade - 9">Grade - 9</option>
+
+
+
+            <option value="Grade - 10">Grade - 10</option>
+
+
+
+            <option value="Grade - 11">Grade - 11</option>
+
+
+
+            <option value="Grade - 12">Grade - 12</option>
+
+
+
+        </select>
+
+
+
+
+
+
+
+        <label>Subjects</label>
+
+
+
+        <select id="editSubject" multiple size="4" style="width:100%;margin-bottom:12px;"></select>
+
+
+
+
+
+
+
+        <label>ECA</label>
+
+
+
+        <select id="editEca" multiple size="3" style="width:100%;margin-bottom:12px;"></select>
+
+
+
+
+
+
+
+        <label>Languages</label>
+
+
+
+        <select id="editLanguage" multiple size="3" style="width:100%;margin-bottom:12px;"></select>
+
+
+
+
+
+
+
+        <label>Start Time</label>
+
+
+
+        <input type="time" id="editStart" style="width:100%;margin-bottom:12px;">
+
+
+
+
+
+
+
+        <label>End Time</label>
+
+
+
+        <input type="time" id="editEnd" style="width:100%;margin-bottom:18px;">
+
+        <h3 style="color:#10264a">Student mapping for this period</h3>
+
+        <div id="gpaEditStudentCards"></div>
+
+
+
+
+
+
+
+        <div>
+
+
+
+            <button type="button" onclick="saveScheduleEdit()">Save Changes</button>
+
+
+
+            <button type="button" onclick="closeSchedulePopup()" style="background:#666;">Cancel</button>
+
+
+
+        </div>
+
+
+
+    </div>
+
+
+
 </div>
+
+
+
 <!-- END EDIT SCHEDULE POPUP -->
 
+
+
+
+
+
+
 <h2 style="margin-top:40px;">Weekly Grid View</h2>
+
+
+
 <br>
 
+
+
+
+
+
+
 <select id="gridTeacher" onchange="filterGrid()">
+
+
+
 <option value="all">All Teachers</option>
+
+
+
 </select>
 
-<button onclick="downloadPDF()" style="margin-left:10px;">
-    Download PDF
-</button>
-<div id="pdfContent">
-    <h2 style="text-align:center;">Teacher Weekly Timetable</h2>
 
-    <table border="1" width="100%" id="gridTable">
-        <thead>
-            <tr>
-                <th>Day</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+
+
+
+
+
+<button onclick="downloadPDF()" style="margin-left:10px;">
+
+
+
+    Download PDF
+
+
+
+</button>
+
+
+
+<div id="pdfContent">
+
+
+
+    <h2 style="text-align:center;">Teacher Weekly Timetable</h2>
+
+
+
+
+
+
+
+    <table border="1" width="100%" id="gridTable">
+
+
+
+        <thead>
+
+
+
+            <tr>
+
+
+
+                <th>Day</th>
+
+
+
+            </tr>
+
+
+
+        </thead>
+
+
+
+        <tbody></tbody>
+
+
+
+    </table>
+
+
+
 </div>
+
+
+
+
+
+
 
 <script>
 
-let teachers=[];
-let allSchedules=[];
+
+
+
+
+
+
+let teachers = [];
+
+let allSchedules = [];
+
+let gpaStudents = [];
+
+
+
 const periods = [
+
+
+
 { name:"P1", start:"08:00", end:"08:40" },
+
+
+
 { name:"P2", start:"09:00", end:"09:40" },
+
+
+
 { name:"P3", start:"10:00", end:"10:40" },
+
+
+
 { name:"P4", start:"11:00", end:"11:40" },
+
+
+
 { name:"P5", start:"12:00", end:"12:40" },
+
+
+
 { name:"P6", start:"15:50", end:"16:50" },
+
+
+
 { name:"P7", start:"18:00", end:"19:00" }
+
+
+
 ];
+
+
+
 async function loadTeachers(){
 
+
+
+
+
+
+
 const token = localStorage.getItem("token");
+
+
+
+
+
+
 
 const res = await fetch("https://academy-backend-eatl.onrender.com/api/founder/teachers",{
 
+
+
+
+
+
+
 headers:{ "Authorization":"Bearer "+token }
+
+
+
+
+
+
 
 });
 
+
+
+
+
+
+
 const data = await res.json();
 
+
+
+
+
+
+
 if(!data.teachers){
+
+
+
 alert("Unable to load teachers");
+
+
+
 return;
+
+
+
 }
+
+
+
+
+
+
 
 teachers = data.teachers;
 
+
+
+
+
+
+
 const select = document.getElementById("teacher");
+
+
+
 const gridSelect = document.getElementById("gridTeacher");
+
+
+
 const filterTeacher = document.getElementById("filterTeacher");
+
+
+
+
+
+
 
 select.innerHTML = "";
 
+
+
+
+
+
+
 filterTeacher.innerHTML =
-    '<option value="all">All Teachers</option>';
+
+
+
+    '<option value="all">All Teachers</option>';
+
+
+
+
+
+
 
 teachers.forEach(t=>{
 
+
+
+
+
+
+
 select.innerHTML +=
-    `<option value="${t._id}">
-        ${t.name} - ${t.teacherId}
-    </option>`;
+
+
+
+    `<option value="${t._id}">
+
+
+
+        ${t.name} - ${t.teacherId}
+
+
+
+    </option>`;
+
+
+
+
+
+
 
 gridSelect.innerHTML +=
-    `<option value="${t._id}">
-        ${t.name} - ${t.teacherId}
-    </option>`;
+
+
+
+    `<option value="${t._id}">
+
+
+
+        ${t.name} - ${t.teacherId}
+
+
+
+    </option>`;
+
+
+
+
+
+
 
 filterTeacher.innerHTML +=
-    `<option value="${t._id}">
-        ${t.name} - ${t.teacherId}
-    </option>`;
+
+
+
+    `<option value="${t._id}">
+
+
+
+        ${t.name} - ${t.teacherId}
+
+
+
+    </option>`;
+
+
+
+
+
+
 
 });
+
+
+
 if (teachers.length > 0) {
-    loadTeacherOptions();
+
+
+
+    loadTeacherOptions();
+
+
+
 }
+
+
+
 select.addEventListener("change", loadTeacherOptions);
+
+
+
 }
+
+
+
 function convertToMinutes(time){
 
-    // normalize
-    time = time.trim();
 
-    // handle AM/PM
-    if (time.includes("AM") || time.includes("PM")) {
-        let [t, modifier] = time.split(" ");
-        let [h, m] = t.split(":").map(Number);
 
-        if (modifier === "PM" && h !== 12) h += 12;
-        if (modifier === "AM" && h === 12) h = 0;
 
-        return h * 60 + m;
-    }
 
-    // handle 24h
-    let [h, m] = time.split(":").map(Number);
-    return h * 60 + m;
+
+
+  
+
+
+
+    time = time.trim();
+
+
+
+
+
+
+
+
+
+
+    if (time.includes("AM") || time.includes("PM")) {
+
+
+
+        let [t, modifier] = time.split(" ");
+
+
+
+        let [h, m] = t.split(":").map(Number);
+
+
+
+
+
+
+
+        if (modifier === "PM" && h !== 12) h += 12;
+
+
+
+        if (modifier === "AM" && h === 12) h = 0;
+
+
+
+
+
+
+
+        return h * 60 + m;
+
+
+
+    }
+
+
+
+
+
+
+
+  
+
+
+
+    let [h, m] = time.split(":").map(Number);
+
+
+
+    return h * 60 + m;
+
+
+
 }
+
+
+
 async function addSchedule(){
 
+
+
+
+
+
+
 const teacherId = document.getElementById("teacher").value;
+
+
+
 const day = document.getElementById("day").value;
+
+
+
 const className = document.getElementById("className").value;
+
+
+
 const subjectValue = Array.from(
-    document.getElementById("subject").selectedOptions
+
+
+
+    document.getElementById("subject").selectedOptions
+
+
+
 )
+
+
+
 .filter(option => option.value !== "")
+
+
+
 .map(option => option.value);
+
+
+
+
+
+
 
 const ecaValue = Array.from(
-    document.getElementById("eca").selectedOptions
+
+
+
+    document.getElementById("eca").selectedOptions
+
+
+
 )
+
+
+
 .filter(option => option.value !== "")
+
+
+
 .map(option => option.value);
+
+
+
+
+
+
 
 const languageValue = Array.from(
-    document.getElementById("language").selectedOptions
+
+
+
+    document.getElementById("language").selectedOptions
+
+
+
 )
+
+
+
 .filter(option => option.value !== "")
+
+
+
 .map(option => option.value);
 
-// Check that at least one option is selected
+
+
+
+
+
+
+
+
+
+
 if (
-    subjectValue.length === 0 &&
-    ecaValue.length === 0 &&
-    languageValue.length === 0
+
+
+
+    subjectValue.length === 0 &&
+
+
+
+    ecaValue.length === 0 &&
+
+
+
+    languageValue.length === 0
+
+
+
 ) {
-    alert("Select at least one: Subject / ECA / Language");
-    return;
+
+
+
+    alert("Select at least one: Subject / ECA / Language");
+
+
+
+    return;
+
+
+
 }
 
-// ✅ ONLY ONE VARIABLE SET
+
+
+
+
+
+
+
+
+
 const subject = subjectValue;
+
+
+
 const eca = ecaValue;
+
+
+
 const language = languageValue;
+
+
+
 const startTime = document.getElementById("startTime").value;
+
+
+
 const endTime = document.getElementById("endTime").value;
 
-// ✅ STRICT VALIDATION
+
+
+
+
+
+
+
+
+
 if (!startTime || !endTime) {
-    alert("Enter time");
-    return;
+
+
+
+    alert("Enter time");
+
+
+
+    return;
+
+
+
 }
+
+
+
+
+
+
 
 if (startTime >= endTime) {
-    alert("End time must be after start time");
-    return;
+
+
+
+    alert("End time must be after start time");
+
+
+
+    return;
+
+
+
 }
 
-// ✅ CLASH CHECK
-// 🔥 NEW BACKEND CLASH CHECK
+
+
+
+
+
+
+
+
+
 const token = localStorage.getItem("token");
 
+
+
+
+
+
+
 const clashRes = await fetch("https://academy-backend-eatl.onrender.com/api/founder/check-clash", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + token
-    },
-    body: JSON.stringify({
-        teacher: teacherId,
-        day,
-        startTime,
-        endTime
-    })
+
+
+
+    method: "POST",
+
+
+
+    headers: {
+
+
+
+        "Content-Type": "application/json",
+
+
+
+        "Authorization": "Bearer " + token
+
+
+
+    },
+
+
+
+    body: JSON.stringify({
+
+
+
+        teacher: teacherId,
+
+
+
+        day,
+
+
+
+        startTime,
+
+
+
+        endTime
+
+})
+
+
+
 });
+
+
+
+
+
+
 
 const clashData = await clashRes.json();
 
+
+
+
+
+
+
 if (clashData.clash) {
-    document.getElementById("clashWarning").style.display = "block";
-    document.getElementById("clashWarning").innerText = clashData.message;
-    return;
+
+
+
+    document.getElementById("clashWarning").style.display = "block";
+
+
+
+    document.getElementById("clashWarning").innerText = clashData.message;
+
+
+
+    return;
+
+
+
 }
 
+
+
+
+
+
+
 document.getElementById("clashWarning").style.display = "none";
+
+
+
 const res = await fetch("https://academy-backend-eatl.onrender.com/api/founder/add-schedule",{
+
+
+
+
+
+
 
 method:"POST",
 
+
+
+
+
+
+
 headers:{
+
+
+
 "Content-Type":"application/json",
+
+
+
 "Authorization":"Bearer "+token
+
+
+
 },
 
+
+
+
+
+
+
 body: JSON.stringify({
-    teacher: teacherId,
-    day,
-    className,
-    subject: subject,
-    eca: eca,
-    language: language,
-    startTime,
-    endTime
+
+
+
+    teacher: teacherId,
+
+
+
+    day,
+
+
+
+    className,
+
+
+
+    subject: subject,
+
+
+
+    eca: eca,
+
+
+
+    language: language,
+
+
+
+    startTime,
+
+
+
+    endTime,
+
+    assignments: collectGpaAssignments()
+
+
+
 })
+
+
+
+
+
+
 
 });
 
+
+
+
+
+
+
 const data = await res.json();
 
+
+
+
+
+
+
 if(!res.ok){
-    document.getElementById("clashWarning").style.display = "block";
-    document.getElementById("clashWarning").innerText = data.message || "Error";
-    return;
+
+
+
+    document.getElementById("clashWarning").style.display = "block";
+
+
+
+    document.getElementById("clashWarning").innerText = data.message || "Error";
+
+
+
+    return;
+
+
+
 }
+
+
+
+
+
+
 
 document.getElementById("clashWarning").style.display = "none";
 
+
+
+
+
+
+
 alert("✅ Schedule Added Successfully");
+
+
+
+
+
+
 
 loadSchedules();
 
+
+
+
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+async function loadGpaStudents(){
+
+ const box=document.getElementById("gpaStudentCards");
+
+ if(!box)return;
+
+ box.innerHTML="<span>Loading students…</span>";
+
+ try{
+
+  const token=localStorage.getItem("token");
+
+  const res=await fetch("https://academy-backend-eatl.onrender.com/api/founder/students",{headers:{Authorization:"Bearer "+token}});
+
+  const data=await res.json();
+
+  if(!res.ok)throw new Error(data.message||"Unable to load students");
+
+  gpaStudents=Array.isArray(data.students)?data.students:(Array.isArray(data)?data:[]);
+
+  renderGpaStudentCards();
+
+ }catch(err){box.innerHTML='<span style="color:#a11">Could not load students: '+escapeGpaHtml(err.message)+'</span>'; }
+
+}
+
+function escapeGpaHtml(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+
+function currentGpaActivities(){
+
+ const read=id=>Array.from(document.getElementById(id)?.selectedOptions||[]).map(o=>o.value).filter(Boolean);
+
+ return {subjects:read("subject"),languages:read("language"),eca:read("eca")};
+
+}
+
+function renderGpaStudentCards(assignmentsOverride, activityOverride){
+
+ const box=document.getElementById("gpaStudentCards");if(!box)return;
+
+ const activity=activityOverride||currentGpaActivities();
+
+ const old=assignmentsOverride||Array.from(document.querySelectorAll(".gpa-student-card[data-student-id]")).map(card=>({student:card.dataset.studentId,selected:!!card.querySelector('.gpa-student-select')?.checked,subjects:Array.from(card.querySelectorAll('[data-kind="subjects"] input:checked')).map(x=>x.value),languages:Array.from(card.querySelectorAll('[data-kind="languages"] input:checked')).map(x=>x.value),eca:Array.from(card.querySelectorAll('[data-kind="eca"] input:checked')).map(x=>x.value)}));
+
+ const oldMap=new Map(old.map(a=>[String(a.student?._id||a.studentId||a.student),a]));
+
+ if(!gpaStudents.length){box.innerHTML='<span>No students returned by the backend.</span>';return;}
+
+ box.innerHTML=gpaStudents.map(s=>{
+
+  const id=String(s._id);const saved=oldMap.get(id);const profileSubjects=s.subjects||s.subject||[];const profileLang=s.languages||s.language||[];const profileEca=s.eca||[];
+
+  const renderGroup=(kind,label,values,profile)=>{if(!values.length)return '';return '<div class="gpa-option-group" data-kind="'+kind+'"><strong>'+label+'</strong>'+values.map(v=>{const checked=saved?(saved[kind]||[]).includes(v):profile.includes(v);return '<label><input type="checkbox" value="'+escapeGpaHtml(v)+'" '+(checked?'checked':'')+'> '+escapeGpaHtml(v)+'</label>';}).join('')+'</div>';};
+
+  const checked=saved?(saved.selected !== false):false;
+
+  return '<div class="gpa-student-card" data-student-id="'+id+'"><label class="gpa-student-top"><input class="gpa-student-select" type="checkbox" '+(checked?'checked':'')+'> '+escapeGpaHtml(s.name||s.studentName||'Unnamed student')+(s.studentId?' <small>('+escapeGpaHtml(s.studentId)+')</small>':'')+'</label><div class="gpa-student-options">'+renderGroup('subjects','Subjects',activity.subjects,Array.isArray(profileSubjects)?profileSubjects:[profileSubjects])+renderGroup('languages','Languages',activity.languages,Array.isArray(profileLang)?profileLang:[profileLang])+renderGroup('eca','ECA',activity.eca,Array.isArray(profileEca)?profileEca:[profileEca])+'</div></div>';
+
+ }).join('');
+
+}
+
+function selectAllGpaStudents(checked){document.querySelectorAll('.gpa-student-select').forEach(el=>el.checked=checked);}
+
+function collectGpaAssignments(){
+
+ return Array.from(document.querySelectorAll('.gpa-student-card')).filter(card=>card.querySelector('.gpa-student-select')?.checked).map(card=>({studentId:card.dataset.studentId,subjects:Array.from(card.querySelectorAll('[data-kind="subjects"] input:checked')).map(x=>x.value),languages:Array.from(card.querySelectorAll('[data-kind="languages"] input:checked')).map(x=>x.value),eca:Array.from(card.querySelectorAll('[data-kind="eca"] input:checked')).map(x=>x.value)}));
+
+}
+
+function collectExistingGpaAssignments(schedule){
+
+ const raw=schedule?.assignments||[];return raw.map(a=>({student:a.student?._id||a.student,subjects:a.subjects||[],languages:a.languages||[],eca:a.eca||[]}));
+
+}
+
 
 
 function convertTo12Hour(time){
 
+
+
+
+
+
+
 let [hours, minutes] = time.split(":");
+
+
+
+
+
+
 
 hours = parseInt(hours);
 
+
+
+
+
+
+
 let ampm = hours >= 12 ? "PM" : "AM";
+
+
+
+
+
+
 
 hours = hours % 12;
 
+
+
+
+
+
+
 hours = hours ? hours : 12;
+
+
+
+
+
+
 
 return hours.toString().padStart(2,'0') + ":" + minutes + " " + ampm;
 
+
+
+
+
+
+
 }
 
 
 
-// =========================================================
-// GET TEACHER ID FROM LOADED TEACHER LIST
-// =========================================================
+
 
 function getTeacherId(schedule) {
 
-    if (!schedule || !schedule.teacher) {
-        return "-";
-    }
 
-    const teacher = teachers.find(
-        t => t._id === schedule.teacher._id
-    );
 
-    return teacher ? (teacher.teacherId || "-") : "-";
+
+
+
+
+    if (!schedule || !schedule.teacher) {
+
+
+
+        return "-";
+
+
+
+    }
+
+
+
+
+
+
+
+    const teacher = teachers.find(
+
+
+
+        t => t._id === schedule.teacher._id
+
+
+
+    );
+
+
+
+
+
+
+
+    return teacher ? (teacher.teacherId || "-") : "-";
+
+
+
 }
+
+
+
 async function loadSchedules(){
 
+
+
+
+
+
+
 const token = localStorage.getItem("token");
+
+
+
+
+
+
 
 const res = await fetch("https://academy-backend-eatl.onrender.com/api/founder/schedules",{
 
+
+
+
+
+
+
 headers:{ "Authorization":"Bearer "+token }
 
+
+
+
+
+
+
 });
+
+
+
+
+
+
 
 const data = await res.json();
 
+
+
+
+
+
+
 if(!data.schedules){
+
+
+
 console.log("No schedules found");
+
+
+
 return;
+
+
+
 }
+
+
+
+
+
+
 
 const tbody = document.querySelector("#scheduleTable tbody");
 
+
+
+
+
+
+
 tbody.innerHTML="";
+
+
+
+
+
+
 
 data.schedules.forEach(s=>{
 
+
+
+
+
+
+
 tbody.innerHTML += `
+
+
+
 <tr>
 
-    <td>
-        ${s.teacher ? s.teacher.name : "Unknown"}
-    </td>
 
-    <td>
-        ${getTeacherId(s)}
-    </td>
 
-    <td>
-        ${s.day}
-    </td>
 
-    <td>
-        ${s.className}
-    </td>
 
-    <td>
-        ${s.subject || "-"}
-    </td>
 
-    <td>
-        ${s.eca || "-"}
-    </td>
 
-    <td>
-        ${s.language || "-"}
-    </td>
+    <td>
 
-    <td>
-        ${convertTo12Hour(s.startTime)}
-    </td>
 
-    <td>
-        ${convertTo12Hour(s.endTime)}
-    </td>
 
-    <td>
-        <button onclick="editSchedule('${s._id}')">Edit</button>
-        <button onclick="deleteSchedule('${s._id}')">Delete</button>
-    </td>
+        ${s.teacher ? s.teacher.name : "Unknown"}
+
+
+
+    </td>
+
+
+
+
+
+
+
+    <td>
+
+
+
+        ${getTeacherId(s)}
+
+
+
+    </td>
+
+
+
+
+
+
+
+    <td>
+
+
+
+        ${s.day}
+
+
+
+    </td>
+
+
+
+
+
+
+
+    <td>
+
+
+
+        ${s.className}
+
+
+
+    </td>
+
+
+
+
+
+
+
+    <td>
+
+
+
+        ${Array.isArray(s.subject) ? s.subject.join(", ") : (s.subject || "-")}
+
+
+
+    </td>
+
+
+
+
+
+
+
+    <td>
+
+
+
+        ${Array.isArray(s.eca) ? s.eca.join(", ") : (s.eca || "-")}
+
+
+
+    </td>
+
+
+
+
+
+
+
+    <td>
+
+
+
+        ${Array.isArray(s.language) ? s.language.join(", ") : (s.language || "-")}
+
+
+
+    </td>
+
+
+
+
+
+
+
+    <td>
+
+        ${(s.assignments || []).filter(a => a.student).map(a => a.student.name || "Student").join(", ") || "—"}
+
+    </td>
+
+
+
+    <td>
+
+
+
+        ${convertTo12Hour(s.startTime)}
+
+
+
+    </td>
+
+
+
+
+
+
+
+    <td>
+
+
+
+        ${convertTo12Hour(s.endTime)}
+
+
+
+    </td>
+
+
+
+
+
+
+
+    <td>
+
+
+
+        <button onclick="editSchedule('${s._id}')">Edit</button>
+
+
+
+        <button onclick="deleteSchedule('${s._id}')">Delete</button>
+
+
+
+    </td>
+
+
+
+
+
+
 
 </tr>
+
+
+
 `;
+
+
+
 });
+
+
+
 allSchedules = data.schedules || [];
 
+
+
+
+
+
+
 buildGrid(allSchedules);
+
+
+
 }
 
-// =========================================================
-// FILTER TEACHER WEEKLY TIMETABLE
-// =========================================================
+
+
+
+
+
+
+
+
+
+
 
 function applyScheduleFilters() {
 
-    const teacherId =
-        document.getElementById("filterTeacher").value;
-
-    const day =
-        document.getElementById("filterDay").value;
-
-    const classSearch =
-        document.getElementById("filterClass").value
-        .trim()
-        .toLowerCase();
 
 
-    const filteredSchedules = allSchedules.filter(s => {
-
-        // -----------------------------
-        // TEACHER FILTER
-        // -----------------------------
-        if (teacherId !== "all") {
-
-            if (
-                !s.teacher ||
-                s.teacher._id !== teacherId
-            ) {
-                return false;
-            }
-        }
 
 
-        // -----------------------------
-        // DAY FILTER
-        // -----------------------------
-        if (day !== "all") {
-
-            if (s.day !== day) {
-                return false;
-            }
-        }
 
 
-        // -----------------------------
-        // CLASS FILTER
-        // -----------------------------
-        if (classSearch !== "all") {
+    const teacherId =
 
-    if (s.className !== classSearch) {
-        return false;
-    }
+
+
+        document.getElementById("filterTeacher").value;
+
+
+
+
+
+
+
+    const day =
+
+
+
+        document.getElementById("filterDay").value;
+
+
+
+
+
+
+
+    const classSearch =
+
+
+
+        document.getElementById("filterClass").value
+
+
+
+        .trim()
+
+
+
+        .toLowerCase();
+
+
+
+
+
+
+
+
+
+
+
+    const filteredSchedules = allSchedules.filter(s => {
+
+
+
+
+
+
+
+
+
+
+
+        if (teacherId !== "all") {
+
+
+
+
+
+
+
+            if (
+
+
+
+                !s.teacher ||
+
+
+
+                s.teacher._id !== teacherId
+
+
+
+            ) {
+
+
+
+                return false;
+
+
+
+            }
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        if (day !== "all") {
+
+
+
+
+
+
+
+            if (s.day !== day) {
+
+
+
+                return false;
+
+
+
+            }
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+        if (classSearch !== "all") {
+
+
+
+
+
+
+
+    if (s.className !== classSearch) {
+
+
+
+        return false;
+
+
+
+    }
+
+
+
 }
 
 
-        return true;
-    });
 
 
-       renderScheduleTable(filteredSchedules);
+
+
+
+
+
+
+
+        return true;
+
+
+
+    });
+
+
+
+
+
+
+
+
+
+
+
+       renderScheduleTable(filteredSchedules);
+
+
+
 }
 
 
-// =========================================================
-// RENDER FILTERED SCHEDULE TABLE
-// =========================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function renderScheduleTable(schedules) {
 
-    const tbody =
-        document.querySelector("#scheduleTable tbody");
-
-    tbody.innerHTML = "";
 
 
-    if (!schedules || schedules.length === 0) {
-
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="10"
-                    style="
-                        text-align:center;
-                        padding:20px;
-                        color:#777;
-                    ">
-                    No timetable found
-                </td>
-            </tr>
-        `;
-
-        return;
-    }
 
 
-    schedules.forEach(s => {
 
-        tbody.innerHTML += `
-            
+
+    const tbody =
+
+
+
+        document.querySelector("#scheduleTable tbody");
+
+
+
+
+
+
+
+    tbody.innerHTML = "";
+
+
+
+
+
+
+
+
+
+
+
+    if (!schedules || schedules.length === 0) {
+
+
+
+
+
+
+
+        tbody.innerHTML = `
+
+
+
+            <tr>
+
+
+
+                <td colspan="10"
+
+
+
+                    style="
+
+
+
+                        text-align:center;
+
+
+
+                        padding:20px;
+
+
+
+                        color:#777;
+
+
+
+                    ">
+
+
+
+                    No timetable found
+
+
+
+                </td>
+
+
+
+            </tr>
+
+
+
+        `;
+
+
+
+
+
+
+
+        return;
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+    schedules.forEach(s => {
+
+
+
+
+
+
+
+        tbody.innerHTML += `
+
+
+
+
+
+
+
 <tr>
-    <td>${s.teacher ? s.teacher.name : "Unknown"}</td>
-    <td>${getTeacherId(s)}</td>
-    <td>${s.day || "-"}</td>
-    <td>${s.className || "-"}</td>
-    <td>${s.subject || "-"}</td>
-    <td>${s.eca || "-"}</td>
-    <td>${s.language || "-"}</td>
-    <td>${convertTo12Hour(s.startTime)}</td>
-    <td>${convertTo12Hour(s.endTime)}</td>
-    <td>
-        <button onclick="editSchedule('${s._id}')">Edit</button>
-        <button onclick="deleteSchedule('${s._id}')">Delete</button>
-    </td>
+
+
+
+    <td>${s.teacher ? s.teacher.name : "Unknown"}</td>
+
+
+
+    <td>${getTeacherId(s)}</td>
+
+
+
+    <td>${s.day || "-"}</td>
+
+
+
+    <td>${s.className || "-"}</td>
+
+
+
+    <td>${s.subject || "-"}</td>
+
+
+
+    <td>${s.eca || "-"}</td>
+
+
+
+    <td>${s.language || "-"}</td>
+
+
+
+    <td>${convertTo12Hour(s.startTime)}</td>
+
+
+
+    <td>${convertTo12Hour(s.endTime)}</td>
+
+
+
+    <td>
+
+
+
+        <button onclick="editSchedule('${s._id}')">Edit</button>
+
+
+
+        <button onclick="deleteSchedule('${s._id}')">Delete</button>
+
+
+
+    </td>
+
+
+
 </tr>
 
-        `;
 
-    });
+
+
+
+
+
+        `;
+
+
+
+
+
+
+
+    });
+
+
+
 }
 
 
-// =========================================================
-// CLEAR FILTER
-// =========================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function clearScheduleFilters() {
 
-    document.getElementById("filterTeacher").value = "all";
 
-    document.getElementById("filterDay").value = "all";
 
-    document.getElementById("filterClass").value = "all";
 
-    renderScheduleTable(allSchedules);
+
+
+
+    document.getElementById("filterTeacher").value = "all";
+
+
+
+
+
+
+
+    document.getElementById("filterDay").value = "all";
+
+
+
+
+
+
+
+    document.getElementById("filterClass").value = "all";
+
+
+
+
+
+
+
+    renderScheduleTable(allSchedules);
+
+
+
 }
+
+
+
+
+
+
+
+
+
 
 
 loadTeachers();
+
+
+
 loadSchedules();
+
+
+
 setTimeout(checkTimeClashLive, 500);
 
+
+
+
+
+
+
 document.getElementById("startTime").addEventListener("change", checkTimeClashLive);
+
+
+
 document.getElementById("endTime").addEventListener("change", checkTimeClashLive);
+
+
+
 document.getElementById("endTime").addEventListener("input", checkTimeClashLive);
+
+
+
 document.getElementById("className").addEventListener("input", checkTimeClashLive);
+
+
+
 document.getElementById("teacher").addEventListener("change", checkTimeClashLive);
+
+
+
 document.getElementById("day").addEventListener("change", checkTimeClashLive);
+
+
+
 document.getElementById("teacher").addEventListener("change", suggestNextSlot);
+
+
+
 document.getElementById("startTime").addEventListener("input", checkTimeClashLive);
+
+
+
 function buildGrid(schedules){
+
+
+
+
+
+
 
 const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
-// SORT
+
+
+
+
+
+
+
+
+
+
 schedules.sort((a, b) => a.startTime.localeCompare(b.startTime));
 
-// HOURS
+
+
+
+
+
+
+
+
+
 const hours = [...new Set(
-    schedules.map(s => `${s.startTime}-${s.endTime}`)
+
+
+
+    schedules.map(s => `${s.startTime}-${s.endTime}`)
+
+
+
 )];
 
-// ✅ FIRST define
+
+
+
+
+
+
+
+
+
+
 const thead = document.querySelector("#gridTable thead tr");
+
+
+
 const tbody = document.querySelector("#gridTable tbody");
 
-// ✅ THEN use
+
+
+
+
+
+
+
+
+
+
 thead.innerHTML = "<th>Day</th>";
 
+
+
+
+
+
+
 hours.forEach(hour => {
-    thead.innerHTML += `<th>${hour}</th>`;
+
+
+
+    thead.innerHTML += `<th>${hour}</th>`;
+
+
+
 });
+
+
+
+
+
+
 
 tbody.innerHTML = "";
 
+
+
+
+
+
+
 days.forEach(day=>{
+
+
+
+
+
+
 
 let row = `<tr><td><b>${day}</b></td>`;
 
+
+
+
+
+
+
 hours.forEach(hour=>{
 
+
+
+
+
+
+
 const found = schedules.find(s => {
+
+
+
 return s.day === day && `${s.startTime}-${s.endTime}` === hour;
+
+
+
 });
+
+
+
+
+
+
 
 if(found){
 
+
+
+
+
+
+
 row += `<td>
+
+
+
 <button
+
+
+
 class="class-block ${[String(found.subject || ""), String(found.eca || ""), String(found.language || "")]
-    .join(" ")
-    .toLowerCase()}"
+
+
+
+    .join(" ")
+
+
+
+    .toLowerCase()}"
+
+
+
 onclick="openPeriod('${found._id}')">
+
+
+
 ${found.className}<br>
+
+
+
 ${found.subject || found.eca || found.language}<br>
+
+
+
 ${convertTo12Hour(found.startTime)} - ${convertTo12Hour(found.endTime)}
+
+
+
 </button>
+
+
+
 </td>`;
+
+
+
+
+
+
 
 }else{
 
+
+
+
+
+
+
 row += `<td></td>`;
+
+
+
+
+
+
 
 }
 
+
+
+
+
+
+
 });
+
+
+
+
+
+
 
 row += "</tr>";
 
+
+
+
+
+
+
 tbody.innerHTML += row;
+
+
+
+
+
+
 
 });
 
+
+
+
+
+
+
 }
+
+
+
 function filterGrid(){
+
+
+
+
+
+
 
 const teacherId = document.getElementById("gridTeacher").value;
 
+
+
+
+
+
+
 if(teacherId === "all"){
-    buildGrid(allSchedules);
-    return;
+
+
+
+    buildGrid(allSchedules);
+
+
+
+    return;
+
+
+
 }
 
+
+
+
+
+
+
 const filtered = allSchedules.filter(
-    s => s.teacher && s.teacher._id === teacherId
+
+
+
+    s => s.teacher && s.teacher._id === teacherId
+
+
+
 );
+
+
+
+
+
+
 
 buildGrid(filtered);
 
+
+
+
+
+
+
 }
+
+
+
 function openPeriod(scheduleId){
 
-    window.location.href =
-    "period-details.html?scheduleId=" + scheduleId;
+
+
+
+
+
+
+    window.location.href =
+
+
+
+    "period-details.html?scheduleId=" + scheduleId;
+
+
+
+
+
+
 
 }
+
+
+
 async function deleteSchedule(id){
+
+
+
+
+
+
 
 const token = localStorage.getItem("token");
 
+
+
+
+
+
+
 if(!confirm("Delete this schedule?")) return;
 
+
+
+
+
+
+
 await fetch("https://academy-backend-eatl.onrender.com/api/founder/delete-schedule/" + id,{
+
+
+
 method:"DELETE",
+
+
+
 headers:{
+
+
+
 "Authorization":"Bearer " + token
+
+
+
 }
+
+
+
 });
+
+
+
+
+
+
 
 alert("Schedule deleted");
 
+
+
+
+
+
+
 location.reload();
 
+
+
+
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -826,344 +3329,1391 @@ location.reload();
 
 let currentEditId = null;
 
+
+
+
+
+
+
 function editSchedule(id) {
-    const schedule = allSchedules.find(s => s._id === id);
 
-    if (!schedule) {
-        alert("Schedule not found. Please refresh the page.");
-        return;
-    }
 
-    currentEditId = id;
 
-    const teacherSelect = document.getElementById("editTeacher");
-    teacherSelect.innerHTML = "";
+    const schedule = allSchedules.find(s => s._id === id);
 
-    teachers.forEach(t => {
-        const option = document.createElement("option");
-        option.value = t._id;
-        option.textContent = t.name + " - " + t.teacherId;
-        teacherSelect.appendChild(option);
-    });
 
-    const selectedTeacherId = schedule.teacher?._id || schedule.teacher;
-    teacherSelect.value = selectedTeacherId || "";
 
-    document.getElementById("editDay").value = schedule.day || "Monday";
-    document.getElementById("editClass").value = schedule.className || "";
-    document.getElementById("editStart").value = schedule.startTime || "";
-    document.getElementById("editEnd").value = schedule.endTime || "";
 
-    populateEditOptions(schedule, selectedTeacherId);
 
-    document.getElementById("editSchedulePopup").style.display = "flex";
+
+
+    if (!schedule) {
+
+
+
+        alert("Schedule not found. Please refresh the page.");
+
+
+
+        return;
+
+
+
+    }
+
+
+
+
+
+
+
+    currentEditId = id;
+
+
+
+
+
+
+
+    const teacherSelect = document.getElementById("editTeacher");
+
+
+
+    teacherSelect.innerHTML = "";
+
+
+
+
+
+
+
+    teachers.forEach(t => {
+
+
+
+        const option = document.createElement("option");
+
+
+
+        option.value = t._id;
+
+
+
+        option.textContent = t.name + " - " + t.teacherId;
+
+
+
+        teacherSelect.appendChild(option);
+
+
+
+    });
+
+
+
+
+
+
+
+    const selectedTeacherId = schedule.teacher?._id || schedule.teacher;
+
+
+
+    teacherSelect.value = selectedTeacherId || "";
+
+
+
+
+
+
+
+    document.getElementById("editDay").value = schedule.day || "Monday";
+
+
+
+    document.getElementById("editClass").value = schedule.className || "";
+
+
+
+    document.getElementById("editStart").value = schedule.startTime || "";
+
+
+
+    document.getElementById("editEnd").value = schedule.endTime || "";
+
+
+
+
+
+
+
+    populateEditOptions(schedule, selectedTeacherId);
+
+    const editBox=document.getElementById("gpaEditStudentCards");
+
+    if(editBox){
+
+      const previous=document.getElementById("gpaStudentCards");
+
+      const original=previous.innerHTML;
+
+      renderGpaStudentCards(collectExistingGpaAssignments(schedule), {subjects:schedule.subject||[],languages:schedule.language||[],eca:schedule.eca||[]});
+
+      editBox.innerHTML=previous.innerHTML;
+
+      previous.innerHTML=original;
+
+      editBox.querySelectorAll('.gpa-student-card').forEach(card=>{card.querySelector('.gpa-student-select')?.addEventListener('change',()=>{});});
+
+    }
+
+
+
+
+
+
+
+    document.getElementById("editSchedulePopup").style.display = "flex";
+
+
+
 }
+
+
+
+
+
+
 
 function populateEditOptions(schedule, teacherId) {
-    const teacher = teachers.find(t => t._id === teacherId);
 
-    const fields = [
-        { id: "editSubject", values: teacher?.subject || [], selected: schedule.subject },
-        { id: "editEca", values: teacher?.eca || [], selected: schedule.eca },
-        { id: "editLanguage", values: teacher?.language || [], selected: schedule.language }
-    ];
 
-    fields.forEach(field => {
-        const select = document.getElementById(field.id);
-        const selectedValues = Array.isArray(field.selected)
-            ? field.selected.map(String)
-            : field.selected
-                ? [String(field.selected)]
-                : [];
 
-        select.innerHTML = "";
+    const teacher = teachers.find(t => t._id === teacherId);
 
-        field.values.forEach(value => {
-            const option = document.createElement("option");
-            option.value = value;
-            option.textContent = value;
-            option.selected = selectedValues.includes(String(value));
-            select.appendChild(option);
-        });
-    });
+
+
+
+
+
+
+    const fields = [
+
+
+
+        { id: "editSubject", values: teacher?.subject || [], selected: schedule.subject },
+
+
+
+        { id: "editEca", values: teacher?.eca || [], selected: schedule.eca },
+
+
+
+        { id: "editLanguage", values: teacher?.language || [], selected: schedule.language }
+
+
+
+    ];
+
+
+
+
+
+
+
+    fields.forEach(field => {
+
+
+
+        const select = document.getElementById(field.id);
+
+
+
+        const selectedValues = Array.isArray(field.selected)
+
+
+
+            ? field.selected.map(String)
+
+
+
+            : field.selected
+
+
+
+                ? [String(field.selected)]
+
+
+
+                : [];
+
+
+
+
+
+
+
+        select.innerHTML = "";
+
+
+
+
+
+
+
+        field.values.forEach(value => {
+
+
+
+            const option = document.createElement("option");
+
+
+
+            option.value = value;
+
+
+
+            option.textContent = value;
+
+
+
+            option.selected = selectedValues.includes(String(value));
+
+
+
+            select.appendChild(option);
+
+
+
+        });
+
+
+
+    });
+
+
+
 }
+
+
+
+
+
+
+
+
+
 
 
 document.getElementById("editTeacher").addEventListener("change", function () {
-    const schedule = allSchedules.find(s => s._id === currentEditId);
 
-    if (!schedule) return;
 
-    const updatedSchedule = {
-        ...schedule,
-        subject: [],
-        eca: [],
-        language: []
-    };
 
-    populateEditOptions(updatedSchedule, this.value);
+    const schedule = allSchedules.find(s => s._id === currentEditId);
+
+
+
+
+
+
+
+    if (!schedule) return;
+
+
+
+
+
+
+
+    const updatedSchedule = {
+
+
+
+        ...schedule,
+
+
+
+        subject: [],
+
+
+
+        eca: [],
+
+
+
+        language: []
+
+
+
+    };
+
+
+
+
+
+
+
+    populateEditOptions(updatedSchedule, this.value);
+
+
+
 });
 
 
+
+
+
+
+
+
+
+
+
 function closeSchedulePopup() {
-    document.getElementById("editSchedulePopup").style.display = "none";
-    currentEditId = null;
+
+
+
+    document.getElementById("editSchedulePopup").style.display = "none";
+
+
+
+    currentEditId = null;
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+function collectGpaEditAssignments(){
+
+ const root=document.getElementById("gpaEditStudentCards");if(!root)return [];
+
+ return Array.from(root.querySelectorAll('.gpa-student-card')).filter(card=>card.querySelector('.gpa-student-select')?.checked).map(card=>({studentId:card.dataset.studentId,subjects:Array.from(card.querySelectorAll('[data-kind="subjects"] input:checked')).map(x=>x.value),languages:Array.from(card.querySelectorAll('[data-kind="languages"] input:checked')).map(x=>x.value),eca:Array.from(card.querySelectorAll('[data-kind="eca"] input:checked')).map(x=>x.value)}));
+
+}
+
 
 
 async function saveScheduleEdit() {
-    if (!currentEditId) {
-        alert("No existing schedule selected.");
-        return;
-    }
 
-    const teacherId = document.getElementById("editTeacher").value;
-    const day = document.getElementById("editDay").value;
-    const className = document.getElementById("editClass").value;
-    const startTime = document.getElementById("editStart").value;
-    const endTime = document.getElementById("editEnd").value;
 
-    const getSelectedValues = (id) =>
-        Array.from(document.getElementById(id).selectedOptions)
-            .map(option => option.value)
-            .filter(value => value !== "");
 
-    const subject = getSelectedValues("editSubject");
-    const eca = getSelectedValues("editEca");
-    const language = getSelectedValues("editLanguage");
+    if (!currentEditId) {
 
-    if (!teacherId || !startTime || !endTime) {
-        alert("Please select a teacher and enter both times.");
-        return;
-    }
 
-    if (startTime >= endTime) {
-        alert("End time must be after start time.");
-        return;
-    }
 
-    if (subject.length === 0 && eca.length === 0 && language.length === 0) {
-        alert("Select at least one Subject, ECA, or Language.");
-        return;
-    }
+        alert("No existing schedule selected.");
 
-    const token = localStorage.getItem("token");
 
-    try {
-        const clashRes = await fetch(
-            "https://academy-backend-eatl.onrender.com/api/founder/check-clash",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                },
-                body: JSON.stringify({
-                    teacher: teacherId,
-                    day,
-                    startTime,
-                    endTime,
-                    scheduleId: currentEditId
-                })
-            }
-        );
 
-        const clashData = await clashRes.json();
+        return;
 
-        if (clashData.clash) {
-            alert(clashData.message || "This teacher has a schedule clash.");
-            return;
-        }
 
-        const response = await fetch(
-            "https://academy-backend-eatl.onrender.com/api/founder/update-schedule/" + currentEditId,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                },
-                body: JSON.stringify({
-                    teacher: teacherId,
-                    day,
-                    className,
-                    subject,
-                    eca,
-                    language,
-                    startTime,
-                    endTime
-                })
-            }
-        );
 
-        const result = await response.json();
+    }
 
-        if (!response.ok) {
-            alert(result.message || "Unable to update schedule.");
-            return;
-        }
 
-        alert("Schedule updated successfully.");
-        closeSchedulePopup();
-        await loadSchedules();
 
-    } catch (error) {
-        console.error("Schedule update error:", error);
-        alert("Unable to update schedule. Please try again.");
-    }
+
+
+
+
+    const teacherId = document.getElementById("editTeacher").value;
+
+
+
+    const day = document.getElementById("editDay").value;
+
+
+
+    const className = document.getElementById("editClass").value;
+
+
+
+    const startTime = document.getElementById("editStart").value;
+
+
+
+    const endTime = document.getElementById("editEnd").value;
+
+
+
+
+
+
+
+    const getSelectedValues = (id) =>
+
+
+
+        Array.from(document.getElementById(id).selectedOptions)
+
+
+
+            .map(option => option.value)
+
+
+
+            .filter(value => value !== "");
+
+
+
+
+
+
+
+    const subject = getSelectedValues("editSubject");
+
+
+
+    const eca = getSelectedValues("editEca");
+
+
+
+    const language = getSelectedValues("editLanguage");
+
+
+
+
+
+
+
+    if (!teacherId || !startTime || !endTime) {
+
+
+
+        alert("Please select a teacher and enter both times.");
+
+
+
+        return;
+
+
+
+    }
+
+
+
+
+
+
+
+    if (startTime >= endTime) {
+
+
+
+        alert("End time must be after start time.");
+
+
+
+        return;
+
+
+
+    }
+
+
+
+
+
+
+
+    if (subject.length === 0 && eca.length === 0 && language.length === 0) {
+
+
+
+        alert("Select at least one Subject, ECA, or Language.");
+
+
+
+        return;
+
+
+
+    }
+
+
+
+
+
+
+
+    const token = localStorage.getItem("token");
+
+
+
+
+
+
+
+    try {
+
+
+
+        const clashRes = await fetch(
+
+
+
+            "https://academy-backend-eatl.onrender.com/api/founder/check-clash",
+
+
+
+            {
+
+
+
+                method: "POST",
+
+
+
+                headers: {
+
+
+
+                    "Content-Type": "application/json",
+
+
+
+                    "Authorization": "Bearer " + token
+
+
+
+                },
+
+
+
+                body: JSON.stringify({
+
+
+
+                    teacher: teacherId,
+
+
+
+                    day,
+
+
+
+                    startTime,
+
+
+
+                    endTime,
+
+
+
+                    scheduleId: currentEditId
+
+
+
+                })
+
+
+
+            }
+
+
+
+        );
+
+
+
+
+
+
+
+        const clashData = await clashRes.json();
+
+
+
+
+
+
+
+        if (clashData.clash) {
+
+
+
+            alert(clashData.message || "This teacher has a schedule clash.");
+
+
+
+            return;
+
+
+
+        }
+
+
+
+
+
+
+
+        const response = await fetch(
+
+
+
+            "https://academy-backend-eatl.onrender.com/api/founder/update-schedule/" + currentEditId,
+
+
+
+            {
+
+
+
+                method: "PUT",
+
+
+
+                headers: {
+
+
+
+                    "Content-Type": "application/json",
+
+
+
+                    "Authorization": "Bearer " + token
+
+
+
+                },
+
+
+
+                body: JSON.stringify({
+
+                    teacher: teacherId,
+
+                    day,
+
+                    className,
+
+                    subject,
+
+                    eca,
+
+                    language,
+
+                    startTime,
+
+                    endTime,
+
+                    assignments: collectGpaEditAssignments()
+
+                })
+
+
+
+            }
+
+
+
+        );
+
+
+
+
+
+
+
+        const result = await response.json();
+
+
+
+
+
+
+
+        if (!response.ok) {
+
+
+
+            alert(result.message || "Unable to update schedule.");
+
+
+
+            return;
+
+
+
+        }
+
+
+
+
+
+
+
+        alert("Schedule updated successfully.");
+
+
+
+        closeSchedulePopup();
+
+
+
+        await loadSchedules();
+
+
+
+
+
+
+
+    } catch (error) {
+
+
+
+        console.error("Schedule update error:", error);
+
+
+
+        alert("Unable to update schedule. Please try again.");
+
+
+
+    }
+
+
+
 }
+
+
+
+
+
+
+
+
+
 
 
 function loadTeacherOptions(){
 
+
+
+
+
+
+
 const teacherId = document.getElementById("teacher").value;
+
+
+
+
+
+
 
 const teacher = teachers.find(t => t._id === teacherId);
 
+
+
+
+
+
+
 if(!teacher) return;
 
+
+
+
+
+
+
 /* SUBJECT */
+
+
+
 const subjectSelect = document.getElementById("subject");
+
+
+
 subjectSelect.innerHTML = '<option value="" selected>Select Subject</option>';
 
+
+
+
+
+
+
 (teacher.subject || []).forEach(s=>{
+
+
+
 subjectSelect.innerHTML += `<option value="${s}">${s}</option>`;
+
+
+
 });
+
+
+
+
+
+
 
 /* ECA */
+
+
+
 const ecaSelect = document.getElementById("eca");
+
+
+
 ecaSelect.innerHTML = '<option value="">Select ECA</option>';
 
+
+
+
+
+
+
 (teacher.eca || []).forEach(e=>{
+
+
+
 ecaSelect.innerHTML += `<option value="${e}">${e}</option>`;
+
+
+
 });
+
+
+
+
+
+
 
 /* LANGUAGE */
+
+
+
 const langSelect = document.getElementById("language");
+
+
+
 langSelect.innerHTML = '<option value="">Select Language</option>';
 
+
+
+
+
+
+
 (teacher.language || []).forEach(l=>{
+
+
+
 langSelect.innerHTML += `<option value="${l}">${l}</option>`;
+
+
+
 });
 
+
+
+
+
+
+
 }
+
+
+
+
+
+
 
 function downloadPDF(){
 
-    const element = document.getElementById("pdfContent");
 
-    const opt = {
-        margin: 5,
-        filename: 'timetable.pdf',
-        image: { type: 'jpeg', quality: 1 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
-    };
 
-    setTimeout(() => {
-        html2pdf().set(opt).from(element).save();
-    }, 500); // wait for render
+
+
+
+
+    const element = document.getElementById("pdfContent");
+
+
+
+
+
+
+
+    const opt = {
+
+
+
+        margin: 5,
+
+
+
+        filename: 'timetable.pdf',
+
+
+
+        image: { type: 'jpeg', quality: 1 },
+
+
+
+        html2canvas: { scale: 2 },
+
+
+
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+
+
+
+    };
+
+
+
+
+
+
+
+    setTimeout(() => {
+
+
+
+        html2pdf().set(opt).from(element).save();
+
+
+
+    }, 500); // wait for render
+
+
+
 }
+
+
+
 async function checkTimeClashLive() {
 
-    const teacherId = document.getElementById("teacher").value;
-    const day = document.getElementById("day").value;
 
-    const startTime = document.getElementById("startTime").value;
-    const endTime = document.getElementById("endTime").value;
 
-    const warningBox = document.getElementById("clashWarning");
 
-    // ❌ if empty → hide
-    if (!startTime || !endTime) {
-        warningBox.style.display = "none";
-        return;
-    }
 
-    try {
+
+
+    const teacherId = document.getElementById("teacher").value;
+
+
+
+    const day = document.getElementById("day").value;
+
+
+
+
+
+
+
+    const startTime = document.getElementById("startTime").value;
+
+
+
+    const endTime = document.getElementById("endTime").value;
+
+
+
+
+
+
+
+    const warningBox = document.getElementById("clashWarning");
+
+
+
+
+
+
+
+
+
+
+
+    if (!startTime || !endTime) {
+
+
+
+        warningBox.style.display = "none";
+
+
+
+        return;
+
+
+
+    }
+
+
+
+
+
+
+
+    try {
+
+
+
 const token = localStorage.getItem("token");
 
+
+
+
+
+
+
 const res = await fetch("https://academy-backend-eatl.onrender.com/api/founder/check-clash", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + token
-    },
-    body: JSON.stringify({
-        teacher: teacherId,
-        day,
-        startTime,
-        endTime
-    })
+
+
+
+    method: "POST",
+
+
+
+    headers: {
+
+
+
+        "Content-Type": "application/json",
+
+
+
+        "Authorization": "Bearer " + token
+
+
+
+    },
+
+
+
+    body: JSON.stringify({
+
+
+
+        teacher: teacherId,
+
+
+
+        day,
+
+
+
+        startTime,
+
+
+
+        endTime
+
+
+
+    })
+
+
+
 });
 
-        const data = await res.json();
 
-        if (data.clash) {
-            warningBox.style.display = "block";
-            warningBox.innerText = "⚠ " + data.message;
-        } else {
-            warningBox.style.display = "none";
-        }
 
-    } catch (err) {
-        console.log("Live clash error:", err);
-    }
+
+
+
+
+        const data = await res.json();
+
+
+
+
+
+
+
+        if (data.clash) {
+
+
+
+            warningBox.style.display = "block";
+
+
+
+            warningBox.innerText = "⚠ " + data.message;
+
+
+
+        } else {
+
+
+
+            warningBox.style.display = "none";
+
+
+
+        }
+
+
+
+
+
+
+
+    } catch (err) {
+
+
+
+        console.log("Live clash error:", err);
+
+
+
+    }
+
+
+
 }
+
+
+
 function suggestNextSlot() {
 
-    const teacherId = document.getElementById("teacher").value;
-    const day = document.getElementById("day").value;
 
-    const schedules = allSchedules
-        .filter(s => s.teacher && s.teacher._id === teacherId && s.day === day)
-        .sort((a,b)=> a.endTime.localeCompare(b.endTime));
 
-    if (schedules.length === 0) return;
 
-    const last = schedules[schedules.length - 1];
 
-    
+
+
+    const teacherId = document.getElementById("teacher").value;
+
+
+
+    const day = document.getElementById("day").value;
+
+
+
+
+
+
+
+    const schedules = allSchedules
+
+
+
+        .filter(s => s.teacher && s.teacher._id === teacherId && s.day === day)
+
+
+
+        .sort((a,b)=> a.endTime.localeCompare(b.endTime));
+
+
+
+
+
+
+
+    if (schedules.length === 0) return;
+
+
+
+
+
+
+
+    const last = schedules[schedules.length - 1];
+
+
+
+
+
+
+
+
+
+
+
 let [h, m] = last.endTime.split(":").map(Number);
 
-// ADD 2-MINUTE BUFFER
+
+
+
+
+
+
+
+
+
 m += 2;
 
+
+
+
+
+
+
 if (m >= 60) {
-    h += Math.floor(m / 60);
-    m = m % 60;
+
+
+
+    h += Math.floor(m / 60);
+
+
+
+    m = m % 60;
+
+
+
 }
+
+
+
+
+
+
 
 if (h >= 24) {
-    h = h % 24;
+
+
+
+    h = h % 24;
+
+
+
 }
 
+
+
+
+
+
+
 const start =
-    String(h).padStart(2, "0") + ":" +
-    String(m).padStart(2, "0");
+
+
+
+    String(h).padStart(2, "0") + ":" +
+
+
+
+    String(m).padStart(2, "0");
+
+
+
+
+
+
 
 document.getElementById("startTime").value = start;
 
-// DEFAULT CLASS DURATION: 40 MINUTES
+
+
+
+
+
+
+
+
+
+
 m += 40;
 
+
+
+
+
+
+
 if (m >= 60) {
-    h += Math.floor(m / 60);
-    m = m % 60;
+
+
+
+    h += Math.floor(m / 60);
+
+
+
+    m = m % 60;
+
+
+
 }
+
+
+
+
+
+
 
 if (h >= 24) {
-    h = h % 24;
+
+
+
+    h = h % 24;
+
+
+
 }
 
+
+
+
+
+
+
 const end =
-    String(h).padStart(2, "0") + ":" +
-    String(m).padStart(2, "0");
+
+
+
+    String(h).padStart(2, "0") + ":" +
+
+
+
+    String(m).padStart(2, "0");
+
+
+
+
+
+
 
 document.getElementById("endTime").value = end;
 
+
+
+
+
+
+
 }
+
+
+
 </script>
 
+
+
+
+
+
+
+<script>
+
+["subject","eca","language"].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener("change",()=>renderGpaStudentCards());});
+
+</script>
+
+<script>document.addEventListener("DOMContentLoaded",()=>{loadGpaStudents();});</script>
+
 </body>
+
+
+
 </html>
