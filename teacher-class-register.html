@@ -477,18 +477,14 @@ body{
 
             <!-- TOPIC -->
 
-            <div class="form-group full">
+            
+<div class="form-group full">
+    <label>Topics Covered — By Subject</label>
+    <div id="subjectTopicsContainer"
+         style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:15px;">
+    </div>
+</div>
 
-                <label>
-                    Topic Covered
-                </label>
-
-                <textarea
-                    id="topicCovered"
-                    placeholder="Enter the topic covered in today's class"
-                ></textarea>
-
-            </div>
 
             <!-- TEACHER STATUS -->
 
@@ -982,6 +978,7 @@ checkbox.style.height = "16px";
 
         label.appendChild(checkbox);
         label.appendChild(document.createTextNode(value));
+        checkbox.addEventListener("change", renderSubjectTopicInputs);
 
         container.appendChild(label);
     });
@@ -994,6 +991,53 @@ function getSelectedSubjects() {
         )
     ).map(checkbox => checkbox.value);
 }
+
+
+function renderSubjectTopicInputs() {
+    const container = document.getElementById("subjectTopicsContainer");
+    const selectedSubjects = getSelectedSubjects();
+
+    const previousTopics = {};
+
+    container.querySelectorAll("textarea[data-subject]").forEach(input => {
+        previousTopics[input.dataset.subject] = input.value;
+    });
+
+    container.innerHTML = "";
+
+    selectedSubjects.forEach(subject => {
+        const group = document.createElement("div");
+        group.className = "form-group";
+
+        const label = document.createElement("label");
+        label.textContent = subject + " — Topic Covered";
+
+        const textarea = document.createElement("textarea");
+        textarea.dataset.subject = subject;
+        textarea.placeholder = "Enter the " + subject + " topic covered";
+        textarea.value = previousTopics[subject] || "";
+
+        group.appendChild(label);
+        group.appendChild(textarea);
+        container.appendChild(group);
+    });
+}
+
+function getSubjectTopics() {
+    const topics = [];
+
+    document.querySelectorAll(
+        "#subjectTopicsContainer textarea[data-subject]"
+    ).forEach(input => {
+        topics.push({
+            subject: input.dataset.subject,
+            topic: input.value.trim()
+        });
+    });
+
+    return topics;
+}
+
 /* =====================================================
    LOAD SELECTED CLASS
    ===================================================== */
@@ -1013,6 +1057,7 @@ function loadSelectedClass(){
 
 
        document.getElementById("subjectCheckboxes").innerHTML = "";
+       document.getElementById("subjectTopicsContainer").innerHTML = "";
 
 
         document.getElementById(
@@ -1051,6 +1096,7 @@ function loadSelectedClass(){
 
 
     populateSubjectOptions(selectedClass);
+    renderSubjectTopicInputs();
 
 
     document.getElementById(
@@ -1440,10 +1486,11 @@ async function saveClassRegister(){
         ).value;
 
 
-    const topic =
-        document.getElementById(
-            "topicCovered"
-        ).value.trim();
+    const subjectTopics = getSubjectTopics();
+
+const topic = subjectTopics
+    .map(item => item.subject + ": " + item.topic)
+    .join("\n");
 
 
     const teacherStatus =
@@ -1641,16 +1688,16 @@ async function saveClassRegister(){
     }
 
 
-    if(!topic){
-
-        showMessage(
-            "Please enter the topic covered.",
-            "error"
-        );
-
-        return;
-
-    }
+    if (
+    subjectTopics.length === 0 ||
+    subjectTopics.some(item => !item.topic)
+) {
+    showMessage(
+        "Please enter the topic for every selected subject.",
+        "error"
+    );
+    return;
+}
 
     if (getSelectedSubjects().length === 0) {
     showMessage(
