@@ -346,165 +346,182 @@ body:has(#filterDate) h2 + div label {
 
 
 
-/* ==========================================
-   GPA PREMIUM HOMEWORK UI — STAGE 2
-   Table, file links and action buttons
-   ========================================== */
+
+/* GPA PREMIUM TABLE — CLEAN COLUMN LAYOUT */
 
 .homework-table-scroll {
+    display: block;
     width: calc(100% - 32px) !important;
     margin: 16px !important;
-    overflow-x: auto;
+    overflow-x: auto !important;
     overflow-y: visible;
-    background: #FFFFFF;
-    border: 1px solid #E1E7F0;
-    border-radius: 12px;
-    box-shadow: 0 6px 22px rgba(23, 43, 77, 0.07);
+    background: #fff;
+    border: 1px solid #D9E1EC;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(23, 43, 77, 0.07);
+    box-sizing: border-box;
     -webkit-overflow-scrolling: touch;
 }
 
 .homework-table-scroll table {
-    width: 100% !important;
-    min-width: 1050px;
-    border-collapse: separate !important;
-    border-spacing: 0;
-    table-layout: auto;
-    background: #FFFFFF;
-    box-shadow: none !important;
-    border: none !important;
+    width: 1500px !important;
+    min-width: 1500px !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+    background: #fff;
     font-size: 13px !important;
+    box-shadow: none !important;
 }
 
+/* Fixed widths for all 13 columns */
+.homework-table-scroll th:nth-child(1),
+.homework-table-scroll td:nth-child(1) { width: 90px; }
+
+.homework-table-scroll th:nth-child(2),
+.homework-table-scroll td:nth-child(2) { width: 130px; }
+
+.homework-table-scroll th:nth-child(3),
+.homework-table-scroll td:nth-child(3) { width: 100px; }
+
+.homework-table-scroll th:nth-child(4),
+.homework-table-scroll td:nth-child(4) { width: 110px; }
+
+.homework-table-scroll th:nth-child(5),
+.homework-table-scroll td:nth-child(5) { width: 150px; }
+
+.homework-table-scroll th:nth-child(6),
+.homework-table-scroll td:nth-child(6) { width: 200px; }
+
+.homework-table-scroll th:nth-child(7),
+.homework-table-scroll td:nth-child(7) { width: 190px; }
+
+.homework-table-scroll th:nth-child(8),
+.homework-table-scroll td:nth-child(8) { width: 150px; }
+
+.homework-table-scroll th:nth-child(9),
+.homework-table-scroll td:nth-child(9) { width: 110px; }
+
+.homework-table-scroll th:nth-child(10),
+.homework-table-scroll td:nth-child(10) { width: 100px; }
+
+.homework-table-scroll th:nth-child(11),
+.homework-table-scroll td:nth-child(11) { width: 140px; }
+
+.homework-table-scroll th:nth-child(12),
+.homework-table-scroll td:nth-child(12) { width: 150px; }
+
+.homework-table-scroll th:nth-child(13),
+.homework-table-scroll td:nth-child(13) { width: 110px; }
+
+/* Strong, clear cell divisions */
 .homework-table-scroll thead th {
-    position: sticky;
-    top: 0;
-    z-index: 2;
     background: #18365D !important;
     color: #F8E4AD !important;
-    padding: 15px 12px !important;
-    border: none !important;
-    border-bottom: 2px solid #C6A45B !important;
-    text-align: left;
-    font-size: 12px;
+    padding: 15px 10px !important;
+    border: 1px solid #49617E !important;
+    border-bottom: 3px solid #C6A45B !important;
+    text-align: left !important;
+    vertical-align: middle;
+    font-size: 12px !important;
     font-weight: 700;
-    letter-spacing: 0.2px;
-    line-height: 1.4;
-    white-space: normal;
-}
-
-.homework-table-scroll thead th:first-child {
-    border-top-left-radius: 10px;
-}
-
-.homework-table-scroll thead th:last-child {
-    border-top-right-radius: 10px;
+    line-height: 1.5;
+    white-space: normal !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
 }
 
 .homework-table-scroll tbody td {
-    padding: 14px 12px !important;
-    border: none !important;
-    border-bottom: 1px solid #E9EDF4 !important;
+    padding: 14px 10px !important;
+    border: 1px solid #DCE4EE !important;
     color: #334155;
-    font-size: 13px;
+    font-size: 13px !important;
     line-height: 1.6;
+    text-align: left;
     vertical-align: top;
-    overflow-wrap: anywhere;
-}
-
-.homework-table-scroll tbody tr {
-    transition: background-color 0.18s ease;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    box-sizing: border-box;
 }
 
 .homework-table-scroll tbody tr:nth-child(even) {
-    background: #F8FAFD;
+    background: #F5F8FC;
 }
 
 .homework-table-scroll tbody tr:hover {
-    background: #F0F5FB;
+    background: #EDF3FA;
 }
 
-.homework-table-scroll tbody tr:last-child td {
-    border-bottom: none !important;
+/* Keep dates readable */
+.homework-table-scroll td:nth-child(1) {
+    white-space: nowrap !important;
+    font-variant-numeric: tabular-nums;
 }
 
-/* Homework text */
+/* Keep subjects and topics together naturally */
+.homework-table-scroll td:nth-child(3),
+.homework-table-scroll td:nth-child(4),
 .homework-table-scroll td:nth-child(5) {
-    color: #18365D;
-    font-weight: 700;
+    overflow-wrap: normal !important;
 }
 
+/* Homework text should wrap between words */
 .homework-table-scroll td:nth-child(6),
 .homework-table-scroll td:nth-child(7) {
-    min-width: 140px;
-    max-width: 240px;
-    white-space: pre-wrap;
+    white-space: pre-wrap !important;
+    overflow-wrap: anywhere !important;
 }
 
-/* Uploaded document links */
+/* File links */
 .homework-table-scroll td a {
-    display: inline-block;
-    margin: 3px 0;
-    padding: 5px 8px;
-    border-radius: 6px;
-    background: #EEF3FA;
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 0 7px;
+    padding: 5px 7px;
+    background: #EAF1FA;
     color: #214E80;
-    font-weight: 600;
+    border-radius: 5px;
     text-decoration: none;
+    line-height: 1.5;
     overflow-wrap: anywhere;
+    box-sizing: border-box;
 }
 
 .homework-table-scroll td a:hover {
-    background: #DFEAF8;
-    color: #102544;
+    background: #DCE8F8;
     text-decoration: underline;
 }
 
-/* Edit buttons generated inside the table */
-.homework-table-scroll tbody button {
+/* Edit action */
+.homework-table-scroll tbody td:last-child {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.homework-table-scroll tbody td button {
     background: #18365D !important;
     color: #F8E4AD !important;
     border: 1px solid #C6A45B !important;
     border-radius: 7px !important;
-    padding: 8px 13px !important;
+    padding: 9px 14px !important;
     font-size: 12px;
     font-weight: 700;
     white-space: nowrap;
     cursor: pointer;
-    transition: background 0.2s ease, transform 0.2s ease;
 }
 
-.homework-table-scroll tbody button:hover {
-    background: #254D78 !important;
-    transform: translateY(-1px);
-}
-
-/* Back button */
-button[onclick*="goBack"],
-button[onclick*="teacher-dashboard.html"] {
-    border-radius: 8px !important;
-    font-weight: 600;
-}
-
-/* Small screens */
+/* Preserve readable layout on smaller screens */
 @media (max-width: 600px) {
     .homework-table-scroll {
         width: calc(100% - 20px) !important;
         margin: 10px !important;
-        border-radius: 10px;
     }
 
     .homework-table-scroll table {
-        min-width: 1050px !important;
-        width: max-content !important;
-    }
-
-    .homework-table-scroll thead th {
-        padding: 12px 10px !important;
-    }
-
-    .homework-table-scroll tbody td {
-        padding: 11px 10px !important;
-        font-size: 12px;
+        width: 1500px !important;
+        min-width: 1500px !important;
     }
 }
 
