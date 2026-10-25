@@ -266,28 +266,38 @@ async function addSchedule(){
 const teacherId = document.getElementById("teacher").value;
 const day = document.getElementById("day").value;
 const className = document.getElementById("className").value;
-const subjectValue = document.getElementById("subject").value;
-const ecaValue = document.getElementById("eca").value;
-const languageValue = document.getElementById("language").value;
+const subjectValue = Array.from(
+    document.getElementById("subject").selectedOptions
+)
+.filter(option => option.value !== "")
+.map(option => option.value);
 
-// ❗ check at least one selected
-if (!subjectValue && !ecaValue && !languageValue) {
+const ecaValue = Array.from(
+    document.getElementById("eca").selectedOptions
+)
+.filter(option => option.value !== "")
+.map(option => option.value);
+
+const languageValue = Array.from(
+    document.getElementById("language").selectedOptions
+)
+.filter(option => option.value !== "")
+.map(option => option.value);
+
+// Check that at least one option is selected
+if (
+    subjectValue.length === 0 &&
+    ecaValue.length === 0 &&
+    languageValue.length === 0
+) {
     alert("Select at least one: Subject / ECA / Language");
     return;
 }
 
 // ✅ ONLY ONE VARIABLE SET
-let subject = "";
-let eca = "";
-let language = "";
-
-if (languageValue !== "") {
-    language = languageValue;
-} else if (ecaValue !== "") {
-    eca = ecaValue;
-} else if (subjectValue !== "") {
-    subject = subjectValue;
-}
+const subject = subjectValue;
+const eca = ecaValue;
+const language = languageValue;
 const startTime = document.getElementById("startTime").value;
 const endTime = document.getElementById("endTime").value;
 
@@ -338,15 +348,15 @@ headers:{
 "Authorization":"Bearer "+token
 },
 
-body:JSON.stringify({
-teacher: teacherId,
-day,
-className,
-subject: subject || "",
-eca: eca || "",
-language: language || "",
-startTime,
-endTime
+body: JSON.stringify({
+    teacher: teacherId,
+    day,
+    className,
+    subject: subject,
+    eca: eca,
+    language: language,
+    startTime,
+    endTime
 })
 
 });
