@@ -1480,19 +1480,23 @@ cursor:pointer;
 
     }
 
-    subjects.sort();
+    
+const separateSubjects = [
+    ...new Set(
+        subjects.flatMap(subject =>
+            String(subject || "")
+                .split(",")
+                .map(item => item.trim())
+                .filter(Boolean)
+        )
+    )
+].sort();
 
-    subjects.forEach(subject=>{
-
+separateSubjects.forEach(subject => {
     subjectSelect.innerHTML +=
+        `<option value="${subject}">${subject}</option>`;
+});
 
-    `<option value="${subject}">
-
-    ${subject}
-
-    </option>`;
-
-    });
 
     subjectSelect.value =
     currentSubject;
