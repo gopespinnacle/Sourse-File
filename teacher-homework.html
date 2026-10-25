@@ -909,6 +909,15 @@ const res = await fetch(
 
     const result = await res.json();
 
+    console.log("HOMEWORK SUBJECT DEBUG:", result.data?.map(plan => ({
+    planSubject: plan.subject,
+    lessons: plan.lessons?.map(lesson => ({
+        topic: lesson.topic,
+        topicId: lesson.topicId,
+        subject: lesson.subject
+    }))
+})));
+
     if(!result.success){
 
     document.getElementById("body").innerHTML="";
