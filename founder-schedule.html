@@ -154,6 +154,85 @@ document.getElementById("sidebar-container").innerHTML = data;
 </table>
 
 
+<!-- EDIT SCHEDULE POPUP -->
+<div id="editSchedulePopup" style="
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.6);
+    z-index:9999;
+    justify-content:center;
+    align-items:center;
+">
+    <div style="
+        background:white;
+        padding:25px;
+        border-radius:10px;
+        width:90%;
+        max-width:500px;
+        max-height:85vh;
+        overflow-y:auto;
+    ">
+        <h2>Edit Existing Schedule</h2>
+
+        <label>Teacher</label>
+        <select id="editTeacher" style="width:100%;margin-bottom:12px;"></select>
+
+        <label>Day</label>
+        <select id="editDay" style="width:100%;margin-bottom:12px;">
+            <option>Monday</option>
+            <option>Tuesday</option>
+            <option>Wednesday</option>
+            <option>Thursday</option>
+            <option>Friday</option>
+            <option>Saturday</option>
+            <option>Sunday</option>
+        </select>
+
+        <label>Class</label>
+        <select id="editClass" style="width:100%;margin-bottom:12px;">
+            <option value="Pre.KG">Pre.KG</option>
+            <option value="LKG">LKG</option>
+            <option value="Grade - 1">Grade - 1</option>
+            <option value="Grade - 2">Grade - 2</option>
+            <option value="Grade - 3">Grade - 3</option>
+            <option value="Grade - 4">Grade - 4</option>
+            <option value="Grade - 5">Grade - 5</option>
+            <option value="Grade - 6">Grade - 6</option>
+            <option value="Grade - 7">Grade - 7</option>
+            <option value="Grade - 8">Grade - 8</option>
+            <option value="Grade - 9">Grade - 9</option>
+            <option value="Grade - 10">Grade - 10</option>
+            <option value="Grade - 11">Grade - 11</option>
+            <option value="Grade - 12">Grade - 12</option>
+        </select>
+
+        <label>Subjects</label>
+        <select id="editSubject" multiple size="4" style="width:100%;margin-bottom:12px;"></select>
+
+        <label>ECA</label>
+        <select id="editEca" multiple size="3" style="width:100%;margin-bottom:12px;"></select>
+
+        <label>Languages</label>
+        <select id="editLanguage" multiple size="3" style="width:100%;margin-bottom:12px;"></select>
+
+        <label>Start Time</label>
+        <input type="time" id="editStart" style="width:100%;margin-bottom:12px;">
+
+        <label>End Time</label>
+        <input type="time" id="editEnd" style="width:100%;margin-bottom:18px;">
+
+        <div>
+            <button type="button" onclick="saveScheduleEdit()">Save Changes</button>
+            <button type="button" onclick="closeSchedulePopup()" style="background:#666;">Cancel</button>
+        </div>
+    </div>
+</div>
+<!-- END EDIT SCHEDULE POPUP -->
+
 <h2 style="margin-top:40px;">Weekly Grid View</h2>
 <br>
 
@@ -742,11 +821,199 @@ location.reload();
 }
 
 
+
+
+
 let currentEditId = null;
 
 function editSchedule(id) {
-    // Edit functionality temporarily disabled.
+    const schedule = allSchedules.find(s => s._id === id);
+
+    if (!schedule) {
+        alert("Schedule not found. Please refresh the page.");
+        return;
+    }
+
+    currentEditId = id;
+
+    const teacherSelect = document.getElementById("editTeacher");
+    teacherSelect.innerHTML = "";
+
+    teachers.forEach(t => {
+        const option = document.createElement("option");
+        option.value = t._id;
+        option.textContent = t.name + " - " + t.teacherId;
+        teacherSelect.appendChild(option);
+    });
+
+    const selectedTeacherId = schedule.teacher?._id || schedule.teacher;
+    teacherSelect.value = selectedTeacherId || "";
+
+    document.getElementById("editDay").value = schedule.day || "Monday";
+    document.getElementById("editClass").value = schedule.className || "";
+    document.getElementById("editStart").value = schedule.startTime || "";
+    document.getElementById("editEnd").value = schedule.endTime || "";
+
+    populateEditOptions(schedule, selectedTeacherId);
+
+    document.getElementById("editSchedulePopup").style.display = "flex";
 }
+
+function populateEditOptions(schedule, teacherId) {
+    const teacher = teachers.find(t => t._id === teacherId);
+
+    const fields = [
+        { id: "editSubject", values: teacher?.subject || [], selected: schedule.subject },
+        { id: "editEca", values: teacher?.eca || [], selected: schedule.eca },
+        { id: "editLanguage", values: teacher?.language || [], selected: schedule.language }
+    ];
+
+    fields.forEach(field => {
+        const select = document.getElementById(field.id);
+        const selectedValues = Array.isArray(field.selected)
+            ? field.selected.map(String)
+            : field.selected
+                ? [String(field.selected)]
+                : [];
+
+        select.innerHTML = "";
+
+        field.values.forEach(value => {
+            const option = document.createElement("option");
+            option.value = value;
+            option.textContent = value;
+            option.selected = selectedValues.includes(String(value));
+            select.appendChild(option);
+        });
+    });
+}
+
+
+document.getElementById("editTeacher").addEventListener("change", function () {
+    const schedule = allSchedules.find(s => s._id === currentEditId);
+
+    if (!schedule) return;
+
+    const updatedSchedule = {
+        ...schedule,
+        subject: [],
+        eca: [],
+        language: []
+    };
+
+    populateEditOptions(updatedSchedule, this.value);
+});
+
+
+function closeSchedulePopup() {
+    document.getElementById("editSchedulePopup").style.display = "none";
+    currentEditId = null;
+}
+
+
+async function saveScheduleEdit() {
+    if (!currentEditId) {
+        alert("No existing schedule selected.");
+        return;
+    }
+
+    const teacherId = document.getElementById("editTeacher").value;
+    const day = document.getElementById("editDay").value;
+    const className = document.getElementById("editClass").value;
+    const startTime = document.getElementById("editStart").value;
+    const endTime = document.getElementById("editEnd").value;
+
+    const getSelectedValues = (id) =>
+        Array.from(document.getElementById(id).selectedOptions)
+            .map(option => option.value)
+            .filter(value => value !== "");
+
+    const subject = getSelectedValues("editSubject");
+    const eca = getSelectedValues("editEca");
+    const language = getSelectedValues("editLanguage");
+
+    if (!teacherId || !startTime || !endTime) {
+        alert("Please select a teacher and enter both times.");
+        return;
+    }
+
+    if (startTime >= endTime) {
+        alert("End time must be after start time.");
+        return;
+    }
+
+    if (subject.length === 0 && eca.length === 0 && language.length === 0) {
+        alert("Select at least one Subject, ECA, or Language.");
+        return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    try {
+        const clashRes = await fetch(
+            "https://academy-backend-eatl.onrender.com/api/founder/check-clash",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    teacher: teacherId,
+                    day,
+                    startTime,
+                    endTime,
+                    scheduleId: currentEditId
+                })
+            }
+        );
+
+        const clashData = await clashRes.json();
+
+        if (clashData.clash) {
+            alert(clashData.message || "This teacher has a schedule clash.");
+            return;
+        }
+
+        const response = await fetch(
+            "https://academy-backend-eatl.onrender.com/api/founder/update-schedule/" + currentEditId,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    teacher: teacherId,
+                    day,
+                    className,
+                    subject,
+                    eca,
+                    language,
+                    startTime,
+                    endTime
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            alert(result.message || "Unable to update schedule.");
+            return;
+        }
+
+        alert("Schedule updated successfully.");
+        closeSchedulePopup();
+        await loadSchedules();
+
+    } catch (error) {
+        console.error("Schedule update error:", error);
+        alert("Unable to update schedule. Please try again.");
+    }
+}
+
+
 function loadTeacherOptions(){
 
 const teacherId = document.getElementById("teacher").value;
@@ -781,90 +1048,6 @@ langSelect.innerHTML += `<option value="${l}">${l}</option>`;
 
 }
 
-function closeSchedulePopup(){
-    document.getElementById("schedulePopup").style.display = "none";
-}
-
-async function saveScheduleEdit(){
-
-    const day = document.getElementById("editDay").value;
-    const className = document.getElementById("editClass").value;
-    const subjectValue = document.getElementById("editSubject").value;
-    const ecaValue = document.getElementById("editEca").value;
-    const languageValue = document.getElementById("editLanguage").value;
-    const startTime = document.getElementById("editStart").value;
-    const endTime = document.getElementById("editEnd").value;
-const teacherId = document.getElementById("teacher").value;
-// 🔥 BACKEND CLASH CHECK FOR EDIT
- const token = localStorage.getItem("token");
-const clashRes = await fetch("https://academy-backend-eatl.onrender.com/api/founder/check-clash", {
-    method: "POST",
-   
-
-headers: {
-    "Content-Type": "application/json",
-    "Authorization": "Bearer " + token
-},
-    body: JSON.stringify({
-        teacher: teacherId,
-        day,
-        startTime,
-        endTime,
-        scheduleId: currentEditId   // 🔥 VERY IMPORTANT
-    })
-});
-
-const clashData = await clashRes.json();
-
-if (clashData.clash) {
-    alert(clashData.message);
-    return;
-}
-// ✅ CLASH CHECK FOR EDIT (FIXED)
-
-    let subject = subjectValue || "";
-let eca = ecaValue || "";
-let language = languageValue || "";
-
-        try {
-
-        const res = await fetch("https://academy-backend-eatl.onrender.com/api/founder/update-schedule/" + currentEditId,{
-            method:"PUT",
-            headers:{
-                "Content-Type":"application/json",
-                "Authorization":"Bearer " + token
-            },
-            body:JSON.stringify({
-                teacher: teacherId,   // 🔥 FIXED
-                day,
-                className,
-                subject,
-                eca,
-                language,
-                startTime,
-                endTime
-            })
-        });
-
-        const data = await res.json();
-
-        console.log("UPDATE RESPONSE:", data);
-
-        if(!res.ok){
-            alert(data.message || "Update failed");
-            return;
-        }
-
-        alert("Updated Successfully");
-
-        closeSchedulePopup();
-        loadSchedules();
-
-    } catch(err){
-        console.log("ERROR:", err);
-        alert("Something went wrong");
-    }
-}
 function downloadPDF(){
 
     const element = document.getElementById("pdfContent");
@@ -982,41 +1165,5 @@ document.getElementById("endTime").value = end;
 }
 </script>
 
-</div>
-<div id="schedulePopup" class="popup-content" style="display:none;">
-<h3>Edit Schedule</h3>
-
-Day:
-<select id="editDay">
-<option>Monday</option>
-<option>Tuesday</option>
-<option>Wednesday</option>
-<option>Thursday</option>
-<option>Friday</option>
-<option>Saturday</option>
-<option>Sunday</option>
-</select>
-
-Class:
-<input id="editClass">
-
-Subject:
-<select id="editSubject"></select>
-
-ECA:
-<select id="editEca"></select>
-
-Language:
-<select id="editLanguage"></select>
-
-Start:
-<input type="time" id="editStart">
-
-End:
-<input type="time" id="editEnd">
-
-<button onclick="saveScheduleEdit()">Save</button>
-<button onclick="closeSchedulePopup()">Cancel</button>
-</div>
 </body>
 </html>
