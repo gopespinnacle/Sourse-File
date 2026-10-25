@@ -1223,7 +1223,7 @@ border-right:1px solid #1e3a5f;
 padding:10px;
 vertical-align:top;u
 ">
-${lesson.subject || plan.lessons.find(l => l.topicId === lesson.topicId)?.subject || plan.subject?.split(",")[0]?.trim() || "-"}
+${plan.lessons.find(l => l.topicId === lesson.topicId)?.subject || "-"}
 </td>
 
         <td style="
