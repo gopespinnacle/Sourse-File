@@ -420,6 +420,33 @@ function renderTable(data) {
     `).join("");
 }
 
+function applyScheduleFilters() {
+    const teacherId = document.getElementById("filterTeacher").value;
+    const day = document.getElementById("filterDay").value;
+
+    const filteredSchedules = allSchedules.filter(schedule => {
+        const scheduleTeacherId =
+            schedule.teacher?._id || schedule.teacher;
+
+        const matchesTeacher =
+            teacherId === "all" || scheduleTeacherId === teacherId;
+
+        const matchesDay =
+            day === "all" || schedule.day === day;
+
+        return matchesTeacher && matchesDay;
+    });
+
+    renderTable(filteredSchedules);
+}
+
+function clearScheduleFilters() {
+    document.getElementById("filterTeacher").value = "all";
+    document.getElementById("filterDay").value = "all";
+    renderTable(allSchedules);
+}
+
+
 async function addSchedule() {
     const token = localStorage.getItem("token");
     const payload = {
