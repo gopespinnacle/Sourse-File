@@ -345,6 +345,170 @@ body:has(#filterDate) h2 + div label {
 }
 
 
+
+/* ==========================================
+   GPA PREMIUM HOMEWORK UI — STAGE 2
+   Table, file links and action buttons
+   ========================================== */
+
+.homework-table-scroll {
+    width: calc(100% - 32px) !important;
+    margin: 16px !important;
+    overflow-x: auto;
+    overflow-y: visible;
+    background: #FFFFFF;
+    border: 1px solid #E1E7F0;
+    border-radius: 12px;
+    box-shadow: 0 6px 22px rgba(23, 43, 77, 0.07);
+    -webkit-overflow-scrolling: touch;
+}
+
+.homework-table-scroll table {
+    width: 100% !important;
+    min-width: 1050px;
+    border-collapse: separate !important;
+    border-spacing: 0;
+    table-layout: auto;
+    background: #FFFFFF;
+    box-shadow: none !important;
+    border: none !important;
+    font-size: 13px !important;
+}
+
+.homework-table-scroll thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #18365D !important;
+    color: #F8E4AD !important;
+    padding: 15px 12px !important;
+    border: none !important;
+    border-bottom: 2px solid #C6A45B !important;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    line-height: 1.4;
+    white-space: normal;
+}
+
+.homework-table-scroll thead th:first-child {
+    border-top-left-radius: 10px;
+}
+
+.homework-table-scroll thead th:last-child {
+    border-top-right-radius: 10px;
+}
+
+.homework-table-scroll tbody td {
+    padding: 14px 12px !important;
+    border: none !important;
+    border-bottom: 1px solid #E9EDF4 !important;
+    color: #334155;
+    font-size: 13px;
+    line-height: 1.6;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+}
+
+.homework-table-scroll tbody tr {
+    transition: background-color 0.18s ease;
+}
+
+.homework-table-scroll tbody tr:nth-child(even) {
+    background: #F8FAFD;
+}
+
+.homework-table-scroll tbody tr:hover {
+    background: #F0F5FB;
+}
+
+.homework-table-scroll tbody tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* Homework text */
+.homework-table-scroll td:nth-child(5) {
+    color: #18365D;
+    font-weight: 700;
+}
+
+.homework-table-scroll td:nth-child(6),
+.homework-table-scroll td:nth-child(7) {
+    min-width: 140px;
+    max-width: 240px;
+    white-space: pre-wrap;
+}
+
+/* Uploaded document links */
+.homework-table-scroll td a {
+    display: inline-block;
+    margin: 3px 0;
+    padding: 5px 8px;
+    border-radius: 6px;
+    background: #EEF3FA;
+    color: #214E80;
+    font-weight: 600;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+}
+
+.homework-table-scroll td a:hover {
+    background: #DFEAF8;
+    color: #102544;
+    text-decoration: underline;
+}
+
+/* Edit buttons generated inside the table */
+.homework-table-scroll tbody button {
+    background: #18365D !important;
+    color: #F8E4AD !important;
+    border: 1px solid #C6A45B !important;
+    border-radius: 7px !important;
+    padding: 8px 13px !important;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.homework-table-scroll tbody button:hover {
+    background: #254D78 !important;
+    transform: translateY(-1px);
+}
+
+/* Back button */
+button[onclick*="goBack"],
+button[onclick*="teacher-dashboard.html"] {
+    border-radius: 8px !important;
+    font-weight: 600;
+}
+
+/* Small screens */
+@media (max-width: 600px) {
+    .homework-table-scroll {
+        width: calc(100% - 20px) !important;
+        margin: 10px !important;
+        border-radius: 10px;
+    }
+
+    .homework-table-scroll table {
+        min-width: 1050px !important;
+        width: max-content !important;
+    }
+
+    .homework-table-scroll thead th {
+        padding: 12px 10px !important;
+    }
+
+    .homework-table-scroll tbody td {
+        padding: 11px 10px !important;
+        font-size: 12px;
+    }
+}
+
+
 </style>
     
     <div class="mobile-page-header" style="
