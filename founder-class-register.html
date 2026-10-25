@@ -1291,7 +1291,11 @@ function renderRegister(
 
                     <td>${escapeHtml(register.className || "-")}</td>
 
-                    <td>${escapeHtml(register.subject || "-")}</td>
+                    <td style="white-space:pre-line;">${escapeHtml(
+    Array.isArray(register.subject)
+        ? register.subject.join("\n")
+        : register.subject || "-"
+).replace(/, /g, "\n")}</td>
 
                     <td>—</td>
 
@@ -1299,7 +1303,9 @@ function renderRegister(
 
                     <td>—</td>
 
-                    <td>${escapeHtml(register.topicCovered || "-")}</td>
+                    <td style="white-space:pre-line;">${escapeHtml(
+    register.topicCovered || "-"
+).replace(/(Maths|Science|Social Science|English|Tamil|Phonics|ECA):/gi, "\n$1:").replace(/^\n/, "")}</td>
 
                     <td class="status-present">
 
@@ -1351,7 +1357,11 @@ function renderRegister(
 
                         <td>${escapeHtml(register.className || "-")}</td>
 
-                        <td>${escapeHtml(register.subject || "-")}</td>
+                        <td style="white-space:pre-line;">${escapeHtml(
+    Array.isArray(register.subject)
+        ? register.subject.join("\n")
+        : register.subject || "-"
+).replace(/, /g, "\n")}</td>
 
                         <td>${escapeHtml(student.studentName || "-")}</td>
 
@@ -1363,7 +1373,9 @@ function renderRegister(
 
                         </td>
 
-                        <td>${escapeHtml(register.topicCovered || "-")}</td>
+                        <td style="white-space:pre-line;">${escapeHtml(
+    register.topicCovered || "-"
+).replace(/(Maths|Science|Social Science|English|Tamil|Phonics|ECA):/gi, "\n$1:").replace(/^\n/, "")}</td>
 
                         <td class="status-present">
 
