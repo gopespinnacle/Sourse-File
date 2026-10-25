@@ -411,21 +411,19 @@ body{
 
 
             <!-- SUBJECT -->
+<div class="form-group">
+    <label>Subjects / ECA / Language</label>
 
-            <div class="form-group">
+    <select
+        id="subject"
+        multiple
+        size="4"
+        style="min-height:110px;"
+    >
+    </select>
 
-                <label>
-                    Subject
-                </label>
-
-                <input
-                    type="text"
-                    id="subject"
-                    readonly
-                    placeholder="Select a class"
-                >
-
-            </div>
+    <small>Hold Ctrl (Windows) to select multiple options.</small>
+</div>
 
 
             <!-- GRADE -->
@@ -923,6 +921,48 @@ function renderClassesForDay(
     }
 
 }
+
+function getScheduleOptions(value) {
+    if (Array.isArray(value)) {
+        return value;
+    }
+
+    if (typeof value === "string" && value.trim()) {
+        return [value.trim()];
+    }
+
+    return [];
+}
+
+function populateSubjectOptions(schedule) {
+    const select = document.getElementById("subject");
+
+    const options = [
+        ...getScheduleOptions(schedule.subject),
+        ...getScheduleOptions(schedule.eca),
+        ...getScheduleOptions(schedule.language)
+    ];
+
+    const uniqueOptions = [...new Set(
+        options.filter(value => value && value.trim())
+    )];
+
+    select.innerHTML = "";
+
+    uniqueOptions.forEach(value => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = value;
+        select.appendChild(option);
+    });
+}
+
+function getSelectedSubjects() {
+    return Array.from(
+        document.getElementById("subject").selectedOptions
+    ).map(option => option.value);
+}
+
 /* =====================================================
    LOAD SELECTED CLASS
    ===================================================== */
@@ -941,9 +981,7 @@ function loadSelectedClass(){
             null;
 
 
-        document.getElementById(
-            "subject"
-        ).value = "";
+       document.getElementById("subject").innerHTML = "";
 
 
         document.getElementById(
@@ -981,10 +1019,7 @@ function loadSelectedClass(){
         ];
 
 
-    document.getElementById(
-        "subject"
-    ).value =
-        selectedClass.subject || "";
+    populateSubjectOptions(selectedClass);
 
 
     document.getElementById(
@@ -1448,7 +1483,7 @@ async function saveClassRegister(){
                                 selectedClass.className,
 
                             subject:
-                                selectedClass.subject,
+    getSelectedSubjects().join(", "),
 
                             scheduledStartTime:
                                 selectedClass.startTime,
@@ -1586,6 +1621,14 @@ async function saveClassRegister(){
 
     }
 
+    if (getSelectedSubjects().length === 0) {
+    showMessage(
+        "Please select at least one subject, ECA or language.",
+        "error"
+    );
+    return;
+}
+
 
     /* ================= STUDENTS ================= */
 
@@ -1702,7 +1745,7 @@ async function saveClassRegister(){
                             selectedClass.className,
 
                         subject:
-                            selectedClass.subject,
+    getSelectedSubjects().join(", "),
 
                         scheduledStartTime:
                             selectedClass.startTime,
