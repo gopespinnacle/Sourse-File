@@ -675,7 +675,9 @@ if(found){
 
 row += `<td>
 <button
-class="class-block ${(found.subject || found.eca || found.language || "general").toLowerCase()}"
+class="class-block ${[String(found.subject || ""), String(found.eca || ""), String(found.language || "")]
+    .join(" ")
+    .toLowerCase()}"
 onclick="openPeriod('${found._id}')">
 ${found.className}<br>
 ${found.subject || found.eca || found.language}<br>
