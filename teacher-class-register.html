@@ -922,17 +922,23 @@ function renderClassesForDay(
 
 }
 
+
 function getScheduleOptions(value) {
     if (Array.isArray(value)) {
-        return value;
+        return value.flatMap(item =>
+            typeof item === "string"
+                ? item.split(",").map(s => s.trim()).filter(Boolean)
+                : []
+        );
     }
 
     if (typeof value === "string" && value.trim()) {
-        return [value.trim()];
+        return value.split(",").map(s => s.trim()).filter(Boolean);
     }
 
     return [];
 }
+
 
 function populateSubjectOptions(schedule) {
     const select = document.getElementById("subject");
