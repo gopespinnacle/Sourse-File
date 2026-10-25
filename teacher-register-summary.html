@@ -263,7 +263,7 @@ document.getElementById("conductedCount").textContent = Math.max(
       <td><div class="date-main">${escapeHtml(formatDate(register.date))}</div><div class="date-sub">${escapeHtml(asDate(register.date)?.toLocaleDateString("en-IN",{weekday:"short"}) || "")}</div></td>
       <td class="time-cell">${escapeHtml(time)}</td>
       <td><span class="grade-pill">${escapeHtml(grade)}</span></td>
-      <td>${escapeHtml(subject)}</td>
+      <td style="white-space: pre-line;">${escapeHtml(Array.isArray(subject) ? subject.join("\n") : String(subject || "-").replace(/,\s*/g, "\n"))}</td>
       <td><div class="student-name">${escapeHtml(studentName)}</div></td>
       <td><div class="student-id">${escapeHtml(studentId)}</div></td>
       <td><span class="status-pill ${attendanceClass}">${escapeHtml(student?.attendance || "Not recorded")}</span></td>
