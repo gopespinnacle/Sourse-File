@@ -1160,10 +1160,9 @@ async function checkApprovedLeave(){
         );
 
 
-    const topicInput =
-        document.getElementById(
-            "topicCovered"
-        );
+    const topicInputs = document.querySelectorAll(
+    "#subjectTopicsContainer textarea[data-subject]"
+);
 
 
     const studentList =
@@ -1229,12 +1228,11 @@ async function checkApprovedLeave(){
 
             /* ================= TOPIC ================= */
 
-            topicInput.value = "";
-
-            topicInput.disabled = true;
-
-            topicInput.placeholder =
-                "Topic not required - teacher absent";
+            topicInputs.forEach(input => {
+    input.value = "";
+    input.disabled = true;
+    input.placeholder = "Topic not required - teacher absent";
+});
 
 
             /* ================= STUDENTS ================= */
@@ -1279,10 +1277,11 @@ async function checkApprovedLeave(){
 
             /* ================= TOPIC ================= */
 
-            topicInput.disabled = false;
-
-            topicInput.placeholder =
-                "Enter the topic covered in today's class";
+            topicInputs.forEach(input => {
+    input.disabled = false;
+    input.placeholder =
+        "Enter the " + input.dataset.subject + " topic covered";
+});
 
 
             /* ================= STUDENTS ================= */
@@ -1318,11 +1317,13 @@ async function checkApprovedLeave(){
             "700";
 
 
-        topicInput.disabled =
-            false;
-
-        topicInput.placeholder =
-            "Enter the topic covered in today's class";
+        document.querySelectorAll(
+    "#subjectTopicsContainer textarea[data-subject]"
+).forEach(input => {
+    input.disabled = false;
+    input.placeholder =
+        "Enter the " + input.dataset.subject + " topic covered";
+});
 
 
         renderStudents(
