@@ -1874,11 +1874,17 @@ separateSubjects.forEach(subject => {
 
     /* Add all saved topics */
 
-    plan.lessons.forEach(lesson=>{
+    plan.lessons.forEach((lesson, index) => {
 
+    const lessonSubject =
+        (lesson.subject || "").trim() ||
+        (plan.subject || "")
+            .split(",")
+            .map(subject => subject.trim())
+            .filter(Boolean)[index] ||
+        "";
 
-
-    addTopicCard(lesson.subject || "");
+    addTopicCard(lessonSubject);
 
     const card =
 
@@ -2670,7 +2676,7 @@ if (selectedSubjects.length === 0) {
 
     lessons.push({
     topicId,
-    subject: card.dataset.subject || card.querySelector("h2").textContent.replace("Topic:", "").trim(),
+    subject: (card.dataset.subject || "").trim(),
     topic,
     topicSummary,
     homework,
