@@ -853,17 +853,9 @@ if (clashData.clash) {
 }
 // ✅ CLASH CHECK FOR EDIT (FIXED)
 
-    let subject = "";
-    let eca = "";
-    let language = "";
-
-    if (languageValue !== "") {
-        language = languageValue;
-    } else if (ecaValue !== "") {
-        eca = ecaValue;
-    } else if (subjectValue !== "") {
-        subject = subjectValue;
-    }
+    let subject = subjectValue || "";
+let eca = ecaValue || "";
+let language = languageValue || "";
 
         try {
 
