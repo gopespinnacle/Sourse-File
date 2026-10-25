@@ -811,44 +811,7 @@ langSelect.innerHTML += `<option value="${l}">${l}</option>`;
 });
 
 }
-// ✅ ONLY ONE DROPDOWN ACTIVE
 
-document.getElementById("subject").addEventListener("change", function () {
-    if (this.value !== "") {
-        document.getElementById("eca").value = "";
-        document.getElementById("language").value = "";
-    }
-});
-document.getElementById("eca").addEventListener("change", function () {
-    if (this.value !== "") {
-        document.getElementById("subject").value = "";
-        document.getElementById("language").value = "";
-    }
-});
-
-document.getElementById("language").addEventListener("change", function () {
-    if (this.value !== "") {
-        document.getElementById("subject").value = "";
-        document.getElementById("eca").value = "";
-    }
-});
-
-
-// 🔥 ADD THIS BELOW (EDIT POPUP FIX)
-
-document.getElementById("eca").addEventListener("change", function () {
-    if (this.value !== "") {
-        document.getElementById("subject").value = "";
-        document.getElementById("language").value = "";
-    }
-});
-
-document.getElementById("language").addEventListener("change", function () {
-    if (this.value !== "") {
-        document.getElementById("subject").value = "";
-        document.getElementById("eca").value = "";
-    }
-});
 function closeSchedulePopup(){
     document.getElementById("schedulePopup").style.display = "none";
 }
