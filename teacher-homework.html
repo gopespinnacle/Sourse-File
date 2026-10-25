@@ -426,17 +426,18 @@ if (
     background:#f5f5f5;
     ">
 
-    <label><b>Subject</b></label>
+        <label><b>Subject</b></label>
 
-    <input
-    type="text"
-    id="hwSubject"
-    readonly
-    style="
-    padding:8px;
-    width:350px;
-    background:#f5f5f5;
-    ">
+    <div id="hwSubjectCheckboxes" style="
+        display:flex;
+        flex-wrap:wrap;
+        gap:10px;
+        padding:10px;
+        border:1px solid #ccc;
+        border-radius:8px;
+        background:white;
+    "></div>
+
 
     </div>
 
@@ -1487,7 +1488,13 @@ cursor:pointer;
 
     document.getElementById("hwClass").value = plan.className;
 
-    document.getElementById("hwSubject").value = plan.subject;
+        const editSubjects = (plan.subject || "")
+        .split(",")
+        .map(subject => subject.trim());
+
+    document.querySelectorAll(".hwSubjectCheckbox").forEach(checkbox => {
+        checkbox.checked = editSubjects.includes(checkbox.value);
+    });
 
     /* Remove the default empty topic */
 
@@ -1982,8 +1989,19 @@ const existing =
     document.getElementById("hwClass").value =
     sessionStorage.getItem("homeworkClass") || "";
 
-    document.getElementById("hwSubject").value =
-    sessionStorage.getItem("homeworkSubject") || "";
+        const subjectContainer = document.getElementById("hwSubjectCheckboxes");
+    const classSubjects = (sessionStorage.getItem("homeworkSubject") || "")
+        .split(",")
+        .map(subject => subject.trim())
+        .filter(Boolean);
+
+    subjectContainer.innerHTML = classSubjects.map(subject => `
+        <label style="display:flex;align-items:center;gap:6px;padding:8px;border:1px solid #ddd;border-radius:6px;">
+            <input type="checkbox" class="hwSubjectCheckbox" value="${subject.replace(/&/g, "&amp;").replace(/"/g, "&quot;")}" checked>
+            ${subject.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}
+        </label>
+    `).join("");
+
 
     document.getElementById("topicContainer").innerHTML="";
 
@@ -2336,9 +2354,8 @@ const existing =
 
     });
 
-    const subjectCode =
-    document.getElementById("hwSubject")
-    .value
+        const subjectCode =
+    (document.querySelector(".hwSubjectCheckbox:checked")?.value || "HW")
     .substring(0,3)
     .toUpperCase();
 
@@ -2384,8 +2401,9 @@ const existing =
     className:
     document.getElementById("hwClass").value,
 
-    subject:
-    document.getElementById("hwSubject").value,
+        subject: Array.from(
+        document.querySelectorAll(".hwSubjectCheckbox:checked")
+    ).map(checkbox => checkbox.value).join(", "),
 
     day:
     sessionStorage.getItem("homeworkDay") || "",
