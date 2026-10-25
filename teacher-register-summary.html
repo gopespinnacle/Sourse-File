@@ -267,7 +267,13 @@ document.getElementById("conductedCount").textContent = Math.max(
       <td><div class="student-name">${escapeHtml(studentName)}</div></td>
       <td><div class="student-id">${escapeHtml(studentId)}</div></td>
       <td><span class="status-pill ${attendanceClass}">${escapeHtml(student?.attendance || "Not recorded")}</span></td>
-      <td><div class="topic">${escapeHtml(register.topicCovered || "—")}</div></td>
+      <td>
+  <div class="topic">
+    ${escapeHtml(register.topicCovered || "—")
+      .replace(/(Maths|Science|Social Science|English|Tamil|Phonics|ECA):/gi, "<br>$1:")
+      .replace(/^<br>/, "")}
+  </div>
+</td>
       <td><span class="status-pill ${teacherClass}">${escapeHtml(register.teacherStatus || "Not recorded")}</span></td>
     </tr>`;
   }).join("");
