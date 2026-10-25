@@ -2003,15 +2003,50 @@ const existing =
     `).join("");
 
 
-    document.getElementById("topicContainer").innerHTML="";
+    const topicContainer = document.getElementById("topicContainer");
 
+topicContainer.innerHTML = "";
 
+const selectedSubjects = Array.from(
+    document.querySelectorAll(".hwSubjectCheckbox:checked")
+).map(checkbox => checkbox.value);
 
-    addTopicCard();
+selectedSubjects.forEach(subject => {
+    addTopicCard(subject);
+});
 
 
 
     }
+
+
+    document.getElementById("hwSubjectCheckboxes")
+    .addEventListener("change", function () {
+
+        const selectedSubjects = Array.from(
+            document.querySelectorAll(".hwSubjectCheckbox:checked")
+        ).map(checkbox => checkbox.value);
+
+        const topicContainer = document.getElementById("topicContainer");
+
+        const existingCards = Array.from(topicContainer.children);
+
+        selectedSubjects.forEach(subject => {
+            const exists = existingCards.some(
+                card => card.dataset.subject === subject
+            );
+
+            if (!exists) {
+                addTopicCard(subject);
+            }
+        });
+
+        existingCards.forEach(card => {
+            if (!selectedSubjects.includes(card.dataset.subject)) {
+                card.remove();
+            }
+        });
+    });
 
     async function loadLessonPlans(){
 
@@ -2101,189 +2136,71 @@ const existing =
         }
 
     }
-    function addTopicCard(){
+    function addTopicCard(subject = "") {
+    const div = document.createElement("div");
 
-    const div=document.createElement("div");
+    div.dataset.subject = subject;
 
-    div.style.border="1px solid #ccc";
-    div.style.padding="20px";
-    div.style.marginBottom="20px";
-    div.style.borderRadius="10px";
-    div.style.background="#fafafa";
+    div.style.border = "1px solid #ccc";
+    div.style.padding = "20px";
+    div.style.marginBottom = "20px";
+    div.style.borderRadius = "10px";
+    div.style.background = "#fafafa";
 
-    div.innerHTML=`
+    div.innerHTML = `
+        <h2>Topic: ${subject || "Additional Topic"}</h2>
 
-    <h2>Topic</h2>
+        <label><b>Topic</b></label><br>
+        <input type="text" class="topicName"
+            placeholder="Enter ${subject || ""} topic"
+            style="width:100%;padding:10px;margin:5px 0 15px;">
 
-    <label><b>Topic</b></label><br>
+        <label><b>Topic Description (Topic Summary)</b></label><br>
+        <textarea class="topicDescription"
+            placeholder="Enter topic summary"
+            style="width:100%;height:100px;padding:10px;margin:5px 0 15px;"></textarea>
 
-    <input
-    type="text"
-    class="topicName"
-    placeholder="Enter Topic"
-    style="
-    width:100%;
-    padding:10px;
-    margin-top:5px;
-    margin-bottom:15px;
-    ">
+        <label><b>Homework Given</b></label><br>
+        <textarea class="homeworkGiven"
+            placeholder="Enter homework"
+            style="width:100%;height:100px;padding:10px;margin:5px 0 15px;"></textarea>
 
-    <label><b>Topic Description (Topic Summary)</b></label><br>
+        <label><b>Homework Document (Optional)</b></label><br>
+        <div class="homeworkDocumentContainer">
+            <input type="file" class="homeworkDocumentFile" multiple>
+            <button type="button" onclick="uploadHomeworkDocument(this)">Upload</button>
+            <div class="uploadedHomeworkDocuments"></div>
+        </div>
 
-    <textarea
-    class="topicDescription"
-    placeholder="Enter Topic Summary"
-    style="
-    width:100%;
-    height:100px;
-    padding:10px;
-    margin-top:5px;
-    margin-bottom:15px;
-    "></textarea>
+        <br>
+        <label><b>Class Material</b></label><br>
+        <div class="materialContainer">
+            <input type="file" class="lessonMaterialFile" multiple>
+            <button type="button" onclick="uploadLessonMaterial(this)">Upload</button>
+            <div class="uploadedLessonMaterials"></div>
+        </div>
 
-    <label><b>Homework Given</b></label><br>
+        <br>
+        <button type="button" onclick="addMaterial(this)">+ Add File</button>
 
-    <textarea
-    class="homeworkGiven"
-    placeholder="Enter Homework"
-    style="
-    width:100%;
-    height:100px;
-    padding:10px;
-    margin-top:5px;
-    margin-bottom:15px;
-    "></textarea>
+        <hr style="margin:20px 0;">
 
-    <label><b>Homework Document (Optional)</b></label><br>
+        <label><b>Video Link Reference</b></label><br>
+        <div class="videoContainer">
+            <input type="text" class="videoLink"
+                placeholder="https://youtube.com/..."
+                style="width:100%;padding:10px;margin-top:8px;">
+        </div>
 
-    <div class="homeworkDocumentContainer">
-
-    <div style="margin-bottom:10px;">
-
-    <input
-    type="file"
-    class="homeworkDocumentFile"
-    multiple>
-
-    <button
-    type="button"
-    onclick="uploadHomeworkDocument(this)"
-    style="
-    background:#28a745;
-    color:white;
-    border:none;
-    padding:6px 12px;
-    border-radius:5px;
-    cursor:pointer;
-    ">
-
-    Upload
-
-    </button>
-
-    </div>
-
-    <div class="uploadedHomeworkDocuments"></div>
-
-    </div>
-
-    <br>
-
-    <label><b>Class Material</b></label><br>
-
-    <div class="materialContainer">
-
-    <div style="margin-bottom:10px;">
-
-    <input
-    type="file"
-    class="lessonMaterialFile"
-    multiple>
-
-    <button
-    type="button"
-    onclick="uploadLessonMaterial(this)"
-    style="
-    background:#28a745;
-    color:white;
-    border:none;
-    padding:6px 12px;
-    border-radius:5px;
-    cursor:pointer;
-    ">
-
-    Upload
-
-    </button>
-
-    </div>
-
-    <div class="uploadedLessonMaterials"></div>
-
-    </div>
-
-    <br>
-
-    <button
-    type="button"
-    onclick="addMaterial(this)"
-    style="
-    background:#1e3a5f;
-    color:white;
-    border:none;
-    padding:6px 12px;
-    border-radius:5px;
-    cursor:pointer;
-    ">
-
-    + Add File
-
-    </button>
-
-    <hr style="margin:20px 0;">
-
-    <label><b>Video Link Reference</b></label><br>
-
-    <div class="videoContainer">
-
-    <input
-    type="text"
-    class="videoLink"
-    placeholder="https://youtube.com/..."
-    style="
-    width:100%;
-    padding:10px;
-    margin-top:8px;
-    ">
-
-    </div>
-
-    <br>
-
-    <button
-    type="button"
-    onclick="addVideoLink(this)"
-    style="
-    background:#1e3a5f;
-    color:white;
-    border:none;
-    padding:6px 12px;
-    border-radius:5px;
-    cursor:pointer;
-    ">
-
-    + Add Link
-
-    </button>
-
+        <br>
+        <button type="button" onclick="addVideoLink(this)">+ Add Link</button>
     `;
 
-    document
-    .getElementById("topicContainer")
-    .appendChild(div);
+    div.lessonMaterials = [];
+    div.homeworkDocuments = [];
 
-    }
-
+    document.getElementById("topicContainer").appendChild(div);
+}
     function addMaterial(btn){
 
     const container=
@@ -2369,24 +2286,15 @@ const existing =
     `${subjectCode}-${dateCode}-${String(index+1).padStart(2,"0")}`;
 
     lessons.push({
-
     topicId,
-
+    subject: card.dataset.subject || "",
     topic,
-
     topicSummary,
-
     homework,
-
     videoLinks,
-
-    classMaterials:
-    card.lessonMaterials || [],
-
-    homeworkDocuments:
-    card.homeworkDocuments || []
-
-    });
+    classMaterials: card.lessonMaterials || [],
+    homeworkDocuments: card.homeworkDocuments || []
+});
 
     });
 
