@@ -216,7 +216,23 @@ function render() {
   visibleRows.forEach(({register}) => matchingRegisters.set(registerId(register),register));
   const registers = [...matchingRegisters.values()];
   document.getElementById("sessionCount").textContent = registers.length;
-  document.getElementById("conductedCount").textContent = registers.filter(r => teacherStatus(r) === "present").length;
+  
+const studentAbsentCount = registers.reduce((total, r) => {
+  const students = Array.isArray(r.students) ? r.students : [];
+  return total + students.filter(s =>
+    String(s.attendance || "").toLowerCase() === "absent"
+  ).length;
+}, 0);
+
+const teacherAbsentCount = registers.filter(
+  r => teacherStatus(r) === "absent"
+).length;
+
+document.getElementById("conductedCount").textContent = Math.max(
+  0,
+  registers.length - studentAbsentCount - teacherAbsentCount
+);
+
   document.getElementById("leaveCount").textContent = registers.filter(r => teacherStatus(r) === "absent").length;
   document.getElementById("resultCount").textContent = `${visibleRows.length} student record${visibleRows.length===1?"":"s"} · ${registers.length} session${registers.length===1?"":"s"}`;
 
