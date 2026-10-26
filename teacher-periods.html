@@ -686,10 +686,29 @@ window.location.href =
 /* TYPE */
 let typeClass = "period-card";
 
-if(s.subject?.toLowerCase().includes("math")) typeClass += " math";
-else if(s.subject?.toLowerCase().includes("science")) typeClass += " science";
-else if(s.language) typeClass += " language";
-else if(s.eca) typeClass += " eca";
+
+const subjects = Array.isArray(s.subject)
+    ? s.subject
+    : (s.subject ? [s.subject] : []);
+
+const languages = Array.isArray(s.language)
+    ? s.language
+    : (s.language ? [s.language] : []);
+
+const activities = Array.isArray(s.eca)
+    ? s.eca
+    : (s.eca ? [s.eca] : []);
+
+if (subjects.some(subject => String(subject).toLowerCase().includes("math"))) {
+    typeClass += " math";
+} else if (subjects.some(subject => String(subject).toLowerCase().includes("science"))) {
+    typeClass += " science";
+} else if (languages.length > 0) {
+    typeClass += " language";
+} else if (activities.length > 0) {
+    typeClass += " eca";
+}
+
 
 /* STATUS */
 const status = getClassStatus(s.day, s.startTime, s.endTime);
