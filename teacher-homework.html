@@ -140,8 +140,6 @@ async function reviewSubmission(id,currentMarks,currentFeedback){
  try{const r=await fetch(API+`/api/homework-flow/submissions/${id}/review`,{method:"PATCH",headers:{...headers,"Content-Type":"application/json"},body:JSON.stringify({marks,feedback})});const j=await r.json();if(!r.ok||!j.success)throw new Error(j.message||"Review failed");await loadTracking();alert("Review saved.")}catch(e){alert(e.message)}
 }
 async function changeStatus(id,status){try{const r=await fetch(API+`/api/homework-flow/assignments/${id}/status`,{method:"PATCH",headers:{...headers,"Content-Type":"application/json"},body:JSON.stringify({status})});const j=await r.json();if(!r.ok||!j.success)throw new Error(j.message||"Update failed");await loadTracking()}catch(e){alert(e.message)}}
-initClass();loadTracking();
-
 
 initClass();
 loadTracking();
