@@ -410,18 +410,28 @@ return;
 /* DISPLAY */
 data.data.forEach(d=>{
 
-let label =
-d.subject ||
-(d.languages?.join(", ")) ||
-(d.eca?.join(", ")) ||
-"General";
 
 container.innerHTML += `
 <div class="student-card">
-<b>👤 ${d.student.name}</b><br>
-📘 ${label}
+    <b>👤 ${d.student.name}</b><br>
+    📘 Subjects: ${
+        Array.isArray(d.subject)
+            ? d.subject.join(", ")
+            : (d.subject || "—")
+    }<br>
+    🌐 Languages: ${
+        Array.isArray(d.languages)
+            ? d.languages.join(", ")
+            : (d.languages || "—")
+    }<br>
+    🎨 ECA: ${
+        Array.isArray(d.eca)
+            ? d.eca.join(", ")
+            : (d.eca || "—")
+    }
 </div>
 `;
+
 
 });
 renderAttendanceTable(data.data);
