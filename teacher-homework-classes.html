@@ -2,461 +2,68 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Homework Classes</title>
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
 <style>
-
-body {
-    margin:0;
-    font-family: 'Segoe UI';
-    background:#f1f5f9;
-}
-
-/* SIDEBAR */
-.sidebar {
-    width:240px;
-    height:100vh;
-    background:#0f172a;
-    color:white;
-    position:fixed;
-}
-
-.sidebar h2 {
-    text-align:center;
-    padding:20px;
-}
-
-.sidebar ul {
-    list-style:none;
-    padding:0;
-}
-
-.sidebar ul li {
-    padding:15px;
-    cursor:pointer;
-}
-
-.sidebar ul li:hover {
-    background:#1e293b;
-}
-
-/* MAIN */
-.main {
-    margin-left:240px;
-    padding:20px;
-}
-
-.timetable-container {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-gap: 15px;
-}
-
-.day-column {
-background: #f8fafc;
-border-radius: 12px;
-padding: 10px;
-}
-
-.day-header {
-background: #2c3e50;
-color: white;
-padding: 6px;
-text-align:center;
-border-radius: 6px;
-margin-bottom: 8px;
-}
-
-.period-card {
-background: linear-gradient(135deg, #4f46e5, #3b82f6);
-color: white;
-padding: 10px;
-border-radius: 10px;
-margin-bottom: 10px;
-cursor:pointer;
-}
-
-/* STATUS COLORS */
-.live { border-left:4px solid #00e676; }
-.upcoming { border-left:4px solid #ffeb3b; }
-.completed { border-left:4px solid #9e9e9e; }
-.disabled { opacity:0.4; }
-
-/* =====================================================
-   MOBILE APP UI
-   ===================================================== */
-
-@media (max-width: 600px) {
-
-    body {
-        background: #f1f5f9;
-        overflow-x: hidden;
-    }
-
-    /* Hide desktop sidebar */
-    .sidebar {
-        display: none;
-    }
-
-    /* Full-width mobile content */
-    .main {
-        margin-left: 0;
-        padding: 0;
-        width: 100%;
-    }
-
-    /* Mobile header */
-    .main::before {
-        content: "Homework Classes";
-        display: block;
-        background: #0f172a;
-        color: white;
-        font-size: 20px;
-        font-weight: 700;
-        padding: 18px 18px;
-        text-align: left;
-        box-sizing: border-box;
-    }
-
-    /* Hide duplicate page heading */
-    .main > h2 {
-        display: none;
-    }
-
-    /* Mobile timetable */
-    .timetable-container {
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        padding: 16px;
-        box-sizing: border-box;
-    }
-
-    /* Day section */
-    .day-column {
-        width: 100%;
-        box-sizing: border-box;
-        background: transparent;
-        padding: 0;
-        border-radius: 0;
-    }
-
-    /* Day heading */
-    .day-header {
-        background: #2c3e50;
-        color: white;
-        padding: 10px 14px;
-        text-align: left;
-        border-radius: 10px;
-        margin-bottom: 8px;
-        font-size: 14px;
-        font-weight: 700;
-    }
-
-    /* Class card */
-    .period-card {
-        width: 100%;
-        box-sizing: border-box;
-        padding: 14px 16px;
-        border-radius: 12px;
-        margin-bottom: 9px;
-        min-height: 82px;
-
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-
-        box-shadow: 0 3px 8px rgba(15, 23, 42, 0.12);
-
-        font-size: 14px;
-        line-height: 1.6;
-
-        -webkit-tap-highlight-color: transparent;
-    }
-
-    .period-card:active {
-        transform: scale(0.98);
-    }
-
-    .period-card div:first-child {
-        font-size: 17px;
-        font-weight: 700;
-        margin-bottom: 2px;
-    }
-
-    .period-card div:nth-child(2) {
-        font-size: 14px;
-        opacity: 0.95;
-    }
-
-    .period-card div:nth-child(3) {
-        font-size: 13px;
-        opacity: 0.9;
-    }
-
-    /* Status indicator */
-    .live {
-        border-left: 5px solid #00e676;
-    }
-
-    .upcoming {
-        border-left: 5px solid #ffeb3b;
-    }
-
-    .completed {
-        border-left: 5px solid #9e9e9e;
-    }
-
-    .disabled {
-        opacity: 0.55;
-    }
-
-}
-
+body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#f1f5f9;color:#0f172a}
+.sidebar{width:240px;height:100vh;background:#0f172a;color:white;position:fixed;left:0;top:0}
+.sidebar h2{text-align:center;padding:20px}.sidebar ul{list-style:none;padding:0}.sidebar ul li{padding:15px;cursor:pointer}.sidebar ul li:hover{background:#1e293b}
+.main{margin-left:240px;padding:20px}.timetable-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.day-column{background:#f8fafc;border-radius:12px;padding:10px;min-height:220px}.day-header{background:#2c3e50;color:white;padding:6px;text-align:center;border-radius:6px;margin-bottom:8px}
+.period-card{background:linear-gradient(135deg,#4f46e5,#3b82f6);color:white;padding:10px;border-radius:10px;margin-bottom:8px;cursor:pointer}.live{border-left:4px solid #00e676}.upcoming{border-left:4px solid #ffeb3b}.completed{border-left:4px solid #9e9e9e}.disabled{opacity:.65}
+.tracking-section{margin-top:28px;background:white;border-radius:12px;padding:18px;box-shadow:0 3px 12px #0f172a0c}.tracking-list{display:grid;gap:10px}.tracking-item{border:1px solid #dbe3ee;border-radius:9px;padding:12px}.tracking-item header{background:transparent;color:#0f172a;padding:0;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.pill{background:#dbeafe;color:#1d4ed8;border-radius:20px;padding:4px 9px;font-size:12px}.muted{color:#64748b;font-size:13px}button{border:0;border-radius:7px;padding:9px 12px;background:#1e3a5f;color:white;cursor:pointer}
+@media(max-width:600px){.sidebar{display:none}.main{margin:0;padding:0;width:100%}.main::before{content:"Homework Classes";display:block;background:#0f172a;color:white;font-size:20px;font-weight:700;padding:18px}.main>h2{display:none}.timetable-container{display:flex;flex-direction:column;padding:16px}.day-column{min-height:0}.period-card{padding:14px 16px;min-height:76px}.tracking-section{margin:12px;padding:16px}}
 </style>
 </head>
-
 <body>
-
-<div class="sidebar">
-<h2>Teacher ERP</h2>
-<ul>
+<div class="sidebar"><h2>Teacher ERP</h2><ul>
 <li onclick="go('teacher-dashboard.html')">🏠 Dashboard</li>
-<li>📅 My Classes</li>
-<li>📘 Homework Classes</li>
-<li onclick="logout()">🚪 Logout</li>
-</ul>
-</div>
-
+<li onclick="go('teacher-classes.html')">📅 My Classes</li>
+<li onclick="window.scrollTo({top:document.getElementById('homeworkTracking').offsetTop,behavior:'smooth'})">📘 Homework Tracking</li>
+<li onclick="logout()">🚪 Logout</li></ul></div>
 <div class="main">
-
 <h2>Homework Classes</h2>
-
 <div id="timetable"></div>
-
+<section id="homeworkTracking" class="tracking-section">
+<h2>Homework Tracking</h2>
+<p class="muted">Homework created by you, with class, subject, due date, and submission progress.</p>
+<div id="trackingList" class="tracking-list">Loading homework tracking…</div>
+</section>
 </div>
-
 <script>
-
-let token =
-    sessionStorage.getItem("token");
-
-if (!token) {
-
-    if (
-        window.GPAAndroid &&
-        typeof window.GPAAndroid.getToken === "function"
-    ) {
-
-        token =
-            window.GPAAndroid.getToken();
-
-        const teacherId =
-            window.GPAAndroid.getUserId();
-
-        const teacherName =
-            window.GPAAndroid.getUserName();
-
-        if (token) {
-
-            sessionStorage.setItem(
-                "token",
-                token
-            );
-
-            if (teacherId) {
-
-                sessionStorage.setItem(
-                    "teacherId",
-                    teacherId
-                );
-            }
-
-            if (teacherName) {
-
-                sessionStorage.setItem(
-                    "teacherName",
-                    teacherName
-                );
-            }
-        }
-    }
-}
-
-if (!token) {
-
-    window.location.href =
-        "teacher-login.html";
-}
-
-/* ================= LOAD TIMETABLE ================= */
-
+const API="https://academy-backend-eatl.onrender.com";
+let token=sessionStorage.getItem("token");
+if(!token&&window.GPAAndroid&&typeof window.GPAAndroid.getToken==="function"){token=window.GPAAndroid.getToken();if(token)sessionStorage.setItem("token",token);const id=window.GPAAndroid.getUserId?.();if(id)sessionStorage.setItem("teacherId",id);const name=window.GPAAndroid.getUserName?.();if(name)sessionStorage.setItem("teacherName",name)}
+if(!token)location.href="teacher-login.html";
+const headers={"Authorization":"Bearer "+token};
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 async function loadTimetable(){
-
-const teacherId = sessionStorage.getItem("teacherId");
-
-const res = await fetch(
-
-"https://academy-backend-eatl.onrender.com/api/teacher/homework-classes/" +
-
-teacherId
-
-);
-
-const data = await res.json();
-
-if(data.success){
-
-    renderGrid(data.data);
-
+ try{const teacherId=sessionStorage.getItem("teacherId");if(!teacherId)throw new Error("Teacher ID is missing from the login session.");
+ const res=await fetch(API+"/api/teacher/homework-classes/"+encodeURIComponent(teacherId),{headers});
+ const data=await res.json();if(!res.ok||!data.success)throw new Error(data.message||"Could not load timetable.");
+ renderGrid(data.data||[]);
+ }catch(e){document.getElementById("timetable").innerHTML=`<p>${esc(e.message)}</p>`}
 }
-
-}
-
-/* ================= STATUS ================= */
-
-function getStatus(day, startTime, endTime){
-
-const now = new Date();
-
-const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-const today = days[now.getDay()];
-
-if(day !== today) return "disabled";
-
-const [sh, sm] = startTime.split(":");
-const [eh, em] = endTime.split(":");
-
-const start = new Date();
-start.setHours(sh, sm, 0);
-
-const end = new Date();
-end.setHours(eh, em, 0);
-
-if(now >= start && now <= end) return "live";
-if(now < start) return "upcoming";
-
-return "completed";
-}
-
-/* ================= UI ================= */
-
+function getStatus(day,startTime,endTime){const now=new Date();const days=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];if(day!==days[now.getDay()])return"disabled";const [sh,sm]=String(startTime).split(":").map(Number);const [eh,em]=String(endTime).split(":").map(Number);const start=new Date();start.setHours(sh,sm,0,0);const end=new Date();end.setHours(eh,em,0,0);if(now>=start&&now<=end)return"live";if(now<start)return"upcoming";return"completed"}
+function formatTime(time){if(!time)return"";let [hour,minute]=String(time).split(":");hour=Number(hour);const ampm=hour>=12?"PM":"AM";hour=hour%12||12;return hour+":"+(minute||"00")+" "+ampm}
 function renderGrid(schedule){
-
-const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-
-const container = document.getElementById("timetable");
-container.innerHTML = "";
-container.className = "timetable-container";
-
-/* GROUP */
-const grouped = {};
-days.forEach(d => grouped[d] = []);
-
-schedule.forEach(s=>{
-grouped[s.day].push(s);
-});
-
-/* BUILD */
-days.forEach(day=>{
-
-const col = document.createElement("div");
-col.className = "day-column";
-
-col.innerHTML = `<div class="day-header">${day}</div>`;
-
-grouped[day].forEach(s=>{
-
-const status = getStatus(s.day, s.startTime, s.endTime);
-
-const div = document.createElement("div");
-div.className = "period-card " + status;
-
-div.onclick = () => {
-
-    sessionStorage.setItem(
-        "homeworkClass",
-        s.className
-    );
-
-    sessionStorage.setItem(
-        "homeworkSubject",
-        s.subject || ""
-    );
-
-    sessionStorage.setItem(
-        "homeworkDay",
-        s.day
-    );
-
-    sessionStorage.setItem(
-        "homeworkStartTime",
-        s.startTime
-    );
-
-    sessionStorage.setItem(
-        "homeworkEndTime",
-        s.endTime
-    );
-
-    sessionStorage.setItem(
-        "homeworkPeriodId",
-        s._id
-    );
-
-    window.location.href = "teacher-homework.html";
-
-};
-
-div.innerHTML = `
-<div><b>${s.className}</b></div>
-<div>📘 ${s.subject || "General"}</div>
-<div>⏰ ${formatTime(s.startTime)} - ${formatTime(s.endTime)}</div>
-`;
-
-col.appendChild(div);
-
-});
-
-container.appendChild(col);
-
-});
-
+ const days=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];const container=document.getElementById("timetable");container.innerHTML="";container.className="timetable-container";const grouped={};days.forEach(d=>grouped[d]=[]);
+ (schedule||[]).forEach(s=>{if(grouped[s.day])grouped[s.day].push(s)});
+ days.forEach(day=>{const col=document.createElement("div");col.className="day-column";col.innerHTML=`<div class="day-header">${day}</div>`;
+ grouped[day].forEach(s=>{const div=document.createElement("div");div.className="period-card "+getStatus(s.day,s.startTime,s.endTime);const subject=Array.isArray(s.subject)?s.subject.join(", "):(s.subject||"");div.innerHTML=`<div><b>${esc(s.className)}</b></div><div>📘 ${esc(subject||"General")}</div><div>⏰ ${esc(formatTime(s.startTime))} - ${esc(formatTime(s.endTime))}</div>`;div.onclick=()=>{sessionStorage.setItem("homeworkClass",s.className||"");sessionStorage.setItem("homeworkSubject",subject);sessionStorage.setItem("homeworkDay",s.day||"");sessionStorage.setItem("homeworkStartTime",s.startTime||"");sessionStorage.setItem("homeworkEndTime",s.endTime||"");sessionStorage.setItem("homeworkPeriodId",s._id||"");location.href="teacher-homework.html"};col.appendChild(div)});container.appendChild(col)});
 }
-
-/* ================= NAV ================= */
-
-function logout(){
-localStorage.clear();
-window.location.href = "student-login.html";
+async function loadTracking(){
+ const box=document.getElementById("trackingList");
+ try{const r=await fetch(API+"/api/homework-flow/teacher/assignments",{headers});const j=await r.json();if(!r.ok||!j.success)throw new Error(j.message||"Could not load tracking");
+ if(!j.data.length){box.innerHTML='<p class="muted">No homework created yet.</p>';return}
+ box.innerHTML=j.data.map(h=>`<article class="tracking-item"><header><strong>${esc(h.title)}</strong><span class="pill">${esc(h.status)}</span></header><p>${esc(h.className)} • ${esc(h.subject)} • Due ${esc(new Date(h.dueDate).toLocaleString())}</p><p class="muted">Submissions: ${h.submissionCount||0}/${(h.assignedStudents||[]).length} • Reviewed: ${h.reviewedCount||0}</p><button onclick="openHomework('${h.schedule}')">Create more for this class</button></article>`).join("");
+ }catch(e){box.innerHTML=`<p>${esc(e.message)}</p>`}
 }
-
-function go(page){
-window.location.href = page;
-}
-
-/* AUTO REFRESH */
-setInterval(loadTimetable, 10000);
-
-loadTimetable();
-function formatTime(time){
-
-    let [hour, minute] = time.split(":");
-
-    hour = parseInt(hour);
-
-    let ampm = hour >= 12 ? "PM" : "AM";
-
-    hour = hour % 12;
-    hour = hour ? hour : 12;
-
-    return hour + ":" + minute + " " + ampm;
-}
+function openHomework(scheduleId){sessionStorage.setItem("homeworkPeriodId",scheduleId);location.href="teacher-homework.html"}
+function logout(){sessionStorage.clear();localStorage.removeItem("token");location.href="teacher-login.html"}
+function go(page){location.href=page}
+loadTimetable();loadTracking();setInterval(loadTimetable,30000);setInterval(loadTracking,30000);
 </script>
-
-
-
 </body>
 </html>
