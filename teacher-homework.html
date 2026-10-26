@@ -114,9 +114,11 @@ const body = {
   setMessage(`Published. Assigned to ${j.data.assignedStudents?.length||0} student(s).`,"success");e.target.reset();await loadTracking();
  }catch(err){setMessage(err.message,"error")}finally{btn.disabled=false}
 });
+
+let allSubmissions = [];
 async function loadTracking(){
 
-    let allSubmissions = [];
+    
  const box=document.getElementById("tracking");box.textContent="Loading homework…";
  try{
   const r=await fetch(API+"/api/homework-flow/teacher/assignments",{headers});const j=await r.json();
