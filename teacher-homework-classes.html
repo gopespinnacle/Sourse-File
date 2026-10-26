@@ -60,7 +60,52 @@ async function loadTracking(){
  box.innerHTML=j.data.map(h=>`<article class="tracking-item"><header><strong>${esc(h.title)}</strong><span class="pill">${esc(h.status)}</span></header><p>${esc(h.className)} • ${esc(h.subject)} • Due ${esc(new Date(h.dueDate).toLocaleString())}</p><p class="muted">Submissions: ${h.submissionCount||0}/${(h.assignedStudents||[]).length} • Reviewed: ${h.reviewedCount||0}</p><button onclick="openHomework('${h.schedule}')">Create more for this class</button></article>`).join("");
  }catch(e){box.innerHTML=`<p>${esc(e.message)}</p>`}
 }
-function openHomework(scheduleId){sessionStorage.setItem("homeworkPeriodId",scheduleId);location.href="teacher-homework.html"}
+
+async function openHomework(scheduleId) {
+    try {
+        const teacherId = sessionStorage.getItem("teacherId");
+
+        if (!teacherId || !scheduleId) {
+            alert("Teacher or class period information is missing. Please open the class card again.");
+            return;
+        }
+
+        const r = await fetch(
+            API + "/api/teacher/homework-classes/" + encodeURIComponent(teacherId),
+            { headers }
+        );
+
+        const j = await r.json();
+
+        if (!r.ok || !j.success) {
+            throw new Error(j.message || "Could not load the class period.");
+        }
+
+        const schedule = (j.data || []).find(
+            s => String(s._id) === String(scheduleId)
+        );
+
+        if (!schedule) {
+            throw new Error("This class period was not found. Refresh Homework Classes and try again.");
+        }
+
+        const subject = Array.isArray(schedule.subject)
+            ? schedule.subject.join(", ")
+            : (schedule.subject || "");
+
+        sessionStorage.setItem("homeworkPeriodId", String(schedule._id));
+        sessionStorage.setItem("homeworkClass", schedule.className || "");
+        sessionStorage.setItem("homeworkSubject", subject);
+        sessionStorage.setItem("homeworkDay", schedule.day || "");
+        sessionStorage.setItem("homeworkStartTime", schedule.startTime || "");
+        sessionStorage.setItem("homeworkEndTime", schedule.endTime || "");
+
+        location.href = "teacher-homework.html";
+    } catch (e) {
+        alert(e.message || "Could not open this class period.");
+    }
+}
+
 function logout(){sessionStorage.clear();localStorage.removeItem("token");location.href="teacher-login.html"}
 function go(page){location.href=page}
 loadTimetable();loadTracking();setInterval(loadTimetable,30000);setInterval(loadTracking,30000);
