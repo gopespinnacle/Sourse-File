@@ -115,12 +115,15 @@ const body = {
  }catch(err){setMessage(err.message,"error")}finally{btn.disabled=false}
 });
 async function loadTracking(){
+
+    let allSubmissions = [];
  const box=document.getElementById("tracking");box.textContent="Loading homework…";
  try{
   const r=await fetch(API+"/api/homework-flow/teacher/assignments",{headers});const j=await r.json();
   if(!r.ok||!j.success)throw new Error(j.message||"Could not load homework");
   if(!j.data.length){box.innerHTML='<p class="muted">No homework has been created yet.</p>';return}
-  box.innerHTML=j.data.map(h=>`<article class="hw">
+  allSubmissions = j.data.flatMap(h => h.submissions || []);
+box.innerHTML=j.data.map(h=>`<article class="hw">
    <div class="hw-top"><div><strong>${esc(h.title)}</strong><div class="muted">${esc(h.className)} • ${esc(h.subject)} • Due ${esc(fmtDate(h.dueDate))}</div></div><span class="tag">${esc(h.status)}</span></div>
    <p>${esc(h.instructions||"No extra instructions")}</p>
    ${h.topic?`<p class="muted">Topic: ${esc(h.topic)}</p>`:""}
@@ -128,16 +131,38 @@ async function loadTracking(){
    <p class="students">Assigned students: ${(h.assignedStudents||[]).map(s=>esc(s.name||s.studentId||"Student")).join(", ")||"—"}</p>
    <p><strong>Submitted:</strong> ${h.submissionCount||0} / ${(h.assignedStudents||[]).length} &nbsp; <strong>Reviewed:</strong> ${h.reviewedCount||0}</p>
    <div class="table-wrap"><table><thead><tr><th>Student</th><th>Submission</th><th>Answer / attachments</th><th>Marks</th><th>Feedback</th><th>Review</th></tr></thead><tbody>
-   ${(h.submissions||[]).map(s=>`<tr><td>${esc(s.student?.name||s.student?.studentId||"Student")}</td><td>${esc(s.status)}<br>${esc(fmtDate(s.submittedAt))}</td><td>${esc(s.answerText||"—")} ${(s.attachments||[]).map(a=>`<br><a href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.name||"File")}</a>`).join("")}</td><td>${s.marks==null?"—":esc(s.marks)}</td><td>${esc(s.feedback||"—")}</td><td><button type="button" onclick="reviewSubmission('${s._id}',${JSON.stringify(s.marks??"").replace(/</g,"\\u003c")},${JSON.stringify(s.feedback||"").replace(/</g,"\\u003c")})">Review</button></td></tr>`).join("")||'<tr><td colspan="6">No submissions yet.</td></tr>'}
+   ${(h.submissions||[]).map(s=>`<tr><td>${esc(s.student?.name||s.student?.studentId||"Student")}</td><td>${esc(s.status)}<br>${esc(fmtDate(s.submittedAt))}</td><td>${esc(s.answerText||"—")} ${(s.attachments||[]).map(a=>`<br><a href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.name||"File")}</a>`).join("")}</td><td>${s.marks==null?"—":esc(s.marks)}</td><td>${esc(s.feedback||"—")}</td><td><button type="button" onclick="reviewSubmission('${s._id}')">Review</button></td></tr>`).join("")||'<tr><td colspan="6">No submissions yet.</td></tr>'}
    </tbody></table></div>
    <p><button class="${h.status==="published"?"warn":"secondary"}" onclick="changeStatus('${h._id}','${h.status==="published"?"closed":"published"}')">${h.status==="published"?"Close homework":"Reopen homework"}</button></p>
   </article>`).join("");
  }catch(err){box.innerHTML=`<p class="error">${esc(err.message)}</p>`}
 }
-async function reviewSubmission(id,currentMarks,currentFeedback){
- const marks=prompt("Enter marks (leave blank if not marked):",currentMarks??"");if(marks===null)return;
- const feedback=prompt("Enter feedback for student:",currentFeedback??"");if(feedback===null)return;
- try{const r=await fetch(API+`/api/homework-flow/submissions/${id}/review`,{method:"PATCH",headers:{...headers,"Content-Type":"application/json"},body:JSON.stringify({marks,feedback})});const j=await r.json();if(!r.ok||!j.success)throw new Error(j.message||"Review failed");await loadTracking();alert("Review saved.")}catch(e){alert(e.message)}
+async function reviewSubmission(id) {
+    const submission = allSubmissions.find(s => s._id === id);
+    const currentMarks = submission?.marks ?? "";
+    const currentFeedback = submission?.feedback ?? "";
+
+    const marks = prompt("Enter marks (leave blank if not marked):", currentMarks);
+    if (marks === null) return;
+
+    const feedback = prompt("Enter feedback for student:", currentFeedback);
+    if (feedback === null) return;
+
+    try {
+        const r = await fetch(API + `/api/homework-flow/submissions/${id}/review`, {
+            method: "PATCH",
+            headers: { ...headers, "Content-Type": "application/json" },
+            body: JSON.stringify({ marks, feedback })
+        });
+
+        const j = await r.json();
+        if (!r.ok || !j.success) throw new Error(j.message || "Review failed");
+
+        await loadTracking();
+        alert("Review saved.");
+    } catch (e) {
+        alert(e.message);
+    }
 }
 async function changeStatus(id,status){try{const r=await fetch(API+`/api/homework-flow/assignments/${id}/status`,{method:"PATCH",headers:{...headers,"Content-Type":"application/json"},body:JSON.stringify({status})});const j=await r.json();if(!r.ok||!j.success)throw new Error(j.message||"Update failed");await loadTracking()}catch(e){alert(e.message)}}
 
