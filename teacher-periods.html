@@ -859,7 +859,23 @@ box-shadow:0 2px 8px rgba(0,0,0,.08);
 
 <b>${period.className}</b><br>
 
-📘 ${period.subject || period.eca || period.language}<br>
+📘 <strong>Subjects:</strong> ${
+    Array.isArray(period.subject)
+        ? period.subject.join(", ")
+        : (period.subject || "—")
+}<br>
+
+🌐 <strong>Languages:</strong> ${
+    Array.isArray(period.language)
+        ? (period.language.join(", ") || "—")
+        : (period.language || "—")
+}<br>
+
+🎨 <strong>ECA:</strong> ${
+    Array.isArray(period.eca)
+        ? (period.eca.join(", ") || "—")
+        : (period.eca || "—")
+}<br>
 
 ⏰ ${formatTime(period.startTime)}
 -
