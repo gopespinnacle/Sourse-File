@@ -109,6 +109,25 @@ async function reviewSubmission(id,currentMarks,currentFeedback){
 }
 async function changeStatus(id,status){try{const r=await fetch(API+`/api/homework-flow/assignments/${id}/status`,{method:"PATCH",headers:{...headers,"Content-Type":"application/json"},body:JSON.stringify({status})});const j=await r.json();if(!r.ok||!j.success)throw new Error(j.message||"Update failed");await loadTracking()}catch(e){alert(e.message)}}
 initClass();loadTracking();
+
+
+initClass();
+loadTracking();
+
+// Automatically fill today's date and current time
+function setDefaultDueDate() {
+    const dueDateInput = document.getElementById("dueDate");
+
+    if (!dueDateInput) return;
+
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+
+    dueDateInput.value = now.toISOString().slice(0, 16);
+}
+
+setDefaultDueDate();
+
 </script>
 </body>
 </html>
