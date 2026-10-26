@@ -139,24 +139,40 @@ box.innerHTML=j.data.map(h=>`<article class="hw">
 }
 async function reviewSubmission(id) {
     const submission = allSubmissions.find(s => s._id === id);
+
     const currentMarks = submission?.marks ?? "";
     const currentFeedback = submission?.feedback ?? "";
 
-    const marks = prompt("Enter marks (leave blank if not marked):", currentMarks);
+    const marks = prompt(
+        "Enter marks (leave blank if not marked):",
+        currentMarks
+    );
     if (marks === null) return;
 
-    const feedback = prompt("Enter feedback for student:", currentFeedback);
+    const feedback = prompt(
+        "Enter feedback for student:",
+        currentFeedback
+    );
     if (feedback === null) return;
 
     try {
-        const r = await fetch(API + `/api/homework-flow/submissions/${id}/review`, {
-            method: "PATCH",
-            headers: { ...headers, "Content-Type": "application/json" },
-            body: JSON.stringify({ marks, feedback })
-        });
+        const r = await fetch(
+            API + `/api/homework-flow/submissions/${id}/review`,
+            {
+                method: "PATCH",
+                headers: {
+                    ...headers,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ marks, feedback })
+            }
+        );
 
         const j = await r.json();
-        if (!r.ok || !j.success) throw new Error(j.message || "Review failed");
+
+        if (!r.ok || !j.success) {
+            throw new Error(j.message || "Review failed");
+        }
 
         await loadTracking();
         alert("Review saved.");
@@ -164,6 +180,7 @@ async function reviewSubmission(id) {
         alert(e.message);
     }
 }
+
 async function changeStatus(id,status){try{const r=await fetch(API+`/api/homework-flow/assignments/${id}/status`,{method:"PATCH",headers:{...headers,"Content-Type":"application/json"},body:JSON.stringify({status})});const j=await r.json();if(!r.ok||!j.success)throw new Error(j.message||"Update failed");await loadTracking()}catch(e){alert(e.message)}}
 
 initClass();
