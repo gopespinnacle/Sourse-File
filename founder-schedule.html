@@ -410,10 +410,12 @@ function renderTable(data) {
             <td>${s.teacher?.name || 'Unknown'}</td>
             <td>${s.day}</td>
             <td>${s.className}</td>
-            <td>${(s.subject || []).join(", ")}</td>
-            <td>${(s.assignments || []).length} mapped</td>
-            <td>${s.startTime}</td>
-            <td>${s.endTime}</td>
+            <td>${(s.subject || []).join(", ") || "-"}</td>
+<td>${(s.language || []).join(", ") || "-"}</td>
+<td>${(s.eca || []).join(", ") || "-"}</td>
+<td>${(s.assignments || []).length} mapped</td>
+<td>${s.startTime}</td>
+<td>${s.endTime}</td>
             <td>
                 <button onclick="editSchedule('${s._id}')">Edit</button>
                 <button onclick="deleteSchedule('${s._id}')" style="background:#dc3545">Del</button>
