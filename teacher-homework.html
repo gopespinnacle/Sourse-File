@@ -986,31 +986,44 @@ if (
 
     const totalRows = plan.lessons.length;
 
-    const studentGroups = {};
+    
+const studentGroups = {};
 
-submissions.forEach(sub=>{
+// First add students assigned to this class schedule.
+(plan.assignedStudents || []).forEach(student => {
+    const studentId = student._id;
 
+    if (!studentId) return;
+
+    studentGroups[studentId] = {
+        studentName: student.name || "Unknown Student",
+        submissions: []
+    };
+});
+
+// Then attach any existing submissions to those students.
+submissions.forEach(sub => {
     const studentId =
-    sub.student?._id || sub.student?.id || sub.studentId;
+        sub.student?._id ||
+        sub.studentId?._id ||
+        sub.studentId ||
+        sub.student?._id;
 
-    if(!studentGroups[studentId]){
+    if (!studentId) return;
 
-        studentGroups[studentId]={
-
+    if (!studentGroups[studentId]) {
+        studentGroups[studentId] = {
             studentName:
-            sub.student?.studentName ||
-            sub.student?.name ||
-            "Unknown Student",
-
-            submissions:[]
-
+                sub.student?.name ||
+                sub.studentId?.name ||
+                "Unknown Student",
+            submissions: []
         };
-
     }
 
     studentGroups[studentId].submissions.push(sub);
-
 });
+
 
 
 if (Object.keys(studentGroups).length === 0) {
