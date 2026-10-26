@@ -791,7 +791,27 @@ div.innerHTML = `
 </div>
 
 <div style="margin-top:4px;">
-📘 ${s.subject || s.eca || s.language}
+📘 Subjects: ${
+    Array.isArray(s.subject)
+        ? s.subject.join(", ")
+        : (s.subject || "—")
+}
+</div>
+
+<div style="margin-top:4px;">
+🌐 Languages: ${
+    Array.isArray(s.language)
+        ? (s.language.join(", ") || "—")
+        : (s.language || "—")
+}
+</div>
+
+<div style="margin-top:4px;">
+🎨 ECA: ${
+    Array.isArray(s.eca)
+        ? (s.eca.join(", ") || "—")
+        : (s.eca || "—")
+}
 </div>
 
 <div style="margin-top:4px;">
