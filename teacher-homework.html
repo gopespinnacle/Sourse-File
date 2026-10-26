@@ -157,22 +157,34 @@ async function reviewSubmission(id) {
     );
     if (feedback === null) return;
 
+    const reviewedAttachments = [];
+
+const chooseReviewedFile = confirm(
+    "Do you want to attach a Reviewed File?\n\n" +
+    "Click OK to choose a file, or Cancel to continue without a file."
+);
+
+if (chooseReviewedFile) {
     const reviewedFileInput = document.createElement("input");
-reviewedFileInput.type = "file";
-reviewedFileInput.accept = ".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png";
-reviewedFileInput.multiple = true;
+    reviewedFileInput.type = "file";
+    reviewedFileInput.accept = ".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png";
+    reviewedFileInput.multiple = true;
 
-const uploadReviewedFiles = new Promise(resolve => {
-    reviewedFileInput.onchange = () => resolve(reviewedFileInput.files);
-});
+    const selectedReviewedFiles = await new Promise(resolve => {
+        reviewedFileInput.addEventListener("change", () => {
+            resolve(Array.from(reviewedFileInput.files || []));
+        }, { once: true });
 
-reviewedFileInput.click();
+        reviewedFileInput.addEventListener("cancel", () => {
+            resolve([]);
+        }, { once: true });
 
-const selectedReviewedFiles = await uploadReviewedFiles;
-const reviewedAttachments = [];
+        reviewedFileInput.click();
+    });
 
-for (const file of selectedReviewedFiles) {
-    reviewedAttachments.push(await uploadAttachment(file));
+    for (const file of selectedReviewedFiles) {
+        reviewedAttachments.push(await uploadAttachment(file));
+    }
 }
 
     try {
