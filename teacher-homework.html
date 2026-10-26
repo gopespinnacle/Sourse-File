@@ -139,6 +139,7 @@ box.innerHTML=j.data.map(h=>`<article class="hw">
   </article>`).join("");
  }catch(err){box.innerHTML=`<p class="error">${esc(err.message)}</p>`}
 }
+
 async function reviewSubmission(id) {
     const submission = allSubmissions.find(s => s._id === id);
 
@@ -157,37 +158,50 @@ async function reviewSubmission(id) {
     );
     if (feedback === null) return;
 
-    const reviewedAttachments = [];
+    // Create a visible form for selecting the reviewed file.
+    const reviewForm = document.createElement("div");
+    reviewForm.style.cssText =
+        "position:fixed;inset:0;background:#0008;z-index:99999;" +
+        "display:flex;align-items:center;justify-content:center;";
 
-const chooseReviewedFile = confirm(
-    "Do you want to attach a Reviewed File?\n\n" +
-    "Click OK to choose a file, or Cancel to continue without a file."
-);
+    reviewForm.innerHTML = `
+        <div style="background:white;padding:24px;border-radius:10px;
+                    width:min(420px,90%);color:#222;">
+            <h3 style="margin-top:0;">Reviewed File (optional)</h3>
+            <p>Select a corrected file to share with the student.</p>
+            <input id="reviewedFilePicker" type="file"
+                   accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png"
+                   multiple style="width:100%;margin-bottom:20px;">
+            <div style="display:flex;gap:10px;justify-content:flex-end;">
+                <button id="skipReviewedFile" type="button">Skip file</button>
+                <button id="saveReviewedFile" type="button">Continue</button>
+            </div>
+        </div>
+    `;
 
-if (chooseReviewedFile) {
-    const reviewedFileInput = document.createElement("input");
-    reviewedFileInput.type = "file";
-    reviewedFileInput.accept = ".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png";
-    reviewedFileInput.multiple = true;
+    document.body.appendChild(reviewForm);
 
     const selectedReviewedFiles = await new Promise(resolve => {
-        reviewedFileInput.addEventListener("change", () => {
-            resolve(Array.from(reviewedFileInput.files || []));
-        }, { once: true });
-
-        reviewedFileInput.addEventListener("cancel", () => {
+        reviewForm.querySelector("#skipReviewedFile").onclick = () => {
+            reviewForm.remove();
             resolve([]);
-        }, { once: true });
+        };
 
-        reviewedFileInput.click();
+        reviewForm.querySelector("#saveReviewedFile").onclick = () => {
+            const picker = reviewForm.querySelector("#reviewedFilePicker");
+            const files = Array.from(picker.files || []);
+            reviewForm.remove();
+            resolve(files);
+        };
     });
 
-    for (const file of selectedReviewedFiles) {
-        reviewedAttachments.push(await uploadAttachment(file));
-    }
-}
+    const reviewedAttachments = [];
 
     try {
+        for (const file of selectedReviewedFiles) {
+            reviewedAttachments.push(await uploadAttachment(file));
+        }
+
         const r = await fetch(
             API + `/api/homework-flow/submissions/${id}/review`,
             {
@@ -196,7 +210,11 @@ if (chooseReviewedFile) {
                     ...headers,
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ marks, feedback, reviewedAttachments })
+                body: JSON.stringify({
+                    marks,
+                    feedback,
+                    reviewedAttachments
+                })
             }
         );
 
@@ -209,7 +227,7 @@ if (chooseReviewedFile) {
         await loadTracking();
         alert("Review saved.");
     } catch (e) {
-        alert(e.message);
+        alert(e.message || "Failed to save review.");
     }
 }
 
