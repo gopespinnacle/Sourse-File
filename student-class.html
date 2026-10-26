@@ -158,8 +158,8 @@ headers:{
 
 const data = await res.json();
 
-console.log("Timetable data received:", data.data);
-renderGrid(data.data || []);
+console.log("Timetable response:", data);
+renderGrid(Array.isArray(data) ? data : (data.data || []));
 
 }
 
