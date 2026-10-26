@@ -746,8 +746,26 @@ ${s.className}
 </div>
 
 <div class="subject">
-${s.subject || s.eca || s.language}
+    <strong>Subjects:</strong> ${
+        Array.isArray(s.subject) ? s.subject.join(", ") : (s.subject || "—")
+    }
 </div>
+
+${(Array.isArray(s.language) ? s.language.length : !!s.language) ? `
+<div class="subject">
+    <strong>Languages:</strong> ${
+        Array.isArray(s.language) ? s.language.join(", ") : s.language
+    }
+</div>
+` : ""}
+
+${(Array.isArray(s.eca) ? s.eca.length : !!s.eca) ? `
+<div class="subject">
+    <strong>ECA:</strong> ${
+        Array.isArray(s.eca) ? s.eca.join(", ") : s.eca
+    }
+</div>
+` : ""}
 
 <div class="time">
 ${formatTime(s.startTime)}
