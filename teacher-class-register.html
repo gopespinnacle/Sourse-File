@@ -891,8 +891,15 @@ function renderClassesForDay(
                 originalIndex;
 
 
-            option.textContent =
-                `${item.className || "-"} | ${item.subject || "-"}`;
+            const subjects = getScheduleOptions(item.subject);
+const languages = getScheduleOptions(item.language);
+const eca = getScheduleOptions(item.eca);
+
+option.textContent =
+    `${item.className || "-"} | ` +
+    `Subjects: ${subjects.join(", ") || "-"} | ` +
+    `Languages: ${languages.join(", ") || "-"} | ` +
+    `ECA: ${eca.join(", ") || "-"}`;
 
 
             select.appendChild(
