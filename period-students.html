@@ -862,7 +862,13 @@ sessionStorage.setItem(
 );
 
 /* Show Create Learning Material before opening Google Meet */
-    populateLearningMaterialPopup(subject);
+    populateLearningMaterialPopup(
+    [
+        ...(params.get("subject") ? [params.get("subject")] : []),
+        ...(params.get("language") ? [params.get("language")] : []),
+        ...(params.get("eca") ? [params.get("eca")] : [])
+    ].join(", ")
+);
     document.getElementById("learningMaterialOverlay").style.display = "flex";
     learningMaterialPopupOpen = true;
 }
