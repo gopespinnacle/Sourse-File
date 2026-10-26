@@ -157,6 +157,24 @@ async function reviewSubmission(id) {
     );
     if (feedback === null) return;
 
+    const reviewedFileInput = document.createElement("input");
+reviewedFileInput.type = "file";
+reviewedFileInput.accept = ".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png";
+reviewedFileInput.multiple = true;
+
+const uploadReviewedFiles = new Promise(resolve => {
+    reviewedFileInput.onchange = () => resolve(reviewedFileInput.files);
+});
+
+reviewedFileInput.click();
+
+const selectedReviewedFiles = await uploadReviewedFiles;
+const reviewedAttachments = [];
+
+for (const file of selectedReviewedFiles) {
+    reviewedAttachments.push(await uploadFile(file));
+}
+
     try {
         const r = await fetch(
             API + `/api/homework-flow/submissions/${id}/review`,
@@ -166,7 +184,7 @@ async function reviewSubmission(id) {
                     ...headers,
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ marks, feedback })
+                body: JSON.stringify({ marks, feedback, reviewedAttachments })
             }
         );
 

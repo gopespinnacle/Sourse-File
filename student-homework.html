@@ -67,6 +67,15 @@ function renderHomework(){
  </div>
 
  ${sub?.marks!=null?`<p><strong>Marks:</strong> ${esc(sub.marks)}</p>`:""}${sub?.feedback?`<p><strong>Teacher feedback:</strong> ${esc(sub.feedback)}</p>`:""}
+
+ ${(sub?.reviewedAttachments || []).length
+    ? `<div class="attachments">
+        <p><strong>Reviewed File</strong></p>
+        ${sub.reviewedAttachments.map(a =>
+            `<a href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.name || "Open reviewed file")}</a>`
+        ).join("")}
+       </div>`
+    : ""}
  <form onsubmit="submitHomework(event,'${h._id}')">
  <label for="answer-${h._id}">Your answer</label><textarea id="answer-${h._id}" placeholder="Type your answer here">${esc(sub?.answerText||"")}</textarea>
  <label for="file-${h._id}">Attach answer file (optional)</label><input id="file-${h._id}" type="file">
