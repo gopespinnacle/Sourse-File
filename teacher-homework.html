@@ -172,7 +172,7 @@ const selectedReviewedFiles = await uploadReviewedFiles;
 const reviewedAttachments = [];
 
 for (const file of selectedReviewedFiles) {
-    reviewedAttachments.push(await uploadFile(file));
+    reviewedAttachments.push(await uploadAttachment(file));
 }
 
     try {
