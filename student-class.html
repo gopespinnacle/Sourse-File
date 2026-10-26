@@ -202,8 +202,10 @@ container.className = "timetable-container";
 const grouped = {};
 days.forEach(d => grouped[d] = []);
 
-schedule.forEach(s=>{
-grouped[s.day].push(s);
+schedule.forEach(s => {
+    if (grouped[s.day]) {
+        grouped[s.day].push(s);
+    }
 });
 
 /* BUILD */
@@ -262,7 +264,11 @@ ${s.className}
 </div>
 
 <div style="margin-bottom:10px;">
-📘 ${s.subject || "General"}
+📘 ${
+    Array.isArray(s.subject)
+        ? s.subject.join(", ")
+        : (s.subject || "General")
+}
 </div>
 
 <hr style="border-color:rgba(255,255,255,.25);margin:8px 0;">
