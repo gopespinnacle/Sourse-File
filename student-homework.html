@@ -48,7 +48,24 @@ function renderHomework(){
  <div class="hwhead"><div><h2>${esc(h.title)}</h2><p class="muted">${esc(h.className)} • ${esc(h.subject)} • Due ${esc(date(h.dueDate))}</p></div><span class="tag">${esc(statusOf(h))}</span></div>
  ${h.topic?`<p><strong>Topic:</strong> ${esc(h.topic)}</p>`:""}<p>${esc(h.instructions||"No extra instructions")}</p>
  <p class="muted">Teacher: ${esc(h.teacher?.name||"Teacher")}</p>
- <div class="attachments">${(h.attachments||[]).map(a=>`<a href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.name||"Open attachment")}</a>`).join("")}</div>
+ 
+ <div class="attachments">
+ ${(h.attachments || []).length
+ ? `<p><strong>Homework Attachments</strong></p>` +
+ h.attachments.map(a =>
+ `<a href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.name || "Open attachment")}</a>`
+ ).join("")
+ : ""}
+ </div>
+ <div class="attachments">
+ ${(h.materialAttachments || []).length
+ ? `<p><strong>Class Materials</strong></p>` +
+ h.materialAttachments.map(a =>
+ `<a href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.name || "Open material")}</a>`
+ ).join("")
+ : ""}
+ </div>
+
  ${sub?.marks!=null?`<p><strong>Marks:</strong> ${esc(sub.marks)}</p>`:""}${sub?.feedback?`<p><strong>Teacher feedback:</strong> ${esc(sub.feedback)}</p>`:""}
  <form onsubmit="submitHomework(event,'${h._id}')">
  <label for="answer-${h._id}">Your answer</label><textarea id="answer-${h._id}" placeholder="Type your answer here">${esc(sub?.answerText||"")}</textarea>

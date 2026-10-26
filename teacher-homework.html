@@ -90,7 +90,25 @@ document.getElementById("homeworkForm").addEventListener("submit",async e=>{
  try{
   const file=document.getElementById("attachment").files[0];const attachments=[];
   if(file)attachments.push(await uploadAttachment(file));
-  const body={scheduleId,subject:document.getElementById("subject").value,title:document.getElementById("title").value.trim(),topic:document.getElementById("topic").value.trim(),instructions:document.getElementById("instructions").value.trim(),dueDate:document.getElementById("dueDate").value,attachments};
+  
+const materialFiles = document.getElementById("materialAttachment").files;
+const materialAttachments = [];
+
+for (const materialFile of materialFiles) {
+    materialAttachments.push(await uploadAttachment(materialFile));
+}
+
+const body = {
+    scheduleId,
+    subject: document.getElementById("subject").value,
+    title: document.getElementById("title").value.trim(),
+    topic: document.getElementById("topic").value.trim(),
+    instructions: document.getElementById("instructions").value.trim(),
+    dueDate: document.getElementById("dueDate").value,
+    attachments,
+    materialAttachments
+};
+
   const r=await fetch(API+"/api/homework-flow/assignments",{method:"POST",headers:{...headers,"Content-Type":"application/json"},body:JSON.stringify(body)});
   const j=await r.json();if(!r.ok||!j.success)throw new Error(j.message||"Could not publish homework");
   setMessage(`Published. Assigned to ${j.data.assignedStudents?.length||0} student(s).`,"success");e.target.reset();await loadTracking();
