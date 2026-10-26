@@ -158,6 +158,7 @@ headers:{
 
 const data = await res.json();
 
+console.log("Timetable data received:", data.data);
 renderGrid(data.data || []);
 
 }
