@@ -35,7 +35,15 @@ function date(v){const d=new Date(v);return Number.isNaN(d.getTime())?"—":d.to
 function statusOf(h){return h.submission?.status||"pending"}
 async function loadHomework(){
  const box=document.getElementById("homeworkList");box.textContent="Loading your homework…";
- try{const r=await fetch(API+"/api/homework-flow/student/assignments",{headers});const j=await r.json();if(!r.ok||!j.success)throw new Error(j.message||"Could not load homework");
+ try{const periodId = sessionStorage.getItem("homeworkPeriodId");
+
+const url = new URL(API + "/api/homework-flow/student/assignments");
+
+if (periodId) {
+    url.searchParams.set("scheduleId", periodId);
+}
+
+const r = await fetch(url.toString(), { headers });const j=await r.json();if(!r.ok||!j.success)throw new Error(j.message||"Could not load homework");
  allHomework=j.data||[];const select=document.getElementById("subjectFilter");const old=select.value;const subjects=[...new Set(allHomework.map(h=>h.subject).filter(Boolean))];select.innerHTML='<option value="">All Subjects</option>'+subjects.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join("");select.value=subjects.includes(old)?old:"";renderHomework();
  }catch(e){box.innerHTML=`<p class="error">${esc(e.message)}</p>`}
 }
