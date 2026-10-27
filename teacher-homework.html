@@ -124,9 +124,16 @@ async function loadTracking(){
   const r=await fetch(API+"/api/homework-flow/teacher/assignments",{headers});const j=await r.json();
   if(!r.ok||!j.success)throw new Error(j.message||"Could not load homework");
   if(!j.data.length){box.innerHTML='<p class="muted">No homework has been created yet.</p>';return}
-  const periodHomework = j.data.filter(h =>
-    String(h.schedule?._id || h.schedule || h.scheduleId || "") === String(scheduleId)
-);
+  const selectedSubject = document.getElementById("subject").value.trim();
+
+const periodHomework = j.data.filter(h => {
+    const homeworkScheduleId = String(
+        h.schedule?._id || h.schedule || h.scheduleId || ""
+    );
+
+    return homeworkScheduleId === String(scheduleId) &&
+           String(h.subject || "").trim() === selectedSubject;
+});
 
 allSubmissions = periodHomework.flatMap(h => h.submissions || []);
 box.innerHTML=periodHomework.map(h=>`<article class="hw">
@@ -238,6 +245,9 @@ async function reviewSubmission(id) {
 async function changeStatus(id,status){try{const r=await fetch(API+`/api/homework-flow/assignments/${id}/status`,{method:"PATCH",headers:{...headers,"Content-Type":"application/json"},body:JSON.stringify({status})});const j=await r.json();if(!r.ok||!j.success)throw new Error(j.message||"Update failed");await loadTracking()}catch(e){alert(e.message)}}
 
 initClass();
+
+document.getElementById("subject").addEventListener("change", loadTracking);
+
 loadTracking();
 
 // Automatically fill today's date and current time
