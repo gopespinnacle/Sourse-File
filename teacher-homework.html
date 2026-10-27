@@ -124,8 +124,12 @@ async function loadTracking(){
   const r=await fetch(API+"/api/homework-flow/teacher/assignments",{headers});const j=await r.json();
   if(!r.ok||!j.success)throw new Error(j.message||"Could not load homework");
   if(!j.data.length){box.innerHTML='<p class="muted">No homework has been created yet.</p>';return}
-  allSubmissions = j.data.flatMap(h => h.submissions || []);
-box.innerHTML=j.data.map(h=>`<article class="hw">
+  const periodHomework = j.data.filter(h =>
+    String(h.schedule?._id || h.schedule || h.scheduleId || "") === String(scheduleId)
+);
+
+allSubmissions = periodHomework.flatMap(h => h.submissions || []);
+box.innerHTML=periodHomework.map(h=>`<article class="hw">
    <div class="hw-top"><div><strong>${esc(h.title)}</strong><div class="muted">${esc(h.className)} • ${esc(h.subject)} • Due ${esc(fmtDate(h.dueDate))}</div></div><span class="tag">${esc(h.status)}</span></div>
    <p>${esc(h.instructions||"No extra instructions")}</p>
    ${h.topic?`<p class="muted">Topic: ${esc(h.topic)}</p>`:""}
