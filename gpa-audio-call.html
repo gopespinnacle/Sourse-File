@@ -1,0 +1,494 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GPA Audio Call | Gopes Pinnacle Academy</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f1f5f9;
+      color: #172554;
+    }
+
+    .container {
+      max-width: 620px;
+      margin: 50px auto;
+      padding: 24px;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 8px 30px #00000012;
+    }
+
+    h1 { margin-top: 0; }
+    label { display: block; margin: 18px 0 8px; }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    button {
+      padding: 12px 18px;
+      margin: 12px 8px 0 0;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .primary { background: #1d4ed8; color: white; }
+    .accept { background: #15803d; color: white; }
+    .decline { background: #b91c1c; color: white; }
+
+    #status { margin-top: 20px; line-height: 1.5; }
+    #incoming {
+      display: none;
+      margin-top: 24px;
+      padding: 20px;
+      border: 1px solid #93c5fd;
+      background: #eff6ff;
+      border-radius: 12px;
+    }
+
+    .note {
+      color: #64748b;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <section class="panel">
+      <h1>GPA Audio Call</h1>
+      <p>Gopes Pinnacle Academy — Secure audio calling</p>
+
+      <div id="callerPanel" style="display:none">
+        <label for="recipientId">Recipient User ID</label>
+        <input id="recipientId"
+               placeholder="Paste the recipient's MongoDB User ID">
+
+        <button id="callButton" class="primary">Start Audio Call</button>
+      </div>
+
+      <div id="incoming" role="dialog" aria-live="polite">
+        <h2>Incoming GPA Audio Call</h2>
+        <p>Caller: <strong id="callerName"></strong></p>
+        <button id="acceptButton" class="accept">Accept</button>
+        <button id="declineButton" class="decline">Decline</button>
+      </div>
+
+      <div id="status" role="status">Not connected.</div>
+
+      <button id="hangupButton" class="decline" hidden>End Call</button>
+
+      <audio id="remoteAudio" autoplay playsinline></audio>
+
+      <p class="note">
+        Microphone access is required for live audio. Recording is not
+        enabled by this initial interface. Do not treat a call as connected
+        until both participants can hear each other.
+      </p>
+    </section>
+  </main>
+
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
+
+<script>
+const API_BASE = "https://academy-backend-eatl.onrender.com";
+
+const $ = id => document.getElementById(id);
+const statusBox = $("status");
+const callerPanel = $("callerPanel");
+const incomingBox = $("incoming");
+const callerName = $("callerName");
+const recipientInput = $("recipientId");
+const callButton = $("callButton");
+const acceptButton = $("acceptButton");
+const declineButton = $("declineButton");
+const hangupButton = $("hangupButton");
+const remoteAudio = $("remoteAudio");
+
+let socket = null;
+let currentCallId = null;
+let remoteUserId = null;
+let pc = null;
+let localStream = null;
+let pendingCandidates = [];
+
+function setStatus(message) {
+  statusBox.textContent = message;
+}
+
+function getToken() {
+  return localStorage.getItem("token") ||
+         sessionStorage.getItem("token");
+}
+
+function getTokenPayload(token) {
+  try {
+    const part = token.split(".")[1];
+    const base64 = part.replace(/-/g, "+").replace(/_/g, "/");
+    return JSON.parse(atob(base64));
+  } catch {
+    return null;
+  }
+}
+
+function closeMedia() {
+  if (pc) {
+    pc.ontrack = null;
+    pc.onicecandidate = null;
+    pc.close();
+    pc = null;
+  }
+
+  if (localStream) {
+    localStream.getTracks().forEach(track => track.stop());
+    localStream = null;
+  }
+
+  remoteAudio.srcObject = null;
+  pendingCandidates = [];
+}
+
+function resetCall(message) {
+  closeMedia();
+  currentCallId = null;
+  remoteUserId = null;
+  incomingBox.style.display = "none";
+  hangupButton.hidden = true;
+  callButton.disabled = false;
+  acceptButton.disabled = false;
+  declineButton.disabled = false;
+  setStatus(message);
+}
+
+async function getMicrophone() {
+  if (!localStream) {
+    localStream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true
+      },
+      video: false
+    });
+  }
+
+  return localStream;
+}
+
+async function createPeerConnection() {
+  if (pc) return pc;
+
+  pc = new RTCPeerConnection({
+    iceServers: [
+      { urls: "stun:stun.l.google.com:19302" }
+    ]
+  });
+
+  const stream = await getMicrophone();
+
+  stream.getAudioTracks().forEach(track => {
+    pc.addTrack(track, stream);
+  });
+
+  pc.ontrack = event => {
+    remoteAudio.srcObject = event.streams[0];
+    remoteAudio.play().catch(() => {
+      setStatus("Call connected. Tap the page if audio playback is blocked.");
+    });
+  };
+
+  pc.onicecandidate = event => {
+    if (!event.candidate || !socket?.connected ||
+        !currentCallId || !remoteUserId) return;
+
+    socket.emit("call:signal", {
+      callId: currentCallId,
+      recipientId: remoteUserId,
+      signal: {
+        type: "ice",
+        candidate: event.candidate
+      }
+    }, result => {
+      if (result && !result.ok) {
+        console.error("ICE signaling error:", result.message);
+      }
+    });
+  };
+
+  pc.onconnectionstatechange = () => {
+    if (!pc) return;
+
+    if (pc.connectionState === "connected") {
+      setStatus("Live audio connected. You can speak now.");
+    } else if (pc.connectionState === "connecting") {
+      setStatus("Connecting live audio...");
+    } else if (pc.connectionState === "failed") {
+      setStatus("Audio connection failed. TURN connectivity may be required.");
+    } else if (pc.connectionState === "disconnected") {
+      setStatus("Audio connection interrupted.");
+    }
+  };
+
+  return pc;
+}
+
+async function sendSignal(signal) {
+  return new Promise((resolve, reject) => {
+    if (!socket?.connected || !currentCallId || !remoteUserId) {
+      reject(new Error("Call signaling is not ready."));
+      return;
+    }
+
+    socket.emit("call:signal", {
+      callId: currentCallId,
+      recipientId: remoteUserId,
+      signal
+    }, result => {
+      if (result?.ok) resolve();
+      else reject(new Error(result?.message || "Signaling failed."));
+    });
+  });
+}
+
+async function connectAudioCall() {
+  const token = getToken();
+
+  if (!token) {
+    setStatus("Please log in to the academy first.");
+    return;
+  }
+
+  const payload = getTokenPayload(token);
+
+  if (!payload?.id) {
+    setStatus("Login token is invalid. Please log in again.");
+    return;
+  }
+
+  // This only controls visibility. The backend enforces permissions.
+  if (["founder", "admin"].includes(payload.role)) {
+    callerPanel.style.display = "block";
+  }
+
+  socket = io(`${API_BASE}/gpa-audio-call`, {
+    auth: { token },
+    transports: ["websocket", "polling"]
+  });
+
+  socket.on("connect", () => {
+    setStatus("GPA Audio Call signaling connected.");
+  });
+
+  socket.on("connect_error", error => {
+    setStatus("Signaling connection failed: " + error.message);
+  });
+
+  socket.on("call:incoming", data => {
+    if (currentCallId) {
+      socket.emit("call:decline", { callId: data.callId }, () => {});
+      return;
+    }
+
+    currentCallId = data.callId;
+    remoteUserId = data.caller.id;
+
+    callerName.textContent = data.caller.name || "Academy user";
+    incomingBox.style.display = "block";
+    hangupButton.hidden = true;
+    setStatus("Incoming call. Accept or decline.");
+  });
+
+  socket.on("call:accepted", async data => {
+    if (data.callId !== currentCallId) return;
+
+    remoteUserId = data.recipient.id;
+    hangupButton.hidden = false;
+    callButton.disabled = true;
+
+    try {
+      const connection = await createPeerConnection();
+      const offer = await connection.createOffer();
+
+      await connection.setLocalDescription(offer);
+
+      await sendSignal({
+        type: "description",
+        description: {
+          type: connection.localDescription.type,
+          sdp: connection.localDescription.sdp
+        }
+      });
+
+      setStatus("Call accepted. Establishing live audio...");
+    } catch (error) {
+      console.error(error);
+      setStatus("Could not start microphone audio: " + error.message);
+    }
+  });
+
+  socket.on("call:signal", async data => {
+    if (data.callId !== currentCallId) return;
+
+    try {
+      const signal = data.signal;
+
+      if (signal.type === "description" &&
+          signal.description?.type === "offer") {
+        const connection = await createPeerConnection();
+
+        await connection.setRemoteDescription(signal.description);
+
+        for (const candidate of pendingCandidates) {
+          await connection.addIceCandidate(candidate);
+        }
+        pendingCandidates = [];
+
+        const answer = await connection.createAnswer();
+        await connection.setLocalDescription(answer);
+
+        await sendSignal({
+          type: "description",
+          description: {
+            type: connection.localDescription.type,
+            sdp: connection.localDescription.sdp
+          }
+        });
+
+        setStatus("Answer sent. Connecting live audio...");
+      } else if (
+        signal.type === "description" &&
+        signal.description?.type === "answer"
+      ) {
+        if (!pc) return;
+
+        await pc.setRemoteDescription(signal.description);
+
+        for (const candidate of pendingCandidates) {
+          await pc.addIceCandidate(candidate);
+        }
+        pendingCandidates = [];
+      } else if (signal.type === "ice" && signal.candidate) {
+        if (!pc || !pc.remoteDescription) {
+          pendingCandidates.push(signal.candidate);
+        } else {
+          await pc.addIceCandidate(signal.candidate);
+        }
+      }
+    } catch (error) {
+      console.error("WebRTC signaling error:", error);
+      setStatus("Could not establish audio: " + error.message);
+    }
+  });
+
+  socket.on("call:ended", data => {
+    if (data.callId !== currentCallId) return;
+    resetCall("Call ended: " + data.reason);
+  });
+}
+
+callButton.addEventListener("click", async () => {
+  if (!socket?.connected) {
+    setStatus("Audio Call signaling is not connected.");
+    return;
+  }
+
+  const recipientId = recipientInput.value.trim();
+
+  if (!/^[a-fA-F0-9]{24}$/.test(recipientId)) {
+    setStatus("Enter a valid recipient User ID.");
+    return;
+  }
+
+  callButton.disabled = true;
+
+  socket.emit("call:invite", { recipientId }, result => {
+    if (!result?.ok) {
+      callButton.disabled = false;
+      setStatus(result?.message || "Could not start call.");
+      return;
+    }
+
+    currentCallId = result.callId;
+    remoteUserId = recipientId;
+    hangupButton.hidden = false;
+    setStatus("Calling recipient. Waiting for them to accept...");
+  });
+});
+
+acceptButton.addEventListener("click", async () => {
+  if (!socket?.connected || !currentCallId) return;
+
+  acceptButton.disabled = true;
+
+  try {
+    // Request the microphone after the user explicitly accepts.
+    await getMicrophone();
+
+    socket.emit("call:accept", { callId: currentCallId }, result => {
+      if (!result?.ok) {
+        resetCall(result?.message || "Could not accept call.");
+        return;
+      }
+
+      incomingBox.style.display = "none";
+      hangupButton.hidden = false;
+      setStatus("Call accepted. Establishing live audio...");
+    });
+  } catch (error) {
+    acceptButton.disabled = false;
+    setStatus("Microphone permission is required: " + error.message);
+  }
+});
+
+declineButton.addEventListener("click", () => {
+  if (!socket?.connected || !currentCallId) return;
+
+  socket.emit("call:decline", { callId: currentCallId }, result => {
+    if (!result?.ok) {
+      setStatus(result?.message || "Could not decline call.");
+      return;
+    }
+
+    resetCall("Call declined.");
+  });
+});
+
+hangupButton.addEventListener("click", () => {
+  if (!socket?.connected || !currentCallId) return;
+
+  socket.emit("call:end", { callId: currentCallId }, result => {
+    if (!result?.ok) {
+      setStatus(result?.message || "Could not end call.");
+    }
+  });
+});
+
+window.addEventListener("beforeunload", () => {
+  closeMedia();
+});
+
+connectAudioCall();
+</script>
+
+</body>
+</html>
