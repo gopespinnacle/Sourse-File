@@ -1127,5 +1127,39 @@ async function createAdmin() {
 
 </script>
 </div>   <!-- ✅ CLOSE main-content HERE -->
+
+
+<script>
+async function testGpaAudioCall(recipientId) {
+    const token = localStorage.getItem("token");
+
+    if (!recipientId) {
+        alert("Please provide the recipient's MongoDB _id.");
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            "https://academy-backend-eatl.onrender.com/api/gpa-audio-call/start",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({ recipientId })
+            }
+        );
+
+        const result = await response.json();
+        console.log("GPA Audio Call test:", response.status, result);
+        alert(JSON.stringify(result, null, 2));
+    } catch (error) {
+        console.error("GPA Audio Call test failed:", error);
+        alert("Request failed. Check the browser console.");
+    }
+}
+</script>
+
 </body>
 </html>
