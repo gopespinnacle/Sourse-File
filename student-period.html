@@ -113,6 +113,9 @@ const day = params.get("day");
 const startTime = params.get("startTime");
 const endTime = params.get("endTime");
 const periodId = params.get("periodId");
+if (!periodId) {
+    console.error("Missing periodId in page URL");
+}
 
 /* DISPLAY CLASS INFO */
 document.getElementById("classInfo").innerHTML = `

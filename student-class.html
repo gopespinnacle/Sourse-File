@@ -233,29 +233,31 @@ div.className = "period-card " + status;
 
 /* ================= LIVE CLASS ONLY ================= */
 
-if(status === "live"){
 
+if (status === "live") {
     div.style.cursor = "pointer";
 
     div.onclick = () => {
+        const subjects = Array.isArray(s.subject)
+            ? s.subject
+            : (s.subject ? [s.subject] : []);
+
+        const params = new URLSearchParams({
+            className: s.className || "",
+            subject: subjects.join(", "),
+            day: s.day || "",
+            startTime: s.startTime || "",
+            endTime: s.endTime || "",
+            periodId: s._id
+        });
 
         window.location.href =
-        "student-period.html?" +
-        "className=" + encodeURIComponent(s.className) +
-        "&subject=" + encodeURIComponent(s.subject || "") +
-        "&day=" + encodeURIComponent(s.day) +
-        "&startTime=" + encodeURIComponent(s.startTime) +
-        "&endTime=" + encodeURIComponent(s.endTime) +
-        "&periodId=" + encodeURIComponent(s._id);
-
+            "student-period.html?" + params.toString();
     };
-
-}
-else{
-
+} else {
     div.style.cursor = "default";
-
 }
+
 
 
 
