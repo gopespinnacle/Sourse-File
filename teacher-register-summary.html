@@ -247,12 +247,39 @@ document.getElementById("conductedCount").textContent = Math.max(
     return db-da || String(a.register.scheduledStartTime||"").localeCompare(String(b.register.scheduledStartTime||""));
   });
   tbody.innerHTML = sorted.map(({register,student}) => {
-    const start = register.scheduledStartTime || register.actualStartTime;
-    const end = register.scheduledEndTime || register.actualEndTime;
-    const time = [formatTime(start),formatTime(end)].filter(x=>x!=="—").join(" – ") || "—";
-    const assignment = register.periodAssignment && typeof register.periodAssignment === "object" ? register.periodAssignment : {};
-    const grade = register.className || assignment.className || assignment.grade || "—";
-    const subject = register.subject || assignment.subject || "—";
+    const assignment =
+    register.periodAssignment &&
+    typeof register.periodAssignment === "object"
+        ? register.periodAssignment
+        : {};
+
+const start = assignment.startTime ||
+    register.scheduledStartTime ||
+    register.actualStartTime;
+
+const end = assignment.endTime ||
+    register.scheduledEndTime ||
+    register.actualEndTime;
+
+const time = [
+    formatTime(start),
+    formatTime(end)
+].filter(x => x !== "—").join(" – ") || "—";
+
+const grade = assignment.className ||
+    register.className ||
+    assignment.grade ||
+    "—";
+
+const scheduleSubjects = [
+    ...(Array.isArray(assignment.subject) ? assignment.subject : assignment.subject ? [assignment.subject] : []),
+    ...(Array.isArray(assignment.language) ? assignment.language : assignment.language ? [assignment.language] : []),
+    ...(Array.isArray(assignment.eca) ? assignment.eca : assignment.eca ? [assignment.eca] : [])
+];
+
+const subject = scheduleSubjects.length
+    ? [...new Set(scheduleSubjects)].join(", ")
+    : register.subject || "—";
     const attendance = String(student?.attendance || "—").toLowerCase();
     const teacher = teacherStatus(register);
     const attendanceClass = attendance === "present" ? "status-present" : attendance === "absent" ? "status-absent" : "status-neutral";
@@ -334,11 +361,29 @@ function exportRegisterPDF() {
   doc.text(`Generated: ${new Date().toLocaleString("en-IN")}`,283,17,{align:"right"});
   const rows = visibleRows.map(({register,student}) => {
     const assignment = register.periodAssignment && typeof register.periodAssignment==="object" ? register.periodAssignment : {};
-    return [
-      formatDate(register.date),
-      `${formatTime(register.scheduledStartTime || register.actualStartTime)} - ${formatTime(register.scheduledEndTime || register.actualEndTime)}`,
-      register.className || assignment.className || assignment.grade || "—",
-      register.subject || assignment.subject || "—",
+    const start = assignment.startTime ||
+    register.scheduledStartTime ||
+    register.actualStartTime;
+
+const end = assignment.endTime ||
+    register.scheduledEndTime ||
+    register.actualEndTime;
+
+const scheduleSubjects = [
+    ...(Array.isArray(assignment.subject) ? assignment.subject : assignment.subject ? [assignment.subject] : []),
+    ...(Array.isArray(assignment.language) ? assignment.language : assignment.language ? [assignment.language] : []),
+    ...(Array.isArray(assignment.eca) ? assignment.eca : assignment.eca ? [assignment.eca] : [])
+];
+
+const subject = scheduleSubjects.length
+    ? [...new Set(scheduleSubjects)].join(", ")
+    : register.subject || "—";
+
+return [
+    formatDate(register.date),
+    `${formatTime(start)} - ${formatTime(end)}`,
+    assignment.className || register.className || assignment.grade || "—",
+    subject,
       student?.studentName || student?.student?.name || (student ? "Student" : "No student entries"),
       student?.studentId || "—",
       student?.attendance || "—",
