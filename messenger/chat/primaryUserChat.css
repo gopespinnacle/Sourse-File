@@ -136,8 +136,9 @@
     display: block;
     margin-top: 4px;
     font-size: 10px;
+    font-weight: bold;
     line-height: 1.2;
-    color: #200909;
+    color: #200303;
     text-align: right;
     white-space: nowrap;
 }
