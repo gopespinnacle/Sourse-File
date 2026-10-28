@@ -130,3 +130,14 @@
 .gpa-primary-typing-indicator .gpa-primary-message-bubble {
     font-style: italic;
 }
+
+/* GPA Messenger message sent time */
+.gpa-primary-message-time {
+    display: block;
+    margin-top: 4px;
+    font-size: 10px;
+    line-height: 1.2;
+    color: #777;
+    text-align: right;
+    white-space: nowrap;
+}

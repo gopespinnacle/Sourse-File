@@ -171,9 +171,27 @@ this.typingTimer = null;
             bubble.className = "gpa-primary-message-bubble";
 
             const text = document.createElement("span");
-            text.className = "gpa-primary-message-text";
-            text.textContent = String(message.text || "");
-            bubble.appendChild(text);
+text.className = "gpa-primary-message-text";
+text.textContent = String(message.text || "");
+bubble.appendChild(text);
+
+// Display the message sent time.
+const timestamp = document.createElement("span");
+timestamp.className = "gpa-primary-message-time";
+
+const sentTime = message.sentAt || message.createdAt || message.receivedAt;
+const sentDate = sentTime ? new Date(sentTime) : null;
+
+timestamp.textContent =
+    sentDate && !Number.isNaN(sentDate.getTime())
+        ? sentDate.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true
+          })
+        : "";
+
+bubble.appendChild(timestamp);
 
             if (direction === "outgoing") {
                 const tick = document.createElement("span");
