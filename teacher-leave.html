@@ -2067,7 +2067,11 @@ function renderCalendar(){
                     <div class="period-subject">
 
                         📘
-                        ${period.subject || "General"}
+                        ${[
+    ...(Array.isArray(period.subject) ? period.subject : period.subject ? [period.subject] : []),
+    ...(Array.isArray(period.language) ? period.language : period.language ? [period.language] : []),
+    ...(Array.isArray(period.eca) ? period.eca : period.eca ? [period.eca] : [])
+].join(", ") || "General"}
 
                     </div>
 
@@ -2173,10 +2177,12 @@ function openLeaveModal(
 
 
     document.getElementById(
-        "leaveSubject"
-    ).innerText =
-    period.subject ||
-    "General";
+    "leaveSubject"
+).innerText = [
+    ...(Array.isArray(period.subject) ? period.subject : period.subject ? [period.subject] : []),
+    ...(Array.isArray(period.language) ? period.language : period.language ? [period.language] : []),
+    ...(Array.isArray(period.eca) ? period.eca : period.eca ? [period.eca] : [])
+].join(", ") || "General";
 
 
     document.getElementById(
