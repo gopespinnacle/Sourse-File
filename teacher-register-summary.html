@@ -253,13 +253,13 @@ document.getElementById("conductedCount").textContent = Math.max(
         ? register.periodAssignment
         : {};
 
-const start = assignment.startTime ||
-    register.scheduledStartTime ||
-    register.actualStartTime;
+const start = register.scheduledStartTime ||
+    register.actualStartTime ||
+    assignment.startTime;
 
-const end = assignment.endTime ||
-    register.scheduledEndTime ||
-    register.actualEndTime;
+const end = register.scheduledEndTime ||
+    register.actualEndTime ||
+    assignment.endTime;
 
 const time = [
     formatTime(start),
@@ -277,9 +277,10 @@ const scheduleSubjects = [
     ...(Array.isArray(assignment.eca) ? assignment.eca : assignment.eca ? [assignment.eca] : [])
 ];
 
-const subject = scheduleSubjects.length
-    ? [...new Set(scheduleSubjects)].join(", ")
-    : register.subject || "—";
+const subject = register.subject ||
+    (scheduleSubjects.length
+        ? [...new Set(scheduleSubjects)].join(", ")
+        : "—");
     const attendance = String(student?.attendance || "—").toLowerCase();
     const teacher = teacherStatus(register);
     const attendanceClass = attendance === "present" ? "status-present" : attendance === "absent" ? "status-absent" : "status-neutral";
