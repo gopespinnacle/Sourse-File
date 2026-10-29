@@ -469,6 +469,10 @@ async function addSchedule() {
 
     if (!payload.teacher || !payload.startTime || !payload.endTime) return alert("Fill required fields");
 
+    if (document.getElementById("submitBtn").disabled) {
+    return alert("Please resolve the schedule conflict before saving.");
+}
+
     const res = await fetch(`${API_BASE}/add-schedule`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
@@ -523,14 +527,124 @@ function downloadPDF() {
 }
 
 // Placeholder for Live Clash (Logic varies based on backend implementation)
+// Check teacher timetable clashes using TeacherStudentSchedule data.
 function setupLiveClash() {
     const fields = ["teacher", "day", "startTime", "endTime"];
-    fields.forEach(f => document.getElementById(f).addEventListener("change", async () => {
-        const warning = document.getElementById("clashWarning");
-        // Logic to hit /check-clash endpoint here
-    }));
-}
+    const warning = document.getElementById("clashWarning");
+    const submitBtn = document.getElementById("submitBtn");
 
+    let checkNumber = 0;
+
+    async function checkClash() {
+        const currentCheck = ++checkNumber;
+
+        const teacher = document.getElementById("teacher").value;
+        const day = document.getElementById("day").value;
+        const startTime = document.getElementById("startTime").value;
+        const endTime = document.getElementById("endTime").value;
+
+        warning.style.display = "none";
+        warning.textContent = "";
+        submitBtn.disabled = false;
+
+        if (!teacher || !day || !startTime || !endTime) return;
+
+        if (endTime <= startTime) {
+            warning.textContent = "End time must be later than start time.";
+            warning.style.display = "block";
+            submitBtn.disabled = true;
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem("token");
+
+            const response = await fetch(`${API_BASE}/schedules`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("Could not verify existing schedules.");
+            }
+
+            const data = await response.json();
+
+            // Ignore outdated responses if the user changes a field quickly.
+            if (currentCheck !== checkNumber) return;
+
+            const schedules = data.schedules || [];
+
+            const conflict = schedules.find(schedule => {
+                const existingTeacher =
+                    schedule.teacher?._id || schedule.teacher;
+
+                if (
+                    String(existingTeacher) !== String(teacher) ||
+                    schedule.day !== day
+                ) {
+                    return false;
+                }
+
+                const existingStart = schedule.startTime;
+                const existingEnd = schedule.endTime;
+
+                if (!existingStart || !existingEnd) return false;
+
+                const newStartMinutes =
+                    Number(startTime.split(":")[0]) * 60 +
+                    Number(startTime.split(":")[1]);
+
+                const newEndMinutes =
+                    Number(endTime.split(":")[0]) * 60 +
+                    Number(endTime.split(":")[1]);
+
+                const oldStartMinutes =
+                    Number(existingStart.split(":")[0]) * 60 +
+                    Number(existingStart.split(":")[1]);
+
+                const oldEndMinutes =
+                    Number(existingEnd.split(":")[0]) * 60 +
+                    Number(existingEnd.split(":")[1]);
+
+                // Require a minimum 2-minute gap.
+                return (
+                    newStartMinutes < oldEndMinutes + 2 &&
+                    newEndMinutes > oldStartMinutes - 2
+                );
+            });
+
+            if (conflict) {
+                const teacherName =
+                    teachers.find(t => String(t._id) === String(teacher))
+                        ?.name || "This teacher";
+
+                warning.textContent =
+                    `${teacherName} already has a class on ${day}, ` +
+                    `${conflict.startTime}–${conflict.endTime}. ` +
+                    `Choose another time with at least a 2-minute gap.`;
+
+                warning.style.display = "block";
+                submitBtn.disabled = true;
+            }
+        } catch (error) {
+            console.error("Schedule clash check failed:", error);
+
+            if (currentCheck !== checkNumber) return;
+
+            warning.textContent =
+                "Unable to verify the timetable. Please try again before saving.";
+
+            warning.style.display = "block";
+            submitBtn.disabled = true;
+        }
+    }
+
+    fields.forEach(field => {
+        document.getElementById(field).addEventListener("change", checkClash);
+    });
+}
 async function editSchedule(id) {
     currentEditId = id;
     const s = allSchedules.find(item => item._id === id);
