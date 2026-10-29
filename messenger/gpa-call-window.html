@@ -112,6 +112,10 @@
 </head>
 
 <body>
+    <audio id="gpaIncomingRingtone"
+       src="/gpa-ringtone.mp3"
+       preload="auto"
+       loop></audio>
   <main class="call-window">
     <div class="brand">GOPES PINNACLE ACADEMY</div>
 
@@ -191,6 +195,7 @@
         const data = event.data || {};
 
         if (data.type === "incoming-call") {
+            startRingtone();
           const name = data.callerName || "Academy user";
 
           callerName.textContent = name;
@@ -209,19 +214,22 @@
         }
 
         if (data.type === "call-ended") {
-          callerName.textContent = "GPA Audio Call";
-          callerAvatar.textContent = "G";
-          callStatus.textContent = "Waiting for an incoming call…";
-          acceptCall.hidden = true;
-          declineCall.hidden = true;
-          enableWindow.hidden = false;
-          enableWindow.disabled = false;
-          enableWindow.textContent = "Enable call window";
-        }
+  stopRingtone();
+
+  callerName.textContent = "GPA Audio Call";
+  callerAvatar.textContent = "G";
+  callStatus.textContent = "Waiting for an incoming call…";
+  acceptCall.hidden = true;
+  declineCall.hidden = true;
+  enableWindow.hidden = false;
+  enableWindow.disabled = false;
+  enableWindow.textContent = "Enable call window";
+}
       };
     }
 
     acceptCall.addEventListener("click", () => {
+        stopRingtone();
       if (channel) {
         channel.postMessage({ type: "accept-call" });
       }
@@ -230,12 +238,33 @@
     });
 
     declineCall.addEventListener("click", () => {
+
+        stopRingtone();
       if (channel) {
         channel.postMessage({ type: "decline-call" });
       }
 
       callStatus.textContent = "Declining call…";
     });
+
+
+    const ringtone = document.getElementById("gpaIncomingRingtone");
+
+function startRingtone() {
+  if (!ringtone) return;
+
+  ringtone.currentTime = 0;
+  ringtone.play().catch(error => {
+    console.warn("Click the page once to enable ringtone playback.", error);
+  });
+}
+
+function stopRingtone() {
+  if (!ringtone) return;
+
+  ringtone.pause();
+  ringtone.currentTime = 0;
+}
   </script>
 </body>
 </html>
