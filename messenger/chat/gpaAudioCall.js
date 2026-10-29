@@ -889,6 +889,8 @@ updateSeparateCallWindow({
     callerName: callerName
 });
 
+console.log("[GPA Audio Call] Sent incoming call to separate window:", callerName);
+
 updateControls("incoming");
 status("Voice call");
 
