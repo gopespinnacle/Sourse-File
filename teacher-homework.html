@@ -78,12 +78,30 @@ function initClass(){
  if(values.length){values.forEach(s=>{const o=document.createElement("option");o.value=s;o.textContent=s;select.appendChild(o)})}
  else {const o=document.createElement("option");o.value="";o.textContent="No subject supplied by selected class";select.appendChild(o)}
 }
-async function uploadAttachment(file){
- const fd=new FormData();fd.append("file",file);
- const r=await fetch(API+"/upload-file",{method:"POST",headers,body:fd});
- const j=await r.json();if(!r.ok||!j.url)throw new Error(j.message||"File upload failed");
- return {name:file.name,url:j.url};
+
+async function uploadAttachment(file) {
+    const fd = new FormData();
+    fd.append("files", file);
+
+    const r = await fetch(API + "/api/upload-homework-document", {
+        method: "POST",
+        headers,
+        body: fd
+    });
+
+    const j = await r.json();
+    const uploadedFile = j.files?.[0];
+
+    if (!r.ok || !j.success || !uploadedFile?.s3Url) {
+        throw new Error(j.message || "File upload failed");
+    }
+
+    return {
+        name: file.name,
+        url: uploadedFile.s3Url
+    };
 }
+
 document.getElementById("homeworkForm").addEventListener("submit",async e=>{
  e.preventDefault();if(!scheduleId){setMessage("Open a class card from Homework Classes first.","error");return}
  const btn=document.getElementById("createButton");btn.disabled=true;setMessage("Publishing…");
