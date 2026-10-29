@@ -523,6 +523,68 @@
     }
 }
 
+/* FIX GPA MESSENGER DESKTOP HEADER, CALL AND SEND BUTTONS */
+@media screen and (min-width: 601px) {
+
+    .gpa-primary-messenger-header {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 76px;
+        padding: 16px !important;
+        border-bottom: 1px solid #e5e7eb;
+        background: #ffffff;
+        color: #111827;
+        box-sizing: border-box;
+    }
+
+    #gpaMessengerContactName {
+        display: block !important;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    #gpaMessengerPresenceStatus {
+        display: block !important;
+    }
+
+    .gpa-primary-composer {
+        display: flex !important;
+        align-items: flex-end;
+        gap: 8px;
+        flex-shrink: 0;
+        padding: 12px !important;
+        background: #ffffff;
+        box-sizing: border-box;
+    }
+
+    #gpaPrimaryMessageInput {
+        display: block !important;
+        flex: 1 1 auto;
+        width: auto;
+        min-width: 0;
+    }
+
+    #gpaPrimarySendButton {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 80px;
+        width: 80px;
+        min-width: 80px;
+        height: 44px;
+        visibility: visible !important;
+        background: #2563eb;
+        color: #ffffff;
+    }
+
+    /* Keep the existing audio call button visible */
+    .gpa-messenger-chat-area button {
+        visibility: visible;
+    }
+}
+
 
 
     </style>
