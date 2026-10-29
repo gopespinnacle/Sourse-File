@@ -455,7 +455,35 @@ function clearDocument(){
  document.getElementById("editor").innerHTML="";document.getElementById("topicInput").value="";clearPen();selectedImageBox=null;penEnabled=false;editorPage.classList.remove("pen-mode");document.getElementById("penButton").classList.remove("active");updateMeta();document.getElementById("previewMount").innerHTML="";resizePenCanvas();
 }
 
-loadMappedGrades();updateMeta();setTimeout(setupExistingImages,300);
+
+loadMappedGrades().then(() => {
+    updateMeta();
+    buildPreview();
+});
+
+updateMeta();
+setTimeout(setupExistingImages, 300);
+
+// Refresh live preview when the teacher edits the document
+document.getElementById("editor").addEventListener("input", () => {
+    updateMeta();
+    buildPreview();
+});
+
+// Refresh preview when the topic changes
+document.getElementById("topicInput").addEventListener("input", buildPreview);
+
+// Refresh preview when the grade changes
+document.getElementById("gradeSelect").addEventListener("change", buildPreview);
+
+// Refresh preview when the document type changes
+document.querySelectorAll(".type-option").forEach(option => {
+    option.addEventListener("click", buildPreview);
+});
+
+// Refresh preview after pen drawing finishes
+document.getElementById("penCanvas").addEventListener("pointerup", buildPreview);
+
 </script>
 </body>
 </html>
