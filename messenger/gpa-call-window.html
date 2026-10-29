@@ -229,23 +229,24 @@
     }
 
     acceptCall.addEventListener("click", () => {
-        stopRingtone();
-      if (channel) {
-        channel.postMessage({ type: "accept-call" });
-      }
+  stopRingtone();
 
-      callStatus.textContent = "Accepting call…";
-    });
+  if (channel) {
+    channel.postMessage({ type: "accept-call" });
+  }
+
+  callStatus.textContent = "Accepting call…";
+});
 
     declineCall.addEventListener("click", () => {
+  stopRingtone();
 
-        stopRingtone();
-      if (channel) {
-        channel.postMessage({ type: "decline-call" });
-      }
+  if (channel) {
+    channel.postMessage({ type: "decline-call" });
+  }
 
-      callStatus.textContent = "Declining call…";
-    });
+  callStatus.textContent = "Declining call…";
+});
 
 
     const ringtone = document.getElementById("gpaIncomingRingtone");
