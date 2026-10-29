@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Parent Call Feedback | Gopes Pinnacle Academy</title>
+<style>
+:root{--navy:#172554;--blue:#3158c9;--ink:#182230;--muted:#667085;--line:#e4e7ec;--bg:#f5f7fb;--green:#067647;--red:#b42318;--amber:#b54708}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.page{max-width:1100px;margin:0 auto;padding:26px 18px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
+h1{font-size:26px;color:var(--navy);margin:0 0 6px}.muted{color:var(--muted);font-size:13px;line-height:1.5}
+.btn{border:1px solid var(--line);background:#fff;padding:10px 14px;border-radius:9px;font-weight:650;color:#344054;cursor:pointer}
+.record{background:#fff;border:1px solid var(--line);border-radius:15px;padding:20px;margin:16px 0;box-shadow:0 2px 8px #10182808}
+.record-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}.record h2{margin:0 0 6px;font-size:19px;color:var(--navy)}
+.badge{display:inline-block;padding:6px 10px;border-radius:20px;font-size:12px;font-weight:750}
+.solved{background:#dcfae6;color:var(--green)}.open{background:#fee4e2;color:var(--red)}.completed{background:#ecfdf3;color:#027a48}.saved{background:#fff4e5;color:var(--amber)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+.card{border:1px solid var(--line);border-radius:11px;padding:14px;min-width:0}.card h3{font-size:15px;margin:0 0 10px;color:#243b72}
+.item{border-top:1px solid var(--line);padding:12px 0}.item:first-of-type{border-top:0;padding-top:0}
+.item h4{font-size:14px;margin:0 0 7px}.line{font-size:13px;line-height:1.6;margin:4px 0;overflow-wrap:anywhere}
+.status{font-weight:750}.status.done{color:var(--green)}.status.pending{color:var(--red)}.status.progress{color:var(--amber)}
+.message{padding:28px 14px;text-align:center;background:#fff;border:1px solid var(--line);border-radius:12px;color:var(--muted)}
+@media(max-width:700px){.page{padding:18px 12px}.top{align-items:flex-start;flex-direction:column}.grid{grid-template-columns:1fr}.record{padding:14px}}
+</style>
+</head>
+<body>
+<main class="page">
+  <div class="top">
+    <div>
+      <h1>My Parent Call Feedback</h1>
+      <div class="muted">See the feedback discussed with your parent, the follow-up actions taken by the academy, and the current resolution status.</div>
+    </div>
+    <button class="btn" onclick="window.location.href='student-dashboard.html'">← Back to Student Dashboard</button>
+  </div>
+  <div id="message" class="message">Loading your feedback records…</div>
+  <div id="records"></div>
+</main>
+<script>
+const API_URL = "https://academy-backend-eatl.onrender.com/api/student/weekly-parent-feedback";
+const token = localStorage.getItem("token") || sessionStorage.getItem("token") ||
+              localStorage.getItem("studentToken") || sessionStorage.getItem("studentToken") ||
+              localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
+
+function esc(value){return String(value ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function dateLabel(value){
+  if(!value) return "Not recorded";
+  const date=new Date(value);
+  return Number.isNaN(date.getTime()) ? esc(value) : date.toLocaleDateString("en-IN");
+}
+function feedbackBadge(status){
+  const solved=status==="Feedback Solved";
+  return `<span class="badge ${solved?"solved":"open"}">${solved?"Feedback Solved":"Feedback in-progress"}</span>`;
+}
+function renderRecord(record){
+  const discussion=(record.discussion||[]).map(item=>`
+    <div class="item">
+      <h4>${esc(item.question||("Question "+item.questionNumber))}</h4>
+      <div class="line"><b>Recorded response:</b> ${esc(item.status||"Not recorded")}</div>
+      <div class="line"><b>Parent's notes:</b> ${esc(item.notes||"No notes recorded")}</div>
+    </div>`).join("") || `<div class="muted">No discussion responses recorded.</div>`;
+  const issues=(record.issues||[]).map(issue=>{
+    const status=issue.resolutionStatus||"Pending";
+    const cls=status==="Completed"?"done":status==="In Progress"?"progress":"pending";
+    return `<div class="item">
+      <h4>${esc(issue.question||"Parent concern")}</h4>
+      <div class="line"><b>Parent's feedback:</b> ${esc(issue.parentResponse||"Not recorded")}</div>
+      ${issue.parentNotes?`<div class="line"><b>Details:</b> ${esc(issue.parentNotes)}</div>`:""}
+      <div class="line"><b>Action / resolution status:</b> <span class="status ${cls}">${esc(status==="Completed"?"Resolved":status)}</span></div>
+      <div class="line"><b>Academy follow-up:</b> ${esc(issue.resolutionNotes||"Follow-up notes have not been added yet.")}</div>
+    </div>`;
+  }).join("") || `<div class="muted">No separate concern was recorded for this call.</div>`;
+  const parent=record.parentFeedback||{}, teacher=record.teacherFeedback||{};
+  return `<article class="record">
+    <div class="record-head">
+      <div><h2>Week of ${dateLabel(record.weekStart)}</h2>
+      <div class="muted">Call date: ${dateLabel(record.callDateTime)} · Call status: ${esc(record.callStatus||"Not recorded")}</div></div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap">${feedbackBadge(record.feedbackStatus)} <span class="badge ${record.recordStatus==="Completed"?"completed":"saved"}">Call ${esc(record.recordStatus||"Saved")}</span></div>
+    </div>
+    <div class="grid">
+      <section class="card"><h3>Parent Discussion</h3>${discussion}</section>
+      <section class="card"><h3>Feedback & Resolution</h3>${issues}
+        <div class="line"><b>Additional remarks:</b> ${esc(record.additionalRemarks||"None recorded")}</div>
+        ${record.actionPlanNotes?`<div class="line"><b>Agreed next steps:</b> ${esc(record.actionPlanNotes)}</div>`:""}
+      </section>
+      <section class="card"><h3>Parent Feedback Summary</h3>
+        <div class="line"><b>Rating:</b> ${esc(parent.rating||"Not recorded")}</div>
+        <div class="line"><b>Notes:</b> ${esc(parent.notes||"No additional parent feedback recorded")}</div>
+      </section>
+      <section class="card"><h3>Teacher Feedback</h3>
+        <div class="line"><b>Rating:</b> ${esc(teacher.rating||"Not recorded")}</div>
+        <div class="line"><b>Notes:</b> ${esc(teacher.notes||"No teacher feedback recorded")}</div>
+      </section>
+    </div>
+  </article>`;
+}
+async function loadRecords(){
+  const message=document.getElementById("message"), records=document.getElementById("records");
+  if(!token){message.textContent="Your login session was not found. Please sign in again.";return;}
+  try{
+    const response=await fetch(API_URL,{headers:{Authorization:"Bearer "+token}});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok) throw new Error(data.message||"Unable to load feedback.");
+    const items=data.records||[];
+    if(!items.length){message.textContent="No saved parent-call feedback is available yet.";return;}
+    message.style.display="none";
+    records.innerHTML=items.map(renderRecord).join("");
+  }catch(error){
+    message.textContent=error.message||"Unable to load your feedback records. Please try again later.";
+  }
+}
+loadRecords();
+</script>
+</body>
+</html>
