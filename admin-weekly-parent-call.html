@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Weekly Parent Call | Gopes Pinnacle Academy</title>
+<style>
+:root{--navy:#172554;--blue:#3158c9;--ink:#182230;--muted:#667085;--line:#e4e7ec;--bg:#f5f7fb;--white:#fff;--green:#12805c;--amber:#b54708}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}button,input,select,textarea{font:inherit}button{cursor:pointer}.app{display:grid;grid-template-columns:290px minmax(0,1fr);min-height:100vh}.left{background:#fff;border-right:1px solid var(--line);padding:22px 16px}.brand{font-weight:800;color:var(--navy);font-size:18px;margin:0 0 5px}.sub{font-size:12px;color:var(--muted);margin-bottom:22px}.search{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;margin-bottom:10px}.filters{display:grid;gap:8px;margin-bottom:14px}.filters select{padding:10px;border:1px solid var(--line);border-radius:9px;background:white}.student-list{display:grid;gap:8px;max-height:calc(100vh - 240px);overflow:auto}.student{width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:11px;padding:12px}.student.active{border-color:var(--blue);background:#f0f4ff}.student strong{display:block;font-size:14px}.student small{color:var(--muted);display:block;margin-top:4px}.status-dot{float:right;font-size:10px;border-radius:20px;background:#eef2f6;padding:4px 7px;color:#475467}.main{padding:26px;min-width:0}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.top h1{font-size:25px;margin:0 0 5px}.muted{color:var(--muted);font-size:13px}.week{padding:9px;border:1px solid var(--line);border-radius:9px;background:white}.profile{background:white;border:1px solid var(--line);border-radius:15px;padding:18px;margin-bottom:16px}.profile-head{display:flex;justify-content:space-between;gap:12px;align-items:start}.profile h2{margin:0 0 5px;font-size:21px}.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.pill{background:#f2f4f7;border-radius:8px;padding:8px 10px;font-size:12px}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#fff;padding:9px 12px;border-radius:9px;color:#344054;font-weight:600;font-size:13px}.btn.primary{background:var(--blue);border-color:var(--blue);color:white}.btn.success{background:var(--green);border-color:var(--green);color:white}.tabs{display:flex;gap:7px;overflow-x:auto;padding:4px 0 12px;margin-bottom:12px}.tab{white-space:nowrap;border:1px solid var(--line);background:white;border-radius:9px;padding:10px 13px;font-size:13px;font-weight:650}.tab.active{background:var(--navy);border-color:var(--navy);color:white}.panel{background:white;border:1px solid var(--line);border-radius:15px;padding:20px;min-height:380px}.panel h3{margin:0 0 15px;font-size:18px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px}.metric{border:1px solid var(--line);border-radius:12px;padding:14px}.metric small{color:var(--muted)}.metric strong{display:block;font-size:23px;margin-top:8px}.section{margin:20px 0}.section h4{margin:0 0 10px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:left;padding:11px;border-bottom:1px solid var(--line);vertical-align:top}th{background:#f9fafb;color:#475467}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field.full{grid-column:1/-1}.field label{font-size:13px;font-weight:650;color:#344054}.field input,.field select,.field textarea{width:100%;border:1px solid #d0d5dd;border-radius:9px;padding:10px;background:white;min-width:0}.field textarea{min-height:94px;resize:vertical}.counter{text-align:right;font-size:11px;color:var(--muted)}.question{border:1px solid var(--line);border-radius:12px;padding:15px;margin-bottom:14px}.question h4{margin:0 0 12px;font-size:15px}.question .form-grid{grid-template-columns:240px minmax(0,1fr)}.footer-actions{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:18px}.notice{padding:12px;border-radius:9px;background:#f2f4f7;color:#475467;font-size:13px;margin-bottom:12px}.empty{padding:30px;text-align:center;color:var(--muted)}.hidden{display:none!important}.call-row{display:grid;grid-template-columns:1fr auto;gap:10px;border-bottom:1px solid var(--line);padding:12px 0}.call-row strong{display:block}.tag{font-size:11px;border-radius:20px;background:#ecfdf3;color:#027a48;padding:5px 8px;height:max-content}.feedback-tag{display:inline-block;font-size:11px;font-weight:700;border-radius:20px;padding:5px 8px;white-space:nowrap}.feedback-open{background:#fee4e2;color:#b42318}.feedback-solved{background:#dcfae6;color:#067647}.student .feedback-tag{margin-top:3px;max-width:100%;white-space:normal}.summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.summary-card{border:1px solid var(--line);border-radius:12px;padding:14px}.summary-card h4{margin:0 0 9px}.summary-line{font-size:13px;line-height:1.6;margin:5px 0}.issue-card{border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}.issue-card h4{margin:0 0 8px}.issue-card .form-grid{grid-template-columns:220px minmax(0,1fr)}@media(max-width:720px){.summary-grid{grid-template-columns:1fr}.issue-card .form-grid{grid-template-columns:1fr}}.error{color:#b42318}.mobile-head{display:none}
+@media(max-width:1050px){.app{grid-template-columns:250px minmax(0,1fr)}.main{padding:18px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.question .form-grid{grid-template-columns:1fr}}
+@media(max-width:720px){.app{display:block}.left{border-right:0;border-bottom:1px solid var(--line);padding:14px}.student-list{max-height:210px;grid-template-columns:repeat(2,minmax(0,1fr))}.main{padding:14px}.top{align-items:flex-start;flex-direction:column}.profile-head{flex-direction:column}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.panel{padding:14px}.student-list{max-height:240px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="left">
+  <div class="brand">Gopes Pinnacle Academy</div><div class="sub">ADMIN · WEEKLY PARENT CALLS</div>
+  <input id="search" class="search" placeholder="Search student, grade, teacher…" />
+  <div class="filters">
+    <select id="gradeFilter"><option value="">All Grades</option></select>
+    <select id="teacherFilter"><option value="">All Teachers</option></select>
+    <select id="statusFilter"><option value="">All Call Statuses</option><option>Draft</option><option>Saved</option><option>Completed</option><option>Not started</option></select>
+  </div>
+  <div id="studentList" class="student-list"><div class="empty">Loading students…</div></div>
+</aside>
+<main class="main">
+  <div class="top"><div><h1>Weekly Parent Call</h1><div class="muted">Review student progress, record parent feedback and follow-up actions.</div></div>
+  <div><label class="muted" for="weekStart">Week starting&nbsp;</label><input id="weekStart" class="week" type="date"></div></div>
+  <div id="profile" class="profile"><div class="empty">Select a student to begin.</div></div>
+  <div id="workspace" class="hidden">
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-tab="academic">1. Academic Report</button>
+      <button class="tab" data-tab="conduct">2. Conduct Call</button>
+      <button class="tab" data-tab="parent">3. Parent Feedback</button>
+      <button class="tab" data-tab="teacher">4. Teacher Feedback</button>
+      <button class="tab" data-tab="action">5. Action Plan</button>
+      <button class="tab" data-tab="history">6. Call History</button>
+    </nav>
+    <section id="academic" class="panel"></section>
+    <section id="conduct" class="panel hidden"></section>
+    <section id="parent" class="panel hidden"></section>
+    <section id="teacher" class="panel hidden"></section>
+    <section id="action" class="panel hidden"></section>
+    <section id="history" class="panel hidden"></section>
+    <div class="footer-actions"><div class="muted" id="saveMessage">Records are saved separately for each student and week.</div>
+      <div class="actions"><button class="btn" id="draftBtn">Save as Draft</button><button class="btn primary" id="saveBtn">Save Call Record</button><button class="btn success" id="completeBtn">Mark as Completed</button></div>
+    </div>
+  </div>
+</main>
+</div>
+<script>
+const API = "https://academy-backend-eatl.onrender.com/api/admin/weekly-parent-calls";
+const token = localStorage.getItem("token");
+const $ = id => document.getElementById(id);
+const state = { students: [], selected: null, academic: null, history: [], historyByStudent: {}, activeTab: "academic" };
+const questions = [
+ ["How is the student studying at home?", ["Satisfactory","Needs improvement","Excellent","Concern reported"], "Parent comments, study routine, behaviour at home…"],
+ ["Is the parent satisfied with the teacher’s teaching?", ["Satisfied","Very satisfied","Needs improvement","Concern reported"], "Teaching feedback, explanation style, doubt clearing…"],
+ ["Any concerns about homework?", ["No concerns","Sometimes incomplete","Frequently incomplete","Too difficult","Other concern"], "Reasons for delay, subjects, parent request…"],
+ ["What additional support do you need from the academy?", ["No additional support","Extra academic support","Extra classes","Study material","Schedule support","Teacher discussion"], "Extra classes, study material, teacher change, schedule support…"]
+];
+let discussionValues = questions.map((q,i)=>({questionNumber:i+1,question:q[0],status:"",notes:""}));
+function authHeaders(){ return { "Content-Type":"application/json", "Authorization":"Bearer "+token }; }
+function isoDate(d){ const x=new Date(d); return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,"0")}-${String(x.getDate()).padStart(2,"0")}`; }
+function weekBounds(){ const start=new Date($("weekStart").value+"T00:00:00"); const end=new Date(start); end.setDate(end.getDate()+6); return {start:isoDate(start),end:isoDate(end)}; }
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function options(values, selected=""){return values.map(v=>`<option value="${esc(v)}" ${v===selected?"selected":""}>${esc(v)}</option>`).join("");}
+async function api(path, options={}) {
+ const response=await fetch(`${API}${path}`,{...options,headers:{...authHeaders(),...(options.headers||{})}});
+ const data=await response.json().catch(()=>({message:"Invalid server response"}));
+ if(!response.ok || data.success===false) throw new Error(data.message||"Request failed");
+ return data;
+}
+function callForSelected(){const b=weekBounds();return state.history.find(c=>isoDate(c.weekStart)===b.start)||null;}
+async function init(){
+ if(!token){$("studentList").innerHTML='<div class="empty error">Admin login token not found. Please log in again.</div>';return;}
+ const today=new Date(); const monday=new Date(today); monday.setDate(today.getDate()-((today.getDay()+6)%7)); $("weekStart").value=isoDate(monday);
+ $("weekStart").addEventListener("change",async()=>{
+    await loadAllStudentHistories();
+    if(state.selected) await selectStudent(state.selected._id);
+    else renderStudents();
+  });
+ $("search").addEventListener("input",renderStudents); $("gradeFilter").addEventListener("change",renderStudents); $("teacherFilter").addEventListener("change",renderStudents); $("statusFilter").addEventListener("change",renderStudents);
+ $("tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b)showTab(b.dataset.tab);});
+ $("draftBtn").onclick=()=>saveCall("Draft"); $("saveBtn").onclick=()=>saveCall("Saved"); $("completeBtn").onclick=()=>saveCall("Completed");
+ try {
+    const data=await api("/students");
+    state.students=data.students||[];
+    await loadAllStudentHistories();
+    fillFilters();
+    renderStudents();
+  } catch(e) {
+    $("studentList").innerHTML=`<div class="empty error">${esc(e.message)}</div>`;
+  }
+}
+async function loadAllStudentHistories(){
+  const entries = await Promise.all(state.students.map(async student => {
+    try {
+      const data = await api(`/history/${student._id}`);
+      return [String(student._id), data.calls || []];
+    } catch (e) {
+      return [String(student._id), []];
+    }
+  }));
+  state.historyByStudent = Object.fromEntries(entries);
+}
+function fillFilters(){
+ const grades=[...new Set(state.students.map(s=>s.grade).filter(Boolean))].sort();
+ const teachers=[...new Set(state.students.flatMap(s=>(s.teachers||[]).map(t=>t.name)).filter(Boolean))].sort();
+ $("gradeFilter").innerHTML='<option value="">All Grades</option>'+options(grades);
+ $("teacherFilter").innerHTML='<option value="">All Teachers</option>'+options(teachers);
+}
+function renderStudents(){
+  const q=$("search").value.toLowerCase(), grade=$("gradeFilter").value, teacher=$("teacherFilter").value, status=$("statusFilter").value;
+  const list=state.students.filter(s=>{
+    const hay=[s.name,s.grade,s.studentId,...(s.teachers||[]).map(t=>t.name)].join(" ").toLowerCase();
+    const studentCalls=state.historyByStudent[String(s._id)]||[];
+    const call=studentCalls.find(c=>isoDate(c.weekStart)===weekBounds().start);
+    const st=call?.recordStatus||"Not started";
+    return (!q||hay.includes(q))&&(!grade||s.grade===grade)&&(!teacher||(s.teachers||[]).some(t=>t.name===teacher))&&(!status||st===status);
+  });
+  $("studentList").innerHTML=list.length?list.map(s=>{
+    const studentCalls=state.historyByStudent[String(s._id)]||[];
+    const call=studentCalls.find(c=>isoDate(c.weekStart)===weekBounds().start)||null;
+    const recordStatus=call?.recordStatus||"New";
+    const feedback=call?feedbackStatusForCall(call):"Feedback Opened";
+    const feedbackClass=feedback==="Feedback Solved"?"feedback-solved":"feedback-open";
+    const feedbackLabel=feedback==="Feedback Solved"?"Feedback Solved":"Feedback in-progress";
+    return `<button class="student ${state.selected?._id===s._id?"active":""}" data-id="${s._id}">
+      <span class="status-dot">${esc(recordStatus)}</span>
+      <strong>${esc(s.name)}</strong>
+      <small>${esc(s.grade||"Grade not set")} · ${esc(s.studentId||"No student ID")}</small>
+      <small>${esc((s.teachers||[]).map(t=>t.name).join(", ")||"Teacher not assigned")}</small>
+      <small style="margin-top:7px"><span class="feedback-tag ${feedbackClass}">${feedbackLabel}</span></small>
+    </button>`;
+  }).join(""):'<div class="empty">No students match these filters.</div>';
+  $("studentList").querySelectorAll("[data-id]").forEach(b=>b.onclick=()=>selectStudent(b.dataset.id));
+}
+async function selectStudent(id){
+ state.selected=state.students.find(s=>s._id===id); $("workspace").classList.remove("hidden");
+ renderProfile(); renderStudents();
+ try{
+  const [history,academic]=await Promise.all([
+   api(`/history/${id}`),
+   api(`/academic/${id}?weekStart=${weekBounds().start}&weekEnd=${weekBounds().end}`)
+  ]);
+  state.history=history.calls||[];state.historyByStudent[String(id)]=state.history;state.academic=academic;loadCallIntoForm(callForSelected());renderProfile();renderStudents();renderAcademic();renderConduct();renderFeedback("parent");renderFeedback("teacher");renderAction();renderHistory();
+ }catch(e){$("academic").innerHTML=`<div class="error">${esc(e.message)}</div>`;}
+}
+function renderProfile(){
+ const s=state.selected;if(!s)return;
+ const call=callForSelected();
+ $("profile").innerHTML=`<div class="profile-head"><div><h2>${esc(s.name)}</h2><div class="muted">${esc(s.studentId||"Student ID not assigned")} · ${esc(s.grade||"Grade not set")}</div></div><div class="actions"><button class="btn" id="fullProfile">View Full Profile</button><button class="btn" id="previousCalls">Previous Calls</button><button class="btn" id="timeline">Student Timeline</button></div></div><div class="pills"><span class="pill">Grade: <b>${esc(s.grade||"—")}</b></span><span class="pill">Student ID: <b>${esc(s.studentId||"—")}</b></span><span class="pill">Class: <b>${esc((s.classes||[]).join(", ")||s.grade||"—")}</b></span><span class="pill">Teacher: <b>${esc((s.teachers||[]).map(t=>t.name).join(", ")||"—")}</b></span><span class="pill">Parent: <b>${esc(s.parentName||"Not recorded")}</b></span><span class="pill">This week: <b>${esc(call?.recordStatus||"Not started")}</b></span></div>`;
+ $("fullProfile").onclick=()=>alert(`Student: ${s.name}\nGrade: ${s.grade||"—"}\nStudent ID: ${s.studentId||"—"}\nParent: ${s.parentName||"Not recorded"}`);
+ $("previousCalls").onclick=()=>showTab("history"); $("timeline").onclick=()=>showTab("history");
+}
+function loadCallIntoForm(call){
+ discussionValues=questions.map((q,i)=>({...q,questionNumber:i+1,status:call?.discussion?.[i]?.status||"",notes:call?.discussion?.[i]?.notes||""}));
+ const b=weekBounds();
+ $("callDateTime") && ($("callDateTime").value=call?.callDateTime?new Date(call.callDateTime).toISOString().slice(0,16):"");
+ $("callStatus") && ($("callStatus").value=call?.callStatus||"Parent answered");
+ $("callerName") && ($("callerName").value=call?.callerName||"Admin");
+ $("nextFollowUpDate") && ($("nextFollowUpDate").value=call?.nextFollowUpDate?isoDate(call.nextFollowUpDate):"");
+ $("additionalRemarks") && ($("additionalRemarks").value=call?.additionalRemarks||"");
+ $("parentRating") && ($("parentRating").value=call?.parentFeedback?.rating||"");
+ $("parentNotes") && ($("parentNotes").value=call?.parentFeedback?.notes||"");
+ $("teacherRating") && ($("teacherRating").value=call?.teacherFeedback?.rating||"");
+ $("teacherNotes") && ($("teacherNotes").value=call?.teacherFeedback?.notes||"");
+ $("actionNotes") && ($("actionNotes").value=call?.actionPlan?.notes||"");
+ updateCounters();
+}
+function renderAcademic(){
+ const a=state.academic;if(!a)return;
+ $("academic").innerHTML=`<h3>Weekly Academic Report</h3><div class="muted">Week: ${esc(a.week?.start?isoDate(a.week.start):weekBounds().start)} – ${esc(a.week?.end?isoDate(a.week.end):weekBounds().end)}</div><div class="grid" style="margin-top:16px"><div class="metric"><small>Attendance</small><strong>${a.attendance.percentage==null?"—":a.attendance.percentage+"%"}</strong><small>${a.attendance.present} present · ${a.attendance.absent} absent</small></div><div class="metric"><small>Topics completed</small><strong>${a.topics.length}</strong><small>From lesson plans and class registers</small></div><div class="metric"><small>Homework records</small><strong>${a.homework.length}</strong><small>Assigned/submitted records found</small></div><div class="metric"><small>Assessment results</small><strong>${a.assessments.length}</strong><small>Recorded marks</small></div></div>
+ <div class="section"><h4>Attendance details</h4>${table(["Date","Class","Subject","Teacher","Attendance"],a.attendance.rows.map(r=>[dateLabel(r.date),r.className,r.subject,r.teacher,r.attendance]))}</div>
+ <div class="section"><h4>Topics completed this week</h4>${table(["Date","Class","Subject","Topic","Teacher"],a.topics.map(t=>[dateLabel(t.date),t.className,t.subject,t.topic,t.teacher]))}</div>
+ <div class="section"><h4>Homework details</h4>${table(["Homework","Subject","Due date","Status","Source"],a.homework.map(h=>[h.title,h.subject,dateLabel(h.dueDate),h.status,h.source]))}</div>
+ <div class="section"><h4>Recent assessment results</h4>${table(["Assessment","Subject","Date","Marks"],a.assessments.map(m=>[m.assessment,m.subject,dateLabel(m.date),m.marksObtained==null?"Not marked":`${m.marksObtained}${m.totalMarks!=null?" / "+m.totalMarks:""}`]))}</div>`;
+}
+function dateLabel(v){if(!v)return "—";const d=new Date(v);return Number.isNaN(d.getTime())?esc(v):d.toLocaleDateString("en-IN");}
+function table(headers,rows){if(!rows.length)return '<div class="notice">No records found for this week.</div>';return `<div class="table-wrap"><table><thead><tr>${headers.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c??"—")}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;}
+function renderConduct(){
+ $("conduct").innerHTML=`<h3>Conduct Weekly Call</h3><div class="form-grid">
+ <div class="field"><label>Call Date & Time</label><input id="callDateTime" type="datetime-local"></div>
+ <div class="field"><label>Call Status</label><select id="callStatus">${options(["Parent answered","No answer","Rescheduled","Call back requested"],callForSelected()?.callStatus||"Parent answered")}</select></div>
+ <div class="field"><label>Caller Name</label><input id="callerName" maxlength="120" value="Admin"></div>
+ <div class="field"><label>Next Follow-up Date</label><input id="nextFollowUpDate" type="date"></div>
+ <div class="field full"><label>Additional Remarks <span class="muted">(maximum 1000 characters)</span></label><textarea id="additionalRemarks" maxlength="1000" placeholder="Any additional notes from the weekly call…"></textarea><div class="counter" id="remarksCount">0 / 1000</div></div></div>
+ <div class="section"><h4>Call Discussion</h4><div class="muted">Record a separate status and notes for each question. Each notes field is limited to 500 characters.</div><div id="questions" style="margin-top:14px"></div></div>`;
+ $("questions").innerHTML=questions.map((q,i)=>`<div class="question"><h4>${i+1}. ${esc(q[0])}</h4><div class="form-grid"><div class="field"><label>Status</label><select id="qStatus${i}"><option value="">Select status</option>${options(q[1],discussionValues[i]?.status||"")}</select></div><div class="field"><label>Parent comments / notes</label><textarea id="qNotes${i}" maxlength="500" placeholder="${esc(q[2])}">${esc(discussionValues[i]?.notes||"")}</textarea><div class="counter" id="qCount${i}">0 / 500</div></div></div></div>`).join("");
+ $("additionalRemarks").value=callForSelected()?.additionalRemarks||"";
+ ["callDateTime","callStatus","callerName","nextFollowUpDate","additionalRemarks"].forEach(id=>$(id).addEventListener("input",updateCounters));
+ questions.forEach((q,i)=>{ $(`qStatus${i}`).addEventListener("change",()=>discussionValues[i].status=$(`qStatus${i}`).value);$(`qNotes${i}`).addEventListener("input",()=>{discussionValues[i].notes=$(`qNotes${i}`).value;updateCounters();}); });
+ loadCallIntoForm(callForSelected());
+}
+function renderFeedback(which){
+ const isParent=which==="parent", title=isParent?"Parent Feedback":"Teacher Feedback", prefix=isParent?"parent":"teacher";
+ const saved=callForSelected()?.[prefix+"Feedback"]||{};
+ $(which).innerHTML=`<h3>${title}</h3><div class="form-grid"><div class="field"><label>${isParent?"Parent satisfaction":"Teacher feedback"} rating</label><select id="${prefix}Rating"><option value="">Select rating</option>${options(["Very satisfied","Satisfied","Neutral","Needs improvement","Concern raised"],saved.rating||"")}</select></div><div class="field full"><label>Feedback notes</label><textarea id="${prefix}Notes" maxlength="2000" placeholder="Record specific feedback, concerns, and agreed expectations…">${esc(saved.notes||"")}</textarea><div class="counter" id="${prefix}Count">0 / 2000</div></div></div>`;
+ $(`${prefix}Notes`).addEventListener("input",updateCounters);updateCounters();
+}
+function getFeedbackIssues(call=callForSelected()){
+ const items=call?.actionPlan?.items||[];
+ return (call?.discussion||[]).filter(q=>{const status=String(q.status||"").toLowerCase(),notes=String(q.notes||"").trim();return !!notes||/needs improvement|concern|incomplete|too difficult|extra academic support|extra classes|study material|schedule support|teacher discussion|sometimes incomplete|frequently incomplete|other concern/i.test(status);}).map(q=>{const saved=items.find(it=>String(it.task||"").startsWith(`__feedback_issue__${q.questionNumber||0}__`));return {...q,resolutionStatus:saved?.status||"Pending",resolutionNotes:saved?.assignedTo||""};});
+}
+function renderAction(){
+ const call=callForSelected(), s=state.selected, a=state.academic||{}, issues=getFeedbackIssues(call), academic=a.attendance||{}, topics=a.topics||[], homework=a.homework||[], assessments=a.assessments||[];
+ const resolved=issues.length===0||issues.every(i=>i.resolutionStatus==="Completed");
+ const discussionHtml=(call?.discussion||[]).map(q=>`<div class="summary-line"><b>${esc(q.question||`Question ${q.questionNumber}`)}</b><br>Status: ${esc(q.status||"Not recorded")}<br>Notes: ${esc(q.notes||"No notes recorded")}</div>`).join("")||'<div class="muted">No discussion responses recorded yet.</div>';
+ const issueHtml=issues.length?issues.map((it,i)=>`<div class="issue-card" data-issue-number="${Number(it.questionNumber)||i+1}"><h4>${esc(it.question)}</h4><div class="summary-line"><b>Parent response:</b> ${esc(it.status||"Not recorded")}</div><div class="summary-line"><b>Parent notes:</b> ${esc(it.notes||"No notes recorded")}</div><div class="form-grid"><div class="field"><label>Resolution status</label><select data-issue-status><option ${it.resolutionStatus==="Pending"?"selected":""}>Pending</option><option ${it.resolutionStatus==="In Progress"?"selected":""}>In Progress</option><option ${it.resolutionStatus==="Completed"?"selected":""}>Completed</option></select></div><div class="field"><label>Resolution / follow-up remarks</label><textarea data-issue-notes maxlength="500" placeholder="Record what the academy did to resolve this concern">${esc(it.resolutionNotes||"")}</textarea></div></div></div>`).join(""):'<div class="notice">No parent concerns have been identified from the recorded discussion. If a concern is raised, record it in Conduct Call and it will appear here.</div>';
+ $("action").innerHTML=`<h3>Parent Call Summary &amp; Issue Resolution</h3><div class="notice">This tab automatically summarizes the current week's call and academic report. Update a concern's status only after following up and confirming the outcome.</div><div class="summary-grid"><div class="summary-card"><h4>Student &amp; Call Details</h4><div class="summary-line"><b>Student:</b> ${esc(s?.name||"—")}</div><div class="summary-line"><b>Grade / ID:</b> ${esc(s?.grade||"—")} / ${esc(s?.studentId||"—")}</div><div class="summary-line"><b>Teacher:</b> ${esc((s?.teachers||[]).map(t=>t.name).join(", ")||"Not assigned")}</div><div class="summary-line"><b>Call date:</b> ${esc(dateLabel(call?.callDateTime))}</div><div class="summary-line"><b>Call status:</b> ${esc(call?.callStatus||"Not recorded")}</div><div class="summary-line"><b>Record status:</b> ${esc(call?.recordStatus||"Draft / not saved")}</div></div><div class="summary-card"><h4>Weekly Academic Summary</h4><div class="summary-line"><b>Attendance:</b> ${academic.percentage==null?"—":esc(academic.percentage+"%")}</div><div class="summary-line"><b>Topics completed:</b> ${topics.length}</div><div class="summary-line"><b>Homework records:</b> ${homework.length}</div><div class="summary-line"><b>Assessment results:</b> ${assessments.length}</div><div class="summary-line"><b>Next follow-up:</b> ${esc(dateLabel(call?.nextFollowUpDate))}</div></div><div class="summary-card"><h4>Parent Discussion Summary</h4>${discussionHtml}<div class="summary-line"><b>Additional remarks:</b> ${esc(call?.additionalRemarks||"None recorded")}</div><div class="summary-line"><b>Parent feedback:</b> ${esc(call?.parentFeedback?.rating||"Not rated")} — ${esc(call?.parentFeedback?.notes||"No additional feedback")}</div></div><div class="summary-card"><h4>Teacher Feedback</h4><div class="summary-line"><b>Rating:</b> ${esc(call?.teacherFeedback?.rating||"Not recorded")}</div><div class="summary-line"><b>Notes:</b> ${esc(call?.teacherFeedback?.notes||"No teacher feedback recorded")}</div></div></div><div class="section"><h4>Parent Issues &amp; Resolution Tracker</h4><div class="summary-line">Feedback status: <span class="feedback-tag ${resolved?"feedback-solved":"feedback-open"}">${resolved?"Feedback Solved":"Feedback Opened"}</span></div><div class="muted">Any concern with notes or a concern-related response is listed below. All listed issues must be marked Completed after resolution before history shows Feedback Solved.</div>${issueHtml}</div><div class="field" style="margin-top:16px"><label>Action plan summary / next steps</label><textarea id="actionNotes" maxlength="3000" placeholder="Optional summary of commitments and next steps…">${esc(call?.actionPlan?.notes||"")}</textarea></div>`;
+}
+function feedbackStatusForCall(c){const items=c?.actionPlan?.items||[];const issues=(c?.discussion||[]).filter(q=>{const status=String(q.status||"").toLowerCase(),notes=String(q.notes||"").trim();return !!notes||/needs improvement|concern|incomplete|too difficult|extra academic support|extra classes|study material|schedule support|teacher discussion|sometimes incomplete|frequently incomplete|other concern/i.test(status);});if(!issues.length)return "Feedback Solved";return issues.every(q=>items.some(it=>String(it.task||"").startsWith(`__feedback_issue__${q.questionNumber||0}__`)&&it.status==="Completed"))?"Feedback Solved":"Feedback Opened";}
+function renderHistory(){const calls=state.history.filter(c=>String(c.student)===String(state.selected?._id));$("history").innerHTML=`<h3>Call History</h3><div class="muted">Each weekly record is retained separately. Call completion and feedback resolution are tracked independently.</div>${calls.length?calls.map(c=>{const feedback=feedbackStatusForCall(c);return `<div class="call-row"><div><strong>Week of ${dateLabel(c.weekStart)}</strong><div class="muted">${dateLabel(c.callDateTime)} · ${esc(c.callStatus||"—")}</div><div class="muted">${esc((c.discussion||[]).filter(q=>q.notes).length)} discussion notes</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:7px"><span class="tag">${esc(c.recordStatus||"Draft")}</span><span class="feedback-tag ${feedback==="Feedback Solved"?"feedback-solved":"feedback-open"}">${feedback}</span></div></div>`}).join(""):'<div class="empty">No previous calls recorded.</div>'}`;}
+function updateCounters(){
+ if($("remarksCount"))$("remarksCount").textContent=`${$("additionalRemarks").value.length} / 1000`;
+ questions.forEach((q,i)=>{const el=$(`qNotes${i}`),counter=$(`qCount${i}`);if(el&&counter)counter.textContent=`${el.value.length} / 500`;});
+ ["parent","teacher"].forEach(p=>{const el=$(`${p}Notes`),counter=$(`${p}Count`);if(el&&counter)counter.textContent=`${el.value.length} / 2000`;});
+}
+function showTab(name){state.activeTab=name;document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));["academic","conduct","parent","teacher","action","history"].forEach(id=>$(id).classList.toggle("hidden",id!==name));}
+async function refreshSelected(){
+ if(!state.selected)return;
+ const [h,a]=await Promise.all([api(`/history/${state.selected._id}`),api(`/academic/${state.selected._id}?weekStart=${weekBounds().start}&weekEnd=${weekBounds().end}`)]);
+ state.history=h.calls||[];state.historyByStudent[String(state.selected._id)]=state.history;state.academic=a;renderProfile();renderStudents();renderAcademic();renderAction();renderHistory();
+}
+async function saveCall(recordStatus){
+ if(!state.selected){alert("Please select a student first.");return;}
+ const b=weekBounds();
+ const discussion=questions.map((q,i)=>({questionNumber:i+1,question:q[0],status:$(`qStatus${i}`)?.value||"",notes:$(`qNotes${i}`)?.value||""}));
+ const actionItems=[...$("action").querySelectorAll(".issue-card")].map(card=>{const questionNumber=Number(card.dataset.issueNumber)||0;const q=discussion.find(x=>x.questionNumber===questionNumber)||{};return {task:`__feedback_issue__${questionNumber}__${String(q.question||"").slice(0,180)}`,assignedTo:card.querySelector('[data-issue-notes]').value.trim(),dueDate:null,status:card.querySelector('[data-issue-status]').value};});
+ const payload={
+  studentId:state.selected._id,weekStart:b.start,weekEnd:b.end,
+  callDateTime:$("callDateTime").value||new Date().toISOString(),
+  callStatus:$("callStatus").value,callerName:$("callerName").value,
+  nextFollowUpDate:$("nextFollowUpDate").value||null,discussion,
+  additionalRemarks:$("additionalRemarks").value,
+  parentFeedback:{rating:$("parentRating").value,notes:$("parentNotes").value},
+  teacherFeedback:{rating:$("teacherRating").value,notes:$("teacherNotes").value},
+  actionPlan:{items:actionItems,notes:$("actionNotes").value},recordStatus
+ };
+ $("saveMessage").textContent="Saving…";
+ try{const result=await api("/save",{method:"POST",body:JSON.stringify(payload)});$("saveMessage").textContent=result.message||"Saved successfully.";await refreshSelected();}
+ catch(e){$("saveMessage").textContent="Save failed: "+e.message;}
+}
+init();
+</script>
+</body>
+</html>
