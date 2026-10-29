@@ -276,317 +276,6 @@
     background: #dce6fa;
 }
 
-
-
-
-/* =========================================
-   GPA MESSENGER - MOBILE UI ONLY
-   Desktop layout remains unchanged
-   ========================================= */
-
-#mobileMessengerBack {
-    display: none;
-}
-
-
-@media screen and (max-width: 600px) {
-
-    html,
-    body {
-        width: 100%;
-        height: 100%;
-        height: 100dvh;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-    }
-
-    .gpa-messenger-layout {
-        display: flex;
-        flex-direction: row;
-        width: 100%;
-        height: 100%;
-        height: 100dvh;
-        overflow: hidden;
-    }
-
-    .gpa-messenger-contacts {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        height: 100%;
-        min-width: 0;
-        flex: 1;
-        border-right: none;
-        overflow: hidden;
-        background: #fff;
-    }
-
-    .gpa-messenger-contacts-header {
-        flex-shrink: 0;
-        padding: 20px 18px;
-        font-size: 22px;
-        font-weight: 700;
-        color: #075e54;
-        background: #fff;
-    }
-
-    #gpaMessengerContacts {
-        flex: 1;
-        min-height: 0;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .gpa-messenger-contact-section-title {
-        padding: 12px 16px;
-        font-size: 12px;
-        background: #f1f4f8;
-    }
-
-    .gpa-messenger-contact {
-        padding: 15px 16px;
-        background: #fff;
-    }
-
-    .gpa-messenger-contact-name {
-        font-size: 15px;
-        overflow-wrap: anywhere;
-    }
-
-    .gpa-messenger-contact-info {
-        font-size: 12px;
-        overflow-wrap: anywhere;
-    }
-
-    /* Hide the chat until a contact is selected */
-    .gpa-messenger-chat-area {
-        display: none;
-        width: 100%;
-        height: 100%;
-        min-width: 0;
-        min-height: 0;
-        flex: 1;
-        overflow: hidden;
-    }
-
-    .gpa-messenger-layout.mobile-chat-open
-    .gpa-messenger-contacts {
-        display: none;
-    }
-
-    .gpa-messenger-layout.mobile-chat-open
-    .gpa-messenger-chat-area {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .gpa-primary-messenger-header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        min-height: 64px;
-        padding: 10px 12px;
-        box-sizing: border-box;
-        background: #075e54;
-        color: #fff;
-    }
-
-    #mobileMessengerBack {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        flex-shrink: 0;
-        border: none;
-        background: transparent;
-        color: #fff;
-        font-size: 28px;
-    }
-
-    .gpa-messenger-header-details {
-        min-width: 0;
-    }
-
-    #gpaMessengerContactName {
-        font-size: 16px;
-        font-weight: 700;
-        overflow-wrap: anywhere;
-    }
-
-    .gpa-messenger-presence-status {
-        font-size: 12px;
-        color: #e0f2f1;
-    }
-
-    #gpaPrimaryConversation {
-        flex: 1;
-        min-height: 0;
-        width: 100%;
-        padding: 12px 10px;
-        box-sizing: border-box;
-        overflow-x: hidden;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .gpa-primary-composer {
-        display: flex;
-        align-items: flex-end;
-        gap: 8px;
-        flex-shrink: 0;
-        width: 100%;
-        padding: 10px;
-        padding-bottom: max(10px, env(safe-area-inset-bottom));
-        box-sizing: border-box;
-        background: #f7f7f7;
-    }
-
-    #gpaPrimaryMessageInput {
-        flex: 1;
-        min-width: 0;
-        min-height: 42px;
-        max-height: 120px;
-        box-sizing: border-box;
-        border-radius: 22px;
-        font-size: 15px;
-    }
-
-    #gpaPrimarySendButton {
-        flex-shrink: 0;
-        min-height: 42px;
-        border-radius: 22px;
-        background: #128c7e;
-        color: #fff;
-    }
-}
-
-
-/* GPA MESSENGER — DESKTOP LAYOUT RESTORE */
-@media screen and (min-width: 601px) {
-
-    .gpa-messenger-layout {
-        display: flex !important;
-        flex-direction: row !important;
-        width: 100% !important;
-        height: 100vh !important;
-        min-height: 0;
-        overflow: hidden;
-    }
-
-    .gpa-messenger-contacts {
-        display: block !important;
-        flex: 0 0 300px !important;
-        width: 300px !important;
-        min-width: 300px;
-        height: 100%;
-        box-sizing: border-box;
-        overflow-y: auto;
-    }
-
-    .gpa-messenger-chat-area {
-        display: flex !important;
-        flex: 1 1 0 !important;
-        flex-direction: column !important;
-        width: auto !important;
-        min-width: 0;
-        height: 100%;
-        overflow: hidden;
-    }
-
-    .gpa-primary-messenger-header {
-        flex: 0 0 auto;
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    #gpaPrimaryConversation {
-        flex: 1 1 auto !important;
-        min-width: 0;
-        min-height: 0;
-        width: 100%;
-        overflow-y: auto;
-        box-sizing: border-box;
-    }
-
-    .gpa-primary-composer {
-        display: flex;
-        flex: 0 0 auto;
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    #gpaPrimaryMessageInput {
-        flex: 1 1 auto;
-        min-width: 0;
-    }
-}
-
-/* FIX GPA MESSENGER DESKTOP HEADER, CALL AND SEND BUTTONS */
-@media screen and (min-width: 601px) {
-
-    .gpa-primary-messenger-header {
-        display: flex !important;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        min-height: 76px;
-        padding: 16px !important;
-        border-bottom: 1px solid #e5e7eb;
-        background: #ffffff;
-        color: #111827;
-        box-sizing: border-box;
-    }
-
-    #gpaMessengerContactName {
-        display: block !important;
-        font-size: 16px;
-        font-weight: 600;
-    }
-
-    #gpaMessengerPresenceStatus {
-        display: block !important;
-    }
-
-    .gpa-primary-composer {
-        display: flex !important;
-        align-items: flex-end;
-        gap: 8px;
-        flex-shrink: 0;
-        padding: 12px !important;
-        background: #ffffff;
-        box-sizing: border-box;
-    }
-
-    #gpaPrimaryMessageInput {
-        display: block !important;
-        flex: 1 1 auto;
-        width: auto;
-        min-width: 0;
-    }
-
-    #gpaPrimarySendButton {
-        display: inline-flex !important;
-        align-items: center;
-        justify-content: center;
-        flex: 0 0 80px;
-        width: 80px;
-        min-width: 80px;
-        height: 44px;
-        visibility: visible !important;
-        background: #2563eb;
-        color: #ffffff;
-    }
-
-    /* Keep the existing audio call button visible */
-    .gpa-messenger-chat-area button {
-        visibility: visible;
-    }
-}
-
-
-
     </style>
 
 </head>
@@ -646,26 +335,8 @@
                  HEADER
                  ============================================= -->
 
-            
-<div class="gpa-primary-messenger-header">
-
-    <button
-        id="mobileMessengerBack"
-        type="button"
-        aria-label="Back to contacts"
-    >‹</button>
-
-    <div class="gpa-messenger-header-details">
-        <div id="gpaMessengerContactName">GPA Messenger</div>
-
-        <div
-            id="gpaMessengerPresenceStatus"
-            class="gpa-messenger-presence-status"
-        ></div>
-    </div>
-
-</div>
-
+            <div class="gpa-primary-messenger-header">
+    <div id="gpaMessengerContactName">GPA Messenger</div>
     <div id="gpaMessengerPresenceStatus" class="gpa-messenger-presence-status">
         <!-- Online status or last seen will appear here -->
     </div>
@@ -750,21 +421,15 @@
          * ====================================================
          */
 
-       document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-        loadMessengerContacts();
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
 
-        const backButton = document.getElementById(
-            "mobileMessengerBack"
+                loadMessengerContacts();
+
+            }
         );
 
-        backButton?.addEventListener("click", function () {
-            document.querySelector(".gpa-messenger-layout")
-                ?.classList.remove("mobile-chat-open");
-        });
-    }
-);
 
         async function loadMessengerContacts() {
 
@@ -1100,12 +765,6 @@ async function selectMessengerContact(
         "[GPA MESSENGER] Contact selected:",
         contactId
     );
-
-    // Mobile UI: open the selected conversation
-if (window.matchMedia("(max-width: 600px)").matches) {
-    document.querySelector(".gpa-messenger-layout")
-        ?.classList.add("mobile-chat-open");
-}
 
 
     // =================================================
