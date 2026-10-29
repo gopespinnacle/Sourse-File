@@ -126,6 +126,7 @@ window.location.href = page;
 
 </div>
 
+
 <div class="card" onclick="openIncomeExpense()" style="cursor:pointer;">
 
     <h3>Daily Income & Expense</h3>
@@ -133,7 +134,20 @@ window.location.href = page;
     <p>Manage Academy Income & Expenses</p>
 
 </div>
-    </div>
+
+<!-- WEEKLY PARENT CALL CARD -->
+<div class="card" onclick="openWeeklyParentCall()" style="cursor:pointer;">
+
+    <h3>📞 Weekly Parent Call</h3>
+
+    <p>View Student Reports & Record Parent Calls</p>
+
+</div>
+
+</div>
+
+
+
 
     <!-- =========================================================
      ADMIN MANAGEMENT
@@ -834,6 +848,12 @@ function openAISettings(){
         "founder-ai-settings.html";
 
 }
+
+
+function openWeeklyParentCall() {
+    window.location.href = "weekly-parent-call.html";
+}
+
 </script>
 
 <script>
