@@ -1,0 +1,216 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GPA Incoming Call</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #080d12;
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .call-window {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 24px;
+    }
+
+    .brand {
+      align-self: flex-start;
+      color: #aeb8c2;
+      font-size: 13px;
+      letter-spacing: .4px;
+    }
+
+    .person {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      text-align: center;
+      gap: 14px;
+    }
+
+    .avatar {
+      width: 108px;
+      height: 108px;
+      border-radius: 50%;
+      background: #183b35;
+      color: #b9f4d8;
+      display: grid;
+      place-items: center;
+      font-size: 42px;
+      font-weight: 600;
+    }
+
+    #callerName {
+      margin: 8px 0 0;
+      font-size: 24px;
+      overflow-wrap: anywhere;
+    }
+
+    #callStatus {
+      color: #c0c8ce;
+      font-size: 14px;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+      padding: 20px 0;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 17px 25px;
+      border-radius: 32px;
+    }
+
+    #acceptCall {
+      background: #20c767;
+      color: #061b10;
+    }
+
+    #declineCall {
+      background: #f04444;
+      color: white;
+    }
+
+    #enableWindow {
+      background: #263039;
+      color: white;
+      max-width: 300px;
+    }
+
+    #waitingMessage {
+      max-width: 340px;
+      color: #c0c8ce;
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="call-window">
+    <div class="brand">GOPES PINNACLE ACADEMY</div>
+
+    <section class="person">
+      <div class="avatar" id="callerAvatar">G</div>
+      <h2 id="callerName">GPA Audio Call</h2>
+      <div id="callStatus">Waiting for an incoming call…</div>
+    </section>
+
+    <section class="controls">
+      <button id="declineCall" type="button" hidden>
+        Decline
+      </button>
+
+      <button id="acceptCall" type="button" hidden>
+        Accept
+      </button>
+
+      <button id="enableWindow" type="button">
+        Enable call window
+      </button>
+    </section>
+
+    <p id="waitingMessage">
+      Keep this window open while using other browser tabs.
+    </p>
+  </main>
+
+  <script>
+    const channel = ("BroadcastChannel" in window)
+      ? new BroadcastChannel("gpa-audio-call-window")
+      : null;
+
+    const callerName = document.getElementById("callerName");
+    const callerAvatar = document.getElementById("callerAvatar");
+    const callStatus = document.getElementById("callStatus");
+    const acceptCall = document.getElementById("acceptCall");
+    const declineCall = document.getElementById("declineCall");
+    const enableWindow = document.getElementById("enableWindow");
+
+    enableWindow.addEventListener("click", () => {
+      enableWindow.textContent = "Call window enabled";
+      enableWindow.disabled = true;
+
+      if (channel) {
+        channel.postMessage({ type: "window-ready" });
+      }
+    });
+
+    if (channel) {
+      channel.onmessage = event => {
+        const data = event.data || {};
+
+        if (data.type === "incoming-call") {
+          const name = data.callerName || "Academy user";
+
+          callerName.textContent = name;
+          callerAvatar.textContent =
+            name.trim().charAt(0).toUpperCase() || "G";
+          callStatus.textContent = "Incoming voice call";
+          acceptCall.hidden = false;
+          declineCall.hidden = false;
+          enableWindow.hidden = true;
+
+          try {
+            window.focus();
+          } catch (error) {
+            // Browser focus restrictions may prevent this.
+          }
+        }
+
+        if (data.type === "call-ended") {
+          callerName.textContent = "GPA Audio Call";
+          callerAvatar.textContent = "G";
+          callStatus.textContent = "Waiting for an incoming call…";
+          acceptCall.hidden = true;
+          declineCall.hidden = true;
+          enableWindow.hidden = false;
+          enableWindow.disabled = false;
+          enableWindow.textContent = "Enable call window";
+        }
+      };
+    }
+
+    acceptCall.addEventListener("click", () => {
+      if (channel) {
+        channel.postMessage({ type: "accept-call" });
+      }
+
+      callStatus.textContent = "Accepting call…";
+    });
+
+    declineCall.addEventListener("click", () => {
+      if (channel) {
+        channel.postMessage({ type: "decline-call" });
+      }
+
+      callStatus.textContent = "Declining call…";
+    });
+  </script>
+</body>
+</html>

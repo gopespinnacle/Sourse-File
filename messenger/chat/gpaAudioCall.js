@@ -17,6 +17,32 @@
 let usingLiveKit = false;
 let fallbackStarting = false;
 
+// Communicate with the separate GPA call window.
+const gpaCallWindowChannel =
+    "BroadcastChannel" in window
+        ? new BroadcastChannel("gpa-audio-call-window")
+        : null;
+
+if (gpaCallWindowChannel) {
+    gpaCallWindowChannel.onmessage = event => {
+        const data = event.data || {};
+
+        if (data.type === "accept-call") {
+            acceptCall();
+        }
+
+        if (data.type === "decline-call") {
+            declineCall();
+        }
+    };
+}
+
+function updateSeparateCallWindow(message) {
+    if (gpaCallWindowChannel) {
+        gpaCallWindowChannel.postMessage(message);
+    }
+}
+
   const token =
     sessionStorage.getItem("token") ||
     localStorage.getItem("token") ||
@@ -782,6 +808,8 @@ fallbackStarting = false;
     peerId = null;
     incoming = null;
 
+    updateSeparateCallWindow({ type: "call-ended" });
+
     updateControls("idle");
 
     if (showEnded) status("Call ended.");
@@ -853,6 +881,13 @@ fallbackStarting = false;
 document.getElementById("gpaAudioCaller").textContent = callerName;
 document.getElementById("gpaAudioAvatar").textContent =
   callerName.trim().charAt(0).toUpperCase() || "G";
+
+
+updateSeparateCallWindow({
+    type: "incoming-call",
+    callId: data.callId,
+    callerName: callerName
+});
 
 updateControls("incoming");
 status("Voice call");
