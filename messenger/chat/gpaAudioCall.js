@@ -314,6 +314,10 @@ async function preparePeerConnection() {
         await pc.setRemoteDescription(
           new RTCSessionDescription(signal.sdp)
         );
+        while (pendingIceCandidates.length > 0) {
+  const candidate = pendingIceCandidates.shift();
+  await pc.addIceCandidate(candidate);
+}
 
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
@@ -327,6 +331,10 @@ async function preparePeerConnection() {
           await pc.setRemoteDescription(
             new RTCSessionDescription(signal.sdp)
           );
+          while (pendingIceCandidates.length > 0) {
+  const candidate = pendingIceCandidates.shift();
+  await pc.addIceCandidate(candidate);
+}
         }
       } else if (signal.type === "ice" && signal.candidate) {
   if (!pc) return;
