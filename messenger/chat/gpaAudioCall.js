@@ -216,9 +216,13 @@ let fallbackStarting = false;
   }
 
   #gpaAudioDecline::before,
-  #gpaAudioEnd::before {
-    content: "✕";
-  }
+#gpaAudioEnd::before {
+  content: "☎";
+  display: inline-block;
+  font-size: 24px;
+  line-height: 1;
+  transform: rotate(135deg);
+}
 
   #gpaAudioMute {
     width: 58px;
@@ -852,6 +856,15 @@ document.getElementById("gpaAudioAvatar").textContent =
 
 updateControls("incoming");
 status("Voice call");
+
+// Best-effort: bring GPA Messenger forward for an incoming call.
+window.focus();
+
+const callPopup = document.getElementById("gpaAudioCallPopup");
+
+if (callPopup) {
+    callPopup.hidden = false;
+}
     });
 
     socket.on("call:accepted", async data => {
