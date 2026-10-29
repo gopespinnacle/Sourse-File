@@ -49,33 +49,224 @@ let fallbackStarting = false;
 
     const style = document.createElement("style");
     style.textContent = `
-      .gpa-audio-call-button {
-        position:absolute; right:12px; top:10px;
-        border:0; border-radius:50%; width:42px; height:42px;
-        background:#15803d; color:white; font-size:21px;
-        cursor:pointer; z-index:5;
-      }
-      .gpa-audio-call-button:disabled {
-        opacity:.4; cursor:not-allowed;
-      }
-      #gpaAudioCallPopup {
-        position:fixed; right:22px; bottom:22px;
-        width:min(360px, calc(100vw - 32px));
-        padding:22px; background:white; color:#172554;
-        border:1px solid #cbd5e1; border-radius:16px;
-        box-shadow:0 10px 40px #0003; z-index:99999;
-        font-family:Arial,sans-serif;
-      }
-      #gpaAudioCallPopup button {
-        padding:10px 15px; margin:8px 6px 0 0;
-        border:0; border-radius:8px; cursor:pointer;
-        font-weight:bold;
-      }
-      #gpaAudioAccept { background:#15803d;color:white; }
-      #gpaAudioDecline, #gpaAudioEnd { background:#b91c1c;color:white; }
-      #gpaAudioMute { background:#e2e8f0;color:#172554; }
-      #gpaAudioStatus { font-size:14px; line-height:1.5; }
-    `;
+  .gpa-audio-call-button {
+    position: absolute;
+    right: 12px;
+    top: 10px;
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 50%;
+    background: #128c4a;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 5;
+  }
+
+  .gpa-audio-call-button:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+  }
+
+  #gpaAudioCallPopup[hidden] {
+    display: none !important;
+  }
+
+  #gpaAudioCallPopup {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 24px;
+    border: 0;
+    border-radius: 0;
+    background: #080d12;
+    color: #f5f6f6;
+    box-shadow: none;
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+  }
+
+  .gpa-call-screen {
+    width: 100%;
+    max-width: 420px;
+    min-height: min(650px, 90vh);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    padding: 28px 10px 12px;
+    box-sizing: border-box;
+  }
+
+  .gpa-call-brand {
+    width: 100%;
+    text-align: left;
+    color: #aeb8c2;
+    font-size: 14px;
+    letter-spacing: .3px;
+  }
+
+  .gpa-call-person {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex: 1;
+    padding: 35px 0;
+  }
+
+  #gpaAudioAvatar {
+    width: 112px;
+    height: 112px;
+    border-radius: 50%;
+    background: #183b35;
+    color: #b9f4d8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+    font-weight: 600;
+    overflow: hidden;
+  }
+
+  #gpaAudioAvatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  #gpaAudioCaller {
+    margin: 8px 0 0;
+    color: #f5f6f6;
+    font-size: 25px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  #gpaAudioStatus {
+    margin: 0;
+    color: #c0c8ce;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .gpa-call-controls {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 20px 0 10px;
+  }
+
+  #gpaAudioCallPopup button {
+    border: 0;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    transition: transform .15s ease, filter .15s ease;
+  }
+
+  #gpaAudioCallPopup button:hover {
+    filter: brightness(1.08);
+    transform: scale(1.02);
+  }
+
+  #gpaAudioCallPopup button:focus-visible {
+    outline: 3px solid white;
+    outline-offset: 4px;
+  }
+
+  #gpaAudioAccept {
+    min-height: 58px;
+    flex: 1;
+    max-width: 240px;
+    padding: 16px 24px;
+    border-radius: 32px;
+    background: #20c767;
+    color: #061b10;
+    font-size: 17px;
+  }
+
+  #gpaAudioAccept::before {
+    content: "☎  ";
+  }
+
+    #gpaAudioDecline,
+  #gpaAudioEnd {
+    width: 58px;
+    height: 58px;
+    flex: 0 0 58px;
+    border-radius: 50%;
+    background: #f04444;
+    color: white;
+    font-size: 0;
+    position: relative;
+  }
+
+  #gpaAudioDecline::before,
+  #gpaAudioEnd::before {
+    content: "✕";
+  }
+
+  #gpaAudioMute {
+    width: 58px;
+    height: 58px;
+    flex: 0 0 58px;
+    border-radius: 50%;
+    background: #263039;
+    color: white;
+    font-size: 21px;
+  }
+
+  #gpaAudioRemote {
+    display: none;
+  }
+
+  @media (max-width: 480px) {
+    #gpaAudioCallPopup {
+      padding: 16px;
+    }
+
+    .gpa-call-screen {
+      min-height: 85vh;
+    }
+
+    #gpaAudioAvatar {
+      width: 96px;
+      height: 96px;
+      font-size: 36px;
+    }
+
+    #gpaAudioCaller {
+      font-size: 22px;
+    }
+
+    #gpaAudioAccept {
+      min-height: 54px;
+      font-size: 15px;
+    }
+
+    #gpaAudioDecline,
+    #gpaAudioEnd,
+    #gpaAudioMute {
+      width: 54px;
+      height: 54px;
+      flex-basis: 54px;
+    }
+  }
+`;
     document.head.appendChild(style);
 
     header.style.position = "relative";
@@ -97,15 +288,34 @@ let fallbackStarting = false;
     popup.setAttribute("role", "dialog");
     popup.setAttribute("aria-live", "polite");
     popup.innerHTML = `
-      <h3 style="margin-top:0">GPA Audio Call</h3>
-      <p id="gpaAudioCaller"></p>
-      <p id="gpaAudioStatus">Ready.</p>
-      <button id="gpaAudioAccept">Accept</button>
-      <button id="gpaAudioDecline">Decline</button>
-      <button id="gpaAudioMute" hidden>Mute microphone</button>
-      <button id="gpaAudioEnd" hidden>End call</button>
-      <audio id="gpaAudioRemote" autoplay playsinline></audio>
-    `;
+  <div class="gpa-call-screen">
+    <div class="gpa-call-brand">GOPES PINNACLE ACADEMY</div>
+
+    <div class="gpa-call-person">
+      <div id="gpaAudioAvatar" aria-hidden="true">☎</div>
+
+      <p id="gpaAudioCaller">Academy user</p>
+
+      <p id="gpaAudioStatus">Incoming voice call…</p>
+    </div>
+
+    <div class="gpa-call-controls">
+      <button id="gpaAudioMute" type="button" hidden
+        title="Mute microphone" aria-label="Mute microphone">🎙</button>
+
+      <button id="gpaAudioDecline" type="button"
+        title="Decline call" aria-label="Decline call">Decline</button>
+
+      <button id="gpaAudioAccept" type="button"
+        title="Accept call" aria-label="Accept call">Accept</button>
+
+      <button id="gpaAudioEnd" type="button"
+        title="End call" aria-label="End call" hidden>End call</button>
+    </div>
+
+    <audio id="gpaAudioRemote" autoplay playsinline></audio>
+  </div>
+`;
     document.body.appendChild(popup);
 
     document.getElementById("gpaAudioAccept")
@@ -634,11 +844,14 @@ fallbackStarting = false;
       currentCallId = data.callId;
       peerId = data.caller.id;
 
-      document.getElementById("gpaAudioCaller").textContent =
-        "Incoming call from " + (data.caller.name || "Academy user");
+      const callerName = data.caller.name || "Academy user";
 
-      updateControls("incoming");
-      status("Incoming GPA Audio Call. Accept or decline.");
+document.getElementById("gpaAudioCaller").textContent = callerName;
+document.getElementById("gpaAudioAvatar").textContent =
+  callerName.trim().charAt(0).toUpperCase() || "G";
+
+updateControls("incoming");
+status("Voice call");
     });
 
     socket.on("call:accepted", async data => {
