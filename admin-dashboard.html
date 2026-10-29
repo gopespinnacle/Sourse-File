@@ -437,6 +437,30 @@
 
         </div>
 
+                <!-- WEEKLY PARENT CALL -->
+
+        <div
+            class="admin-card"
+            onclick="openWeeklyParentCall()"
+        >
+
+            <div class="admin-card-icon">
+
+                <i class="fa-solid fa-phone-volume"></i>
+
+            </div>
+
+            <h2>
+                Weekly Parent Call
+            </h2>
+
+            <p>
+                Review student progress, record parent feedback,
+                manage action plans and track issue resolution.
+            </p>
+
+        </div>
+
 
     </div>
 
@@ -477,6 +501,13 @@ function openProfile(){
     alert(
         "Admin Profile will be added next."
     );
+
+}
+
+function openWeeklyParentCall(){
+
+    window.location.href =
+        "admin-weekly-parent-call.html";
 
 }
 
