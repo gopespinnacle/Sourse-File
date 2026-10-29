@@ -198,18 +198,44 @@ async function preparePeerConnection() {
   };
 
   pc.onconnectionstatechange = () => {
-    if (!pc) return;
+  if (!pc) return;
 
-    console.log("[GPA Audio Call] Connection state:", pc.connectionState);
+  console.log("[GPA Audio Call] Connection:", pc.connectionState);
+  console.log("[GPA Audio Call] ICE connection:", pc.iceConnectionState);
+  console.log("[GPA Audio Call] ICE gathering:", pc.iceGatheringState);
 
-    if (pc.connectionState === "connected") {
-      status("Audio connection established.");
-    } else if (pc.connectionState === "failed") {
-      status("Audio connection failed. Network relay support may be needed.");
-    } else if (pc.connectionState === "disconnected") {
-      status("Audio connection interrupted.");
-    }
-  };
+  if (pc.connectionState === "connected") {
+    status("Audio connection established.");
+  } else if (
+    pc.connectionState === "failed" ||
+    pc.iceConnectionState === "failed"
+  ) {
+    status("Audio connection failed. TURN relay may be required.");
+  } else if (
+    pc.connectionState === "disconnected" ||
+    pc.iceConnectionState === "disconnected"
+  ) {
+    status("Audio connection interrupted.");
+  }
+};
+
+pc.oniceconnectionstatechange = () => {
+  if (pc) {
+    console.log(
+      "[GPA Audio Call] ICE state:",
+      pc.iceConnectionState
+    );
+  }
+};
+
+pc.onicegatheringstatechange = () => {
+  if (pc) {
+    console.log(
+      "[GPA Audio Call] ICE gathering:",
+      pc.iceGatheringState
+    );
+  }
+};
 
   localStream = await navigator.mediaDevices.getUserMedia({
     audio: {
