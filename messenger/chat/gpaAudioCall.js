@@ -12,6 +12,7 @@
   let peerId = null;
   let incoming = null;
   let callRole = null;
+  let pendingIceCandidates = [];
 
   const token =
     sessionStorage.getItem("token") ||
@@ -147,57 +148,92 @@
     });
   }
 
-  async function preparePeerConnection() {
-    if (pc) return;
+  
+async function preparePeerConnection() {
+  if (pc) return;
 
-    pc = new RTCPeerConnection({
-      iceServers: [
-        { urls: "stun:stun.l.google.com:19302" }
-      ]
-    });
+  pendingIceCandidates = [];
 
-    pc.onicecandidate = event => {
-      if (event.candidate) {
-        sendSignal({
-          type: "ice",
-          candidate: event.candidate
-        });
-      }
-    };
+  pc = new RTCPeerConnection({
+    iceServers: [
+      { urls: "stun:stun.l.google.com:19302" }
+    ]
+  });
 
-    pc.ontrack = async event => {
-      const audio = document.getElementById("gpaAudioRemote");
+  pc.onicecandidate = event => {
+    if (event.candidate) {
+      sendSignal({
+        type: "ice",
+        candidate: event.candidate
+      });
+    }
+  };
+
+  pc.ontrack = async event => {
+    const audio = document.getElementById("gpaAudioRemote");
+
+    if (!audio) return;
+
+    // Support browsers that provide no event.streams entry.
+    if (event.streams && event.streams[0]) {
       audio.srcObject = event.streams[0];
-
-      try {
-        await audio.play();
-        status("Audio connected. Check that both participants can hear each other.");
-      } catch {
-        status("Audio received. Tap the page or play the audio if prompted.");
+    } else {
+      if (!audio.srcObject) {
+        audio.srcObject = new MediaStream();
       }
-    };
+      audio.srcObject.addTrack(event.track);
+    }
 
-    pc.onconnectionstatechange = () => {
-      if (!pc) return;
+    audio.muted = false;
+    audio.volume = 1;
 
-      if (pc.connectionState === "connected") {
-        status("Audio connection established.");
-      } else if (pc.connectionState === "failed") {
-        status("Audio connection failed. Network relay support may be needed.");
-      } else if (pc.connectionState === "disconnected") {
-        status("Audio connection interrupted.");
-      }
-    };
+    try {
+      await audio.play();
+      status("Remote audio received. Check speaker volume.");
+    } catch (error) {
+      console.warn("Remote audio playback needs user interaction:", error);
+      audio.controls = true;
+      status("Audio received. Press Play on the audio control if you cannot hear the other person.");
+    }
+  };
 
-    localStream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: false
+  pc.onconnectionstatechange = () => {
+    if (!pc) return;
+
+    console.log("[GPA Audio Call] Connection state:", pc.connectionState);
+
+    if (pc.connectionState === "connected") {
+      status("Audio connection established.");
+    } else if (pc.connectionState === "failed") {
+      status("Audio connection failed. Network relay support may be needed.");
+    } else if (pc.connectionState === "disconnected") {
+      status("Audio connection interrupted.");
+    }
+  };
+
+  localStream = await navigator.mediaDevices.getUserMedia({
+    audio: {
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: true
+    },
+    video: false
+  });
+
+  localStream.getAudioTracks().forEach(track => {
+    track.enabled = true;
+
+    console.log("[GPA Audio Call] Local microphone:", {
+      label: track.label,
+      enabled: track.enabled,
+      muted: track.muted,
+      readyState: track.readyState
     });
 
-    localStream.getTracks().forEach(track => {
-      pc.addTrack(track, localStream);
-    });
-  }
+    pc.addTrack(track, localStream);
+  });
+}
+
 
   async function startCall() {
     if (!socket?.connected) {
@@ -293,12 +329,16 @@
           );
         }
       } else if (signal.type === "ice" && signal.candidate) {
-        if (pc) {
-          await pc.addIceCandidate(
-            new RTCIceCandidate(signal.candidate)
-          );
-        }
-      }
+  if (!pc) return;
+
+  const candidate = new RTCIceCandidate(signal.candidate);
+
+  if (!pc.remoteDescription) {
+    pendingIceCandidates.push(candidate);
+  } else {
+    await pc.addIceCandidate(candidate);
+  }
+}
     } catch (error) {
       console.error("[GPA Audio Call] Signaling error:", error);
       status("Could not establish audio. Please end the call and retry.");
