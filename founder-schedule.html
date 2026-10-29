@@ -203,7 +203,7 @@
             <option>Sunday</option>
         </select>
 
-        <select id="className" required>
+        <select id="className" required onchange="renderGpaStudentCards()">
             <option value="">Select Class</option>
             <option>Pre.KG</option>
             <option>LKG</option>
@@ -375,20 +375,47 @@ async function loadGpaStudents() {
     } catch (e) { document.getElementById("gpaStudentCards").innerHTML = "Error loading students"; }
 }
 
+
 function renderGpaStudentCards(assignments = []) {
     const box = document.getElementById("gpaStudentCards");
     if (!box) return;
-    
-    if (gpaStudents.length === 0) {
-        box.innerHTML = "No students found.";
+
+    const selectedClass = document.getElementById("className").value;
+
+    // Show students belonging only to the selected class/grade.
+    const filteredStudents = selectedClass
+        ? gpaStudents.filter(student =>
+            String(student.grade || "").trim().toLowerCase() ===
+            selectedClass.trim().toLowerCase()
+          )
+        : [];
+
+    if (!selectedClass) {
+        box.innerHTML = "Please select a class to view its students.";
         return;
     }
 
-    box.innerHTML = gpaStudents.map(s => {
-        const isSelected = assignments.some(a => (a.studentId || a.student?._id) === s._id);
+    if (filteredStudents.length === 0) {
+        box.innerHTML = "No students found for " + selectedClass + ".";
+        return;
+    }
+
+    box.innerHTML = filteredStudents.map(student => {
+        const isSelected = assignments.some(a =>
+            String(a.studentId || a.student?._id || a.student || "") ===
+            String(student._id)
+        );
+
         return `
-            <div class="gpa-student-card" data-id="${s._id}">
-                <label><input type="checkbox" class="gpa-student-select" ${isSelected ? 'checked' : ''}> ${s.name}</label>
+            <div class="gpa-student-card" data-id="${student._id}">
+                <label>
+                    <input
+                        type="checkbox"
+                        class="gpa-student-select"
+                        ${isSelected ? "checked" : ""}
+                    >
+                    ${student.name}
+                </label>
             </div>
         `;
     }).join("");
