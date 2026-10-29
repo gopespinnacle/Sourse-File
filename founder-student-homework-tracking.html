@@ -580,100 +580,71 @@ async function loadPeople(){
 }
 
 /*
-    Existing homework API is used exactly as it already exists:
-    /student-homework/:studentId
-
-    No existing teacher/student homework route is changed.
+  Founder tracking reads the dedicated homework-flow collections:
+  HomeworkAssignment + HomeworkSubmission.
+  Existing teacher/student endpoints remain unchanged.
 */
+async function fetchFounderHomework(){
 
-async function fetchStudentHomework(student){
+    const result = await fetchJson(API + "/homework-flow/founder/assignments");
 
-    try{
-
-        const result =
-            await fetchJson(
-                API + "/student-homework/" + encodeURIComponent(student._id)
-            );
-
-        if(!result.success){
-            return [];
-        }
-
-        return (result.data || []).map(hw => {
-
-            const plan = hw.lessonPlan || {};
-
-            const lesson =
-                (plan.lessons || []).find(
-                    item => String(item.topicId) === String(hw.topicId)
-                );
-
-            /*
-              One Homework record corresponds to one student + lesson plan
-              + topicId in the existing system.
-            */
-
-            return {
-                homeworkId: hw._id,
-
-                studentId: student._id,
-                studentName: student.name || "-",
-                studentCode: student.studentId || "-",
-                studentMobile: student.mobile || "",
-
-                teacherId: plan.teacherId || "",
-                teacherName: plan.teacherName || "-",
-
-                date: plan.date || normaliseDate(hw.createdAt),
-
-                subject: plan.subject || "-",
-                className: plan.className || "-",
-
-                topic: lesson?.topic || "-",
-                homeworkText: lesson?.homework || "-",
-
-                homeworkDocuments:
-                    lesson?.homeworkDocuments || [],
-
-                submittedFiles:
-                    hw.submittedFiles || [],
-
-                reviewFiles:
-                    hw.reviewFiles || [],
-
-                status:
-                    hw.status || "Pending",
-
-                submittedAt:
-                    hw.submittedAt || null,
-
-                reviewedAt:
-                    hw.reviewedAt || null,
-
-                /*
-                  Existing database stores reviewedAt/reviewFiles.
-                  It does NOT store a separate "student opened review"
-                  timestamp. Therefore this page safely shows whether
-                  the review is available to the student, rather than
-                  falsely claiming the student opened it.
-                */
-                reviewAvailable:
-                    Array.isArray(hw.reviewFiles) &&
-                    hw.reviewFiles.length > 0
-            };
-
-        });
-
-    }catch(err){
-
-        console.log(
-            "Homework load failed for:",
-            student.name,
-            err
-        );
-
-        return [];
+    if (!result.success) {
+        throw new Error(result.message || "Could not load homework assignments.");
     }
+
+    const rows = [];
+
+    (result.data || []).forEach(hw => {
+        const teacher = hw.teacher && typeof hw.teacher === "object" ? hw.teacher : {};
+        const assignedStudents = Array.isArray(hw.assignedStudents) ? hw.assignedStudents : [];
+        const submissions = Array.isArray(hw.submissions) ? hw.submissions : [];
+
+        assignedStudents.forEach(student => {
+            const studentId = String(student?._id || student || "");
+            const submission = submissions.find(item =>
+                String(item.student?._id || item.student || "") === studentId
+            ) || null;
+
+            const rawStatus = String(submission?.status || "").toLowerCase();
+            const submitted = !!submission && ["submitted", "reviewed", "returned"].includes(rawStatus);
+            const reviewed = !!submission && ["reviewed", "returned"].includes(rawStatus);
+            const submittedFiles = Array.isArray(submission?.attachments) ? submission.attachments : [];
+            const reviewFiles = Array.isArray(submission?.reviewedAttachments) ? submission.reviewedAttachments : [];
+
+            rows.push({
+                homeworkId: hw._id,
+                submissionId: submission?._id || "",
+                studentId,
+                studentName: student?.name || "-",
+                studentCode: student?.studentId || "-",
+                studentMobile: student?.mobile || "",
+                teacherId: teacher?._id || hw.teacher?._id || "",
+                teacherName: teacher?.name || "-",
+                date: normaliseDate(hw.createdAt),
+                subject: hw.subject || "-",
+                className: hw.className || "-",
+                topic: hw.topic || hw.title || "-",
+                homeworkText: hw.instructions || "-",
+                homeworkDocuments: [
+                    ...(Array.isArray(hw.attachments) ? hw.attachments : []),
+                    ...(Array.isArray(hw.materialAttachments) ? hw.materialAttachments : [])
+                ],
+                answerText: submission?.answerText || "",
+                submittedFiles,
+                reviewFiles,
+                marks: submission?.marks ?? null,
+                feedback: submission?.feedback || "",
+                status: reviewed ? "Reviewed" : submitted ? "Submitted" : "Pending",
+                submittedAt: submission?.submittedAt || null,
+                reviewedAt: submission?.reviewedAt || null,
+                reviewAvailable: reviewed || reviewFiles.length > 0 ||
+                    submission?.marks !== null && submission?.marks !== undefined ||
+                    !!String(submission?.feedback || "").trim()
+            });
+        });
+    });
+
+    return rows;
 }
 
 async function loadTracking(){
@@ -695,29 +666,9 @@ async function loadTracking(){
 
         await loadPeople();
 
-        allRows = [];
-
-        /*
-          Limit concurrent requests so a large student list does not
-          overload the existing backend.
-        */
-
-        const batchSize = 6;
-
-        for(let i = 0; i < students.length; i += batchSize){
-
-            const batch =
-                students.slice(i, i + batchSize);
-
-            const results =
-                await Promise.all(
-                    batch.map(fetchStudentHomework)
-                );
-
-            results.forEach(rows => {
-                allRows.push(...rows);
-            });
-        }
+        // Read all assignments and their per-student submissions from
+        // HomeworkAssignment and HomeworkSubmission in one founder endpoint.
+        allRows = await fetchFounderHomework();
 
         buildSubjectFilter();
 
@@ -894,22 +845,21 @@ function renderDocuments(files){
 
     return files.map(file => {
 
-        if(!file || !file.s3Url){
-            return "";
-        }
+        const url = file && (file.s3Url || file.url);
+        if(!url) return "";
 
         return `
             <a
                 class="doc-link"
-                href="${escapeHtml(file.s3Url)}"
+                href="${escapeHtml(url)}"
                 target="_blank"
                 rel="noopener"
             >
-                📄 ${escapeHtml(file.fileName || "View")}
+                📄 ${escapeHtml(file.fileName || file.name || "View")}
             </a>
         `;
 
-    }).join("<br>");
+    }).filter(Boolean).join("<br>") || "-";
 }
 
 function renderFileLinks(files, emptyText = "No document") {
@@ -920,18 +870,17 @@ function renderFileLinks(files, emptyText = "No document") {
 
     const links = files.map((file, index) => {
 
-        if (!file || !file.s3Url) {
-            return "";
-        }
+        const url = file && (file.s3Url || file.url);
+        if (!url) return "";
 
         return `
             <a
                 class="doc-link"
-                href="${escapeHtml(file.s3Url)}"
+                href="${escapeHtml(url)}"
                 target="_blank"
                 rel="noopener"
             >
-                📄 ${escapeHtml(file.fileName || `Document ${index + 1}`)}
+                📄 ${escapeHtml(file.fileName || file.name || `Document ${index + 1}`)}
             </a>
         `;
 
@@ -964,6 +913,7 @@ function renderSubmitted(row){
             ${formatDateTime(row.submittedAt)}
         </div>
 
+        ${row.answerText ? `<div class="meta">Answer: ${escapeHtml(row.answerText)}</div>` : ""}
         <div style="margin-top:6px;">
             ${renderFileLinks(row.submittedFiles, "No document")}
         </div>
@@ -1001,27 +951,15 @@ function renderReviewed(row){
 
 function renderReviewReceived(row){
 
-    if(
-        !Array.isArray(row.reviewFiles) ||
-        !row.reviewFiles.length
-    ){
-
-        return `
-            <span class="status-pill not-yet">
-                Not Available
-            </span>
-        `;
+    if (!row.reviewAvailable) {
+        return `<span class="status-pill not-yet">Not Available</span>`;
     }
 
     return `
-        <span class="status-pill available">
-            Review Available
-        </span>
-
-        <div class="time-box">
-            ${formatDateTime(row.reviewedAt)}
-        </div>
-
+        <span class="status-pill available">Review Available</span>
+        <div class="time-box">${formatDateTime(row.reviewedAt)}</div>
+        ${row.marks !== null && row.marks !== undefined ? `<div class="meta">Marks: ${escapeHtml(row.marks)}</div>` : ""}
+        ${row.feedback ? `<div class="meta">Feedback: ${escapeHtml(row.feedback)}</div>` : ""}
         <div style="margin-top:6px;">
             ${renderFileLinks(row.reviewFiles, "No review document")}
         </div>
