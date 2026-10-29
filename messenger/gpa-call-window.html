@@ -153,13 +153,38 @@
     const enableWindow = document.getElementById("enableWindow");
 
     enableWindow.addEventListener("click", () => {
-      enableWindow.textContent = "Call window enabled";
-      enableWindow.disabled = true;
+  // Open a separate, floating browser window from a user click.
+  if (window.location.search.includes("popup=1")) {
+    enableWindow.textContent = "Call window enabled";
+    enableWindow.disabled = true;
 
-      if (channel) {
-        channel.postMessage({ type: "window-ready" });
-      }
-    });
+    if (channel) {
+      channel.postMessage({ type: "window-ready" });
+    }
+    return;
+  }
+
+  const popupUrl = new URL(window.location.href);
+  popupUrl.searchParams.set("popup", "1");
+
+  const callWindow = window.open(
+    popupUrl.href,
+    "GPAAudioCallWindow",
+    "width=420,height=650,resizable=yes,scrollbars=no"
+  );
+
+  if (callWindow) {
+    enableWindow.textContent = "Call window opened";
+    enableWindow.disabled = true;
+
+    if (channel) {
+      channel.postMessage({ type: "window-ready" });
+    }
+  } else {
+    document.getElementById("waitingMessage").textContent =
+      "Your browser blocked the call window. Allow pop-ups for gopespinnacle.com, then click Enable call window again.";
+  }
+});
 
     if (channel) {
       channel.onmessage = event => {
