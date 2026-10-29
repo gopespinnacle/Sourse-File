@@ -610,8 +610,15 @@ fallbackStarting = false;
     });
 
     socket.on("connect", () => {
-      console.log("[GPA Audio Call] Signaling connected.");
+    console.log("[GPA Audio Call] Signaling connected.");
+
+    socket.emit("call:check-pending", result => {
+        console.log(
+            "[GPA Audio Call] Pending-call check:",
+            result
+        );
     });
+});
 
     socket.on("connect_error", error => {
       console.error("[GPA Audio Call] Connection failed:", error.message);
