@@ -13,6 +13,9 @@
   let incoming = null;
   let callRole = null;
   let pendingIceCandidates = [];
+  let liveKitRoom = null;
+let usingLiveKit = false;
+let fallbackStarting = false;
 
   const token =
     sessionStorage.getItem("token") ||
@@ -206,12 +209,12 @@ async function preparePeerConnection() {
 
   if (pc.connectionState === "connected") {
     status("Audio connection established.");
-  } else if (
+ } else if (
     pc.connectionState === "failed" ||
     pc.iceConnectionState === "failed"
-  ) {
-    status("Audio connection failed. TURN relay may be required.");
-  } else if (
+) {
+    requestLiveKitFallback();
+} else if (
     pc.connectionState === "disconnected" ||
     pc.iceConnectionState === "disconnected"
   ) {
@@ -219,14 +222,22 @@ async function preparePeerConnection() {
   }
 };
 
+
 pc.oniceconnectionstatechange = () => {
-  if (pc) {
+    if (!pc) return;
+
     console.log(
-      "[GPA Audio Call] ICE state:",
-      pc.iceConnectionState
+        "[GPA Audio Call] ICE state:",
+        pc.iceConnectionState
     );
-  }
+
+    if (pc.iceConnectionState === "failed") {
+        requestLiveKitFallback();
+    } else if (pc.iceConnectionState === "disconnected") {
+        status("Audio connection interrupted. Checking connection...");
+    }
 };
+
 
 pc.onicegatheringstatechange = () => {
   if (pc) {
@@ -259,6 +270,145 @@ pc.onicegatheringstatechange = () => {
     pc.addTrack(track, localStream);
   });
 }
+
+
+async function requestLiveKitFallback() {
+    if (
+        usingLiveKit ||
+        fallbackStarting ||
+        !currentCallId ||
+        !socket?.connected
+    ) {
+        return;
+    }
+
+    fallbackStarting = true;
+    status("Direct audio failed. Switching to LiveKit...");
+
+    socket.emit(
+        "call:fallback-request",
+        { callId: currentCallId },
+        result => {
+            if (!result?.ok) {
+                fallbackStarting = false;
+                status(
+                    result?.message ||
+                    "Could not switch to LiveKit."
+                );
+            }
+        }
+    );
+}
+
+async function startLiveKitFallback(data) {
+    if (
+        !data ||
+        data.callId !== currentCallId ||
+        usingLiveKit
+    ) {
+        return;
+    }
+
+    try {
+        fallbackStarting = true;
+        status("Connecting audio through LiveKit...");
+
+        // Load the LiveKit browser SDK only when needed.
+        const { Room, RoomEvent } = await import(
+            "https://cdn.jsdelivr.net/npm/livekit-client/+esm"
+        );
+
+        // Close the direct WebRTC connection.
+        if (pc) {
+            pc.ontrack = null;
+            pc.onicecandidate = null;
+            pc.onconnectionstatechange = null;
+            pc.close();
+            pc = null;
+        }
+
+        pendingIceCandidates = [];
+
+        // Stop the old microphone stream; LiveKit will acquire it.
+        if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+            localStream = null;
+        }
+
+        const response = await fetch(
+            `${API_BASE}/api/livekit/audio-token`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    callId: data.callId
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(
+                result.message || "Could not obtain LiveKit token."
+            );
+        }
+
+        liveKitRoom = new Room();
+
+        liveKitRoom.on(
+            RoomEvent.TrackSubscribed,
+            async (track, publication, participant) => {
+                if (track.kind !== "audio") return;
+
+                const element = track.attach();
+                element.autoplay = true;
+                element.setAttribute("playsinline", "");
+                element.volume = 1;
+
+                document.body.appendChild(element);
+
+                try {
+                    await element.play();
+                } catch (error) {
+                    console.warn(
+                        "LiveKit audio playback requires interaction:",
+                        error
+                    );
+                    status(
+                        "Connected. Tap the page if you cannot hear audio."
+                    );
+                }
+            }
+        );
+
+        await liveKitRoom.connect(
+            result.livekitUrl,
+            result.token
+        );
+
+        await liveKitRoom.localParticipant.setMicrophoneEnabled(true);
+
+        usingLiveKit = true;
+        fallbackStarting = false;
+
+        updateControls("active");
+        status("LiveKit audio connected. You can speak now.");
+
+    } catch (error) {
+        console.error(
+            "[GPA Audio Call] LiveKit fallback failed:",
+            error
+        );
+
+        fallbackStarting = false;
+        status("LiveKit fallback failed: " + error.message);
+    }
+}
+
 
 
   async function startCall() {
@@ -394,6 +544,13 @@ pc.onicegatheringstatechange = () => {
   }
 
   function cleanup(showEnded) {
+    if (liveKitRoom) {
+    liveKitRoom.disconnect();
+    liveKitRoom = null;
+}
+
+usingLiveKit = false;
+fallbackStarting = false;
     if (pc) {
       pc.close();
       pc = null;
@@ -500,6 +657,9 @@ pc.onicegatheringstatechange = () => {
     });
 
     socket.on("call:signal", handleSignal);
+    socket.on("call:fallback", data => {
+    startLiveKitFallback(data);
+});
 
     socket.on("call:ended", data => {
       if (data.callId !== currentCallId) return;
