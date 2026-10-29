@@ -13,18 +13,27 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-    const title =
-        payload.notification?.title || "Gopes Pinnacle Academy";
+  const data = payload.data || {};
+  const isCall = data.type === "incoming_call";
 
-    const options = {
-        body: payload.notification?.body || "You have a new message.",
-        icon: "/images/logo.png",
-        data: payload.data || {
-            url: "/messenger/messenger.html"
-        }
-    };
+  const title = isCall
+    ? "📞 Incoming GPA Audio Call"
+    : (data.title || payload.notification?.title || "Gopes Pinnacle Academy");
 
-    return self.registration.showNotification(title, options);
+  const options = {
+    body: isCall
+      ? `${data.callerName || "Someone"} is calling you. Open GPA Messenger to answer.`
+      : (data.body || payload.notification?.body || "You have a new message."),
+    icon: "/images/logo.png",
+    tag: isCall ? `gpa-call-${data.callId || "incoming"}` : undefined,
+    requireInteraction: isCall,
+    data: {
+      ...data,
+      url: data.url || "/messenger/messenger.html"
+    }
+  };
+
+  return self.registration.showNotification(title, options);
 });
 
 self.addEventListener("notificationclick", (event) => {
