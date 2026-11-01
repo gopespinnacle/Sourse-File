@@ -343,64 +343,6 @@ function formatTime(time) {
  *   1. period.assignments[].student
  *   2. period.students[]
  */
-function extractRows(periods) {
-    const rows = [];
-
-    periods.forEach(period => {
-        const teacher = getObject(period.teacher) ||
-                        getObject(period.teacherId) ||
-                        getObject(period.teacherID);
-
-        let students = [];
-
-        if (Array.isArray(period.assignments)) {
-            students = period.assignments
-                .map(item => ({
-                    student: getObject(item.student) ||
-                             getObject(item.studentId) ||
-                             getObject(item.studentID),
-                    assignment: item
-                }))
-                .filter(item => item.student);
-        }
-
-        if (Array.isArray(period.students)) {
-            period.students.forEach(studentValue => {
-                const student = getObject(studentValue);
-
-                if (student) {
-                    students.push({
-                        student,
-                        assignment: {}
-                    });
-                }
-            });
-        }
-
-        students.forEach(({ student, assignment }) => {
-            const source = {
-                ...period,
-                ...assignment
-            };
-
-            rows.push({
-                teacher,
-                student,
-                subject: source.subject || period.subject || "-",
-                className:
-                    source.className ||
-                    period.className ||
-                    student.grade ||
-                    "-",
-                day: source.day || period.day || "-",
-                startTime: source.startTime || period.startTime || "",
-                endTime: source.endTime || period.endTime || ""
-            });
-        });
-    });
-
-    return rows;
-}
 
 
 function extractRows(periods) {
@@ -514,6 +456,60 @@ function extractRows(periods) {
     });
 
     return rows;
+}
+
+async function loadPeriodSummary() {
+    const container = document.getElementById("teachersContainer");
+    const status = document.getElementById("status");
+
+    try {
+        if (!token) {
+            throw new Error("Your login session is missing. Please log in again.");
+        }
+
+        const response = await fetch(
+            `${API}/api/founder/periodassignments`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Unable to load period mappings.");
+        }
+
+        const periods = Array.isArray(result)
+            ? result
+            : Array.isArray(result.data)
+                ? result.data
+                : Array.isArray(result.periods)
+                    ? result.periods
+                    : [];
+
+        allRows = extractRows(periods);
+
+        populateFilters();
+        renderTeachers(allRows);
+
+        status.textContent =
+            `${allRows.length} student-subject-period mapping(s) loaded.`;
+
+    } catch (error) {
+        console.error("Period Summary error:", error);
+
+        status.textContent = error.message;
+
+        container.innerHTML = `
+            <div class="teacher-card">
+                Unable to load period summary.
+                Please check your login session and API response.
+            </div>
+        `;
+    }
 }
 
 function populateFilters() {
