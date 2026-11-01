@@ -24,9 +24,9 @@ body {
 }
 
 .main-content {
-    margin-left: 240px;
+    margin-left: 0;
     padding: 20px;
-    width: calc(100% - 240px);
+    width: 100%;
 }
 
 h2 {
@@ -156,20 +156,7 @@ h2 {
 
 <body>
 
-<!-- FOUNDER SIDEBAR -->
-<div id="sidebar-container"></div>
 
-<script>
-fetch("founder-sidebar.html")
-.then(res => {
-    if (!res.ok) throw new Error("Unable to load Founder sidebar");
-    return res.text();
-})
-.then(html => {
-    document.getElementById("sidebar-container").innerHTML = html;
-})
-.catch(err => console.error("Sidebar error:", err));
-</script>
 
 <div class="main-content">
 
