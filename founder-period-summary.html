@@ -345,114 +345,100 @@ function formatTime(time) {
  */
 
 
+function normalizePerson(value, fallbackName) {
+    if (!value) return null;
+
+    if (typeof value === "object") return value;
+
+    // A raw MongoDB ObjectId is serialized by JSON as a string.
+    if (typeof value === "string") {
+        return { _id: value, name: fallbackName };
+    }
+
+    return null;
+}
+
+function asStringArray(value) {
+    if (Array.isArray(value)) {
+        return value
+            .flat(Infinity)
+            .filter(item => item !== null && item !== undefined && String(item).trim() !== "")
+            .map(item => String(item).trim());
+    }
+
+    if (typeof value === "string" && value.trim()) {
+        return [value.trim()];
+    }
+
+    return [];
+}
+
 function extractRows(periods) {
     const rows = [];
 
-    periods.forEach(period => {
+    (Array.isArray(periods) ? periods : []).forEach(period => {
+        const teacher = normalizePerson(period.teacher, "Unknown Teacher");
+        const assistantTeacher = normalizePerson(
+            period.assistantTeacher,
+            "Unknown Assistant Teacher"
+        );
 
-        // Support populated objects and plain MongoDB IDs
-        function normalizePerson(value) {
-            if (!value) return null;
+        const assignments = Array.isArray(period.assignments)
+            ? period.assignments
+            : [];
 
-            if (typeof value === "object") {
-                return value;
+        // Preserve the timetable record even if no student is assigned.
+        const entries = assignments.length
+            ? assignments
+            : [{ student: null, subjects: [], languages: [], eca: [] }];
+
+        entries.forEach(assignment => {
+            const student = normalizePerson(
+                assignment.student,
+                "Unknown Student"
+            );
+
+            // The student's own assignment is the most precise source.
+            // Fall back to the schedule-level arrays for legacy/incomplete
+            // assignment entries. "language" is singular on the schedule
+            // schema, while assignment entries use "languages".
+            let subjects = asStringArray(assignment.subjects);
+            if (!subjects.length) {
+                subjects = asStringArray(assignment.subject);
+            }
+            if (!subjects.length) {
+                subjects = asStringArray(period.subject);
+            }
+            if (!subjects.length) subjects = ["-"];
+
+            let languages = asStringArray(assignment.languages);
+            if (!languages.length) {
+                languages = asStringArray(assignment.language);
+            }
+            if (!languages.length) {
+                languages = asStringArray(period.language);
             }
 
-            if (typeof value === "string") {
-                return { _id: value };
-            }
-
-            return null;
-        }
-
-        const teacher =
-            normalizePerson(period.teacher) ||
-            normalizePerson(period.teacherId) ||
-            normalizePerson(period.teacherID);
-
-        let students = [];
-
-        // Read student mappings from assignments[]
-        if (Array.isArray(period.assignments)) {
-
-            students = period.assignments
-                .map(item => ({
-                    student:
-                        normalizePerson(item.student) ||
-                        normalizePerson(item.studentId) ||
-                        normalizePerson(item.studentID),
-
-                    assignment: item
-                }))
-                .filter(item => item.student);
-        }
-
-        // Legacy fallback: period.students[]
-        if (students.length === 0 &&
-            Array.isArray(period.students)) {
-
-            students = period.students
-                .map(studentValue => ({
-                    student: normalizePerson(studentValue),
-                    assignment: {}
-                }))
-                .filter(item => item.student);
-        }
-
-        // Expand every student's subject mapping
-        students.forEach(({ student, assignment }) => {
-
-            const subjects = Array.isArray(assignment.subjects)
-                ? assignment.subjects.filter(Boolean)
-                : [];
-
-            // Support older period-level subject records
-            if (subjects.length === 0) {
-
-                if (assignment.subject) {
-                    subjects.push(assignment.subject);
-
-                } else if (period.subject) {
-                    subjects.push(period.subject);
-
-                } else {
-                    subjects.push("-");
-                }
-            }
+            let eca = asStringArray(assignment.eca);
+            if (!eca.length) eca = asStringArray(period.eca);
 
             subjects.forEach(subject => {
-
                 rows.push({
-
-                    teacher: teacher,
-
-                    student: student,
-
-                    subject: subject,
-
-                    className:
-                        period.className ||
-                        student.grade ||
-                        "-",
-
-                    day:
-                        period.day ||
-                        "-",
-
-                    startTime:
-                        period.startTime ||
-                        "",
-
-                    endTime:
-                        period.endTime ||
-                        ""
-
+                    scheduleId: period._id || "",
+                    teacher,
+                    assistantTeacher,
+                    student,
+                    subject,
+                    languages,
+                    eca,
+                    className: period.className || student?.grade || "-",
+                    day: period.day || "-",
+                    startTime: period.startTime || "",
+                    endTime: period.endTime || "",
+                    unassigned: !student
                 });
-
             });
-
         });
-
     });
 
     return rows;
@@ -495,8 +481,13 @@ async function loadPeriodSummary() {
         populateFilters();
         renderTeachers(allRows);
 
+        const scheduleCount = Number.isFinite(result.summary?.scheduleRecords)
+            ? result.summary.scheduleRecords
+            : periods.length;
+
         status.textContent =
-            `${allRows.length} student-subject-period mapping(s) loaded.`;
+            `${scheduleCount} timetable record(s) | ` +
+            `${allRows.length} student-subject-period row(s) loaded.`;
 
     } catch (error) {
         console.error("Period Summary error:", error);
@@ -522,14 +513,14 @@ function populateFilters() {
     const subjects = new Set();
 
     allRows.forEach(row => {
-        if (row.teacher) {
-            const key = row.teacher._id ||
-                        row.teacher.id ||
-                        getTeacherId(row.teacher) ||
-                        getName(row.teacher, "Unknown Teacher");
+        [row.teacher, row.assistantTeacher].filter(Boolean).forEach(person => {
+            const key = person._id ||
+                        person.id ||
+                        getTeacherId(person) ||
+                        getName(person, "Unknown Teacher");
 
-            teachers.set(String(key), teacherLabel(row.teacher));
-        }
+            teachers.set(String(key), teacherLabel(person));
+        });
 
         if (row.student) {
             const key = row.student._id ||
@@ -606,7 +597,7 @@ function renderTeachers(rows) {
         }
 
         const teacherGroup = teacherMap.get(teacherKey);
-        const studentKey = getPersonKey(row.student, "unknown-student");
+        const studentKey = getPersonKey(row.student, "unassigned-student");
 
         if (!teacherGroup.students.has(studentKey)) {
             teacherGroup.students.set(studentKey, {
@@ -652,15 +643,37 @@ function renderTeachers(rows) {
                         ${safe(formatTime(period.startTime))} -
                         ${safe(formatTime(period.endTime))}
                     </span>
+
+                    ${period.assistantTeacher ? `
+                        <span class="tag">
+                            <i class="fa fa-user-tie"></i>
+                            Assistant: ${safe(getName(period.assistantTeacher, "Unknown Assistant Teacher"))}
+                        </span>
+                    ` : ""}
+
+                    ${period.languages.map(language => `
+                        <span class="tag">
+                            <i class="fa fa-language"></i>
+                            ${safe(language)}
+                        </span>
+                    `).join("")}
+
+                    ${period.eca.map(activity => `
+                        <span class="tag">
+                            <i class="fa fa-star"></i>
+                            ${safe(activity)}
+                        </span>
+                    `).join("")}
                 </div>
             `).join("");
 
-            const studentName = getName(
-                studentGroup.student,
-                "Unknown Student"
-            );
+            const studentName = studentGroup.student
+                ? getName(studentGroup.student, "Unknown Student")
+                : "No student assigned";
 
-            const studentId = getStudentId(studentGroup.student);
+            const studentId = studentGroup.student
+                ? getStudentId(studentGroup.student)
+                : "";
 
             return `
                 <div class="student-section">
@@ -714,19 +727,24 @@ function applyFilters() {
 
     const filtered = allRows.filter(row => {
         const teacherKey = getPersonKey(row.teacher, "");
+        const assistantKey = getPersonKey(row.assistantTeacher, "");
         const studentKey = getPersonKey(row.student, "");
 
-        if (teacherId && teacherKey !== teacherId) return false;
+        if (teacherId && teacherKey !== teacherId && assistantKey !== teacherId) return false;
         if (studentId && studentKey !== studentId) return false;
         if (subject && row.subject !== subject) return false;
         if (day && row.day.toLowerCase() !== day.toLowerCase()) return false;
 
         if (search) {
             const teacherText = teacherLabel(row.teacher).toLowerCase();
+            const assistantText = row.assistantTeacher
+                ? teacherLabel(row.assistantTeacher).toLowerCase()
+                : "";
             const studentText = studentLabel(row.student).toLowerCase();
 
             if (
                 !teacherText.includes(search) &&
+                !assistantText.includes(search) &&
                 !studentText.includes(search)
             ) {
                 return false;
@@ -739,7 +757,7 @@ function applyFilters() {
     renderTeachers(filtered);
 
     document.getElementById("status").textContent =
-        `${filtered.length} matching student-period mapping(s).`;
+        `${filtered.length} matching student-subject-period row(s).`;
 }
 
 function clearFilters() {
@@ -752,7 +770,7 @@ function clearFilters() {
     renderTeachers(allRows);
 
     document.getElementById("status").textContent =
-        `${allRows.length} student-period mapping(s) loaded.`;
+        `${allRows.length} student-subject-period row(s) loaded.`;
 }
 
 document.getElementById("searchInput").addEventListener("keydown", event => {
