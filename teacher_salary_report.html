@@ -515,6 +515,14 @@ function formatCurrency(value) {
 
 }
 
+function formatPdfCurrency(value) {
+
+    return "Rs. " +
+        Number(value || 0)
+            .toLocaleString("en-IN");
+
+}
+
 
 
 /* =========================================================
@@ -1755,15 +1763,15 @@ catch(error) {
 
 
                 doc.text(
-                    formatCurrency(
-                        student.amount
-                    ),
-                    185,
-                    y + 6,
-                    {
-                        align: "right"
-                    }
-                );
+    formatPdfCurrency(
+        student.amount
+    ),
+    185,
+    y + 6,
+    {
+        align: "right"
+    }
+);
 
 
                 y += 9;
@@ -1816,16 +1824,16 @@ catch(error) {
         );
 
 
-        doc.text(
-            formatCurrency(
-                teacher.totalSalary
-            ),
-            190,
-            y,
-            {
-                align: "right"
-            }
-        );
+       doc.text(
+    formatPdfCurrency(
+        teacher.totalSalary
+    ),
+    190,
+    y,
+    {
+        align: "right"
+    }
+);
 
 
 
