@@ -262,6 +262,8 @@ function getTeacherId(teacher) {
            teacher.employeeID ||
            teacher.user?.teacherId ||
            teacher.profile?.teacherId ||
+           teacher._id ||
+           teacher.id ||
            "";
 }
 
@@ -272,6 +274,8 @@ function getStudentId(student) {
            student.studentID ||
            student.admissionNumber ||
            student.admissionNo ||
+           student._id ||
+           student.id ||
            "";
 }
 
@@ -398,61 +402,118 @@ function extractRows(periods) {
     return rows;
 }
 
-async function loadPeriodSummary() {
-    const container = document.getElementById("teachersContainer");
-    const status = document.getElementById("status");
 
-    try {
-        if (!token) {
-            throw new Error("Your login session is missing. Please log in again.");
+function extractRows(periods) {
+    const rows = [];
+
+    periods.forEach(period => {
+
+        // Support populated objects and plain MongoDB IDs
+        function normalizePerson(value) {
+            if (!value) return null;
+
+            if (typeof value === "object") {
+                return value;
+            }
+
+            if (typeof value === "string") {
+                return { _id: value };
+            }
+
+            return null;
         }
 
-        const response = await fetch(
-            `${API}/api/founder/periodassignments`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
+        const teacher =
+            normalizePerson(period.teacher) ||
+            normalizePerson(period.teacherId) ||
+            normalizePerson(period.teacherID);
+
+        let students = [];
+
+        // Read student mappings from assignments[]
+        if (Array.isArray(period.assignments)) {
+
+            students = period.assignments
+                .map(item => ({
+                    student:
+                        normalizePerson(item.student) ||
+                        normalizePerson(item.studentId) ||
+                        normalizePerson(item.studentID),
+
+                    assignment: item
+                }))
+                .filter(item => item.student);
+        }
+
+        // Legacy fallback: period.students[]
+        if (students.length === 0 &&
+            Array.isArray(period.students)) {
+
+            students = period.students
+                .map(studentValue => ({
+                    student: normalizePerson(studentValue),
+                    assignment: {}
+                }))
+                .filter(item => item.student);
+        }
+
+        // Expand every student's subject mapping
+        students.forEach(({ student, assignment }) => {
+
+            const subjects = Array.isArray(assignment.subjects)
+                ? assignment.subjects.filter(Boolean)
+                : [];
+
+            // Support older period-level subject records
+            if (subjects.length === 0) {
+
+                if (assignment.subject) {
+                    subjects.push(assignment.subject);
+
+                } else if (period.subject) {
+                    subjects.push(period.subject);
+
+                } else {
+                    subjects.push("-");
                 }
             }
-        );
 
-        const result = await response.json();
+            subjects.forEach(subject => {
 
-        if (!response.ok) {
-            throw new Error(result.message || "Unable to load period mappings.");
-        }
+                rows.push({
 
-        /*
-         * Support common response wrappers.
-         */
-        const periods = Array.isArray(result)
-            ? result
-            : Array.isArray(result.data)
-                ? result.data
-                : Array.isArray(result.periods)
-                    ? result.periods
-                    : [];
+                    teacher: teacher,
 
-        allRows = extractRows(periods);
+                    student: student,
 
-        populateFilters();
-        renderTeachers(allRows);
+                    subject: subject,
 
-        status.textContent =
-            `${allRows.length} student-period mapping(s) loaded.`;
+                    className:
+                        period.className ||
+                        student.grade ||
+                        "-",
 
-    } catch (error) {
-        console.error("Period Summary error:", error);
+                    day:
+                        period.day ||
+                        "-",
 
-        status.textContent = error.message;
+                    startTime:
+                        period.startTime ||
+                        "",
 
-        container.innerHTML = `
-            <div class="teacher-card">
-                Unable to load period summary.
-                Please check your login session and API response.
-            </div>
-        `;
-    }
+                    endTime:
+                        period.endTime ||
+                        ""
+
+                });
+
+            });
+
+        });
+
+    });
+
+    return rows;
 }
 
 function populateFilters() {
