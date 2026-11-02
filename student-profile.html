@@ -41,129 +41,240 @@ body{
 
 </div>
 
+
 <script>
+
+const API = "https://academy-backend-eatl.onrender.com/api/founder";
 
 const params = new URLSearchParams(window.location.search);
 const studentId = params.get("id");
 const token = localStorage.getItem("token");
 
-/* ================= STUDENT INFO ================= */
+const studentInfo = document.getElementById("studentInfo");
+const periodsDiv = document.getElementById("periods");
 
-async function loadStudent(){
-
-const res = await fetch(
-"https://academy-backend-eatl.onrender.com/api/founder/students",
-{
-headers:{
-"Authorization":"Bearer " + token
-}
-}
-);
-
-const data = await res.json();
-
-/* FIND ONE STUDENT */
-const s = data.students.find(st => st._id === studentId);
-
-if(!s){
-document.getElementById("studentInfo").innerText = "Student not found";
-return;
+function authHeaders() {
+    return {
+        "Authorization": "Bearer " + token
+    };
 }
 
-document.getElementById("studentInfo").innerHTML = `
-<b>Name:</b> ${s.name}<br>
-<b>Grade:</b> ${s.grade}<br>
-<b>Board:</b> ${s.board}<br>
-<b>Mobile:</b> ${s.mobile}<br><br>
-
-<b>Login ID:</b> ${s.loginEmail}<br>
-<b>Password:</b> ${s.loginPassword}
-`;
-
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[char]);
 }
 
-/* ================= PERIODS ================= */
+/* =================================
+   LOAD STUDENT INFORMATION
+================================= */
 
-async function loadPeriods(){
+async function loadStudent() {
+    try {
+        const res = await fetch(API + "/students", {
+            headers: authHeaders()
+        });
 
-try{
+        if (!res.ok) throw new Error("Unable to load students");
 
-const res = await fetch(
-"https://academy-backend-eatl.onrender.com/api/founder/periodassignments",
-{
-headers:{
-"Authorization":"Bearer " + token
-}
-}
-);
+        const data = await res.json();
 
-const data = await res.json();
+        const student = (data.students || []).find(
+            s => String(s._id) === String(studentId)
+        );
 
-let html = "";
+        if (!student) {
+            studentInfo.innerText = "Student not found";
+            return;
+        }
 
-if(!data.data){
-document.getElementById("periods").innerText = "No data";
-return;
-}
+        studentInfo.innerHTML = `
+            <b>Name:</b> ${escapeHTML(student.name)}<br>
+            <b>Grade:</b> ${escapeHTML(student.grade)}<br>
+            <b>Board:</b> ${escapeHTML(student.board)}<br>
+            <b>Mobile:</b> ${escapeHTML(student.mobile)}<br><br>
+            <b>Login ID:</b> ${escapeHTML(student.loginEmail || student.email)}
+        `;
 
-data.data.forEach(p=>{
-
-if(p.student && p.student.toString() === studentId){
-
-html += `
-<div style="padding:8px;border-bottom:1px solid #ddd; display:flex; justify-content:space-between; align-items:center;">
-    
-    <span>
-    📘 ${p.subject} | ${p.day} | ⏰ ${p.startTime} - ${p.endTime}
-    </span>
-
-    <button onclick="deletePeriod('${p._id}')" 
-    style="background:red;color:white;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;">
-    Delete
-    </button>
-
-</div>
-`;
-
+    } catch (error) {
+        console.error(error);
+        studentInfo.innerText = "Error loading student information";
+    }
 }
 
-});
+/* =================================
+   LOAD STUDENT ASSIGNED PERIODS
+================================= */
 
-document.getElementById("periods").innerHTML =
-html || "No periods assigned";
+async function loadPeriods() {
+    try {
+        periodsDiv.innerHTML = "Loading periods...";
 
-}catch(err){
-console.log(err);
-document.getElementById("periods").innerText = "Error loading periods";
+        const res = await fetch(
+            API + "/student/" + encodeURIComponent(studentId) +
+            "/assigned-periods",
+            {
+                headers: authHeaders()
+            }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.message || "Unable to load periods");
+        }
+
+        const periods = data.periods || [];
+
+        if (!periods.length) {
+            periodsDiv.innerHTML = `
+                <p style="color:#64748b;">
+                    No periods assigned to this student.
+                </p>
+            `;
+            return;
+        }
+
+        let html = "";
+
+        periods.forEach((p, index) => {
+
+            const subjects = [
+                ...(p.subjects || []),
+                ...(p.languages || []),
+                ...(p.eca || [])
+            ];
+
+            html += `
+                <div style="
+                    background:#f8fafc;
+                    border:1px solid #e2e8f0;
+                    border-radius:10px;
+                    padding:15px;
+                    margin-bottom:12px;
+                ">
+
+                    <h3 style="margin:0 0 10px;color:#1d4ed8;">
+                        Period ${index + 1}
+                    </h3>
+
+                    <p>
+                        <b>Teacher:</b>
+                        ${escapeHTML(p.teacher)}
+                    </p>
+
+                    <p>
+                        <b>Assistant Teacher:</b>
+                        ${escapeHTML(p.assistantTeacher)}
+                    </p>
+
+                    <p>
+                        <b>Class:</b>
+                        ${escapeHTML(p.className)}
+                    </p>
+
+                    <p>
+                        <b>Subject:</b>
+                        ${escapeHTML(subjects.length ? [...new Set(subjects)].join(", ") : "Not specified")}
+                    </p>
+
+                    <p>
+                        <b>Day:</b>
+                        ${escapeHTML(p.day)}
+                    </p>
+
+                    <p>
+                        <b>Time:</b>
+                        ${escapeHTML(p.startTime)} -
+                        ${escapeHTML(p.endTime)}
+                    </p>
+
+                    <button
+                        onclick="deletePeriod('${p.scheduleId}')"
+                        style="
+                            background:#dc2626;
+                            color:white;
+                            border:none;
+                            padding:8px 14px;
+                            border-radius:6px;
+                            cursor:pointer;
+                        ">
+                        Remove Student From This Period
+                    </button>
+
+                </div>
+            `;
+        });
+
+        periodsDiv.innerHTML = html;
+
+    } catch (error) {
+        console.error("PERIOD LOADING ERROR:", error);
+
+        periodsDiv.innerHTML = `
+            <p style="color:red;">
+                ${escapeHTML(error.message)}
+            </p>
+        `;
+    }
 }
 
+/* =================================
+   REMOVE STUDENT FROM ONE PERIOD
+================================= */
+
+async function deletePeriod(scheduleId) {
+
+    if (!confirm(
+        "Remove this student from this period? Other students will remain assigned."
+    )) return;
+
+    try {
+
+        const res = await fetch(
+            API + "/student-period/" +
+            encodeURIComponent(scheduleId) + "/" +
+            encodeURIComponent(studentId),
+            {
+                method: "DELETE",
+                headers: authHeaders()
+            }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.message || "Unable to remove assignment");
+        }
+
+        alert("Student removed successfully.");
+
+        await loadPeriods();
+
+    } catch (error) {
+        console.error(error);
+        alert(error.message);
+    }
 }
-async function deletePeriod(id){
 
-if(!confirm("Delete this period?")) return;
+/* =================================
+   INITIAL LOAD
+================================= */
 
-const token = localStorage.getItem("token");
-
-await fetch(
-"https://academy-backend-eatl.onrender.com/api/founder/periodassignments/" + id,
-{
-method:"DELETE",
-headers:{
-"Authorization":"Bearer " + token
+if (!studentId || !token) {
+    studentInfo.innerText = "Student ID or login session missing";
+    periodsDiv.innerText = "Unable to load periods";
+} else {
+    loadStudent();
+    loadPeriods();
 }
-}
-);
-
-alert("Deleted ✅");
-
-/* reload list */
-
-}
-/* LOAD */
-loadStudent();
-loadPeriods();
 
 </script>
+
 
 
 </body>
