@@ -398,6 +398,8 @@ if (!response.ok) {
 }
 
     const data = await response.json();
+
+
     console.log(data);
 
    document.getElementById("studentCount").innerText = data.totalStudents;
@@ -946,6 +948,30 @@ const selectedDay = new Date(year, month - 1, day)
 
         const data = await response.json();
 
+        const statusResponse = await fetch(
+    "https://academy-backend-eatl.onrender.com/api/founder/schedule-entry-status?date=" +
+    encodeURIComponent(selectedDate),
+    {
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    }
+);
+
+if (!statusResponse.ok) {
+    throw new Error("Unable to load register and homework statuses");
+}
+
+const statusData = await statusResponse.json();
+
+const registerIds = new Set(
+    statusData.statuses.registers || []
+);
+
+const homeworkIds = new Set(
+    statusData.statuses.homework || []
+);
+
         const schedules = (data.schedules || [])
            .filter(s =>
     String(s.day).trim().toLowerCase().startsWith(
@@ -991,6 +1017,8 @@ const selectedDay = new Date(year, month - 1, day)
                         <th>Subject / Language / ECA</th>
                         <th>Time</th>
                         <th>Students</th>
+<th>Daily Class Register</th>
+<th>Schedule's Homework</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1029,6 +1057,22 @@ const selectedDay = new Date(year, month - 1, day)
                         ${format12Hour(s.endTime)}
                     </td>
                     <td>${(s.assignments || []).length}</td>
+
+<td>
+    ${
+        registerIds.has(String(s._id))
+        ? '<span style="background:#dcfce7;color:#166534;padding:5px 9px;border-radius:12px;font-weight:bold;">Submitted</span>'
+        : '<span style="background:#fee2e2;color:#991b1b;padding:5px 9px;border-radius:12px;font-weight:bold;">Not Submitted</span>'
+    }
+</td>
+
+<td>
+    ${
+        homeworkIds.has(String(s._id))
+        ? '<span style="background:#dcfce7;color:#166534;padding:5px 9px;border-radius:12px;font-weight:bold;">Entered</span>'
+        : '<span style="background:#fee2e2;color:#991b1b;padding:5px 9px;border-radius:12px;font-weight:bold;">Not Entered</span>'
+    }
+</td>
                 </tr>
             `;
         });
