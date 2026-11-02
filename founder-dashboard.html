@@ -1006,7 +1006,20 @@ const selectedDay = new Date(year, month - 1, day)
 
             html += `
                 <tr>
-                    <td>${s.teacher?.name || "-"}</td>
+                    <td>
+    <a
+        href="founder-schedule-details.html?scheduleId=${encodeURIComponent(s._id)}&date=${encodeURIComponent(selectedDate)}"
+        style="
+            color:#2563eb;
+            font-weight:600;
+            text-decoration:none;
+            cursor:pointer;
+        "
+        title="View this schedule details"
+    >
+        ${s.teacher?.name || "-"}
+    </a>
+</td>
                     <td>${s.assistantTeacher?.name || "-"}</td>
                     <td>${s.className}</td>
                     <td>${activities || "-"}</td>
