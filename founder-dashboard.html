@@ -324,8 +324,35 @@ window.location.href = page;
 
 <div id="dailyScheduleSection">
     <h2 style="margin-top:40px;">Daily Classes Schedule</h2>
-    <p id="dailyScheduleDay"></p>
-    <div id="dailySchedule">Loading schedule...</div>
+
+<div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:15px 0;">
+
+    <label><strong>Select Date:</strong></label>
+
+    <input
+        type="date"
+        id="scheduleDate"
+        onchange="loadDailySchedule()"
+        style="padding:9px; border:1px solid #ccc; border-radius:6px;"
+    >
+
+    <button onclick="changeScheduleDate(-1)">
+        ← Previous Day
+    </button>
+
+    <button onclick="changeScheduleDate(1)">
+        Next Day →
+    </button>
+
+    <button onclick="goToToday()">
+        Today
+    </button>
+
+</div>
+
+<p id="dailyScheduleDay"></p>
+
+<div id="dailySchedule">Loading schedule...</div>
 </div>
 
 <script>
@@ -847,17 +874,58 @@ async function testGpaAudioCall(recipientId) {
     }
 }
 
+function changeScheduleDate(days) {
+
+    const input = document.getElementById("scheduleDate");
+
+    const [year, month, day] = input.value.split("-").map(Number);
+
+    const date = new Date(year, month - 1, day);
+
+    date.setDate(date.getDate() + days);
+
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+
+    input.value = `${y}-${m}-${d}`;
+
+    loadDailySchedule();
+}
+
+function goToToday() {
+
+    const now = new Date();
+
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+
+    document.getElementById("scheduleDate").value =
+        `${y}-${m}-${d}`;
+
+    loadDailySchedule();
+}
+
 
 async function loadDailySchedule() {
 
     const token = localStorage.getItem("token");
 
-    const today = new Date().toLocaleDateString("en-US", {
+    const selectedDate =
+    document.getElementById("scheduleDate").value;
+
+if (!selectedDate) return;
+
+const [year, month, day] = selectedDate.split("-").map(Number);
+
+const selectedDay = new Date(year, month - 1, day)
+    .toLocaleDateString("en-US", {
         weekday: "long"
     });
 
     document.getElementById("dailyScheduleDay").innerText =
-        "Today's Schedule - " + today;
+    "Schedule for " + selectedDate + " (" + selectedDay + ")";
 
     const container = document.getElementById("dailySchedule");
 
@@ -879,17 +947,18 @@ async function loadDailySchedule() {
         const data = await response.json();
 
         const schedules = (data.schedules || [])
-            .filter(s => 
-                String(s.day).trim().toLowerCase().startsWith(
-                    today.substring(0, 3).toLowerCase()
-                )
-            )
+           .filter(s =>
+    String(s.day).trim().toLowerCase().startsWith(
+        selectedDay.substring(0, 3).toLowerCase()
+    )
+)
             .sort((a, b) =>
                 a.startTime.localeCompare(b.startTime)
             );
 
         if (schedules.length === 0) {
-            container.innerHTML = "No classes scheduled for today.";
+            container.innerHTML =
+    "No classes scheduled for " + selectedDay + ".";
             return;
         }
 
@@ -966,7 +1035,7 @@ async function loadDailySchedule() {
     }
 }
 
-loadDailySchedule();
+goToToday();
 </script>
 
 
