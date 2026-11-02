@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Founder - Schedule Details</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+    .schedule-details-page { padding: 24px; }
+    .page-heading { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:20px; }
+    .page-heading h1 { margin:0; }
+    .back-button, .date-button { border:0; border-radius:7px; padding:10px 15px; cursor:pointer; background:#1e3a8a; color:#fff; text-decoration:none; display:inline-block; }
+    .date-toolbar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:16px 0 24px; }
+    .date-toolbar input { padding:9px 11px; border:1px solid #cbd5e1; border-radius:7px; }
+    .detail-section { background:#fff; padding:20px; border-radius:12px; margin:20px 0; box-shadow:0 2px 10px rgba(0,0,0,.07); overflow:hidden; }
+    .detail-section h2 { margin:0 0 16px; font-size:21px; color:#172554; }
+    .detail-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; }
+    .detail-item { background:#f8fafc; border:1px solid #e2e8f0; padding:13px; border-radius:8px; min-width:0; }
+    .detail-label { color:#64748b; font-size:12px; font-weight:700; text-transform:uppercase; display:block; margin-bottom:6px; }
+    .detail-value { color:#0f172a; font-weight:600; overflow-wrap:anywhere; }
+    .table-wrap { width:100%; overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; min-width:680px; }
+    th, td { padding:11px 12px; border-bottom:1px solid #e2e8f0; text-align:left; vertical-align:top; }
+    th { background:#f1f5f9; color:#334155; font-size:13px; white-space:nowrap; }
+    td { font-size:14px; }
+    .status { display:inline-block; padding:5px 9px; border-radius:20px; font-size:12px; font-weight:700; background:#e2e8f0; color:#334155; }
+    .status.present, .status.reviewed, .status.published { background:#dcfce7; color:#166534; }
+    .status.absent, .status.closed, .status.returned { background:#fee2e2; color:#991b1b; }
+    .status.pending, .status.submitted { background:#fef3c7; color:#92400e; }
+    .muted { color:#64748b; }
+    .empty-state, .error-state, .loading-state { padding:18px; border-radius:8px; background:#f8fafc; color:#475569; }
+    .error-state { background:#fff1f2; color:#9f1239; }
+    .homework-card { border:1px solid #e2e8f0; border-radius:9px; padding:16px; margin:14px 0; }
+    .homework-card h3 { margin:0 0 8px; color:#1e293b; }
+    .homework-meta { display:flex; flex-wrap:wrap; gap:14px; color:#64748b; font-size:13px; margin:8px 0 12px; }
+    .file-links a { display:inline-block; margin:4px 10px 4px 0; color:#1d4ed8; overflow-wrap:anywhere; }
+    .subheading { margin:16px 0 8px; font-size:15px; color:#334155; }
+    @media(max-width:600px) { .schedule-details-page { padding:13px; } .detail-section { padding:14px; } }
+</style>
+</head>
+<body class="dashboard-page">
+<div id="sidebar-container"></div>
+
+<div class="main-content schedule-details-page">
+    <div class="page-heading">
+        <div>
+            <h1>Schedule Details</h1>
+            <p class="muted" style="margin:6px 0 0;">View the students, class register and homework for one selected schedule.</p>
+        </div>
+        <button class="back-button" type="button" onclick="goBackToDashboard()"><i class="fa fa-arrow-left"></i> Back to Dashboard</button>
+    </div>
+
+    <div class="date-toolbar">
+        <label for="selectedDate"><strong>Class Date:</strong></label>
+        <button class="date-button" type="button" onclick="moveDate(-1)" aria-label="Previous day">&#8592;</button>
+        <input type="date" id="selectedDate">
+        <button class="date-button" type="button" onclick="moveDate(1)" aria-label="Next day">&#8594;</button>
+        <button class="date-button" type="button" onclick="setToday()">Today</button>
+    </div>
+
+    <div id="pageMessage" class="loading-state">Loading schedule details...</div>
+
+    <section class="detail-section" id="selectedScheduleSection" hidden>
+        <h2>1. Selected Schedule</h2>
+        <div id="selectedScheduleDetails" class="detail-grid"></div>
+    </section>
+
+    <section class="detail-section" id="assignedStudentsSection" hidden>
+        <h2>2. Students Assigned to This Schedule</h2>
+        <div id="assignedStudentsContent"></div>
+    </section>
+
+    <section class="detail-section" id="classRegisterSection" hidden>
+        <h2>3. This Schedule's Daily Class Register</h2>
+        <div id="classRegisterContent"></div>
+    </section>
+
+    <section class="detail-section" id="homeworkSection" hidden>
+        <h2>4. This Schedule's Homework</h2>
+        <div id="homeworkContent"></div>
+    </section>
+</div>
+
+<script>
+// Login protection - uses the same token as the founder dashboard.
+if (!localStorage.getItem("token")) {
+    window.location.href = "founder-login.html";
+}
+
+const API_BASE = "https://academy-backend-eatl.onrender.com";
+const params = new URLSearchParams(window.location.search);
+const scheduleId = params.get("scheduleId");
+const dateParam = params.get("date");
+
+function localDateString(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+}
+
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[char]));
+}
+
+function displayDate(value) {
+    if (!value) return "—";
+    const date = new Date(value + (String(value).length === 10 ? "T00:00:00" : ""));
+    return Number.isNaN(date.getTime()) ? escapeHTML(value) : date.toLocaleDateString("en-IN", {
+        day: "2-digit", month: "short", year: "numeric"
+    });
+}
+
+function formatTime(value) {
+    if (!value) return "—";
+    const match = String(value).trim().match(/^(\d{1,2}):(\d{2})/);
+    if (!match) return escapeHTML(value);
+    let hour = Number(match[1]);
+    const minute = match[2];
+    const suffix = hour >= 12 ? "PM" : "AM";
+    hour = hour % 12 || 12;
+    return `${hour}:${minute} ${suffix}`;
+}
+
+function listText(values) {
+    if (!Array.isArray(values) || !values.length) return "—";
+    return values.map(item => escapeHTML(item)).join(", ");
+}
+
+function statusClass(value) {
+    const normalized = String(value || "").toLowerCase();
+    if (["present", "reviewed", "published"].includes(normalized)) return normalized;
+    if (["absent", "closed", "returned"].includes(normalized)) return normalized;
+    if (["submitted", "pending", "not submitted"].includes(normalized)) return "pending";
+    return "";
+}
+
+function statusBadge(value) {
+    const label = value || "Not available";
+    return `<span class="status ${statusClass(label)}">${escapeHTML(label)}</span>`;
+}
+
+function showMessage(message, isError = false) {
+    const el = document.getElementById("pageMessage");
+    el.className = isError ? "error-state" : "loading-state";
+    el.textContent = message;
+    el.hidden = false;
+}
+
+function hideMessage() {
+    document.getElementById("pageMessage").hidden = true;
+}
+
+function goBackToDashboard() {
+    // Return to the dashboard while preserving the selected date when possible.
+    window.location.href = "founder-dashboard.html";
+}
+
+function moveDate(days) {
+    const input = document.getElementById("selectedDate");
+    const current = new Date(input.value + "T00:00:00");
+    current.setDate(current.getDate() + days);
+    input.value = localDateString(current);
+    loadScheduleDetails();
+}
+
+function setToday() {
+    document.getElementById("selectedDate").value = localDateString(new Date());
+    loadScheduleDetails();
+}
+
+function renderSelectedSchedule(schedule, selectedDate) {
+    const teacherName = schedule.teacher?.name || "—";
+    const dayName = new Date(selectedDate + "T00:00:00").toLocaleDateString("en-IN", { weekday: "long" });
+    const assignments = Array.isArray(schedule.assignments) ? schedule.assignments : [];
+    const fields = [
+        ["Teacher", teacherName],
+        ["Class", schedule.className || "—"],
+        ["Subject", listText(schedule.subject)],
+        ["Date", displayDate(selectedDate)],
+        ["Day", dayName],
+        ["Time", `${formatTime(schedule.startTime)} - ${formatTime(schedule.endTime)}`],
+        ["Total Students", assignments.length]
+    ];
+    document.getElementById("selectedScheduleDetails").innerHTML = fields.map(([label, value]) => `
+        <div class="detail-item"><span class="detail-label">${escapeHTML(label)}</span><div class="detail-value">${value}</div></div>
+    `).join("");
+    document.getElementById("selectedScheduleSection").hidden = false;
+}
+
+function renderAssignedStudents(schedule) {
+    const assignments = Array.isArray(schedule.assignments) ? schedule.assignments : [];
+    const target = document.getElementById("assignedStudentsContent");
+    if (!assignments.length) {
+        target.innerHTML = '<div class="empty-state">No students are assigned to this schedule.</div>';
+    } else {
+        target.innerHTML = `
+            <div class="table-wrap"><table>
+                <thead><tr><th>#</th><th>Student Name</th><th>Student ID</th><th>Assigned Subjects</th><th>Assigned Languages</th><th>Assigned ECA</th></tr></thead>
+                <tbody>${assignments.map((item, index) => {
+                    const student = item.student || {};
+                    return `<tr>
+                        <td>${index + 1}</td>
+                        <td>${escapeHTML(student.name || "—")}</td>
+                        <td>${escapeHTML(student.studentId || "—")}</td>
+                        <td>${listText(item.subjects)}</td>
+                        <td>${listText(item.languages)}</td>
+                        <td>${listText(item.eca)}</td>
+                    </tr>`;
+                }).join("")}</tbody>
+            </table></div>`;
+    }
+    document.getElementById("assignedStudentsSection").hidden = false;
+}
+
+function renderClassRegister(register) {
+    const target = document.getElementById("classRegisterContent");
+    if (!register) {
+        target.innerHTML = '<div class="empty-state">No daily class register has been submitted for this schedule on the selected date.</div>';
+    } else {
+        const students = Array.isArray(register.students) ? register.students : [];
+        const actualTime = register.actualStartTime || register.actualEndTime
+            ? `${formatTime(register.actualStartTime)} - ${formatTime(register.actualEndTime)}`
+            : "Not recorded";
+        target.innerHTML = `
+            <div class="detail-grid" style="margin-bottom:16px;">
+                <div class="detail-item"><span class="detail-label">Class Status</span><div class="detail-value">${statusBadge("Register submitted")}</div></div>
+                <div class="detail-item"><span class="detail-label">Teacher Attendance</span><div class="detail-value">${statusBadge(register.teacherStatus || "Not recorded")}</div></div>
+                <div class="detail-item"><span class="detail-label">Scheduled Time</span><div class="detail-value">${formatTime(register.scheduledStartTime)} - ${formatTime(register.scheduledEndTime)}</div></div>
+                <div class="detail-item"><span class="detail-label">Actual Class Time</span><div class="detail-value">${actualTime}</div></div>
+                <div class="detail-item"><span class="detail-label">Topic Covered</span><div class="detail-value">${escapeHTML(register.topicCovered || "Not entered")}</div></div>
+            </div>
+            <h3 class="subheading">Student Attendance</h3>
+            ${students.length ? `<div class="table-wrap"><table>
+                <thead><tr><th>#</th><th>Student Name</th><th>Student ID</th><th>Attendance</th></tr></thead>
+                <tbody>${students.map((student, index) => `<tr>
+                    <td>${index + 1}</td><td>${escapeHTML(student.studentName || "—")}</td>
+                    <td>${escapeHTML(student.studentId || "—")}</td><td>${statusBadge(student.attendance)}</td>
+                </tr>`).join("")}</tbody>
+            </table></div>` : '<div class="empty-state">No student attendance entries are recorded.</div>'}`;
+    }
+    document.getElementById("classRegisterSection").hidden = false;
+}
+
+function safeFileLink(file) {
+    if (!file || !file.url) return "";
+    let parsed;
+    try { parsed = new URL(file.url); } catch (_) { return ""; }
+    if (!["https:", "http:"].includes(parsed.protocol)) return "";
+    const name = file.name || "Open document";
+    return `<a href="${escapeHTML(parsed.href)}" target="_blank" rel="noopener noreferrer"><i class="fa fa-paperclip"></i> ${escapeHTML(name)}</a>`;
+}
+
+function renderHomework(homeworkList) {
+    const target = document.getElementById("homeworkContent");
+    if (!Array.isArray(homeworkList) || !homeworkList.length) {
+        target.innerHTML = '<div class="empty-state">No homework has been assigned to this schedule.</div>';
+    } else {
+        target.innerHTML = homeworkList.map(homework => {
+            const assigned = Array.isArray(homework.assignedStudents) ? homework.assignedStudents : [];
+            const submissions = Array.isArray(homework.submissions) ? homework.submissions : [];
+            const submissionByStudent = new Map(submissions.map(item => [String(item.student?._id || item.student), item]));
+            const files = [
+                ...(Array.isArray(homework.attachments) ? homework.attachments : []),
+                ...(Array.isArray(homework.materialAttachments) ? homework.materialAttachments : [])
+            ];
+            return `<article class="homework-card">
+                <h3>${escapeHTML(homework.title || "Untitled homework")}</h3>
+                <div class="homework-meta">
+                    <span><strong>Subject:</strong> ${escapeHTML(homework.subject || "—")}</span>
+                    <span><strong>Topic:</strong> ${escapeHTML(homework.topic || "—")}</span>
+                    <span><strong>Due:</strong> ${displayDate(homework.dueDate)}</span>
+                    <span><strong>Status:</strong> ${statusBadge(homework.status || "—")}</span>
+                </div>
+                ${homework.instructions ? `<p>${escapeHTML(homework.instructions)}</p>` : ""}
+                ${files.length ? `<div class="file-links"><strong>Documents:</strong> ${files.map(safeFileLink).join("") || "No valid document links"}</div>` : '<p class="muted">No documents attached.</p>'}
+                <h4 class="subheading">Student Submission and Teacher Review</h4>
+                ${assigned.length ? `<div class="table-wrap"><table>
+                    <thead><tr><th>Student Name</th><th>Student ID</th><th>Submission Status</th><th>Teacher Review Status</th><th>Submitted On</th><th>Marks</th><th>Feedback</th></tr></thead>
+                    <tbody>${assigned.map(student => {
+                        const submission = submissionByStudent.get(String(student._id || student));
+                        const submissionStatus = submission ? submission.status : "Not submitted";
+                        const reviewStatus = !submission ? "Not reviewed" : submission.status === "reviewed" ? "Reviewed" : submission.status === "returned" ? "Returned" : "Pending review";
+                        return `<tr>
+                            <td>${escapeHTML(student.name || "—")}</td>
+                            <td>${escapeHTML(student.studentId || "—")}</td>
+                            <td>${statusBadge(submissionStatus)}</td>
+                            <td>${statusBadge(reviewStatus)}</td>
+                            <td>${submission?.submittedAt ? displayDate(submission.submittedAt) : "—"}</td>
+                            <td>${submission?.marks ?? "—"}</td>
+                            <td>${escapeHTML(submission?.feedback || "—")}</td>
+                        </tr>`;
+                    }).join("")}</tbody>
+                </table></div>` : '<div class="empty-state">No students are assigned to this homework.</div>'}
+            </article>`;
+        }).join("");
+    }
+    document.getElementById("homeworkSection").hidden = false;
+}
+
+async function loadScheduleDetails() {
+    const selectedDate = document.getElementById("selectedDate").value;
+    if (!scheduleId) {
+        showMessage("Schedule ID is missing. Open this page from a schedule in the founder dashboard.", true);
+        return;
+    }
+    if (!selectedDate) {
+        showMessage("Please select a class date.", true);
+        return;
+    }
+
+    showMessage("Loading schedule details...");
+    ["selectedScheduleSection", "assignedStudentsSection", "classRegisterSection", "homeworkSection"].forEach(id => {
+        document.getElementById(id).hidden = true;
+    });
+
+    try {
+        const response = await fetch(
+            `${API_BASE}/api/founder/schedule-details/${encodeURIComponent(scheduleId)}?date=${encodeURIComponent(selectedDate)}`,
+            { headers: { "Authorization": "Bearer " + localStorage.getItem("token") } }
+        );
+        const data = await response.json();
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || `Request failed (${response.status})`);
+        }
+
+        renderSelectedSchedule(data.schedule, selectedDate);
+        renderAssignedStudents(data.schedule);
+        renderClassRegister(data.register);
+        renderHomework(data.homework);
+        hideMessage();
+    } catch (error) {
+        console.error("SCHEDULE DETAILS LOAD ERROR:", error);
+        showMessage(error.message || "Unable to load schedule details. Please try again.", true);
+    }
+}
+
+const dateInput = document.getElementById("selectedDate");
+dateInput.value = /^\d{4}-\d{2}-\d{2}$/.test(dateParam || "") ? dateParam : localDateString(new Date());
+dateInput.addEventListener("change", loadScheduleDetails);
+
+// Load the existing sidebar, matching the founder dashboard navigation.
+fetch("sidebar.html")
+    .then(response => response.text())
+    .then(html => {
+        document.getElementById("sidebar-container").innerHTML = html;
+        const currentPage = window.location.pathname.split("/").pop();
+        document.querySelectorAll(".sidebar li").forEach(item => {
+            if (item.getAttribute("data-page") === currentPage) item.classList.add("active-menu");
+        });
+    })
+    .catch(error => console.warn("Sidebar could not be loaded:", error));
+
+loadScheduleDetails();
+</script>
+</body>
+</html>
