@@ -513,6 +513,25 @@ function renderTeachers(){
 
     </button>
 
+    ${t.mobile ? `
+    <a class="action-btn"
+       href="tel:${String(t.mobile).replace(/[^\d+]/g, '')}"
+       style="
+           background:#16a34a;
+           color:white;
+           text-decoration:none;
+           display:inline-block;
+       ">
+       <i class="fa fa-phone"></i> Call
+    </a>
+` : `
+    <button class="action-btn"
+        style="background:#999;color:white;"
+        disabled>
+        No Number
+    </button>
+`}
+
 </td>
         </tr>`;
     });

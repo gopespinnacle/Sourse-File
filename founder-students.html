@@ -204,8 +204,25 @@ ${student.name}
 <td>${student.loginPassword || "-"}</td>
 
 <td>
-<button onclick="editStudent(${index})">Edit</button>
-<button onclick="deleteStudent(${index})">Delete</button>
+    <button onclick="editStudent(${index})">Edit</button>
+
+    <button onclick="deleteStudent(${index})">Delete</button>
+
+    <button
+        type="button"
+        onclick="callStudent('${student._id}')"
+        style="
+            background:#16a34a;
+            color:white;
+            border:none;
+            padding:5px 12px;
+            border-radius:5px;
+            cursor:pointer;
+            display:block;
+            margin-top:4px;
+        ">
+        <i class="fa-solid fa-phone"></i> Call
+    </button>
 </td>
 </tr>
 `;
@@ -649,6 +666,34 @@ async function sendStudentWhatsApp(studentId) {
 
     }
 
+}
+
+function callStudent(studentId) {
+
+    const student = students.find(
+        s => s._id === studentId
+    );
+
+    if (!student) {
+        alert("Student not found");
+        return;
+    }
+
+    const mobile = String(student.mobile || "").trim();
+
+    if (!mobile) {
+        alert("Parent mobile number is not available.");
+        return;
+    }
+
+    const phoneNumber = mobile.replace(/[^\d+]/g, "");
+
+    if (!phoneNumber || phoneNumber === "+") {
+        alert("Invalid mobile number.");
+        return;
+    }
+
+    window.location.href = `tel:${phoneNumber}`;
 }
 </script>
 
