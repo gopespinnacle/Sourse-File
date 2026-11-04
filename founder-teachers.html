@@ -450,6 +450,39 @@ async function loadTeachers(){
     renderConsolidatedReport();
 }
 
+
+function showTeacherCallOptions(mobile, whatsapp) {
+
+    const phone = String(mobile || "").replace(/[^\d+]/g, "");
+    const wa = String(whatsapp || mobile || "").replace(/\D/g, "");
+
+    const choice = confirm(
+        "Choose Calling Method:\n\n" +
+        "OK = Regular Phone Call\n" +
+        "Cancel = WhatsApp Call"
+    );
+
+    if (choice) {
+
+        if (!phone) {
+            alert("Mobile number unavailable.");
+            return;
+        }
+
+        window.location.href = "tel:" + phone;
+
+    } else {
+
+        if (!wa) {
+            alert("WhatsApp number unavailable.");
+            return;
+        }
+
+        window.open("https://wa.me/" + wa, "_blank");
+    }
+}
+
+
 function renderTeachers(){
 
     const tbody = document.querySelector("#teacherTable tbody");
@@ -513,17 +546,16 @@ function renderTeachers(){
 
     </button>
 
-    ${t.mobile ? `
-    <a class="action-btn"
-       href="tel:${String(t.mobile).replace(/[^\d+]/g, '')}"
-       style="
-           background:#16a34a;
-           color:white;
-           text-decoration:none;
-           display:inline-block;
-       ">
-       <i class="fa fa-phone"></i> Call
-    </a>
+    
+${t.mobile ? `
+    <button class="action-btn"
+        style="background:#16a34a;color:white;"
+        onclick="showTeacherCallOptions(
+            '${String(t.mobile).replace(/[^\d+]/g, '')}',
+            '${String(t.whatsapp || t.mobile).replace(/[^\d+]/g, '')}'
+        )">
+        <i class="fa fa-phone"></i> Call
+    </button>
 ` : `
     <button class="action-btn"
         style="background:#999;color:white;"
@@ -531,6 +563,7 @@ function renderTeachers(){
         No Number
     </button>
 `}
+
 
 </td>
         </tr>`;
@@ -694,11 +727,26 @@ tbody.innerHTML += `
 <td>${t.sessionsWeek}</td>
 <td>₹ ${t.salarySession}</td>
 <td>${new Date(t.createdAt).toLocaleDateString()}</td>
+
 <td>
 <button class="action-btn" onclick="viewDetails('${t._id}')">Details</button>
+
 <button class="action-btn edit-btn" onclick="editTeacher('${t._id}')">Edit</button>
+
 <button class="action-btn delete-btn" onclick="deleteTeacher('${t._id}')">Delete</button>
+
+${t.mobile ? `
+<button class="action-btn"
+    style="background:#16a34a;color:white;"
+    onclick="showTeacherCallOptions(
+        '${String(t.mobile).replace(/[^\d+]/g, '')}',
+        '${String(t.whatsapp || t.mobile).replace(/[^\d+]/g, '')}'
+    )">
+    <i class="fa fa-phone"></i> Call
+</button>
+` : ""}
 </td>
+
 </tr>
 `;
 
