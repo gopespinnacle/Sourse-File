@@ -1076,7 +1076,9 @@ if (schedules.length === 0) {
                         <th>Time</th>
                         <th>Students</th>
 <th>Daily Class Register</th>
+<th>Daily Class Register</th>
 <th>Schedule's Homework</th>
+<th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1129,6 +1131,26 @@ if (schedules.length === 0) {
         homeworkIds.has(String(s._id))
         ? '<span style="background:#dcfce7;color:#166534;padding:5px 9px;border-radius:12px;font-weight:bold;">Entered</span>'
         : '<span style="background:#fee2e2;color:#991b1b;padding:5px 9px;border-radius:12px;font-weight:bold;">Not Entered</span>'
+    }
+</td>
+
+<td>
+    ${
+        s.teacher?.mobile
+        ? `<a href="tel:${String(s.teacher.mobile).replace(/[^\d+]/g, '')}"
+             style="
+                display:inline-block;
+                background:#16a34a;
+                color:white;
+                padding:6px 12px;
+                border-radius:5px;
+                text-decoration:none;
+                font-weight:bold;
+                white-space:nowrap;
+             ">
+             <i class="fa-solid fa-phone"></i> Call
+           </a>`
+        : '<span style="color:#999;">No Number</span>'
     }
 </td>
                 </tr>
