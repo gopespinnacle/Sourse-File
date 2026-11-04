@@ -894,6 +894,40 @@ async function testGpaAudioCall(recipientId) {
     }
 }
 
+
+function showCallOptions(mobile) {
+
+    const number = String(mobile || "").replace(/[^\d+]/g, "");
+
+    if (!number || number === "+") {
+        alert("Teacher mobile number unavailable.");
+        return;
+    }
+
+    const choice = confirm(
+        "Choose calling method:\n\n" +
+        "OK = Regular Phone Call\n" +
+        "Cancel = WhatsApp Call"
+    );
+
+    if (choice) {
+
+        // Regular phone call
+        window.location.href = "tel:" + number;
+
+    } else {
+
+        // WhatsApp chat
+        const whatsappNumber = number.replace(/\D/g, "");
+
+        window.open(
+            "https://wa.me/" + whatsappNumber,
+            "_blank"
+        );
+    }
+}
+
+
 function changeScheduleDate(days) {
 
     const input = document.getElementById("scheduleDate");
@@ -1141,25 +1175,28 @@ container.style.overflowX = "auto";
     }
 </td>
 
+
 <td>
     ${
         s.teacher?.mobile
-        ? `<a href="tel:${String(s.teacher.mobile).replace(/[^\d+]/g, '')}"
+        ? `<button
+             onclick="showCallOptions('${String(s.teacher.mobile).replace(/[^\d+]/g, '')}')"
              style="
-                display:inline-block;
                 background:#16a34a;
                 color:white;
                 padding:6px 12px;
+                border:0;
                 border-radius:5px;
-                text-decoration:none;
+                cursor:pointer;
                 font-weight:bold;
                 white-space:nowrap;
              ">
              <i class="fa-solid fa-phone"></i> Call
-           </a>`
+           </button>`
         : '<span style="color:#999;">No Number</span>'
     }
 </td>
+
                 </tr>
             `;
         });
