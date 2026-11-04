@@ -669,6 +669,8 @@ let currentFeeReport = [];
 
 let teacherIdMap = new Map();
 
+let studentMobileMap = new Map();
+
 
 async function loadTeacherIds() {
 
@@ -727,6 +729,38 @@ async function loadTeacherIds() {
     });
 
 }
+
+
+
+async function loadStudentMobileNumbers() {
+
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(
+        `${API_BASE}/api/founder/students`,
+        {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error("Unable to load student mobile numbers");
+    }
+
+    studentMobileMap.clear();
+
+    (data.students || []).forEach(student => {
+        studentMobileMap.set(
+            String(student.studentId),
+            student.mobile || ""
+        );
+    });
+}
+
 
 
 /* =================================================
@@ -1325,10 +1359,11 @@ const teacherId =
             </td>
 
 
-            <td>
+            
+<td>
 
-                ${
-    Number(student.feePaid || 0) > 0
+    ${
+        Number(student.feePaid || 0) > 0
         ? `
             <button
                 class="download-btn"
@@ -1342,9 +1377,26 @@ const teacherId =
                 Yet to Pay
             </span>
         `
-}
+    }
 
-            </td>
+    <button
+        type="button"
+        onclick="showStudentFeeCallOptions('${String(student.studentId).replace(/'/g, "\\'")}')"
+        style="
+            display:block;
+            margin-top:7px;
+            background:#16a34a;
+            color:white;
+            border:none;
+            padding:7px 12px;
+            border-radius:5px;
+            cursor:pointer;
+        ">
+        <i class="fa-solid fa-phone"></i> Call
+    </button>
+
+</td>
+
 
         `;
 
@@ -1427,6 +1479,45 @@ document.getElementById(
 
     }
 
+}
+
+
+function showStudentFeeCallOptions(studentId) {
+
+    const mobile = String(
+        studentMobileMap.get(String(studentId)) || ""
+    ).trim();
+
+    if (!mobile) {
+        alert("Parent mobile number not available.");
+        return;
+    }
+
+    const phone = mobile.replace(/[^\d+]/g, "");
+
+    const choice = confirm(
+        "Choose Calling Method:\n\n" +
+        "OK = Regular Phone Call\n" +
+        "Cancel = WhatsApp Call"
+    );
+
+    if (choice) {
+
+        window.location.href = "tel:" + phone;
+
+    } else {
+
+        let whatsappNumber = phone.replace(/\D/g, "");
+
+        if (/^[6-9]\d{9}$/.test(whatsappNumber)) {
+            whatsappNumber = "91" + whatsappNumber;
+        }
+
+        window.open(
+            "https://wa.me/" + whatsappNumber,
+            "_blank"
+        );
+    }
 }
 
 
@@ -2176,7 +2267,9 @@ populateMonthDropdown();
 
         await loadTeacherIds();
 
-        await loadFeeReport();
+await loadStudentMobileNumbers();
+
+await loadFeeReport();
 
     }
     catch (error) {
