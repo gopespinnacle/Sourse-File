@@ -668,14 +668,15 @@ async function sendStudentWhatsApp(studentId) {
 
 }
 
+
 function callStudent(studentId) {
 
     const student = students.find(
-        s => s._id === studentId
+        s => String(s._id) === String(studentId)
     );
 
     if (!student) {
-        alert("Student not found");
+        alert("Student not found.");
         return;
     }
 
@@ -689,12 +690,39 @@ function callStudent(studentId) {
     const phoneNumber = mobile.replace(/[^\d+]/g, "");
 
     if (!phoneNumber || phoneNumber === "+") {
-        alert("Invalid mobile number.");
+        alert("Invalid parent mobile number.");
         return;
     }
 
-    window.location.href = `tel:${phoneNumber}`;
+    const choice = confirm(
+        "Choose Calling Method:\n\n" +
+        "OK = Regular Phone Call\n" +
+        "Cancel = WhatsApp Call"
+    );
+
+    if (choice) {
+
+        // Regular phone call
+        window.location.href = "tel:" + phoneNumber;
+
+    } else {
+
+        // WhatsApp chat
+        let whatsappNumber = phoneNumber.replace(/\D/g, "");
+
+        // Add Indian country code for 10-digit numbers
+        if (/^[6-9]\d{9}$/.test(whatsappNumber)) {
+            whatsappNumber = "91" + whatsappNumber;
+        }
+
+        window.open(
+            "https://wa.me/" + whatsappNumber,
+            "_blank"
+        );
+    }
 }
+
+
 </script>
 
 
