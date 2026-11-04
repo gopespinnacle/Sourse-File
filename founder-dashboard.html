@@ -1063,10 +1063,18 @@ if (schedules.length === 0) {
             return `${hours}:${minutes} ${period}`;
         }
 
-        let html = `
-            <p><strong>Total Classes: ${schedules.length}</strong></p>
+        container.style.width = "100%";
+container.style.overflowX = "auto";
 
-            <table style="width:100%; border-collapse:collapse;">
+        let html = `
+    <p><strong>Total Classes: ${schedules.length}</strong></p>
+
+    <table style="
+        width:100%;
+        min-width:1250px;
+        border-collapse:collapse;
+        white-space:nowrap;
+    ">
                 <thead>
                     <tr>
                         <th>Teacher</th>
@@ -1075,7 +1083,6 @@ if (schedules.length === 0) {
                         <th>Subject / Language / ECA</th>
                         <th>Time</th>
                         <th>Students</th>
-<th>Daily Class Register</th>
 <th>Daily Class Register</th>
 <th>Schedule's Homework</th>
 <th>Action</th>
