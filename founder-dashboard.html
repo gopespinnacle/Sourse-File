@@ -348,6 +348,24 @@ window.location.href = page;
         Today
     </button>
 
+    <!-- DAILY CLASS REGISTER FILTER -->
+<label><strong>Register:</strong></label>
+<select id="registerFilter" onchange="loadDailySchedule()"
+    style="padding:9px; border:1px solid #ccc; border-radius:6px;">
+    <option value="all">All Registers</option>
+    <option value="submitted">Submitted</option>
+    <option value="not-submitted">Not Submitted</option>
+</select>
+
+<!-- HOMEWORK FILTER -->
+<label><strong>Homework:</strong></label>
+<select id="homeworkFilter" onchange="loadDailySchedule()"
+    style="padding:9px; border:1px solid #ccc; border-radius:6px;">
+    <option value="all">All Homework</option>
+    <option value="entered">Entered</option>
+    <option value="not-entered">Not Entered</option>
+</select>
+
 </div>
 
 <p id="dailyScheduleDay"></p>
@@ -972,15 +990,55 @@ const homeworkIds = new Set(
     statusData.statuses.homework || []
 );
 
-        const schedules = (data.schedules || [])
-           .filter(s =>
-    String(s.day).trim().toLowerCase().startsWith(
-        selectedDay.substring(0, 3).toLowerCase()
+        const allSchedules = (data.schedules || [])
+    .filter(s =>
+        String(s.day).trim().toLowerCase().startsWith(
+            selectedDay.substring(0, 3).toLowerCase()
+        )
     )
-)
-            .sort((a, b) =>
-                a.startTime.localeCompare(b.startTime)
-            );
+    .sort((a, b) =>
+        a.startTime.localeCompare(b.startTime)
+    );
+
+// Get selected filter values
+const registerFilter =
+    document.getElementById("registerFilter").value;
+
+const homeworkFilter =
+    document.getElementById("homeworkFilter").value;
+
+// Apply both filters together
+const schedules = allSchedules.filter(s => {
+
+    const scheduleId = String(s._id);
+
+    const registerSubmitted =
+        registerIds.has(scheduleId);
+
+    const homeworkEntered =
+        homeworkIds.has(scheduleId);
+
+    const registerMatch =
+        registerFilter === "all" ||
+        (registerFilter === "submitted" && registerSubmitted) ||
+        (registerFilter === "not-submitted" && !registerSubmitted);
+
+    const homeworkMatch =
+        homeworkFilter === "all" ||
+        (homeworkFilter === "entered" && homeworkEntered) ||
+        (homeworkFilter === "not-entered" && !homeworkEntered);
+
+    return registerMatch && homeworkMatch;
+});
+
+if (schedules.length === 0) {
+
+    container.innerHTML = allSchedules.length === 0
+        ? "No classes scheduled for " + selectedDay + "."
+        : "No schedules match the selected filters.";
+
+    return;
+}
 
         if (schedules.length === 0) {
             container.innerHTML =
