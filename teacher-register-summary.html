@@ -66,6 +66,372 @@ tbody tr:last-child td{border-bottom:0}
 .footer-note{font-size:11px;color:#8a94a8;text-align:right;padding:13px 20px;border-top:1px solid var(--line)}
 @media(max-width:1100px){.main-content{margin-left:0;padding:18px}.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.summary-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:650px){.main-content{padding:12px}.hero{padding:22px 18px;border-radius:16px}.hero-icon{width:48px;height:48px}.panel{padding:16px}.filters{grid-template-columns:1fr}.summary-grid{grid-template-columns:1fr;gap:10px}.stat-card{padding:14px}.table-head{padding:16px;align-items:flex-start}.panel-heading{align-items:flex-start;flex-direction:column}.btn{width:100%}}
+
+/* ==========================================
+   GPA REGISTER SUMMARY — MOBILE UI ONLY
+   Desktop styling remains unchanged
+========================================== */
+
+@media screen and (max-width: 650px) {
+
+    body {
+        overflow-x: hidden;
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+        padding: 12px !important;
+        width: 100%;
+    }
+
+    .page-wrap {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    /* HEADER / HERO */
+
+    .hero {
+        padding: 20px 16px !important;
+        border-radius: 18px;
+        margin-top: 8px;
+    }
+
+    .hero-top {
+        align-items: center;
+        gap: 12px;
+    }
+
+    .hero-icon {
+        width: 54px;
+        height: 54px;
+        flex-shrink: 0;
+        font-size: 23px;
+    }
+
+    .hero h1 {
+        font-size: 23px;
+        line-height: 1.2;
+        margin-bottom: 7px;
+    }
+
+    .hero p {
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .hero-note {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+        margin-top: 17px;
+        padding: 10px;
+        font-size: 11px;
+        line-height: 1.5;
+        white-space: normal;
+    }
+
+    /* FILTER PANEL */
+
+    .panel {
+        padding: 16px !important;
+        border-radius: 17px;
+        margin-top: 15px;
+    }
+
+    .panel-heading {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+
+    .panel-heading h2 {
+        font-size: 17px;
+    }
+
+    .panel-heading span {
+        font-size: 11px;
+    }
+
+    .filters {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px 10px;
+    }
+
+    .filter-group label {
+        font-size: 12px;
+        margin-bottom: 7px;
+    }
+
+    .filter-group input,
+    .filter-group select {
+        height: 48px;
+        padding: 0 9px;
+        font-size: 12px;
+        min-width: 0;
+    }
+
+    .filters .btn {
+        width: 100%;
+        height: 48px;
+        padding: 0 7px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    /* SUMMARY CARDS */
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 15px;
+    }
+
+    .stat-card {
+        padding: 12px 7px !important;
+        min-width: 0;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        border-radius: 16px;
+    }
+
+    .stat-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 16px;
+    }
+
+    .stat-label {
+        font-size: 11px;
+        line-height: 1.35;
+        min-height: 30px;
+    }
+
+    .stat-value {
+        font-size: 23px;
+    }
+
+    /* DAILY REGISTER HEADER */
+
+    .table-panel {
+        padding: 0 !important;
+        overflow: hidden;
+    }
+
+    .table-head {
+        padding: 16px !important;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .table-head h2 {
+        font-size: 16px;
+    }
+
+    .result-count {
+        font-size: 11px;
+        white-space: normal;
+    }
+
+    /* CONVERT TABLE ROWS INTO MOBILE CARDS */
+
+    .table-scroll {
+        overflow: visible;
+        width: 100%;
+        padding: 12px;
+    }
+
+    table {
+        display: block;
+        width: 100%;
+        min-width: 0 !important;
+        border-spacing: 0;
+    }
+
+    thead {
+        display: none;
+    }
+
+    tbody {
+        display: grid;
+        gap: 13px;
+        width: 100%;
+    }
+
+    tbody tr {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 12px 9px;
+        padding: 13px;
+        background: #ffffff;
+        border: 1px solid #e5eaf3;
+        border-radius: 17px;
+        box-shadow: 0 4px 13px #172a5510;
+        min-width: 0;
+    }
+
+    tbody td {
+        display: block;
+        min-width: 0;
+        padding: 0 !important;
+        border: 0 !important;
+        font-size: 12px;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+    tbody td::before {
+        display: block;
+        margin-bottom: 4px;
+        color: #7b879e;
+        font-size: 10px;
+        font-weight: 750;
+        text-transform: uppercase;
+        letter-spacing: .35px;
+    }
+
+    tbody td:nth-child(1) {
+        grid-column: 1;
+    }
+
+    tbody td:nth-child(1)::before {
+        content: "Date";
+    }
+
+    tbody td:nth-child(2) {
+        grid-column: 2;
+    }
+
+    tbody td:nth-child(2)::before {
+        content: "Time";
+    }
+
+    tbody td:nth-child(3) {
+        grid-column: 1;
+    }
+
+    tbody td:nth-child(3)::before {
+        content: "Grade";
+    }
+
+    tbody td:nth-child(4) {
+        grid-column: 2;
+    }
+
+    tbody td:nth-child(4)::before {
+        content: "Subject";
+    }
+
+    tbody td:nth-child(5) {
+        grid-column: 1;
+    }
+
+    tbody td:nth-child(5)::before {
+        content: "Student";
+    }
+
+    tbody td:nth-child(6) {
+        grid-column: 2;
+    }
+
+    tbody td:nth-child(6)::before {
+        content: "Student ID";
+    }
+
+    tbody td:nth-child(7) {
+        grid-column: 1;
+        grid-row: 5;
+        align-self: stretch;
+        padding: 9px !important;
+        background: #f5f7fb;
+        border-radius: 10px;
+    }
+
+    tbody td:nth-child(7)::before {
+        content: "Attendance";
+    }
+
+    tbody td:nth-child(8) {
+        grid-column: 1 / -1;
+    }
+
+    tbody td:nth-child(8)::before {
+        content: "Topic Covered";
+    }
+
+    tbody td:nth-child(9) {
+        grid-column: 2;
+        grid-row: 5;
+        align-self: stretch;
+        padding: 9px !important;
+        background: #f5f7fb;
+        border-radius: 10px;
+    }
+
+    tbody td:nth-child(9)::before {
+        content: "Teacher Status";
+    }
+
+    .date-main {
+        white-space: normal;
+        font-size: 12px;
+    }
+
+    .time-cell {
+        white-space: normal;
+        font-size: 12px;
+        font-weight: 750;
+    }
+
+    .student-name {
+        font-size: 12px;
+    }
+
+    .student-id {
+        font-size: 10px;
+    }
+
+    .grade-pill {
+        font-size: 11px;
+    }
+
+    .status-pill {
+        white-space: normal;
+        font-size: 10px;
+        padding: 5px 7px;
+    }
+
+    .topic {
+        max-width: 100%;
+        font-size: 12px;
+    }
+
+    /* EMPTY / LOADING MESSAGE */
+
+    tbody tr:has(.message-row) {
+        display: block;
+        padding: 15px;
+    }
+
+    .message-row {
+        display: block !important;
+        padding: 25px 10px !important;
+        text-align: center;
+    }
+
+    .footer-note {
+        padding: 13px 10px;
+        font-size: 10px;
+        text-align: center;
+    }
+}
+
+
 </style>
 </head>
 <body>
