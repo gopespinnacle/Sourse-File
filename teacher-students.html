@@ -240,6 +240,25 @@ fetch("teacher-sidebar.html")
 
 <script>
 
+// ======================================
+// NATIVE ANDROID SESSION INTEGRATION
+// ======================================
+
+if (window.GPAAndroid) {
+
+    const nativeToken = window.GPAAndroid.getToken();
+    const nativeRole = window.GPAAndroid.getRole();
+
+    if (nativeToken) {
+        sessionStorage.setItem("token", nativeToken);
+    }
+
+    if (nativeRole) {
+        sessionStorage.setItem("role", nativeRole);
+    }
+}
+
+// Read the authenticated session
 const token = sessionStorage.getItem("token");
 const role = sessionStorage.getItem("role");
 
