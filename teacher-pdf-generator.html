@@ -353,77 +353,118 @@ document.getElementById("imageInput").addEventListener("change",async function()
 function fileToDataURL(file){return new Promise(resolve=>{const r=new FileReader();r.onload=e=>resolve(e.target.result);r.onerror=()=>resolve(null);r.readAsDataURL(file);});}
 
 
+
 async function handlePaste(e) {
 
     const clipboard = e.clipboardData;
     if (!clipboard) return;
 
+    e.preventDefault();
+
     const html = clipboard.getData("text/html") || "";
     const plainText = clipboard.getData("text/plain") || "";
 
-    const imageItems = Array.from(clipboard.items || [])
+    const imageFiles = Array.from(clipboard.items || [])
         .filter(item =>
             item.kind === "file" &&
             item.type.startsWith("image/")
-        );
+        )
+        .map(item => item.getAsFile())
+        .filter(Boolean);
 
-    // Preserve rich HTML content, including multiple images and tables
-    const hasRichHtml =
-        /<(img|table|p|div|ul|ol|h[1-6])\b/i.test(html);
+    saveRange();
 
-    if (hasRichHtml && imageItems.length === 0) {
+    try {
 
-        setTimeout(() => {
-            setupExistingImages();
-            resizePenCanvas();
-            saveRange();
-            buildPreview();
-        }, 150);
+        if (html.trim()) {
 
-        return;
-    }
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
 
-    // Handle multiple copied images
-    if (imageItems.length > 0) {
+            const pastedImages = Array.from(doc.querySelectorAll("img"));
 
-        e.preventDefault();
+            // Embed actual clipboard image files into HTML images
+            for (let i = 0; i < pastedImages.length; i++) {
 
-        saveRange();
+                if (imageFiles[i]) {
+                    const data = await fileToDataURL(imageFiles[i]);
+                    if (data) pastedImages[i].src = data;
+                }
+                else {
+                    const src = pastedImages[i].getAttribute("src");
 
-        // Preserve copied text if present
-        if (plainText.trim()) {
-            document.execCommand("insertText", false, plainText);
-            saveRange();
-        }
+                    // Try embedding externally referenced images
+                    if (src && /^https?:\/\//i.test(src)) {
+                        try {
+                            const response = await fetch(src, {
+                                mode: "cors"
+                            });
 
-        // Insert every image, one after another
-        for (const item of imageItems) {
+                            if (!response.ok) throw new Error("Image fetch failed");
 
-            const file = item.getAsFile();
-            if (!file) continue;
+                            const blob = await response.blob();
+                            const data = await fileToDataURL(blob);
 
-            const data = await fileToDataURL(file);
+                            if (data) pastedImages[i].src = data;
 
-            if (data) {
-                insertImage(data);
+                        } catch (error) {
+                            console.warn("External image could not be embedded:", src);
+                        }
+                    }
+                }
             }
+
+            // Insert any additional clipboard images not represented in HTML
+for (let i = pastedImages.length; i < imageFiles.length; i++) {
+
+    const data = await fileToDataURL(imageFiles[i]);
+
+    if (data) {
+        doc.body.appendChild(
+            Object.assign(document.createElement("img"), {
+                src: data,
+                alt: "Pasted image"
+            })
+        );
+    }
+}
+
+            // Insert the complete copied HTML content
+            focusEditor();
+
+            document.execCommand(
+                "insertHTML",
+                false,
+                doc.body.innerHTML
+            );
+
+        }
+        else if (imageFiles.length > 0) {
+
+            // Paste every copied image
+            for (const file of imageFiles) {
+
+                const data = await fileToDataURL(file);
+
+                if (data) insertImage(data);
+            }
+
+        }
+        else if (plainText) {
+
+            focusEditor();
+            document.execCommand("insertText", false, plainText);
+
         }
 
-        setupExistingImages();
-        resizePenCanvas();
-        saveRange();
-        buildPreview();
-
-        return;
+    } catch (error) {
+        console.error("Clipboard paste error:", error);
     }
 
-    // Normal text paste
-    setTimeout(() => {
-        setupExistingImages();
-        resizePenCanvas();
-        saveRange();
-        buildPreview();
-    }, 150);
+    setupExistingImages();
+    resizePenCanvas();
+    saveRange();
+    buildPreview();
 }
 
 
@@ -537,26 +578,35 @@ function buildPreview(){
 }
 
 
+
 async function waitForPreviewImages(root) {
 
     const images = Array.from(root.querySelectorAll("img"));
 
-    await Promise.all(images.map(img => {
+    for (const img of images) {
 
-        if (img.complete) return Promise.resolve();
+        if (!img.complete) {
+            await new Promise((resolve, reject) => {
 
-        return new Promise(resolve => {
+                img.onload = resolve;
 
-            const finish = () => resolve();
+                img.onerror = () => reject(
+                    new Error("A pasted image could not be loaded.")
+                );
+            });
+        }
 
-            img.addEventListener("load", finish, { once: true });
-            img.addEventListener("error", finish, { once: true });
+        if (!img.naturalWidth || !img.naturalHeight) {
+            throw new Error(
+                "A pasted image is missing or could not be loaded. Please paste it again."
+            );
+        }
 
-            setTimeout(finish, 10000);
-        });
-    }));
+        if (img.decode) {
+            await img.decode();
+        }
+    }
 }
-
 
 async function generatePDF(){
  const topic=document.getElementById("topicInput").value.trim(),grade=document.getElementById("gradeSelect").value,editor=document.getElementById("editor");
