@@ -777,8 +777,27 @@ return [
     didDrawPage:()=>{doc.setFontSize(8);doc.setTextColor(110,120,140);doc.text("Gopes Pinnacle Academy · Teacher Register Summary",10,203);}
   });
   const month = document.getElementById("registerMonth").value || "all-records";
-  doc.save(`teacher-register-summary-${month}.pdf`);
-  showNotice("");
+const fileName = `teacher-register-summary-${month}.pdf`;
+
+if (
+    window.GPAAndroid &&
+    typeof window.GPAAndroid.savePdf === "function"
+) {
+    const pdfData = doc.output("datauristring");
+    const base64 = pdfData.substring(pdfData.indexOf(",") + 1);
+
+    const result = window.GPAAndroid.savePdf(base64, fileName);
+
+    if (result === "SUCCESS") {
+        showNotice("PDF saved to Downloads folder.");
+    } else {
+        showNotice("PDF export failed. Please try again.");
+    }
+} else {
+    // Normal browser download — keep existing web functionality
+    doc.save(fileName);
+    showNotice("");
+}
 }
 document.getElementById("applyFilters").addEventListener("click",render);
 document.getElementById("registerMonth").addEventListener("change",render);
