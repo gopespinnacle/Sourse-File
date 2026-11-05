@@ -3010,10 +3010,23 @@ function openLeaveModal(
 
 
    const modalOverlay = document.getElementById("leaveModal");
+const modal = modalOverlay.querySelector(".modal");
 
-modalOverlay.style.display = "flex";
-modalOverlay.style.alignItems = "flex-start";
-modalOverlay.style.justifyContent = "center";
+modalOverlay.style.display = "block";
+modalOverlay.style.position = "fixed";
+modalOverlay.style.inset = "0";
+modalOverlay.style.zIndex = "5000";
+modalOverlay.style.overflowY = "auto";
+
+modal.style.display = "block";
+modal.style.visibility = "visible";
+modal.style.opacity = "1";
+modal.style.position = "relative";
+modal.style.width = "100%";
+modal.style.maxWidth = "720px";
+modal.style.margin = "12px auto";
+modal.style.backgroundColor = "#ffffff";
+modal.style.zIndex = "5001";
 
 }
 
