@@ -608,6 +608,8 @@ async function waitForPreviewImages(root) {
     }
 }
 
+
+
 async function generatePDF(){
  const topic=document.getElementById("topicInput").value.trim(),grade=document.getElementById("gradeSelect").value,editor=document.getElementById("editor");
  if(!topic){alert("Please enter the "+documentType.toLowerCase()+" topic.");return;}if(!grade){alert("Please select a mapped grade.");return;}
