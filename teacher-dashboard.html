@@ -104,7 +104,61 @@ flex-shrink: 0;
       <button class="quick qblue" onclick="location.href='teacher-materials.html'"><i class="fa-solid fa-cloud-arrow-up"></i>Manage Materials<i class="fa fa-chevron-right"></i></button>
       <button class="quick qpurple" onclick="location.href='teacher-ai-assessment.html'"><i class="fa-solid fa-file-circle-check"></i>AI Assessment<i class="fa fa-chevron-right"></i></button>
     </div></article>
-  </section>
+  
+</section>
+
+<!-- DAILY CLASSES SCHEDULE -->
+<section class="panel" id="teacherDailySchedulePanel" style="margin-bottom:15px;">
+  <div class="heading">
+    <div class="panel-title">
+      <span class="title-icon">
+        <i class="fa-solid fa-calendar-day"></i>
+      </span>
+      Daily Classes Schedule
+    </div>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+    <strong style="font-size:11px;">Select Date:</strong>
+    <input type="date" id="teacherScheduleDate"
+      style="padding:8px;border:1px solid #dbe5f5;border-radius:7px;">
+
+    <button class="primary" onclick="changeTeacherScheduleDate(-1)">← Previous Day</button>
+    <button class="primary" onclick="changeTeacherScheduleDate(1)">Next Day →</button>
+    <button class="primary" onclick="goToTeacherScheduleToday()">Today</button>
+  </div>
+
+  <div id="teacherScheduleDay" style="font-size:12px;margin-bottom:10px;">
+    Loading schedule...
+  </div>
+
+  <div style="overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;min-width:950px;font-size:12px;">
+      <thead style="background:#f0f5ff;">
+        <tr>
+          <th>Teacher</th>
+          <th>Assistant</th>
+          <th>Class</th>
+          <th>Subject / Language / ECA</th>
+          <th>Time</th>
+          <th>Students</th>
+          <th>Daily Class Register</th>
+          <th>Schedule's Homework</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="teacherDailyScheduleBody">
+        <tr>
+          <td colspan="9" style="text-align:center;padding:20px;">
+            Loading your classes...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+  <section class="grid">
   <section class="lower">
     <article class="panel"><div class="heading"><div class="panel-title"><span class="title-icon" style="background:#fff1d7;color:#c78300"><i class="fa-solid fa-bullhorn"></i></span>Academy Notice</div><a class="text-link" href="teacher-calendar.html">Calendar →</a></div><div class="notice"><div class="notice-icon"><i class="fa-solid fa-star"></i></div><div><strong>Stay connected with academy updates</strong><p>Check your teacher calendar for academy events, holidays and scheduled activities. Open the calendar page for the complete event list.</p></div></div></article>
     <article class="panel"><div class="heading"><div class="panel-title"><span class="title-icon" style="background:#e3f8ed;color:#0a9b69"><i class="fa-solid fa-wand-magic-sparkles"></i></span>Teacher Shortcuts</div></div><div class="shortcuts">
@@ -158,6 +212,220 @@ function renderMiniCalendar(){
  for(let d=1;d<=days;d++){const e=document.createElement("div");e.className="day";if(d===now.getDate()&&calendarDate.getMonth()===now.getMonth()&&calendarDate.getFullYear()===now.getFullYear())e.classList.add("today");e.textContent=d;grid.appendChild(e);}
  const trailing=(7-((first+days)%7))%7;for(let d=1;d<=trailing;d++){const e=document.createElement("div");e.className="day muted";e.textContent=d;grid.appendChild(e);}
 }
+
+
+
+/* ==========================================
+   TEACHER DAILY CLASSES SCHEDULE
+========================================== */
+
+const TEACHER_API = "https://academy-backend-eatl.onrender.com";
+
+function getTeacherDateString(date = new Date()) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+function changeTeacherScheduleDate(offset) {
+    const input = document.getElementById("teacherScheduleDate");
+    if (!input.value) return;
+
+    const selected = new Date(input.value + "T12:00:00");
+    selected.setDate(selected.getDate() + offset);
+
+    input.value = getTeacherDateString(selected);
+    loadTeacherDailySchedule();
+}
+
+function goToTeacherScheduleToday() {
+    document.getElementById("teacherScheduleDate").value =
+        getTeacherDateString();
+
+    loadTeacherDailySchedule();
+}
+
+async function loadTeacherDailySchedule() {
+    const dateInput = document.getElementById("teacherScheduleDate");
+    const tableBody = document.getElementById("teacherDailyScheduleBody");
+    const dayLabel = document.getElementById("teacherScheduleDay");
+
+    if (!dateInput || !tableBody || !dayLabel) return;
+
+    const selectedDate = dateInput.value;
+    const token = sessionStorage.getItem("token");
+
+    if (!selectedDate || !token) return;
+
+    const selectedDay = new Date(
+        selectedDate + "T12:00:00"
+    ).toLocaleDateString("en-US", { weekday: "long" });
+
+    dayLabel.innerText =
+        selectedDay + " | " +
+        new Date(selectedDate + "T12:00:00").toLocaleDateString(
+            "en-IN",
+            { day: "2-digit", month: "short", year: "numeric" }
+        );
+
+    tableBody.innerHTML = `
+        <tr>
+            <td colspan="9" style="text-align:center;padding:20px;">
+                Loading your classes...
+            </td>
+        </tr>
+    `;
+
+    try {
+        const headers = {
+            "Authorization": "Bearer " + token
+        };
+
+        const [scheduleResponse, statusResponse] = await Promise.all([
+            fetch(`${TEACHER_API}/api/teacher/leave-periods`, {
+                headers
+            }),
+
+            fetch(
+                `${TEACHER_API}/api/teacher/daily-schedule-entry-status?date=${encodeURIComponent(selectedDate)}`,
+                { headers }
+            )
+        ]);
+
+        if (!scheduleResponse.ok) {
+            throw new Error("Unable to load teacher schedules.");
+        }
+
+        if (!statusResponse.ok) {
+            throw new Error("Unable to load register and homework status.");
+        }
+
+        const scheduleData = await scheduleResponse.json();
+        const statusData = await statusResponse.json();
+
+        const schedules = Array.isArray(scheduleData.data)
+            ? scheduleData.data
+            : [];
+
+        const registerIds = new Set(
+            statusData.statuses?.registers || []
+        );
+
+        const homeworkIds = new Set(
+            statusData.statuses?.homework || []
+        );
+
+        const todaysSchedules = schedules.filter(schedule =>
+            String(schedule.day || "")
+                .trim()
+                .toLowerCase()
+                .startsWith(selectedDay.substring(0, 3).toLowerCase())
+        );
+
+        if (!todaysSchedules.length) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="9" style="text-align:center;padding:20px;">
+                        No classes scheduled for this day.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        todaysSchedules.sort((a, b) =>
+            String(a.startTime || "").localeCompare(
+                String(b.startTime || "")
+            )
+        );
+
+        tableBody.innerHTML = "";
+
+        todaysSchedules.forEach(schedule => {
+            const scheduleId = String(schedule._id);
+
+            const teacherName =
+                schedule.teacher?.name ||
+                schedule.teacher?.teacherName ||
+                "—";
+
+            const assistantName =
+                schedule.assistantTeacher?.name ||
+                schedule.assistantTeacher?.teacherName ||
+                "—";
+
+            const activities = [
+                ...(Array.isArray(schedule.subject) ? schedule.subject : []),
+                ...(Array.isArray(schedule.language) ? schedule.language : []),
+                ...(Array.isArray(schedule.eca) ? schedule.eca : [])
+            ];
+
+            const studentCount = (schedule.assignments || [])
+                .filter(item => item && item.student)
+                .length;
+
+            const registerDone = registerIds.has(scheduleId);
+            const homeworkDone = homeworkIds.has(scheduleId);
+
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${teacherName}</td>
+                <td>${assistantName}</td>
+                <td>${schedule.className || "—"}</td>
+                <td>${activities.length ? activities.join(", ") : "—"}</td>
+                <td>${schedule.startTime || "—"} - ${schedule.endTime || "—"}</td>
+                <td>${studentCount}</td>
+
+                <td style="color:${registerDone ? "#0a9b69" : "#d97706"};font-weight:600;">
+                    ${registerDone ? "Entered" : "Not Entered"}
+                </td>
+
+                <td style="color:${homeworkDone ? "#0a9b69" : "#d97706"};font-weight:600;">
+                    ${homeworkDone ? "Submitted" : "Not Submitted"}
+                </td>
+
+                <td>
+                    <button type="button" class="primary"
+                        style="margin:2px;">
+                        Register
+                    </button>
+
+                    <button type="button" class="primary"
+                        style="margin:2px;">
+                        Homework
+                    </button>
+                </td>
+            `;
+
+            tableBody.appendChild(row);
+        });
+
+    } catch (error) {
+        console.error("Teacher daily schedule error:", error);
+
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="9" style="text-align:center;padding:20px;color:#dc2626;">
+                    ${error.message}
+                </td>
+            </tr>
+        `;
+    }
+}
+
+document.getElementById("teacherScheduleDate").value =
+    getTeacherDateString();
+
+document.getElementById("teacherScheduleDate").addEventListener(
+    "change",
+    loadTeacherDailySchedule
+);
+
+loadTeacherDailySchedule();
+
 renderMiniCalendar();loadDashboard();
 </script>
 
