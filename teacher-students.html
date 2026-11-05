@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Students</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -36,6 +37,100 @@
     margin:3px;
     font-size:12px;
 }
+
+/* =====================================
+   MY STUDENTS — MOBILE APP DESIGN
+   Desktop design remains unchanged
+===================================== */
+
+.mobile-students-header,
+.mobile-back-btn {
+    display: none;
+}
+
+@media screen and (max-width: 700px) {
+
+    body {
+        background: #eef3fb;
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box;
+        padding: 0 14px 30px !important;
+    }
+
+    #sidebar-container {
+        display: none !important;
+    }
+
+    .mobile-students-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        background: #ffffff;
+        margin: 0 -14px 15px;
+        padding: 22px 16px;
+        border-bottom: 1px solid #e1e8f3;
+    }
+
+    .mobile-students-header h2 {
+        margin: 0;
+        color: #102b58;
+        font-size: 25px;
+        font-weight: 800;
+    }
+
+    .mobile-students-header p {
+        margin: 5px 0 0;
+        color: #718096;
+        font-size: 14px;
+    }
+
+    .mobile-back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        flex-shrink: 0;
+        border: none;
+        border-radius: 12px;
+        padding: 11px 13px;
+        background: #102b58;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .student-card {
+        padding: 14px;
+        margin-bottom: 12px;
+        border: 1px solid #e4eaf4;
+        border-radius: 16px;
+        background: #ffffff;
+        box-shadow: 0 3px 10px rgba(20, 45, 85, 0.08);
+    }
+
+    .student-name {
+        color: #142b50;
+        font-size: 17px;
+        margin-bottom: 8px;
+    }
+
+    .student-card .tag {
+        display: inline-block;
+        margin: 3px 3px 3px 0;
+        padding: 6px 9px;
+        border-radius: 8px;
+        background: #eaf1ff;
+        color: #173d79;
+        font-size: 12px;
+        font-weight: 600;
+    }
+}
 </style>
 </head>
 
@@ -54,7 +149,16 @@ document.getElementById("sidebar-container").innerHTML=data;
 
 <div class="main-content">
 
-<h2>My Students</h2>
+<div class="mobile-students-header">
+    <div>
+        <h2>My Students</h2>
+        <p>Manage your assigned students</p>
+    </div>
+
+    <button type="button" class="mobile-back-btn" onclick="goBackPage()">
+        <i class="fa-solid fa-arrow-left"></i> Back
+    </button>
+</div>
 
 <div id="studentsContainer"></div>
 
@@ -156,6 +260,19 @@ loadStudents();
 <script>
 function go(page){
     window.location.href = page;
+}
+
+function goBackPage() {
+    if (
+        window.GPAAndroid &&
+        typeof window.GPAAndroid.goBack === "function"
+    ) {
+        window.GPAAndroid.goBack();
+    } else if (window.history.length > 1) {
+        window.history.back();
+    } else {
+        window.location.href = "teacher-dashboard.html";
+    }
 }
 
 function logout(){
