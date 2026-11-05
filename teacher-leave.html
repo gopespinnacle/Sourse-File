@@ -2890,8 +2890,7 @@ function renderMobileWeek() {
             card.classList.add("has-leave");
         } else {
            card.onclick = () => {
-    alert("Period tapped successfully");
-    openLeaveModal(period, selectedDate);
+        openLeaveModal(period, selectedDate);
 };
         }
 
@@ -2907,6 +2906,8 @@ function openLeaveModal(
     period,
     date
 ){
+
+    alert("Opening leave form...");
 
     selectedPeriod =
     period;
@@ -3004,6 +3005,7 @@ function openLeaveModal(
         "leaveModal"
     ).style.display =
     "block";
+    alert("Leave form opened");
 
 }
 
