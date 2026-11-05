@@ -188,6 +188,12 @@ async function loadDashboard(){
  }catch(e){console.error("Unable to load teacher dashboard:",e);}
 }
 function logout(){sessionStorage.clear();window.location.href="teacher-login.html";}
+function openTeacherRegister(scheduleId, date) {
+    const url =
+        `teacher-class-register.html?scheduleId=${encodeURIComponent(scheduleId)}&date=${encodeURIComponent(date)}`;
+
+    window.location.href = url;
+}
 function animateNumber(id,number){const el=document.getElementById(id);if(!el)return;if(!number||number<1){el.innerText=0;return;}let count=0;const step=Math.max(1,Math.ceil(number/35));const timer=setInterval(()=>{count=Math.min(number,count+step);el.innerText=count;if(count>=number)clearInterval(timer);},25);}
 function goToClasses(){window.location.href="teacher-classes.html";}
 function goToPeriods(){window.location.href="teacher-periods.html";}
@@ -519,13 +525,14 @@ async function loadTeacherDailySchedule() {
             const actionCell = document.createElement("td");
 
             actionCell.innerHTML = `
-                <button type="button" class="primary" style="margin:2px;">
-                    Register
-                </button>
-                <button type="button" class="primary" style="margin:2px;">
-                    Homework
-                </button>
-            `;
+    <button type="button" class="primary" style="margin:2px;"
+        onclick="openTeacherRegister('${schedule._id}', '${item.date}')">
+        Register
+    </button>
+    <button type="button" class="primary" style="margin:2px;">
+        Homework
+    </button>
+`;
 
             row.appendChild(actionCell);
             tableBody.appendChild(row);

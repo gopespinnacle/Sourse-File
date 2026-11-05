@@ -768,6 +768,18 @@ async function loadClasses(){
             result.data || [];
 
 
+            
+// EXTRA FEATURE: Receive schedule details from Teacher Dashboard.
+// Normal manual register workflow remains unchanged.
+const dashboardParams = new URLSearchParams(window.location.search);
+const dashboardDate = dashboardParams.get("date");
+
+if (dashboardDate) {
+    document.getElementById("classDate").value = dashboardDate;
+}
+
+
+
         const date =
     document.getElementById(
         "classDate"
@@ -814,6 +826,9 @@ if(date){
             );
 
         }
+
+        // Apply dashboard prefill only when scheduleId is supplied.
+prefillRegisterFromDashboard();
 
 
     }catch(error){
@@ -1132,6 +1147,46 @@ function loadSelectedClass(){
 }
 
 
+
+/* ==========================================
+   EXTRA FEATURE - DASHBOARD REGISTER PREFILL
+========================================== */
+
+function prefillRegisterFromDashboard() {
+    const params = new URLSearchParams(window.location.search);
+    const scheduleId = params.get("scheduleId");
+
+    // No dashboard schedule ID: preserve normal manual workflow.
+    if (!scheduleId) return;
+
+    const index = classData.findIndex(item =>
+        String(item.periodId) === String(scheduleId)
+    );
+
+    if (index === -1) {
+        showMessage(
+            "The selected dashboard schedule could not be found.",
+            "error"
+        );
+        return;
+    }
+
+    const classSelect = document.getElementById("classSelect");
+
+    classSelect.value = String(index);
+
+    // Reuse the existing class-loading function.
+    loadSelectedClass();
+
+    // Automatically select the schedule's available activities.
+    document.querySelectorAll(
+        '#subjectCheckboxes input[name="selectedSubjects"]'
+    ).forEach(checkbox => {
+        checkbox.checked = true;
+    });
+
+    renderSubjectTopicInputs();
+}
 
 
 
