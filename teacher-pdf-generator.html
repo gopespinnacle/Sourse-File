@@ -352,18 +352,81 @@ document.getElementById("imageInput").addEventListener("change",async function()
 });
 function fileToDataURL(file){return new Promise(resolve=>{const r=new FileReader();r.onload=e=>resolve(e.target.result);r.onerror=()=>resolve(null);r.readAsDataURL(file);});}
 
-async function handlePaste(e){
- const items=Array.from(e.clipboardData?.items||[]);
- const html=e.clipboardData?.getData("text/html")||"";
- const imageItems=items.filter(x=>x.type.startsWith("image/"));
- if(imageItems.length&&!html.includes("<table")){
-  e.preventDefault();
-  saveRange();
-  for(const item of imageItems){const f=item.getAsFile();if(!f)continue;const data=await fileToDataURL(f);if(data)insertImage(data);}
-  return;
- }
- setTimeout(()=>{setupExistingImages();resizePenCanvas();saveRange();},50);
+
+async function handlePaste(e) {
+
+    const clipboard = e.clipboardData;
+    if (!clipboard) return;
+
+    const html = clipboard.getData("text/html") || "";
+    const plainText = clipboard.getData("text/plain") || "";
+
+    const imageItems = Array.from(clipboard.items || [])
+        .filter(item =>
+            item.kind === "file" &&
+            item.type.startsWith("image/")
+        );
+
+    // Preserve rich HTML content, including multiple images and tables
+    const hasRichHtml =
+        /<(img|table|p|div|ul|ol|h[1-6])\b/i.test(html);
+
+    if (hasRichHtml) {
+
+        setTimeout(() => {
+            setupExistingImages();
+            resizePenCanvas();
+            saveRange();
+            buildPreview();
+        }, 150);
+
+        return;
+    }
+
+    // Handle multiple copied images
+    if (imageItems.length > 0) {
+
+        e.preventDefault();
+
+        saveRange();
+
+        // Preserve copied text if present
+        if (plainText.trim()) {
+            document.execCommand("insertText", false, plainText);
+            saveRange();
+        }
+
+        // Insert every image, one after another
+        for (const item of imageItems) {
+
+            const file = item.getAsFile();
+            if (!file) continue;
+
+            const data = await fileToDataURL(file);
+
+            if (data) {
+                insertImage(data);
+            }
+        }
+
+        setupExistingImages();
+        resizePenCanvas();
+        saveRange();
+        buildPreview();
+
+        return;
+    }
+
+    // Normal text paste
+    setTimeout(() => {
+        setupExistingImages();
+        resizePenCanvas();
+        saveRange();
+        buildPreview();
+    }, 150);
 }
+
+
 document.getElementById("editor").addEventListener("paste",handlePaste);
 
 function setupExistingImages(){document.querySelectorAll("#editor img").forEach(img=>{if(img.closest(".image-box"))return;const box=document.createElement("span");box.className="image-box";box.contentEditable="false";box.style.width=Math.min(360,document.getElementById("editor").clientWidth)+"px";img.parentNode.insertBefore(box,img);box.appendChild(img);const h=document.createElement("span");h.className="image-resize-handle";const d=document.createElement("button");d.type="button";d.className="image-delete-button";d.textContent="×";box.append(h,d);setupImageBox(box);});}
