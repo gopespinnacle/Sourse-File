@@ -2889,9 +2889,10 @@ function renderMobileWeek() {
         if (leave) {
             card.classList.add("has-leave");
         } else {
-            card.onclick = () => {
-                openLeaveModal(period, selectedDate);
-            };
+           card.onclick = () => {
+    alert("Period tapped successfully");
+    openLeaveModal(period, selectedDate);
+};
         }
 
         periodsContainer.appendChild(card);
