@@ -595,21 +595,28 @@ body{
    CONFIG
    ===================================================== */
 
-const API_BASE =
-    "https://academy-backend-eatl.onrender.com";
-
+const isAndroidApp =
+    window.GPAAndroid &&
+    typeof window.GPAAndroid.getToken === "function";
 
 const token =
-    sessionStorage.getItem("token");
+    (isAndroidApp ? window.GPAAndroid.getToken() : "") ||
+    sessionStorage.getItem("token") ||
+    localStorage.getItem("token") ||
+    "";
 
 const role =
-    sessionStorage.getItem("role");
+    (isAndroidApp ? window.GPAAndroid.getRole() : "") ||
+    sessionStorage.getItem("role") ||
+    localStorage.getItem("role") ||
+    "";
 
-
-if(!token || role !== "teacher"){
+if (!token || role.toLowerCase() !== "teacher") {
     alert("Please login first");
-    window.location.href =
-        "teacher-login.html";
+
+    if (!isAndroidApp) {
+        window.location.href = "teacher-login.html";
+    }
 }
 
 
