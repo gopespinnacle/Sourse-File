@@ -131,6 +131,54 @@
         font-weight: 600;
     }
 }
+
+@media screen and (max-width: 700px) {
+
+    .mobile-student-search {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #ffffff;
+        border: 1px solid #d6e0f0;
+        border-radius: 14px;
+        padding: 0 14px;
+        margin-bottom: 18px;
+        height: 52px;
+    }
+
+    .mobile-student-search i {
+        color: #64748b;
+        font-size: 18px;
+    }
+
+    .mobile-student-search input {
+        flex: 1;
+        min-width: 0;
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 15px;
+        color: #142b50;
+    }
+
+    .mobile-grade-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 20px 2px 10px;
+        color: #102b58;
+        font-size: 19px;
+        font-weight: 800;
+    }
+
+    .mobile-grade-count {
+        background: #dce9ff;
+        color: #17458b;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+    }
+}
 </style>
 </head>
 
@@ -160,6 +208,16 @@ document.getElementById("sidebar-container").innerHTML=data;
     </button>
 </div>
 
+<div class="mobile-student-search">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input
+        type="text"
+        id="studentSearch"
+        placeholder="Search students or class..."
+        oninput="renderStudents()"
+    >
+</div>
+
 <div id="studentsContainer"></div>
 
 </div>
@@ -175,6 +233,8 @@ if (!token || role !== "teacher") {
 }
 
 async function loadStudents(){
+
+    window.allStudents = [];
 
 try{
 
@@ -217,30 +277,13 @@ time: item.startTime + " - " + item.endTime
 
 });
 
-/* DISPLAY */
-Object.values(studentMap).forEach(student=>{
+/* GRADE-WISE STUDENT DATA */
+window.allStudents = Object.entries(studentMap).map(([id, student]) => ({
+    id,
+    ...student
+}));
 
-let classHTML = "";
-
-student.classes.forEach(c=>{
-classHTML += `
-<div>
-<span class="tag">📘 ${c.subject || "General"}</span>
-<span class="tag">🏫 ${c.className}</span>
-<span class="tag">📅 ${c.day}</span>
-<span class="tag">⏰ ${c.time}</span>
-</div>
-`;
-});
-
-container.innerHTML += `
-<div class="student-card">
-<div class="student-name">👤 ${student.name}</div>
-${classHTML}
-</div>
-`;
-
-});
+renderStudents();
 
 }catch(err){
 
@@ -251,6 +294,96 @@ document.getElementById("studentsContainer").innerHTML =
 
 }
 
+}
+
+function renderStudents() {
+
+    const container = document.getElementById("studentsContainer");
+    const search = document.getElementById("studentSearch")?.value
+        .trim()
+        .toLowerCase() || "";
+
+    const gradeGroups = {};
+
+    window.allStudents.forEach(student => {
+
+        const matchingClasses = student.classes.filter(c =>
+            [
+                student.name,
+                c.className,
+                c.subject,
+                c.day,
+                c.time
+            ].join(" ").toLowerCase().includes(search)
+        );
+
+        matchingClasses.forEach(c => {
+
+            const grade = c.className || "Other";
+
+            if (!gradeGroups[grade]) {
+                gradeGroups[grade] = {};
+            }
+
+            if (!gradeGroups[grade][student.id]) {
+                gradeGroups[grade][student.id] = {
+                    name: student.name,
+                    subjects: new Set()
+                };
+            }
+
+            if (c.subject) {
+                gradeGroups[grade][student.id].subjects.add(c.subject);
+            }
+        });
+    });
+
+    container.innerHTML = "";
+
+    const grades = Object.keys(gradeGroups).sort((a, b) =>
+        a.localeCompare(b, undefined, { numeric: true })
+    );
+
+    if (grades.length === 0) {
+        container.innerHTML = "<p>No matching students found.</p>";
+        return;
+    }
+
+    grades.forEach(grade => {
+
+        const students = Object.values(gradeGroups[grade]);
+
+        let studentsHTML = "";
+
+        students.forEach(student => {
+
+            const subjectHTML = [...student.subjects].map(subject =>
+                `<span class="tag">${subject}</span>`
+            ).join("");
+
+            studentsHTML += `
+                <div class="student-card">
+                    <div class="student-name">
+                        ${student.name}
+                    </div>
+                    <div class="student-subjects">
+                        ${subjectHTML || '<span class="tag">General</span>'}
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML += `
+            <div class="mobile-grade-heading">
+                <span>${grade}</span>
+                <span class="mobile-grade-count">
+                    ${students.length} Students
+                </span>
+            </div>
+
+            ${studentsHTML}
+        `;
+    });
 }
 
 loadStudents();
@@ -280,7 +413,7 @@ function logout(){
     window.location.replace("teacher-login.html");
 }
 </script>
-</script>
+
 <!-- GPA notifications on the teacher periods page -->
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 <script src="messenger/chat/messengerWebNotifications.js"></script>
