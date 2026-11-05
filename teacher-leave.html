@@ -1832,24 +1832,32 @@ const API =
 
 
 /* =========================================================
-   AUTH
-   ========================================================= */
+   AUTH — WEB + NATIVE ANDROID
+========================================================= */
 
 const token =
-sessionStorage.getItem("token");
+    (window.GPAAndroid &&
+     typeof window.GPAAndroid.getToken === "function"
+        ? window.GPAAndroid.getToken()
+        : "") ||
+    sessionStorage.getItem("token") ||
+    localStorage.getItem("token") ||
+    "";
 
 const role =
-sessionStorage.getItem("role");
+    (window.GPAAndroid &&
+     typeof window.GPAAndroid.getRole === "function"
+        ? window.GPAAndroid.getRole()
+        : "") ||
+    sessionStorage.getItem("role") ||
+    localStorage.getItem("role") ||
+    "";
 
-if(
-    !token ||
-    role !== "teacher"
-){
+if (!token || role.toLowerCase() !== "teacher") {
 
     alert("Please login first.");
 
-    window.location.href =
-    "teacher-login.html";
+    window.location.href = "teacher-login.html";
 
 }
 
@@ -1858,12 +1866,14 @@ if(
    TEACHER NAME
    ========================================================= */
 
-document.getElementById(
-    "teacherName"
-).innerText =
-sessionStorage.getItem(
-    "teacherName"
-) || "Teacher";
+document.getElementById("teacherName").innerText =
+    (window.GPAAndroid &&
+     typeof window.GPAAndroid.getUserName === "function"
+        ? window.GPAAndroid.getUserName()
+        : "") ||
+    sessionStorage.getItem("teacherName") ||
+    localStorage.getItem("teacherName") ||
+    "Teacher";
 
 
 /* =========================================================
