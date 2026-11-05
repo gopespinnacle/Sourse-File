@@ -446,6 +446,23 @@ async function loadTeacherDailySchedule() {
             );
         });
 
+        // DAILY CLASS REGISTER REMINDER POPUP
+const pendingRegisterCount = pendingRows.filter(
+    item => !item.registerDone
+).length;
+
+if (pendingRegisterCount > 0) {
+    alert(
+        `Reminder!\n\nYou have ${pendingRegisterCount} Daily Class Register(s) not entered.\n\nClick OK to view the pending entries.`
+    );
+
+    document.getElementById("teacherDailySchedulePanel")
+        ?.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+}
+
         if (!pendingRows.length) {
             tableBody.innerHTML = `
                 <tr>
