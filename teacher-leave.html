@@ -3028,6 +3028,18 @@ modal.style.margin = "12px auto";
 modal.style.backgroundColor = "#ffffff";
 modal.style.zIndex = "5001";
 
+const modalRect = modal.getBoundingClientRect();
+const modalStyle = window.getComputedStyle(modal);
+
+alert(
+    "Modal check\n" +
+    "Display: " + modalStyle.display + "\n" +
+    "Visibility: " + modalStyle.visibility + "\n" +
+    "Width: " + modalRect.width + "\n" +
+    "Height: " + modalRect.height + "\n" +
+    "Top: " + modalRect.top
+);
+
 }
 
 
