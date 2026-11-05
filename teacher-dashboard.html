@@ -118,15 +118,9 @@ flex-shrink: 0;
     </div>
   </div>
 
-  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
-    <strong style="font-size:11px;">Select Date:</strong>
-    <input type="date" id="teacherScheduleDate"
-      style="padding:8px;border:1px solid #dbe5f5;border-radius:7px;">
-
-    <button class="primary" onclick="changeTeacherScheduleDate(-1)">← Previous Day</button>
-    <button class="primary" onclick="changeTeacherScheduleDate(1)">Next Day →</button>
-    <button class="primary" onclick="goToTeacherScheduleToday()">Today</button>
-  </div>
+  <div style="font-size:12px;margin-bottom:12px;color:#526581;">
+    Automatically displaying pending work for the current month.
+</div>
 
   <div id="teacherScheduleDay" style="font-size:12px;margin-bottom:10px;">
     Loading schedule...
@@ -136,6 +130,7 @@ flex-shrink: 0;
     <table style="width:100%;border-collapse:collapse;min-width:950px;font-size:12px;">
       <thead style="background:#f0f5ff;">
         <tr>
+          <th>Date</th>
           <th>Teacher</th>
           <th>Assistant</th>
           <th>Class</th>
@@ -149,7 +144,7 @@ flex-shrink: 0;
       </thead>
       <tbody id="teacherDailyScheduleBody">
         <tr>
-          <td colspan="9" style="text-align:center;padding:20px;">
+          <td colspan="10" style="text-align:center;padding:20px;">
             Loading your classes...
           </td>
         </tr>
@@ -247,33 +242,84 @@ function goToTeacherScheduleToday() {
     loadTeacherDailySchedule();
 }
 
+
+function getTeacherISTParts(date = new Date()) {
+    const parts = new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Asia/Kolkata",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23"
+    }).formatToParts(date);
+
+    const result = {};
+    parts.forEach(p => result[p.type] = p.value);
+    return result;
+}
+
+function getScheduleEndMinutes(time) {
+    if (!time) return null;
+
+    const match = String(time).trim().match(
+        /^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i
+    );
+
+    if (!match) return null;
+
+    let hour = Number(match[1]);
+    const minute = Number(match[2]);
+    const meridiem = match[3]?.toUpperCase();
+
+    if (minute > 59 || hour > 23 || hour < 0) return null;
+
+    if (meridiem) {
+        if (hour < 1 || hour > 12) return null;
+        if (meridiem === "AM" && hour === 12) hour = 0;
+        if (meridiem === "PM" && hour !== 12) hour += 12;
+    }
+
+    return hour * 60 + minute;
+}
+
+function getTeacherMonthDateKey(year, month, day) {
+    return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
 async function loadTeacherDailySchedule() {
-    const dateInput = document.getElementById("teacherScheduleDate");
     const tableBody = document.getElementById("teacherDailyScheduleBody");
     const dayLabel = document.getElementById("teacherScheduleDay");
 
-    if (!dateInput || !tableBody || !dayLabel) return;
+    if (!tableBody || !dayLabel) return;
 
-    const selectedDate = dateInput.value;
     const token = sessionStorage.getItem("token");
+    if (!token) return;
 
-    if (!selectedDate || !token) return;
+    const now = getTeacherISTParts();
 
-    const selectedDay = new Date(
-        selectedDate + "T12:00:00"
-    ).toLocaleDateString("en-US", { weekday: "long" });
+    const year = Number(now.year);
+    const month = Number(now.month);
+    const today = Number(now.day);
 
-    dayLabel.innerText =
-        selectedDay + " | " +
-        new Date(selectedDate + "T12:00:00").toLocaleDateString(
-            "en-IN",
-            { day: "2-digit", month: "short", year: "numeric" }
-        );
+    const monthKey = `${now.year}-${now.month}`;
+    const todayKey = `${monthKey}-${now.day}`;
+
+    const currentMinutes =
+        Number(now.hour) * 60 + Number(now.minute);
+
+    dayLabel.innerText = new Date(
+        Date.UTC(year, month - 1, 1, 12)
+    ).toLocaleDateString("en-IN", {
+        month: "long",
+        year: "numeric",
+        timeZone: "UTC"
+    }) + " | Monthly Pending Work";
 
     tableBody.innerHTML = `
         <tr>
-            <td colspan="9" style="text-align:center;padding:20px;">
-                Loading your classes...
+            <td colspan="10" style="text-align:center;padding:20px;">
+                Loading monthly pending schedules...
             </td>
         </tr>
     `;
@@ -289,7 +335,7 @@ async function loadTeacherDailySchedule() {
             }),
 
             fetch(
-                `${TEACHER_API}/api/teacher/daily-schedule-entry-status?date=${encodeURIComponent(selectedDate)}`,
+                `${TEACHER_API}/api/teacher/daily-schedule-entry-status?month=${monthKey}`,
                 { headers }
             )
         ]);
@@ -299,7 +345,7 @@ async function loadTeacherDailySchedule() {
         }
 
         if (!statusResponse.ok) {
-            throw new Error("Unable to load register and homework status.");
+            throw new Error("Unable to load monthly entry statuses.");
         }
 
         const scheduleData = await scheduleResponse.json();
@@ -309,42 +355,117 @@ async function loadTeacherDailySchedule() {
             ? scheduleData.data
             : [];
 
-        const registerIds = new Set(
-            statusData.statuses?.registers || []
+        const registerSet = new Set(
+            (statusData.statuses?.registers || []).map(
+                item => `${item.date}|${item.scheduleId}`
+            )
         );
 
-        const homeworkIds = new Set(
-            statusData.statuses?.homework || []
+        const homeworkSet = new Set(
+            (statusData.statuses?.homework || []).map(
+                item => `${item.date}|${item.scheduleId}`
+            )
         );
 
-        const todaysSchedules = schedules.filter(schedule =>
-            String(schedule.day || "")
-                .trim()
-                .toLowerCase()
-                .startsWith(selectedDay.substring(0, 3).toLowerCase())
-        );
+        const weekdayNames = [
+            "Sunday", "Monday", "Tuesday",
+            "Wednesday", "Thursday", "Friday", "Saturday"
+        ];
 
-        if (!todaysSchedules.length) {
+        const daysInMonth = new Date(year, month, 0).getDate();
+
+        const pendingRows = [];
+
+        // Check every past date in this month, including today.
+        for (let day = 1; day <= today; day++) {
+
+            const dateKey = getTeacherMonthDateKey(
+                year, month, day
+            );
+
+            const weekday = weekdayNames[
+                new Date(Date.UTC(year, month - 1, day, 12)).getUTCDay()
+            ];
+
+            schedules.forEach(schedule => {
+
+                const scheduleDay = String(schedule.day || "")
+                    .trim()
+                    .toLowerCase();
+
+                if (!scheduleDay.startsWith(
+                    weekday.substring(0, 3).toLowerCase()
+                )) return;
+
+                // For today, only include schedules whose end time
+                // has already passed.
+                if (dateKey === todayKey) {
+                    const endMinutes = getScheduleEndMinutes(
+                        schedule.endTime
+                    );
+
+                    // Do not display ongoing or future schedules.
+                    if (endMinutes === null || endMinutes > currentMinutes) {
+                        return;
+                    }
+                }
+
+                const scheduleId = String(schedule._id);
+                const statusKey = `${dateKey}|${scheduleId}`;
+
+                const registerDone = registerSet.has(statusKey);
+                const homeworkDone = homeworkSet.has(statusKey);
+
+                // OR condition:
+                // Show if register is pending OR homework is pending.
+                if (registerDone && homeworkDone) return;
+
+                pendingRows.push({
+                    date: dateKey,
+                    schedule,
+                    registerDone,
+                    homeworkDone
+                });
+            });
+        }
+
+        // Oldest date first, then start time.
+        pendingRows.sort((a, b) => {
+            const dateCompare = a.date.localeCompare(b.date);
+
+            if (dateCompare !== 0) return dateCompare;
+
+            return String(a.schedule.startTime || "").localeCompare(
+                String(b.schedule.startTime || "")
+            );
+        });
+
+        if (!pendingRows.length) {
             tableBody.innerHTML = `
                 <tr>
-                    <td colspan="9" style="text-align:center;padding:20px;">
-                        No classes scheduled for this day.
+                    <td colspan="10"
+                        style="text-align:center;padding:20px;color:#0a9b69;">
+                        No pending register or homework entries for this month.
                     </td>
                 </tr>
             `;
             return;
         }
 
-        todaysSchedules.sort((a, b) =>
-            String(a.startTime || "").localeCompare(
-                String(b.startTime || "")
-            )
-        );
-
         tableBody.innerHTML = "";
 
-        todaysSchedules.forEach(schedule => {
-            const scheduleId = String(schedule._id);
+        pendingRows.forEach(item => {
+            const schedule = item.schedule;
+
+            const activities = [
+                ...(Array.isArray(schedule.subject) ? schedule.subject : []),
+                ...(Array.isArray(schedule.language) ? schedule.language : []),
+                ...(Array.isArray(schedule.eca) ? schedule.eca : [])
+            ];
+
+            const studentCount = (schedule.assignments || [])
+                .filter(a => a && a.student)
+                .length;
 
             const teacherName =
                 schedule.teacher?.name ||
@@ -356,73 +477,73 @@ async function loadTeacherDailySchedule() {
                 schedule.assistantTeacher?.teacherName ||
                 "—";
 
-            const activities = [
-                ...(Array.isArray(schedule.subject) ? schedule.subject : []),
-                ...(Array.isArray(schedule.language) ? schedule.language : []),
-                ...(Array.isArray(schedule.eca) ? schedule.eca : [])
-            ];
-
-            const studentCount = (schedule.assignments || [])
-                .filter(item => item && item.student)
-                .length;
-
-            const registerDone = registerIds.has(scheduleId);
-            const homeworkDone = homeworkIds.has(scheduleId);
+            const dateText = new Date(
+                item.date + "T12:00:00"
+            ).toLocaleDateString("en-IN", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            });
 
             const row = document.createElement("tr");
 
-            row.innerHTML = `
-                <td>${teacherName}</td>
-                <td>${assistantName}</td>
-                <td>${schedule.className || "—"}</td>
-                <td>${activities.length ? activities.join(", ") : "—"}</td>
-                <td>${schedule.startTime || "—"} - ${schedule.endTime || "—"}</td>
-                <td>${studentCount}</td>
+            const cells = [
+                dateText,
+                teacherName,
+                assistantName,
+                schedule.className || "—",
+                activities.join(", ") || "—",
+                `${schedule.startTime || "—"} - ${schedule.endTime || "—"}`,
+                String(studentCount),
+                item.registerDone ? "Entered" : "Not Entered",
+                item.homeworkDone ? "Submitted" : "Not Submitted"
+            ];
 
-                <td style="color:${registerDone ? "#0a9b69" : "#d97706"};font-weight:600;">
-                    ${registerDone ? "Entered" : "Not Entered"}
-                </td>
+            cells.forEach((value, index) => {
+                const cell = document.createElement("td");
+                cell.textContent = value;
 
-                <td style="color:${homeworkDone ? "#0a9b69" : "#d97706"};font-weight:600;">
-                    ${homeworkDone ? "Submitted" : "Not Submitted"}
-                </td>
+                if (index === 7 && !item.registerDone) {
+                    cell.style.color = "#d97706";
+                    cell.style.fontWeight = "600";
+                }
 
-                <td>
-                    <button type="button" class="primary"
-                        style="margin:2px;">
-                        Register
-                    </button>
+                if (index === 8 && !item.homeworkDone) {
+                    cell.style.color = "#d97706";
+                    cell.style.fontWeight = "600";
+                }
 
-                    <button type="button" class="primary"
-                        style="margin:2px;">
-                        Homework
-                    </button>
-                </td>
+                row.appendChild(cell);
+            });
+
+            const actionCell = document.createElement("td");
+
+            actionCell.innerHTML = `
+                <button type="button" class="primary" style="margin:2px;">
+                    Register
+                </button>
+                <button type="button" class="primary" style="margin:2px;">
+                    Homework
+                </button>
             `;
 
+            row.appendChild(actionCell);
             tableBody.appendChild(row);
         });
 
     } catch (error) {
-        console.error("Teacher daily schedule error:", error);
+        console.error("Monthly pending schedule error:", error);
 
         tableBody.innerHTML = `
             <tr>
-                <td colspan="9" style="text-align:center;padding:20px;color:#dc2626;">
+                <td colspan="10"
+                    style="text-align:center;padding:20px;color:#dc2626;">
                     ${error.message}
                 </td>
             </tr>
         `;
     }
 }
-
-document.getElementById("teacherScheduleDate").value =
-    getTeacherDateString();
-
-document.getElementById("teacherScheduleDate").addEventListener(
-    "change",
-    loadTeacherDailySchedule
-);
 
 loadTeacherDailySchedule();
 
