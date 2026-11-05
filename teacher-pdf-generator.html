@@ -415,14 +415,62 @@ function buildFormattedContent(){
  return html||'<p>No content entered.</p>';
 }
 
+
 function buildPreview(){
- const mount=document.getElementById("previewMount");mount.innerHTML="";
- const page=document.createElement("div");page.className="a4-page preview-page";
- const header=document.createElement("div");header.className="doc-header";header.innerHTML='<img src="images/logo.png" class="doc-logo" alt="Gopes Pinnacle"><div class="doc-title">GOPES PINNACLE</div><div class="doc-subtitle">Structured Online Academy</div>';page.appendChild(header);
- const meta=document.createElement("div");meta.className="doc-meta";meta.innerHTML='<span>'+esc(document.getElementById("editorTopicMeta").textContent)+'</span><span>'+esc(document.getElementById("editorGradeMeta").textContent)+'</span>';page.appendChild(meta);
- const content=document.createElement("div");content.className="preview-content";content.innerHTML=buildFormattedContent();page.appendChild(content);
- if(penHasDrawing){const layer=document.createElement("div");layer.className="preview-pen";const img=document.createElement("img");img.src=penCanvas.toDataURL("image/png");layer.appendChild(img);page.appendChild(layer);}
- mount.appendChild(page);return page;
+
+    const mount = document.getElementById("previewMount");
+    mount.innerHTML = "";
+
+    // Create a preview page with the same page settings
+    const page = document.createElement("div");
+    page.className = "a4-page editor-page preview-page";
+
+    // Preserve page dimensions, orientation and border
+    page.style.cssText = editorPage.style.cssText;
+
+    // Copy the original document header
+    const header = editorPage.querySelector(".doc-header").cloneNode(true);
+    page.appendChild(header);
+
+    // Copy the original document details
+    const meta = editorPage.querySelector(".doc-meta").cloneNode(true);
+    page.appendChild(meta);
+
+    // Copy the editor content WITHOUT converting or rewriting HTML
+    const content = editor.cloneNode(true);
+
+    content.removeAttribute("id");
+    content.removeAttribute("contenteditable");
+
+    // Remove editing controls only
+    content.querySelectorAll(
+        ".image-resize-handle, .image-delete-button"
+    ).forEach(el => el.remove());
+
+    // Remove selection indicators
+    content.querySelectorAll(".image-box").forEach(box => {
+        box.classList.remove("selected");
+    });
+
+    content.className = "editor-content preview-content";
+
+    page.appendChild(content);
+
+    // Preserve pen drawings
+    if (penHasDrawing) {
+        const layer = document.createElement("div");
+        layer.className = "preview-pen";
+
+        const img = document.createElement("img");
+        img.src = penCanvas.toDataURL("image/png");
+
+        layer.appendChild(img);
+        page.appendChild(layer);
+    }
+
+    mount.appendChild(page);
+
+    return page;
 }
 
 async function generatePDF(){
