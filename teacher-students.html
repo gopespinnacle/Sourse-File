@@ -1,53 +1,58 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Students</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-    body {
-    margin:0;
+body {
+    margin: 0;
 }
+
 .main-content {
-    margin-left:240px;
-    padding:20px;
-    width: calc(100% - 240px);   /* 🔥 VERY IMPORTANT */
+    margin-left: 240px;
+    padding: 20px;
+    width: calc(100% - 240px);
+    box-sizing: border-box;
 }
 
 .student-card {
-    background:#fff;
-    padding:15px;
-    margin-bottom:12px;
-    border-radius:10px;
-    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    background: #fff;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .student-name {
-    font-size:16px;
-    font-weight:bold;
+    font-size: 16px;
+    font-weight: bold;
+    color: #142b50;
+    margin-bottom: 8px;
 }
 
 .tag {
-    display:inline-block;
-    background:#eef;
-    padding:4px 8px;
-    border-radius:6px;
-    margin:3px;
-    font-size:12px;
+    display: inline-block;
+    background: #eef;
+    padding: 4px 8px;
+    border-radius: 6px;
+    margin: 3px;
+    font-size: 12px;
 }
 
-/* =====================================
-   MY STUDENTS — MOBILE APP DESIGN
-   Desktop design remains unchanged
-===================================== */
-
 .mobile-students-header,
-.mobile-back-btn {
+.mobile-back-btn,
+.mobile-student-search,
+.mobile-grade-heading {
     display: none;
 }
 
+/* MOBILE DESIGN */
 @media screen and (max-width: 700px) {
 
     body {
@@ -57,7 +62,6 @@
     .main-content {
         margin-left: 0 !important;
         width: 100% !important;
-        box-sizing: border-box;
         padding: 0 14px 30px !important;
     }
 
@@ -70,7 +74,7 @@
         align-items: center;
         justify-content: space-between;
         gap: 10px;
-        background: #ffffff;
+        background: #fff;
         margin: 0 -14px 15px;
         padding: 22px 16px;
         border-bottom: 1px solid #e1e8f3;
@@ -99,46 +103,17 @@
         border-radius: 12px;
         padding: 11px 13px;
         background: #102b58;
-        color: #ffffff;
+        color: white;
         font-size: 14px;
         font-weight: 700;
         cursor: pointer;
     }
 
-    .student-card {
-        padding: 14px;
-        margin-bottom: 12px;
-        border: 1px solid #e4eaf4;
-        border-radius: 16px;
-        background: #ffffff;
-        box-shadow: 0 3px 10px rgba(20, 45, 85, 0.08);
-    }
-
-    .student-name {
-        color: #142b50;
-        font-size: 17px;
-        margin-bottom: 8px;
-    }
-
-    .student-card .tag {
-        display: inline-block;
-        margin: 3px 3px 3px 0;
-        padding: 6px 9px;
-        border-radius: 8px;
-        background: #eaf1ff;
-        color: #173d79;
-        font-size: 12px;
-        font-weight: 600;
-    }
-}
-
-@media screen and (max-width: 700px) {
-
     .mobile-student-search {
         display: flex;
         align-items: center;
         gap: 12px;
-        background: #ffffff;
+        background: white;
         border: 1px solid #d6e0f0;
         border-radius: 14px;
         padding: 0 14px;
@@ -161,6 +136,45 @@
         color: #142b50;
     }
 
+    .student-card {
+        padding: 14px;
+        margin-bottom: 12px;
+        border: 1px solid #e4eaf4;
+        border-radius: 16px;
+        background: white;
+        box-shadow: 0 3px 10px rgba(20,45,85,.08);
+    }
+
+    .student-name {
+        color: #142b50;
+        font-size: 17px;
+        margin-bottom: 10px;
+    }
+
+    .student-category {
+        margin-top: 8px;
+        color: #334155;
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    .student-category strong {
+        display: inline-block;
+        min-width: 75px;
+        color: #102b58;
+    }
+
+    .student-card .tag {
+        display: inline-block;
+        margin: 3px 3px 3px 0;
+        padding: 6px 9px;
+        border-radius: 8px;
+        background: #eaf1ff;
+        color: #173d79;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
     .mobile-grade-heading {
         display: flex;
         justify-content: space-between;
@@ -179,55 +193,48 @@
         font-size: 12px;
     }
 }
-
-
-@media screen and (max-width: 700px) {
-    .student-category {
-        margin-top: 8px;
-        color: #334155;
-        font-size: 13px;
-    }
-}
 </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
 <div id="sidebar-container"></div>
 
 <script>
 fetch("teacher-sidebar.html")
 .then(res => res.text())
-.then(data=>{
-document.getElementById("sidebar-container").innerHTML=data;
-});
+.then(data => {
+    document.getElementById("sidebar-container").innerHTML = data;
+})
+.catch(err => console.error("Sidebar loading error:", err));
 </script>
 
 <div class="main-content">
 
-<div class="mobile-students-header">
-    <div>
-        <h2>My Students</h2>
-        <p>Manage your assigned students</p>
+    <div class="mobile-students-header">
+        <div>
+            <h2>My Students</h2>
+            <p>Manage your assigned students</p>
+        </div>
+
+        <button type="button"
+                class="mobile-back-btn"
+                onclick="goBackPage()">
+            <i class="fa-solid fa-arrow-left"></i> Back
+        </button>
     </div>
 
-    <button type="button" class="mobile-back-btn" onclick="goBackPage()">
-        <i class="fa-solid fa-arrow-left"></i> Back
-    </button>
-</div>
+    <div class="mobile-student-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
 
-<div class="mobile-student-search">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <input
-        type="text"
-        id="studentSearch"
-        placeholder="Search students or class..."
-        oninput="renderStudents()"
-    >
-</div>
+        <input
+            type="text"
+            id="studentSearch"
+            placeholder="Search students or class..."
+            oninput="renderStudents()">
+    </div>
 
-<div id="studentsContainer"></div>
+    <div id="studentsContainer"></div>
 
 </div>
 
@@ -236,98 +243,186 @@ document.getElementById("sidebar-container").innerHTML=data;
 const token = sessionStorage.getItem("token");
 const role = sessionStorage.getItem("role");
 
+window.allStudents = [];
+
 if (!token || role !== "teacher") {
     alert("Please login first");
     window.location.href = "teacher-login.html";
 }
 
-async function loadStudents(){
+/* CONVERT VALUES INTO ARRAYS */
+function toArray(value) {
 
-    window.allStudents = [];
+    if (!value) return [];
 
-try{
+    if (Array.isArray(value)) {
+        return value.filter(Boolean);
+    }
 
-const res = await fetch(
-"https://academy-backend-eatl.onrender.com/api/teacher/all-period-assignments",
-{
-headers:{
-"Authorization":"Bearer " + token
-}
-}
-);
-
-const data = await res.json();
-
-const container = document.getElementById("studentsContainer");
-container.innerHTML = "";
-
-/* 🔥 GROUP BY STUDENT */
-let studentMap = {};
-
-data.data.forEach(item=>{
-
-item.students.forEach(st=>{
-
-if(!studentMap[st._id]){
-studentMap[st._id] = {
-name: st.name,
-classes: []
-};
+    return [value];
 }
 
-studentMap[st._id].classes.push({
-    className: item.className,
-    subjects: st.subjects || [],
-    languages: st.languages || [],
-    eca: st.eca || [],
-    subject: item.subject,
-    day: item.day,
-    time: item.startTime + " - " + item.endTime
-});
+/* LOAD STUDENTS */
+async function loadStudents() {
 
-});
+    const container = document.getElementById("studentsContainer");
 
-});
+    try {
 
-/* GRADE-WISE STUDENT DATA */
-window.allStudents = Object.entries(studentMap).map(([id, student]) => ({
-    id,
-    ...student
-}));
+        const res = await fetch(
+            "https://academy-backend-eatl.onrender.com/api/teacher/all-period-assignments",
+            {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            }
+        );
 
-renderStudents();
+        if (!res.ok) {
+            throw new Error("Unable to load student assignments");
+        }
 
-}catch(err){
+        const data = await res.json();
 
-console.log(err);
+        if (!data.data || !Array.isArray(data.data)) {
+            throw new Error("Invalid student assignment response");
+        }
 
-document.getElementById("studentsContainer").innerHTML =
-"<p>Error loading students</p>";
+        const studentMap = {};
 
+        data.data.forEach(item => {
+
+            if (!Array.isArray(item.students)) return;
+
+            item.students.forEach(st => {
+
+                /*
+                 * IMPORTANT:
+                 * Supports both structures:
+                 *
+                 * st.student = populated User
+                 * OR
+                 * st = populated User directly
+                 */
+
+                const user = st.student || st;
+
+                const studentId =
+                    user._id || st.student || st._id;
+
+                if (!studentId) return;
+
+                if (!studentMap[studentId]) {
+
+                    studentMap[studentId] = {
+                        name: user.name || st.name || "Student",
+                        classes: []
+                    };
+                }
+
+                /*
+                 * SUBJECTS, LANGUAGES AND ECA
+                 * Usually stored in the student assignment subdocument.
+                 */
+
+                const subjects = [
+                    ...toArray(st.subjects),
+                    ...toArray(st.subject)
+                ];
+
+                const languages = toArray(st.languages);
+
+                const eca = toArray(st.eca);
+
+                /*
+                 * Include period subject if available.
+                 */
+
+                if (item.subject) {
+                    subjects.push(item.subject);
+                }
+
+                studentMap[studentId].classes.push({
+
+                    className: item.className || "Other",
+
+                    subjects: subjects,
+
+                    languages: languages,
+
+                    eca: eca,
+
+                    day: item.day || "",
+
+                    time:
+                        (item.startTime || "") +
+                        " - " +
+                        (item.endTime || "")
+
+                });
+
+            });
+
+        });
+
+        window.allStudents = Object.entries(studentMap).map(
+            ([id, student]) => ({
+                id,
+                ...student
+            })
+        );
+
+        renderStudents();
+
+        console.log("Students loaded:", window.allStudents);
+
+    } catch (err) {
+
+        console.error("Student loading error:", err);
+
+        container.innerHTML =
+            "<p>Error loading students. Please refresh the page.</p>";
+
+    }
 }
 
-}
 
+/* RENDER GRADE-WISE STUDENTS */
 function renderStudents() {
 
     const container = document.getElementById("studentsContainer");
-    const search = document.getElementById("studentSearch")?.value
-        .trim()
-        .toLowerCase() || "";
+
+    const search =
+        document.getElementById("studentSearch")
+        ?.value.trim().toLowerCase() || "";
 
     const gradeGroups = {};
 
     window.allStudents.forEach(student => {
 
-        const matchingClasses = student.classes.filter(c =>
-            [
+        const matchingClasses = student.classes.filter(c => {
+
+            const searchableText = [
+
                 student.name,
+
                 c.className,
-                c.subject,
+
+                ...(c.subjects || []),
+
+                ...(c.languages || []),
+
+                ...(c.eca || []),
+
                 c.day,
+
                 c.time
-            ].join(" ").toLowerCase().includes(search)
-        );
+
+            ].join(" ").toLowerCase();
+
+            return searchableText.includes(search);
+
+        });
 
         matchingClasses.forEach(c => {
 
@@ -338,36 +433,49 @@ function renderStudents() {
             }
 
             if (!gradeGroups[grade][student.id]) {
-    gradeGroups[grade][student.id] = {
-        name: student.name,
-        subjects: new Set(),
-        languages: new Set(),
-        eca: new Set()
-    };
-}
 
-            (c.subjects || []).forEach(v =>
-    gradeGroups[grade][student.id].subjects.add(v)
-);
+                gradeGroups[grade][student.id] = {
 
-(c.languages || []).forEach(v =>
-    gradeGroups[grade][student.id].languages.add(v)
-);
+                    name: student.name,
 
-(c.eca || []).forEach(v =>
-    gradeGroups[grade][student.id].eca.add(v)
-);
+                    subjects: new Set(),
+
+                    languages: new Set(),
+
+                    eca: new Set()
+
+                };
+
+            }
+
+            const current = gradeGroups[grade][student.id];
+
+            (c.subjects || []).forEach(value => {
+                if (value) current.subjects.add(value);
+            });
+
+            (c.languages || []).forEach(value => {
+                if (value) current.languages.add(value);
+            });
+
+            (c.eca || []).forEach(value => {
+                if (value) current.eca.add(value);
+            });
+
         });
+
     });
 
     container.innerHTML = "";
 
-    const grades = Object.keys(gradeGroups).sort((a, b) =>
-        a.localeCompare(b, undefined, { numeric: true })
+    const grades = Object.keys(gradeGroups).sort(
+        (a, b) => a.localeCompare(b, undefined, { numeric: true })
     );
 
     if (grades.length === 0) {
+
         container.innerHTML = "<p>No matching students found.</p>";
+
         return;
     }
 
@@ -379,87 +487,117 @@ function renderStudents() {
 
         students.forEach(student => {
 
-            const subjectHTML = [...student.subjects].map(v =>
-    `<span class="tag">${v}</span>`
-).join("");
+            const subjectHTML = [...student.subjects].map(value =>
+                `<span class="tag">${value}</span>`
+            ).join("");
 
-const languageHTML = [...student.languages].map(v =>
-    `<span class="tag">${v}</span>`
-).join("");
+            const languageHTML = [...student.languages].map(value =>
+                `<span class="tag">${value}</span>`
+            ).join("");
 
-const ecaHTML = [...student.eca].map(v =>
-    `<span class="tag">${v}</span>`
-).join("");
+            const ecaHTML = [...student.eca].map(value =>
+                `<span class="tag">${value}</span>`
+            ).join("");
 
-studentsHTML += `
-    <div class="student-card">
-        <div class="student-name">
-            ${student.name}
-        </div>
+            studentsHTML += `
 
-        ${subjectHTML ? `
-            <div class="student-category">
-                <strong>Subjects:</strong> ${subjectHTML}
-            </div>
-        ` : ""}
+                <div class="student-card">
 
-        ${languageHTML ? `
-            <div class="student-category">
-                <strong>Languages:</strong> ${languageHTML}
-            </div>
-        ` : ""}
+                    <div class="student-name">
+                        ${student.name}
+                    </div>
 
-        ${ecaHTML ? `
-            <div class="student-category">
-                <strong>ECA:</strong> ${ecaHTML}
-            </div>
-        ` : ""}
-    </div>
-`;
+                    ${subjectHTML ? `
+                        <div class="student-category">
+                            <strong>Subjects:</strong>
+                            ${subjectHTML}
+                        </div>
+                    ` : ""}
+
+                    ${languageHTML ? `
+                        <div class="student-category">
+                            <strong>Languages:</strong>
+                            ${languageHTML}
+                        </div>
+                    ` : ""}
+
+                    ${ecaHTML ? `
+                        <div class="student-category">
+                            <strong>ECA:</strong>
+                            ${ecaHTML}
+                        </div>
+                    ` : ""}
+
+                    ${!subjectHTML && !languageHTML && !ecaHTML ? `
+                        <div class="student-category">
+                            No subject details available
+                        </div>
+                    ` : ""}
+
+                </div>
+
+            `;
+
         });
 
         container.innerHTML += `
+
             <div class="mobile-grade-heading">
+
                 <span>${grade}</span>
+
                 <span class="mobile-grade-count">
                     ${students.length} Students
                 </span>
+
             </div>
 
             ${studentsHTML}
+
         `;
+
     });
+
 }
 
-loadStudents();
-</script>
 
-<!-- ✅ ADD HERE -->
-<script>
-function go(page){
-    window.location.href = page;
-}
-
+/* BACK BUTTON */
 function goBackPage() {
+
     if (
         window.GPAAndroid &&
         typeof window.GPAAndroid.goBack === "function"
     ) {
+
         window.GPAAndroid.goBack();
+
     } else if (window.history.length > 1) {
+
         window.history.back();
+
     } else {
+
         window.location.href = "teacher-dashboard.html";
+
     }
+
 }
 
-function logout(){
+function go(page) {
+    window.location.href = page;
+}
+
+function logout() {
     sessionStorage.clear();
     window.location.replace("teacher-login.html");
 }
+
+
+/* START */
+loadStudents();
+
 </script>
 
-<!-- GPA notifications on the teacher periods page -->
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 <script src="messenger/chat/messengerWebNotifications.js"></script>
 <script src="messenger/chat/primaryUserChatSocket.js"></script>
