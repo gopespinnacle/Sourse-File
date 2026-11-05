@@ -48,6 +48,26 @@ body{
     border-radius:12px;
     margin-bottom:25px;
     box-shadow:0 3px 12px rgba(0,0,0,0.06);
+    display:flex;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.back-dashboard-btn{
+    background:#173b67;
+    color:white;
+    border:none;
+    padding:10px 16px;
+    border-radius:8px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+}
+
+.back-dashboard-btn:hover{
+    background:#0f2c50;
 }
 
 .topbar h2{
@@ -352,12 +372,21 @@ body{
 
     <div class="topbar">
 
-        <h2>
-            <i class="fa fa-clipboard-list"></i>
-            Daily Class Register
-        </h2>
+    <button
+        type="button"
+        class="back-dashboard-btn"
+        onclick="goBackToDashboard()"
+    >
+        <i class="fa fa-arrow-left"></i>
+        Back to Dashboard
+    </button>
 
-    </div>
+    <h2>
+        <i class="fa fa-clipboard-list"></i>
+        Daily Class Register
+    </h2>
+
+</div>
 
 
     <div class="register-card">
@@ -2035,6 +2064,19 @@ function escapeHtml(value){
 
 }
 
+
+function goBackToDashboard(){
+
+    if (
+        window.GPAAndroid &&
+        typeof window.GPAAndroid.goBack === "function"
+    ) {
+        window.GPAAndroid.goBack();
+    } else {
+        window.location.href = "teacher-dashboard.html";
+    }
+
+}
 
 /* =====================================================
    LOGOUT
