@@ -1292,6 +1292,221 @@ td{
     cursor: pointer;
     box-shadow: 0 3px 9px rgba(20,40,80,.07);
 }
+
+/* =========================================
+   GPA APPLY LEAVE — MOBILE CALENDAR DESIGN
+   Desktop remains unchanged
+========================================= */
+
+.mobile-week-days,
+.mobile-day-periods {
+    display: none;
+}
+
+@media screen and (max-width: 700px) {
+
+    /* Calendar card */
+    .calendar-card {
+        border-radius: 20px;
+        overflow: hidden;
+        background: #ffffff;
+        padding-bottom: 12px;
+    }
+
+    .calendar-toolbar {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 12px;
+    }
+
+    .calendar-toolbar-left {
+        display: flex;
+        gap: 7px;
+    }
+
+    .calendar-toolbar button {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        font-size: 16px;
+        background: #eaf0fb;
+        color: #102b5c;
+    }
+
+    .calendar-toolbar .today-btn {
+        width: auto !important;
+        padding: 0 12px;
+    }
+
+    .calendar-title {
+        width: 100%;
+        text-align: right;
+        font-size: 14px;
+        line-height: 1.4;
+        color: #10234b;
+    }
+
+    /* Hide old horizontally scrolling calendar */
+    #calendarGrid {
+        display: none !important;
+    }
+
+    /* Seven days in one row */
+    .mobile-week-days {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 5px;
+        padding: 12px 10px 16px;
+        background: #f5f8ff;
+    }
+
+    .mobile-day-button {
+        min-width: 0;
+        min-height: 72px;
+        border: 1px solid #e0e9f8;
+        border-radius: 14px;
+        background: #ffffff;
+        color: #263858;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: 6px 2px;
+        cursor: pointer;
+        box-shadow: 0 2px 7px rgba(30, 64, 120, .06);
+    }
+
+    .mobile-day-button span {
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .mobile-day-button strong {
+        font-size: 20px;
+        line-height: 1;
+    }
+
+    .mobile-day-button.today {
+        border-color: #8bb4ff;
+    }
+
+    .mobile-day-button.selected {
+        background: linear-gradient(145deg, #1744c9, #2878f2);
+        color: #ffffff;
+        border-color: #2364e8;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, .25);
+    }
+
+    /* Selected day's timetable */
+    .mobile-day-periods {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        padding: 8px 12px 14px;
+        background: #f5f8ff;
+    }
+
+    .mobile-period-card {
+        display: grid;
+        grid-template-columns: 39% 61%;
+        min-height: 64px;
+        overflow: hidden;
+        border: 1px solid #c9daf5;
+        border-radius: 15px;
+        background: #ffffff;
+        box-shadow: 0 3px 8px rgba(30, 64, 120, .10);
+        cursor: pointer;
+    }
+
+    .mobile-period-time {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 7px;
+        background: linear-gradient(135deg, #173dc2, #2879f3);
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.4;
+        text-align: center;
+    }
+
+    .mobile-period-info {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 4px;
+        padding: 8px 12px;
+        color: #122344;
+        min-width: 0;
+    }
+
+    .mobile-period-info strong {
+        font-size: 15px;
+    }
+
+    .mobile-period-info span {
+        font-size: 13px;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+    }
+
+    .mobile-period-info i {
+        margin-right: 5px;
+        color: #173da9;
+    }
+
+    .mobile-period-card.has-leave {
+        opacity: .72;
+        cursor: default;
+    }
+
+    .mobile-leave-status {
+        color: #15803d;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .mobile-no-periods {
+        text-align: center;
+        padding: 30px 12px;
+        color: #8290a6;
+        font-size: 14px;
+        background: #ffffff;
+        border-radius: 13px;
+    }
+
+    /* Leave history heading */
+    .history-card {
+        margin-top: 18px;
+        padding: 17px 13px;
+        border-radius: 19px;
+        background: #ffffff;
+        box-shadow: 0 4px 15px rgba(20, 40, 80, .08);
+    }
+
+    .history-card h2 {
+        font-size: 20px;
+        margin-bottom: 15px;
+        color: #10234b;
+    }
+
+    /* Keep history readable on mobile */
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .table-wrapper table {
+        min-width: 650px;
+    }
+}
+
+
+
 </style>
 
 </head>
@@ -1445,6 +1660,15 @@ td{
         </div>
 
 
+              </div>
+
+        <!-- MOBILE WEEK DATE SELECTOR -->
+        <div id="mobileWeekDays" class="mobile-week-days"></div>
+
+        <!-- MOBILE SELECTED DAY PERIODS -->
+        <div id="mobileDayPeriods" class="mobile-day-periods"></div>
+
+        <!-- DESKTOP WEEK CALENDAR -->
         <div
         id="calendarGrid"
         class="calendar-grid">
@@ -1886,6 +2110,9 @@ let leaves = [];
 
 let currentWeekStart =
 getMonday(new Date());
+
+let selectedCalendarDate =
+formatDate(new Date());
 
 let selectedPeriod = null;
 let selectedLeaveDate = null;
@@ -2524,9 +2751,152 @@ function renderCalendar(){
         );
 
     }
+    renderMobileWeek();
 
 }
 
+
+function renderMobileWeek() {
+
+    const daysContainer =
+        document.getElementById("mobileWeekDays");
+
+    const periodsContainer =
+        document.getElementById("mobileDayPeriods");
+
+    if (!daysContainer || !periodsContainer) return;
+
+    daysContainer.innerHTML = "";
+    periodsContainer.innerHTML = "";
+
+    const today = formatDate(new Date());
+
+    // Create all 7 days
+    for (let i = 0; i < 7; i++) {
+
+        const date = addDays(currentWeekStart, i);
+        const dateString = formatDate(date);
+
+        const dayButton = document.createElement("button");
+
+        dayButton.type = "button";
+        dayButton.className = "mobile-day-button";
+
+        if (dateString === selectedCalendarDate) {
+            dayButton.classList.add("selected");
+        }
+
+        if (dateString === today) {
+            dayButton.classList.add("today");
+        }
+
+        dayButton.innerHTML = `
+            <span>${date.toLocaleDateString("en-IN", {
+                weekday: "short"
+            })}</span>
+            <strong>${date.getDate()}</strong>
+        `;
+
+        dayButton.onclick = () => {
+            selectedCalendarDate = dateString;
+            renderMobileWeek();
+        };
+
+        daysContainer.appendChild(dayButton);
+    }
+
+    // Find periods for the selected date
+    const selectedDate = new Date(
+        selectedCalendarDate + "T00:00:00"
+    );
+
+    const selectedDayName =
+        selectedDate.toLocaleDateString("en-IN", {
+            weekday: "long"
+        });
+
+    const dayPeriods = periods.filter(
+        period => period.day === selectedDayName
+    );
+
+    if (dayPeriods.length === 0) {
+
+        periodsContainer.innerHTML = `
+            <div class="mobile-no-periods">
+                No periods scheduled for this day
+            </div>
+        `;
+
+        return;
+    }
+
+    dayPeriods.forEach(period => {
+
+        const card = document.createElement("div");
+        card.className = "mobile-period-card";
+
+        const leave = leaves.find(
+            l =>
+                l.periodAssignment &&
+                (
+                    l.periodAssignment._id ||
+                    l.periodAssignment
+                ).toString() === period._id.toString() &&
+                l.date === selectedCalendarDate &&
+                (
+                    l.status === "Pending" ||
+                    l.status === "Approved"
+                )
+        );
+
+        const subjects = [
+            ...(Array.isArray(period.subject)
+                ? period.subject
+                : period.subject ? [period.subject] : []),
+
+            ...(Array.isArray(period.language)
+                ? period.language
+                : period.language ? [period.language] : []),
+
+            ...(Array.isArray(period.eca)
+                ? period.eca
+                : period.eca ? [period.eca] : [])
+        ].join(", ") || "General";
+
+        card.innerHTML = `
+            <div class="mobile-period-time">
+                ${formatTime(period.startTime)} -
+                ${formatTime(period.endTime)}
+            </div>
+
+            <div class="mobile-period-info">
+                <strong>${period.className}</strong>
+                <span>
+                    <i class="fa-solid fa-book-open"></i>
+                    ${subjects}
+                </span>
+
+                ${leave ? `
+                    <small class="mobile-leave-status">
+                        ${leave.status === "Approved"
+                            ? "✓ Leave Approved"
+                            : "⏳ Leave Pending"}
+                    </small>
+                ` : ""}
+            </div>
+        `;
+
+        if (leave) {
+            card.classList.add("has-leave");
+        } else {
+            card.onclick = () => {
+                openLeaveModal(period, selectedDate);
+            };
+        }
+
+        periodsContainer.appendChild(card);
+    });
+}
 
 /* =========================================================
    OPEN MODAL
