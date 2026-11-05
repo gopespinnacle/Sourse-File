@@ -179,6 +179,15 @@
         font-size: 12px;
     }
 }
+
+
+@media screen and (max-width: 700px) {
+    .student-category {
+        margin-top: 8px;
+        color: #334155;
+        font-size: 13px;
+    }
+}
 </style>
 </head>
 
@@ -267,10 +276,13 @@ classes: []
 }
 
 studentMap[st._id].classes.push({
-className: item.className,
-subject: item.subject,
-day: item.day,
-time: item.startTime + " - " + item.endTime
+    className: item.className,
+    subjects: st.subjects || [],
+    languages: st.languages || [],
+    eca: st.eca || [],
+    subject: item.subject,
+    day: item.day,
+    time: item.startTime + " - " + item.endTime
 });
 
 });
@@ -326,15 +338,25 @@ function renderStudents() {
             }
 
             if (!gradeGroups[grade][student.id]) {
-                gradeGroups[grade][student.id] = {
-                    name: student.name,
-                    subjects: new Set()
-                };
-            }
+    gradeGroups[grade][student.id] = {
+        name: student.name,
+        subjects: new Set(),
+        languages: new Set(),
+        eca: new Set()
+    };
+}
 
-            if (c.subject) {
-                gradeGroups[grade][student.id].subjects.add(c.subject);
-            }
+            (c.subjects || []).forEach(v =>
+    gradeGroups[grade][student.id].subjects.add(v)
+);
+
+(c.languages || []).forEach(v =>
+    gradeGroups[grade][student.id].languages.add(v)
+);
+
+(c.eca || []).forEach(v =>
+    gradeGroups[grade][student.id].eca.add(v)
+);
         });
     });
 
@@ -357,20 +379,43 @@ function renderStudents() {
 
         students.forEach(student => {
 
-            const subjectHTML = [...student.subjects].map(subject =>
-                `<span class="tag">${subject}</span>`
-            ).join("");
+            const subjectHTML = [...student.subjects].map(v =>
+    `<span class="tag">${v}</span>`
+).join("");
 
-            studentsHTML += `
-                <div class="student-card">
-                    <div class="student-name">
-                        ${student.name}
-                    </div>
-                    <div class="student-subjects">
-                        ${subjectHTML || '<span class="tag">General</span>'}
-                    </div>
-                </div>
-            `;
+const languageHTML = [...student.languages].map(v =>
+    `<span class="tag">${v}</span>`
+).join("");
+
+const ecaHTML = [...student.eca].map(v =>
+    `<span class="tag">${v}</span>`
+).join("");
+
+studentsHTML += `
+    <div class="student-card">
+        <div class="student-name">
+            ${student.name}
+        </div>
+
+        ${subjectHTML ? `
+            <div class="student-category">
+                <strong>Subjects:</strong> ${subjectHTML}
+            </div>
+        ` : ""}
+
+        ${languageHTML ? `
+            <div class="student-category">
+                <strong>Languages:</strong> ${languageHTML}
+            </div>
+        ` : ""}
+
+        ${ecaHTML ? `
+            <div class="student-category">
+                <strong>ECA:</strong> ${ecaHTML}
+            </div>
+        ` : ""}
+    </div>
+`;
         });
 
         container.innerHTML += `
