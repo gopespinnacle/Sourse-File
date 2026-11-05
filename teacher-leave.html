@@ -913,6 +913,385 @@ td{
 
 }
 
+
+/* =========================================
+   GPA APPLY LEAVE — MOBILE UI UPGRADE
+   Desktop layout remains unchanged
+========================================= */
+
+@media screen and (max-width: 700px) {
+
+    body {
+        overflow-x: hidden;
+        background: #eef3fb;
+    }
+
+    /* TOP NAVIGATION */
+
+    .sidebar {
+        position: sticky !important;
+        top: 0;
+        width: 100% !important;
+        height: auto !important;
+        z-index: 1000;
+        background: #101b35;
+        box-shadow: 0 3px 12px rgba(0,0,0,.15);
+    }
+
+    .sidebar h2 {
+        padding: 15px 12px !important;
+        font-size: 20px;
+        text-align: center;
+    }
+
+    .sidebar ul {
+        display: flex !important;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 0;
+        margin: 0 !important;
+        padding: 0 5px 5px !important;
+        scrollbar-width: none;
+    }
+
+    .sidebar ul::-webkit-scrollbar {
+        display: none;
+    }
+
+    .sidebar li {
+        flex: 0 0 auto;
+        padding: 12px 14px !important;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    /* MAIN CONTENT */
+
+    .main {
+        width: 100%;
+        margin: 0 !important;
+        padding: 14px !important;
+    }
+
+    .page-header {
+        margin: 8px 0 18px;
+        gap: 5px;
+    }
+
+    .page-header h1 {
+        font-size: 25px;
+        color: #14264c;
+    }
+
+    .teacher-name {
+        font-size: 13px;
+        margin-top: 4px;
+    }
+
+    /* CALENDAR CONTAINER */
+
+    .calendar-card {
+        border-radius: 17px;
+        box-shadow: 0 5px 18px rgba(20,40,80,.09);
+    }
+
+    .calendar-toolbar {
+        padding: 14px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .calendar-toolbar-left {
+        gap: 8px;
+    }
+
+    .calendar-toolbar button {
+        width: 42px;
+        height: 42px;
+        border-radius: 11px;
+        background: #e8eef9;
+        color: #19376d;
+    }
+
+    .calendar-toolbar .today-btn {
+        width: auto !important;
+        padding: 0 15px;
+        font-weight: 700;
+    }
+
+    .calendar-title {
+        width: 100%;
+        text-align: center;
+        font-size: 17px;
+        color: #14264c;
+    }
+
+    /* WEEK CALENDAR — HORIZONTAL SWIPE */
+
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(145px, 1fr));
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: thin;
+        padding-bottom: 8px;
+    }
+
+    .day-column {
+        min-width: 145px;
+        min-height: 200px;
+        scroll-snap-align: start;
+        background: #f8faff;
+        border-right: 1px solid #e3eaf5;
+    }
+
+    .day-header {
+        padding: 13px 5px;
+        background: #f1f5fb;
+    }
+
+    .day-name {
+        font-size: 12px;
+    }
+
+    .day-date {
+        font-size: 21px;
+    }
+
+    .today .day-header {
+        background: #e3edff;
+    }
+
+    .period-area {
+        padding: 8px;
+    }
+
+    .period-card {
+        padding: 11px;
+        margin-bottom: 9px;
+        border-radius: 11px;
+        min-height: 76px;
+        box-shadow: 0 3px 9px rgba(37,99,235,.17);
+    }
+
+    .period-time {
+        font-size: 11px;
+        line-height: 1.4;
+    }
+
+    .period-class {
+        font-size: 14px;
+    }
+
+    .period-subject {
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    .period-leave {
+        font-size: 10px;
+    }
+
+    /* MY LEAVE REQUESTS */
+
+    .history-card {
+        margin-top: 18px;
+        padding: 16px 12px;
+        border-radius: 17px;
+        box-shadow: 0 5px 18px rgba(20,40,80,.08);
+    }
+
+    .history-card h2 {
+        font-size: 19px;
+        color: #14264c;
+        margin: 0 0 15px;
+    }
+
+    .table-wrapper {
+        overflow: visible;
+        width: 100%;
+    }
+
+    .table-wrapper table {
+        width: 100%;
+        min-width: 0 !important;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .table-wrapper thead {
+        display: none;
+    }
+
+    .table-wrapper tbody {
+        display: grid;
+        gap: 12px;
+    }
+
+    .table-wrapper tbody tr {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px 10px;
+        padding: 14px;
+        background: #fff;
+        border: 1px solid #e3eaf5;
+        border-radius: 14px;
+        box-shadow: 0 3px 10px rgba(20,40,80,.06);
+    }
+
+    .table-wrapper tbody td {
+        display: block;
+        min-width: 0;
+        padding: 0 !important;
+        border: 0 !important;
+        font-size: 12px;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+        color: #253653;
+    }
+
+    .table-wrapper tbody td::before {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 10px;
+        font-weight: 800;
+        color: #78869f;
+        text-transform: uppercase;
+        letter-spacing: .35px;
+    }
+
+    .table-wrapper tbody td:nth-child(1)::before {
+        content: "Date";
+    }
+
+    .table-wrapper tbody td:nth-child(2)::before {
+        content: "Day";
+    }
+
+    .table-wrapper tbody td:nth-child(3)::before {
+        content: "Period";
+    }
+
+    .table-wrapper tbody td:nth-child(4)::before {
+        content: "Class";
+    }
+
+    .table-wrapper tbody td:nth-child(5)::before {
+        content: "Subject";
+    }
+
+    .table-wrapper tbody td:nth-child(6)::before {
+        content: "Category";
+    }
+
+    .table-wrapper tbody td:nth-child(7)::before {
+        content: "Subcategory";
+    }
+
+    .table-wrapper tbody td:nth-child(8) {
+        grid-column: 1 / -1;
+    }
+
+    .table-wrapper tbody td:nth-child(8)::before {
+        content: "Compensation";
+    }
+
+    .table-wrapper tbody td:nth-child(9)::before {
+        content: "Status";
+    }
+
+    .status {
+        font-size: 11px;
+        padding: 6px 11px;
+    }
+
+    /* LEAVE APPLICATION POPUP */
+
+    .modal-overlay {
+        padding: 10px;
+    }
+
+    .modal {
+        width: 100%;
+        margin: 12px auto;
+        border-radius: 17px;
+        max-height: calc(100dvh - 24px);
+        overflow-y: auto;
+    }
+
+    .modal-header {
+        padding: 16px;
+    }
+
+    .modal-header h2 {
+        font-size: 18px;
+    }
+
+    .modal-body {
+        padding: 16px;
+    }
+
+    .period-details {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+        margin-bottom: 18px;
+    }
+
+    .detail-box {
+        padding: 10px;
+    }
+
+    .detail-value {
+        font-size: 12px;
+        overflow-wrap: anywhere;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group select,
+    .form-group input,
+    .form-group textarea {
+        min-height: 45px;
+        font-size: 14px;
+    }
+
+    .compensation-box {
+        padding: 13px;
+        margin-top: 15px;
+    }
+
+    .compensation-grid {
+        grid-template-columns: 1fr;
+        gap: 5px;
+    }
+
+    .submit-btn {
+        min-height: 48px;
+        margin-top: 12px;
+    }
+}
+
+.mobile-back-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 10px 17px;
+    margin: 4px 0 14px;
+    border: 1px solid #dbe5f5;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #19376d;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 3px 9px rgba(20,40,80,.07);
+}
 </style>
 
 </head>
@@ -990,6 +1369,10 @@ td{
 
 <div class="main">
 
+    <button class="mobile-back-btn" type="button" onclick="goBackPage()">
+        <i class="fa-solid fa-arrow-left"></i>
+        Back
+    </button>
 
     <div class="page-header">
 
@@ -2802,6 +3185,20 @@ function go(page){
     window.location.href =
     page;
 
+}
+
+
+function goBackPage() {
+    if (
+        window.GPAAndroid &&
+        typeof window.GPAAndroid.goBack === "function"
+    ) {
+        window.GPAAndroid.goBack();
+    } else if (window.history.length > 1) {
+        window.history.back();
+    } else {
+        window.location.href = "teacher-dashboard.html";
+    }
 }
 
 
