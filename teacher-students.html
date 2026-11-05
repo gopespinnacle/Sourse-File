@@ -450,17 +450,28 @@ function renderStudents() {
 
             const current = gradeGroups[grade][student.id];
 
-            (c.subjects || []).forEach(value => {
-                if (value) current.subjects.add(value);
-            });
+            function addUniqueValues(target, values) {
+    (values || []).flat(Infinity).forEach(value => {
 
-            (c.languages || []).forEach(value => {
-                if (value) current.languages.add(value);
-            });
+        if (typeof value !== "string") return;
 
-            (c.eca || []).forEach(value => {
-                if (value) current.eca.add(value);
-            });
+        const cleaned = value.trim();
+
+        if (!cleaned) return;
+
+        const alreadyExists = [...target].some(
+            existing => existing.toLowerCase() === cleaned.toLowerCase()
+        );
+
+        if (!alreadyExists) {
+            target.add(cleaned);
+        }
+    });
+}
+
+addUniqueValues(current.subjects, c.subjects);
+addUniqueValues(current.languages, c.languages);
+addUniqueValues(current.eca, c.eca);
 
         });
 
