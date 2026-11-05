@@ -496,7 +496,14 @@ tbody tr:last-child td{border-bottom:0}
 "use strict";
 
 const API_BASE = "https://academy-backend-eatl.onrender.com";
-const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+const token =
+    (window.GPAAndroid &&
+     typeof window.GPAAndroid.getToken === "function"
+        ? window.GPAAndroid.getToken()
+        : "") ||
+    localStorage.getItem("token") ||
+    sessionStorage.getItem("token") ||
+    "";
 let allRegisters = [];
 let visibleRows = [];
 
