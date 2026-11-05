@@ -371,7 +371,7 @@ async function handlePaste(e) {
     const hasRichHtml =
         /<(img|table|p|div|ul|ol|h[1-6])\b/i.test(html);
 
-    if (hasRichHtml) {
+    if (hasRichHtml && imageItems.length === 0) {
 
         setTimeout(() => {
             setupExistingImages();
@@ -536,6 +536,28 @@ function buildPreview(){
     return page;
 }
 
+
+async function waitForPreviewImages(root) {
+
+    const images = Array.from(root.querySelectorAll("img"));
+
+    await Promise.all(images.map(img => {
+
+        if (img.complete) return Promise.resolve();
+
+        return new Promise(resolve => {
+
+            const finish = () => resolve();
+
+            img.addEventListener("load", finish, { once: true });
+            img.addEventListener("error", finish, { once: true });
+
+            setTimeout(finish, 10000);
+        });
+    }));
+}
+
+
 async function generatePDF(){
  const topic=document.getElementById("topicInput").value.trim(),grade=document.getElementById("gradeSelect").value,editor=document.getElementById("editor");
  if(!topic){alert("Please enter the "+documentType.toLowerCase()+" topic.");return;}if(!grade){alert("Please select a mapped grade.");return;}
@@ -544,7 +566,10 @@ async function generatePDF(){
  try{
   setupExistingImages();resizePenCanvas();
   const page=buildPreview();
-  await document.fonts.ready;
+
+await waitForPreviewImages(page);
+
+await document.fonts.ready;
   await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
   const canvas=await html2canvas(page,{scale:2,backgroundColor:"#fff",useCORS:true,logging:false,allowTaint:true});
   const {jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
