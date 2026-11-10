@@ -132,7 +132,7 @@
     display: grid;
 
     grid-template-columns:
-        repeat(3, 1fr);
+        repeat(4, 1fr);
 
     gap: 15px;
 
@@ -546,6 +546,23 @@ fetch("sidebar.html")
             </div>
 
         </div>
+
+        
+<div class="summary-card">
+
+    <div class="summary-title">
+        Holiday Declarations
+    </div>
+
+    <div
+        class="summary-value"
+        id="holidayCount"
+    >
+        0
+    </div>
+
+</div>
+
 
 
     </div>
@@ -1154,6 +1171,8 @@ function renderRegister(
     let leaves =
         0;
 
+        let holidays = 0;
+
 
     registers.forEach(
         register => {
@@ -1188,20 +1207,62 @@ function renderRegister(
                 `${register.scheduledEndTime || "-"}`;
 
 
-            const isAbsent =
-                register.teacherStatus ===
-                "Absent";
+            const isHoliday =
+    register.registerType === "Holiday";
+
+const isAbsent =
+    register.teacherStatus === "Absent";
 
 
-            if (isAbsent) {
+if (isHoliday) {
 
-                leaves++;
+    holidays++;
 
-            } else {
+} else if (isAbsent) {
 
-                conducted++;
+    leaves++;
 
-            }
+} else {
+
+    conducted++;
+
+}
+
+/* =====================================
+   HOLIDAY DECLARATION
+===================================== */
+
+if (isHoliday) {
+
+    const row = document.createElement("tr");
+
+    const holidayReason =
+        register.holidayReason === "Other"
+            ? "Other: " + (register.holidayNote || "")
+            : register.holidayReason || "Holiday";
+
+    row.style.background = "#fff8e7";
+
+    row.innerHTML = `
+        <td>${date}</td>
+        <td>${time}</td>
+        <td>${escapeHtml(teacherName)}</td>
+        <td>${escapeHtml(teacherId)}</td>
+        <td>${escapeHtml(register.className || "-")}</td>
+        <td>${escapeHtml(register.subject || "-")}</td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+        <td>${escapeHtml(holidayReason)}</td>
+        <td style="color:#b45309;font-weight:700;">
+            Holiday
+        </td>
+    `;
+
+    tbody.appendChild(row);
+
+    return;
+}
 
 
             /* =====================================
@@ -1413,6 +1474,11 @@ function renderRegister(
         "leaveCount"
     ).innerText =
         leaves;
+
+        document.getElementById(
+    "holidayCount"
+).innerText =
+    holidays;
 
 
     if (!registers.length) {
@@ -1745,25 +1811,26 @@ doc.text(
     let teacherLeave =
         0;
 
+        let holidays = 0;
 
-    currentRegisters.forEach(
-        register => {
 
-            if (
-                register.teacherStatus ===
-                "Absent"
-            ) {
+    currentRegisters.forEach(register => {
 
-                teacherLeave++;
+    if (register.registerType === "Holiday") {
 
-            } else {
+        holidays++;
 
-                conducted++;
+    } else if (register.teacherStatus === "Absent") {
 
-            }
+        teacherLeave++;
 
-        }
-    );
+    } else {
+
+        conducted++;
+
+    }
+
+});
 
 
     doc.setFont(
@@ -1791,6 +1858,12 @@ doc.text(
         175,
         44
     );
+
+    doc.text(
+    `Holiday Declarations: ${holidays}`,
+    175,
+    50
+);
 
 
     /* =========================================
@@ -1845,6 +1918,37 @@ doc.text(
             const topic =
                 register.topicCovered ||
                 "-";
+
+
+                /* =================================
+   HOLIDAY DECLARATION
+================================= */
+
+if (register.registerType === "Holiday") {
+
+    const holidayReason =
+        register.holidayReason === "Other"
+            ? "Other: " + (register.holidayNote || "")
+            : register.holidayReason || "Holiday";
+
+    rows.push([
+
+        date,
+        time,
+        teacherName,
+        teacherId,
+        grade,
+        subject,
+        "-",
+        "-",
+        "-",
+        holidayReason,
+        "Holiday"
+
+    ]);
+
+    return;
+}
 
 
             /* =================================
@@ -1981,7 +2085,7 @@ doc.text(
 
     doc.autoTable({
 
-        startY: 50,
+        startY: 56,
 
         head: [[
 

@@ -471,10 +471,76 @@ body{
 
             </div>
 
+            <!-- REGISTER TYPE -->
+
+<div class="form-group full">
+    <label>Register Type</label>
+
+    <div style="display:flex; gap:20px; flex-wrap:wrap;">
+
+        <label>
+            <input
+                type="radio"
+                name="registerType"
+                value="Class"
+                checked
+                onchange="toggleRegisterType()"
+            >
+            Mark Attendance
+        </label>
+
+        <label>
+            <input
+                type="radio"
+                name="registerType"
+                value="Holiday"
+                onchange="toggleRegisterType()"
+            >
+            Declare Holiday
+        </label>
+
+    </div>
+</div>
+
+
+<!-- HOLIDAY DETAILS -->
+
+<div class="form-group full"
+     id="holidaySection"
+     style="display:none;">
+
+    <label>Holiday Reason</label>
+
+    <select id="holidayReason"
+            onchange="toggleHolidayNote()">
+
+        <option value="">Select Holiday Reason</option>
+        <option value="Weekly Off">Weekly Off</option>
+        <option value="Festival Holiday">Festival Holiday</option>
+        <option value="Regional Holiday">Regional Holiday</option>
+        <option value="Religious Holiday">Religious Holiday</option>
+        <option value="Other">Other</option>
+
+    </select>
+
+    <div id="holidayNoteSection"
+         style="display:none; margin-top:12px;">
+
+        <label>Enter Holiday Reason</label>
+
+        <textarea
+            id="holidayNote"
+            placeholder="Enter the reason for this holiday">
+        </textarea>
+
+    </div>
+
+</div>
+
 
             <!-- START TIME -->
 
-            <div class="form-group">
+            <div class="form-group" id="classTimeSection">
 
                 <label>
                     Start Time
@@ -490,7 +556,7 @@ body{
 
             <!-- END TIME -->
 
-            <div class="form-group">
+            <div class="form-group" id="classEndTimeSection">
 
                 <label>
                     End Time
@@ -507,7 +573,7 @@ body{
             <!-- TOPIC -->
 
             
-<div class="form-group full">
+<div class="form-group full" id="topicSection">
     <label>Topics Covered — By Subject</label>
     <div id="subjectTopicsContainer"
          style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:15px;">
@@ -517,7 +583,7 @@ body{
 
             <!-- TEACHER STATUS -->
 
-<div class="form-group">
+<div class="form-group" id="teacherStatusSection">
 
     <label>
         Teacher Status
@@ -540,7 +606,7 @@ body{
              STUDENTS
              ================================================= -->
 
-        <div class="student-section">
+        <div class="student-section" id="studentSection">
 
             <h3>
                 Assigned Students
@@ -661,6 +727,74 @@ if (!token || role.toLowerCase() !== "teacher") {
 let classData = [];
 
 let selectedClass = null;
+
+/* =====================================================
+   REGISTER TYPE SWITCHING
+   ===================================================== */
+
+function toggleRegisterType() {
+
+    const registerType = document.querySelector(
+        'input[name="registerType"]:checked'
+    )?.value || "Class";
+
+    const isHoliday = registerType === "Holiday";
+
+    // Holiday reason section
+    document.getElementById("holidaySection").style.display =
+        isHoliday ? "block" : "none";
+
+    // Hide normal class fields during holiday declaration
+    document.getElementById("classTimeSection").style.display =
+        isHoliday ? "none" : "";
+
+    document.getElementById("classEndTimeSection").style.display =
+        isHoliday ? "none" : "";
+
+    document.getElementById("topicSection").style.display =
+        isHoliday ? "none" : "";
+
+    document.getElementById("teacherStatusSection").style.display =
+        isHoliday ? "none" : "";
+
+    document.getElementById("studentSection").style.display =
+        isHoliday ? "none" : "";
+
+    document.querySelector(".attendance-section").style.display =
+    (isHoliday ||
+     document.getElementById("teacherStatus").value === "Absent")
+        ? "none"
+        : "";
+
+    // Update save button text
+    document.getElementById("saveBtn").innerHTML = isHoliday
+        ? '<i class="fa fa-calendar"></i> Declare Holiday'
+        : '<i class="fa fa-save"></i> Save Class';
+
+    // Reset holiday fields when switching back to Class
+    if (!isHoliday) {
+        document.getElementById("holidayReason").value = "";
+        document.getElementById("holidayNote").value = "";
+        document.getElementById("holidayNoteSection").style.display = "none";
+    }
+}
+
+
+/* =====================================================
+   HOLIDAY REASON
+   ===================================================== */
+
+function toggleHolidayNote() {
+
+    const reason = document.getElementById("holidayReason").value;
+
+    document.getElementById("holidayNoteSection").style.display =
+        reason === "Other" ? "block" : "none";
+
+    if (reason !== "Other") {
+        document.getElementById("holidayNote").value = "";
+    }
+}
 
 
 /* =====================================================
@@ -1615,6 +1749,147 @@ const topic = subjectTopics
         return;
 
     }
+
+    /* =================================================
+   HOLIDAY DECLARATION
+   ================================================= */
+
+const registerType = document.querySelector(
+    'input[name="registerType"]:checked'
+)?.value || "Class";
+
+if (registerType === "Holiday") {
+
+    const holidayReason =
+        document.getElementById("holidayReason").value;
+
+    const holidayNote =
+        document.getElementById("holidayNote").value.trim();
+
+    if (!holidayReason) {
+        showMessage(
+            "Please select a holiday reason.",
+            "error"
+        );
+        return;
+    }
+
+    if (holidayReason === "Other" && !holidayNote) {
+        showMessage(
+            "Please enter the holiday reason.",
+            "error"
+        );
+        return;
+    }
+
+    // Get subjects and activities directly from the selected schedule
+    const scheduleSubjects = [
+        ...getScheduleOptions(selectedClass.subject),
+        ...getScheduleOptions(selectedClass.language),
+        ...getScheduleOptions(selectedClass.eca)
+    ];
+
+    const holidaySubject = [
+        ...new Set(scheduleSubjects)
+    ].join(", ") || "General";
+
+    const saveButton =
+        document.getElementById("saveBtn");
+
+    saveButton.disabled = true;
+    saveButton.innerHTML = `
+        <i class="fa fa-spinner fa-spin"></i>
+        Saving...
+    `;
+
+    try {
+
+        const response = await fetch(
+            `${API_BASE}/api/teacher/daily-class-register`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+
+                body: JSON.stringify({
+
+                    periodAssignmentId:
+                        selectedClass.periodId,
+
+                    date: date,
+
+                    className:
+                        selectedClass.className,
+
+                    subject: holidaySubject,
+
+                    scheduledStartTime:
+                        selectedClass.startTime,
+
+                    scheduledEndTime:
+                        selectedClass.endTime,
+
+                    actualStartTime: "",
+                    actualEndTime: "",
+
+                    registerType: "Holiday",
+
+                    holidayReason: holidayReason,
+
+                    holidayNote:
+                        holidayReason === "Other"
+                            ? holidayNote
+                            : "",
+
+                    topicCovered: "",
+                    students: []
+
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                result.message ||
+                "Unable to declare holiday."
+            );
+        }
+
+        showMessage(
+            result.message || "Holiday declaration saved successfully.",
+            "info"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Holiday declaration error:",
+            error
+        );
+
+        showMessage(
+            error.message || "Unable to declare holiday.",
+            "error"
+        );
+
+    } finally {
+
+        saveButton.disabled = false;
+
+        saveButton.innerHTML = `
+            <i class="fa fa-calendar"></i>
+            Declare Holiday
+        `;
+
+    }
+
+    return;
+}
 
 
     /* =================================================
