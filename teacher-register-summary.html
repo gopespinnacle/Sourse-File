@@ -812,6 +812,21 @@ const subject = scheduleSubjects.length
     ? [...new Set(scheduleSubjects)].join(", ")
     : register.subject || "—";
 
+    const isHoliday = register.registerType === "Holiday";
+
+const holidayLabel =
+    register.holidayReason === "Other"
+        ? "Other: " + (register.holidayNote || "")
+        : register.holidayReason || "Holiday";
+
+const topicDisplay = isHoliday
+    ? holidayLabel
+    : (register.topicCovered || "—");
+
+const statusDisplay = isHoliday
+    ? "Holiday"
+    : (register.teacherStatus || "—");
+
 return [
     formatDate(register.date),
     `${formatTime(start)} - ${formatTime(end)}`,
@@ -820,8 +835,8 @@ return [
       student?.studentName || student?.student?.name || (student ? "Student" : "No student entries"),
       student?.studentId || "—",
       student?.attendance || "—",
-      register.topicCovered || "—",
-      register.teacherStatus || "—"
+      topicDisplay,
+statusDisplay
     ];
   });
   doc.autoTable({
