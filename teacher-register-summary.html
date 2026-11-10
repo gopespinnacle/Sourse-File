@@ -699,6 +699,20 @@ const subject = register.subject ||
     const teacher = teacherStatus(register);
     const attendanceClass = attendance === "present" ? "status-present" : attendance === "absent" ? "status-absent" : "status-neutral";
     const teacherClass = teacher === "present" ? "status-present" : teacher === "absent" ? "status-absent" : "status-neutral";
+    const isHoliday = register.registerType === "Holiday";
+
+const holidayLabel =
+    register.holidayReason === "Other"
+        ? "Other: " + (register.holidayNote || "")
+        : register.holidayReason || "Holiday";
+
+const topicDisplay = isHoliday
+    ? holidayLabel
+    : (register.topicCovered || "—");
+
+const statusDisplay = isHoliday
+    ? "Holiday"
+    : (register.teacherStatus || "Not recorded");
     const studentName = student ? (student.studentName || student.student?.name || "Student") : "No student entries";
     const studentId = student ? (student.studentId || student.student?.studentId || "—") : "—";
     return `<tr>
@@ -710,13 +724,17 @@ const subject = register.subject ||
       <td><div class="student-id">${escapeHtml(studentId)}</div></td>
       <td><span class="status-pill ${attendanceClass}">${escapeHtml(student?.attendance || "Not recorded")}</span></td>
       <td>
-  <div class="topic">
-    ${escapeHtml(register.topicCovered || "—")
-      .replace(/(Maths|Science|Social Science|English|Tamil|Phonics|ECA):/gi, "<br>$1:")
-      .replace(/^<br>/, "")}
-  </div>
+    <div class="topic">
+        ${escapeHtml(topicDisplay)
+            .replace(/(Maths|Science|Social Science|English|Tamil|Phonics|ECA):/gi, "<br>$1:")
+            .replace(/^<br>/, "")}
+    </div>
 </td>
-      <td><span class="status-pill ${teacherClass}">${escapeHtml(register.teacherStatus || "Not recorded")}</span></td>
+      <td>
+    <span class="status-pill ${isHoliday ? "status-neutral" : teacherClass}">
+        ${escapeHtml(statusDisplay)}
+    </span>
+</td>
     </tr>`;
   }).join("");
 }
