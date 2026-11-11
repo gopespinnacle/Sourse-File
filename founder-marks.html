@@ -263,24 +263,58 @@ td input {
 
         <div class="grid">
 
-            <div class="field">
-                <label>Assessment Title</label>
-                <input id="title" type="text"
-                    placeholder="Example: Weekly Test 1">
-            </div>
+            
+<div class="field">
+    <label>Assessment Title</label>
+    <select id="title">
+        <option value="">Select Assessment Title</option>
+        <optgroup label="Periodic Assessment">
+            <option value="Periodic Assessment - 1">Periodic Assessment - 1</option>
+            <option value="Periodic Assessment - 2">Periodic Assessment - 2</option>
+            <option value="Periodic Assessment - 3">Periodic Assessment - 3</option>
+            <option value="Periodic Assessment - 4">Periodic Assessment - 4</option>
+            <option value="Periodic Assessment - 5">Periodic Assessment - 5</option>
+        </optgroup>
+        <optgroup label="Weekly Assessment">
+            <option value="Weekly Assessment - 1">Weekly Assessment - 1</option>
+            <option value="Weekly Assessment - 2">Weekly Assessment - 2</option>
+            <option value="Weekly Assessment - 3">Weekly Assessment - 3</option>
+            <option value="Weekly Assessment - 4">Weekly Assessment - 4</option>
+            <option value="Weekly Assessment - 5">Weekly Assessment - 5</option>
+        </optgroup>
+    </select>
+</div>
 
-            <div class="field">
-                <label>Class / Grade</label>
-                <input id="className" type="text"
-                    placeholder="Example: Grade 8">
-            </div>
+<div class="field">
+    <label>Class / Grade</label>
+    <select id="className">
+        <option value="">Select Class / Grade</option>
+        <option value="LKG">LKG</option>
+        <option value="Pre. KG">Pre. KG</option>
+        <option value="Grade - 1">Grade - 1</option>
+        <option value="Grade - 2">Grade - 2</option>
+        <option value="Grade - 3">Grade - 3</option>
+        <option value="Grade - 4">Grade - 4</option>
+        <option value="Grade - 5">Grade - 5</option>
+        <option value="Grade - 6">Grade - 6</option>
+        <option value="Grade - 7">Grade - 7</option>
+        <option value="Grade - 8">Grade - 8</option>
+        <option value="Grade - 9">Grade - 9</option>
+        <option value="Grade - 10">Grade - 10</option>
+        <option value="Grade - 11">Grade - 11</option>
+        <option value="Grade - 12">Grade - 12</option>
+    </select>
+</div>
 
-            <div class="field">
-                <label>Subject</label>
-                <input id="subject" type="text"
-                    placeholder="Example: Science">
-            </div>
+<div class="field">
+    <label>Subject</label>
+    <select id="subject" disabled>
+        <option value="">Select Class First</option>
+    </select>
+</div>
 
+
+           
             <div class="field">
                 <label>Total Marks</label>
                 <input id="totalMarks" type="number"
@@ -519,6 +553,74 @@ async function loadAssessments() {
 }
 
 
+async function loadSubjectsForGrade() {
+
+    const className =
+        document.getElementById("className").value;
+
+    const subjectSelect =
+        document.getElementById("subject");
+
+    subjectSelect.innerHTML =
+        '<option value="">Loading subjects...</option>';
+
+    subjectSelect.disabled = true;
+
+    if (!className) {
+        subjectSelect.innerHTML =
+            '<option value="">Select Class First</option>';
+        return;
+    }
+
+    try {
+
+        const data = await apiRequest(
+            "/founder/subjects?className=" +
+            encodeURIComponent(className)
+        );
+
+        subjectSelect.innerHTML = "";
+
+        const first = document.createElement("option");
+        first.value = "";
+        first.textContent = "Select Subject";
+
+        subjectSelect.appendChild(first);
+
+        (data.subjects || []).forEach(subject => {
+
+            const option = document.createElement("option");
+
+            option.value = subject;
+            option.textContent = subject;
+
+            subjectSelect.appendChild(option);
+
+        });
+
+        subjectSelect.disabled = false;
+
+        if (!data.subjects || !data.subjects.length) {
+            subjectSelect.innerHTML =
+                '<option value="">No scheduled subjects found</option>';
+            subjectSelect.disabled = true;
+        }
+
+    } catch (error) {
+
+        subjectSelect.innerHTML =
+            '<option value="">Unable to load subjects</option>';
+
+        showMessage(
+            "createMessage",
+            error.message,
+            "error"
+        );
+
+    }
+}
+
+
 // ======================================================
 // CREATE ASSESSMENT
 // ======================================================
@@ -541,16 +643,14 @@ async function createAssessment() {
     const date =
         document.getElementById("assessmentDate").value;
 
-    if (!title || !className || !subject || !totalMarks) {
-
-        showMessage(
-            "createMessage",
-            "Please complete the title, class, subject and total marks.",
-            "error"
-        );
-
-        return;
-    }
+  if (!title || !className || !subject || !totalMarks) {
+    showMessage(
+        "createMessage",
+        "Please select assessment title, class, subject and enter total marks.",
+        "error"
+    );
+    return;
+}
 
     if (!Number.isFinite(totalMarks) || totalMarks <= 0) {
 
@@ -931,6 +1031,9 @@ async function saveMarks(studentId, button) {
 // ======================================================
 
 document.addEventListener("DOMContentLoaded", initializePage);
+
+document.getElementById("className")
+    .addEventListener("change", loadSubjectsForGrade);
 
 document.getElementById("assessmentSelect")
     .addEventListener("change", loadStudentsForAssessment);
