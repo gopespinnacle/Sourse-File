@@ -243,6 +243,19 @@ td input {
         padding: 16px;
     }
 }
+
+
+.delete-btn {
+    padding: 7px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.delete-btn:hover {
+    background: #b91c1c !important;
+}
 </style>
 </head>
 
@@ -843,8 +856,23 @@ async function loadStudentsForAssessment() {
             status.className = "status";
             status.id = "status-" + student._id;
 
-            actionCell.appendChild(saveButton);
-            actionCell.appendChild(status);
+            const deleteButton = document.createElement("button");
+
+deleteButton.textContent = "Delete";
+deleteButton.className = "delete-btn";
+deleteButton.style.background = "#dc2626";
+deleteButton.style.color = "#fff";
+deleteButton.style.marginLeft = "8px";
+deleteButton.style.display = "none";
+
+deleteButton.onclick = () => deleteMarks(
+    student._id,
+    deleteButton
+);
+
+actionCell.appendChild(saveButton);
+actionCell.appendChild(deleteButton);
+actionCell.appendChild(status);
 
             row.appendChild(numberCell);
             row.appendChild(nameCell);
@@ -900,11 +928,14 @@ async function loadStudentsForAssessment() {
 
             const row = input.closest("tr");
 
-            const saveButton = row.querySelector("button");
+            const saveButton = row.querySelector(".save-btn");
+const deleteButton = row.querySelector(".delete-btn");
 
             input.value = savedMark.marksObtained;
 
             saveButton.textContent = "Saved";
+
+            deleteButton.style.display = "inline-block";
 
             status.textContent = "Previously saved";
 
@@ -1027,6 +1058,74 @@ async function saveMarks(studentId, button) {
 
     }
 
+}
+
+
+
+// ======================================================
+// DELETE FOUNDER MARKS
+// ======================================================
+
+async function deleteMarks(studentId, button) {
+
+    if (!selectedAssessment) return;
+
+    const confirmed = confirm(
+        "Are you sure you want to permanently delete this student's marks?"
+    );
+
+    if (!confirmed) return;
+
+    button.disabled = true;
+    button.textContent = "Deleting...";
+
+    try {
+
+        const data = await apiRequest(
+            "/founder/assessments/" +
+            selectedAssessment._id +
+            "/marks/" +
+            studentId,
+            {
+                method: "DELETE"
+            }
+        );
+
+        document.getElementById(
+            "marks-" + studentId
+        ).value = "";
+
+        const row = button.closest("tr");
+
+        const saveButton = row.querySelector(".save-btn");
+
+        saveButton.textContent = "Save";
+
+        button.style.display = "none";
+
+        const status = document.getElementById(
+            "status-" + studentId
+        );
+
+        status.textContent = "Marks deleted successfully";
+        status.style.color = "#dc2626";
+
+        showMessage(
+            "marksMessage",
+            data.message,
+            "success"
+        );
+
+    } catch (error) {
+
+        alert(error.message);
+        button.textContent = "Delete";
+
+    } finally {
+
+        button.disabled = false;
+
+    }
 }
 
 
