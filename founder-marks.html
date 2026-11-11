@@ -306,12 +306,17 @@ td input {
     </select>
 </div>
 
+
 <div class="field">
     <label>Subject</label>
-    <select id="subject" disabled>
-        <option value="">Select Class First</option>
-    </select>
+    <input
+        id="subject"
+        type="text"
+        placeholder="Enter subject name"
+        autocomplete="off"
+    >
 </div>
+
 
 
            
@@ -1032,8 +1037,7 @@ async function saveMarks(studentId, button) {
 
 document.addEventListener("DOMContentLoaded", initializePage);
 
-document.getElementById("className")
-    .addEventListener("change", loadSubjectsForGrade);
+
 
 document.getElementById("assessmentSelect")
     .addEventListener("change", loadStudentsForAssessment);
