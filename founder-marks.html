@@ -307,15 +307,14 @@ td input {
 </div>
 
 
+
 <div class="field">
-    <label>Subject</label>
-    <input
-        id="subject"
-        type="text"
-        placeholder="Enter subject name"
-        autocomplete="off"
-    >
+    <label>Subject / ECA / Language</label>
+    <select id="subject">
+        <option value="">Loading categories...</option>
+    </select>
 </div>
+
 
 
 
@@ -1041,6 +1040,84 @@ document.addEventListener("DOMContentLoaded", initializePage);
 
 document.getElementById("assessmentSelect")
     .addEventListener("change", loadStudentsForAssessment);
+
+
+
+async function loadAllAssessmentCategories() {
+
+    const select = document.getElementById("subject");
+
+    select.innerHTML =
+        '<option value="">Loading categories...</option>';
+
+    try {
+
+        const baseURL =
+            "https://academy-backend-eatl.onrender.com/api/founder/categories/";
+
+        const [subjectRes, ecaRes, languageRes] =
+            await Promise.all([
+                fetch(baseURL + "subject"),
+                fetch(baseURL + "eca"),
+                fetch(baseURL + "language")
+            ]);
+
+        if (!subjectRes.ok || !ecaRes.ok || !languageRes.ok) {
+            throw new Error("Unable to retrieve academy categories.");
+        }
+
+        const [subjectData, ecaData, languageData] =
+            await Promise.all([
+                subjectRes.json(),
+                ecaRes.json(),
+                languageRes.json()
+            ]);
+
+        select.innerHTML =
+            '<option value="">Select Subject / ECA / Language</option>';
+
+        function addGroup(label, items) {
+
+            const group = document.createElement("optgroup");
+            group.label = label;
+
+            (items || []).forEach(item => {
+
+                if (!item.name) return;
+
+                const option = document.createElement("option");
+
+                option.value = item.name;
+                option.textContent = item.name;
+
+                group.appendChild(option);
+
+            });
+
+            if (group.children.length) {
+                select.appendChild(group);
+            }
+        }
+
+        addGroup("SUBJECTS", subjectData.data);
+        addGroup("ECA", ecaData.data);
+        addGroup("LANGUAGE", languageData.data);
+
+    } catch (error) {
+
+        console.error("ASSESSMENT CATEGORY ERROR:", error);
+
+        select.innerHTML =
+            '<option value="">Unable to load categories</option>';
+
+        showMessage(
+            "createMessage",
+            error.message,
+            "error"
+        );
+    }
+}
+loadAllAssessmentCategories();
 
 </script>
 
