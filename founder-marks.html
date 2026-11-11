@@ -752,6 +752,63 @@ async function loadStudentsForAssessment() {
 
         });
 
+
+        // ==============================================
+        // LOAD PREVIOUSLY SAVED MARKS
+        // ==============================================
+
+        const savedData = await apiRequest(
+            "/founder/assessments/" +
+            assessmentId +
+            "/marks"
+        );
+
+        const savedMarksMap = new Map();
+
+        (savedData.marks || []).forEach(mark => {
+
+            const student = mark.studentId;
+
+            if (!student) return;
+
+            savedMarksMap.set(
+                String(student._id),
+                mark
+            );
+
+        });
+
+        filteredStudents.forEach(student => {
+
+            const savedMark = savedMarksMap.get(
+                String(student._id)
+            );
+
+            if (!savedMark) return;
+
+            const input = document.getElementById(
+                "marks-" + student._id
+            );
+
+            const status = document.getElementById(
+                "status-" + student._id
+            );
+
+            const row = input.closest("tr");
+
+            const saveButton = row.querySelector("button");
+
+            input.value = savedMark.marksObtained;
+
+            saveButton.textContent = "Saved";
+
+            status.textContent = "Previously saved";
+
+            status.style.color = "#15803d";
+
+        });
+
+
         showMessage(
             "marksMessage",
             filteredStudents.length + " students loaded.",
