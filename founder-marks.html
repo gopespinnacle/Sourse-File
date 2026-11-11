@@ -1,0 +1,884 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Founder | Marks Management - Gopes Pinnacle Academy</title>
+
+<style>
+:root {
+    --navy: #123a63;
+    --blue: #1d5b91;
+    --bg: #f3f6fa;
+    --white: #ffffff;
+    --text: #263445;
+    --muted: #718096;
+    --border: #e2e8f0;
+    --green: #15803d;
+    --red: #dc2626;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+header {
+    background: var(--navy);
+    color: white;
+    padding: 20px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+header h1 {
+    font-size: 21px;
+    margin: 0;
+}
+
+header a {
+    color: white;
+    text-decoration: none;
+    background: rgba(255,255,255,.14);
+    padding: 10px 15px;
+    border-radius: 7px;
+}
+
+main {
+    max-width: 1250px;
+    margin: 25px auto;
+    padding: 0 18px;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: 0 3px 14px rgba(0,0,0,.05);
+}
+
+h2 {
+    margin: 0 0 18px;
+    color: var(--navy);
+    font-size: 20px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.field label {
+    display: block;
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 7px;
+}
+
+input, select {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    font-size: 14px;
+    background: white;
+}
+
+input:focus, select:focus {
+    outline: 2px solid #bfdbfe;
+    border-color: var(--blue);
+}
+
+button {
+    border: 0;
+    border-radius: 7px;
+    padding: 11px 17px;
+    background: var(--navy);
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+button:hover {
+    background: var(--blue);
+}
+
+button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+.primary {
+    margin-top: 18px;
+}
+
+.secondary {
+    background: #475569;
+}
+
+.message {
+    display: none;
+    padding: 12px;
+    margin: 15px 0;
+    border-radius: 7px;
+    font-size: 14px;
+}
+
+.message.success {
+    display: block;
+    background: #dcfce7;
+    color: #166534;
+}
+
+.message.error {
+    display: block;
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.toolbar {
+    display: flex;
+    gap: 12px;
+    align-items: end;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.toolbar .field {
+    flex: 1;
+    min-width: 200px;
+}
+
+.stats {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.stat {
+    background: #eff6ff;
+    color: var(--navy);
+    padding: 12px 17px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 650px;
+}
+
+th, td {
+    padding: 13px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+th {
+    background: #edf3f9;
+    color: var(--navy);
+    font-size: 13px;
+}
+
+td {
+    font-size: 14px;
+}
+
+td input {
+    max-width: 120px;
+}
+
+.save-btn {
+    padding: 8px 13px;
+    background: var(--green);
+}
+
+.save-btn:hover {
+    background: #166534;
+}
+
+.status {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.empty {
+    text-align: center;
+    padding: 30px;
+    color: var(--muted);
+}
+
+@media(max-width: 750px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    header {
+        padding: 16px;
+    }
+
+    main {
+        padding: 0 12px;
+    }
+
+    .card {
+        padding: 16px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Gopes Pinnacle Academy | Marks Management</h1>
+    <a href="founder-dashboard.html">← Founder Dashboard</a>
+</header>
+
+<main>
+
+    <!-- CREATE ASSESSMENT -->
+
+    <section class="card">
+
+        <h2>Create New Assessment</h2>
+
+        <div class="grid">
+
+            <div class="field">
+                <label>Assessment Title</label>
+                <input id="title" type="text"
+                    placeholder="Example: Weekly Test 1">
+            </div>
+
+            <div class="field">
+                <label>Class / Grade</label>
+                <input id="className" type="text"
+                    placeholder="Example: Grade 8">
+            </div>
+
+            <div class="field">
+                <label>Subject</label>
+                <input id="subject" type="text"
+                    placeholder="Example: Science">
+            </div>
+
+            <div class="field">
+                <label>Total Marks</label>
+                <input id="totalMarks" type="number"
+                    min="1" placeholder="100">
+            </div>
+
+            <div class="field">
+                <label>Exam Duration (minutes)</label>
+                <input id="examDuration" type="number"
+                    min="1" placeholder="60">
+            </div>
+
+            <div class="field">
+                <label>Assessment Date</label>
+                <input id="assessmentDate" type="date">
+            </div>
+
+        </div>
+
+        <button class="primary" id="createBtn"
+            onclick="createAssessment()">
+            Create Assessment
+        </button>
+
+        <div id="createMessage" class="message"></div>
+
+    </section>
+
+
+    <!-- MARKS ENTRY -->
+
+    <section class="card">
+
+        <h2>Enter Student Marks</h2>
+
+        <div class="toolbar">
+
+            <div class="field">
+                <label>Select Assessment</label>
+                <select id="assessmentSelect">
+                    <option value="">Loading assessments...</option>
+                </select>
+            </div>
+
+            <button class="secondary"
+                onclick="loadStudentsForAssessment()">
+                Load Students
+            </button>
+
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                Students: <span id="studentCount">0</span>
+            </div>
+
+            <div class="stat">
+                Maximum Marks: <span id="maximumMarks">-</span>
+            </div>
+        </div>
+
+        <div id="marksMessage" class="message"></div>
+
+        <div class="table-wrap">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>S.No.</th>
+                        <th>Student Name</th>
+                        <th>Student ID</th>
+                        <th>Marks Obtained</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="studentTable">
+                    <tr>
+                        <td colspan="5" class="empty">
+                            Select an assessment to load students.
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+// ======================================================
+// CONFIGURATION
+// ======================================================
+
+const API = "https://academy-backend-eatl.onrender.com/api/marks";
+
+const token = localStorage.getItem("token");
+
+let students = [];
+let assessments = [];
+let selectedAssessment = null;
+
+
+// ======================================================
+// AUTHENTICATION CHECK
+// ======================================================
+
+if (!token) {
+    alert("Founder login required.");
+    window.location.href = "founder-login.html";
+}
+
+
+// ======================================================
+// COMMON API REQUEST
+// ======================================================
+
+async function apiRequest(url, options = {}) {
+
+    const response = await fetch(API + url, {
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+            ...(options.headers || {})
+        }
+    });
+
+    const data = await response.json();
+
+    if (response.status === 401 || response.status === 403) {
+        throw new Error(data.message || "Access denied.");
+    }
+
+    if (!response.ok) {
+        throw new Error(data.message || "Request failed.");
+    }
+
+    return data;
+}
+
+
+// ======================================================
+// MESSAGE DISPLAY
+// ======================================================
+
+function showMessage(elementId, message, type) {
+
+    const element = document.getElementById(elementId);
+
+    element.textContent = message;
+    element.className = "message " + type;
+
+}
+
+
+// ======================================================
+// LOAD INITIAL DATA
+// ======================================================
+
+async function initializePage() {
+
+    try {
+
+        await Promise.all([
+            loadAssessments(),
+            loadStudents()
+        ]);
+
+    } catch (error) {
+
+        showMessage(
+            "marksMessage",
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+// ======================================================
+// LOAD STUDENTS
+// ======================================================
+
+async function loadStudents() {
+
+    const data = await apiRequest("/founder/students");
+
+    students = data.students || [];
+
+    return students;
+}
+
+
+// ======================================================
+// LOAD ASSESSMENTS
+// ======================================================
+
+async function loadAssessments() {
+
+    const data = await apiRequest("/founder/assessments");
+
+    assessments = data.assessments || [];
+
+    const select = document.getElementById("assessmentSelect");
+
+    select.innerHTML = "";
+
+    const first = document.createElement("option");
+    first.value = "";
+    first.textContent = "Select Assessment";
+    select.appendChild(first);
+
+    assessments.forEach(assessment => {
+
+        const option = document.createElement("option");
+
+        option.value = assessment._id;
+
+        option.textContent =
+            assessment.title + " | " +
+            assessment.className + " | " +
+            assessment.subject;
+
+        select.appendChild(option);
+
+    });
+
+}
+
+
+// ======================================================
+// CREATE ASSESSMENT
+// ======================================================
+
+async function createAssessment() {
+
+    const button = document.getElementById("createBtn");
+
+    const title = document.getElementById("title").value.trim();
+    const className = document.getElementById("className").value.trim();
+    const subject = document.getElementById("subject").value.trim();
+
+    const totalMarks = Number(
+        document.getElementById("totalMarks").value
+    );
+
+    const examDuration =
+        document.getElementById("examDuration").value;
+
+    const date =
+        document.getElementById("assessmentDate").value;
+
+    if (!title || !className || !subject || !totalMarks) {
+
+        showMessage(
+            "createMessage",
+            "Please complete the title, class, subject and total marks.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (!Number.isFinite(totalMarks) || totalMarks <= 0) {
+
+        showMessage(
+            "createMessage",
+            "Enter a valid maximum mark.",
+            "error"
+        );
+
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Creating...";
+
+    try {
+
+        const data = await apiRequest(
+            "/founder/assessments",
+            {
+                method: "POST",
+                body: JSON.stringify({
+                    title,
+                    className,
+                    subject,
+                    totalMarks,
+                    examDuration,
+                    date
+                })
+            }
+        );
+
+        showMessage(
+            "createMessage",
+            data.message || "Assessment created successfully.",
+            "success"
+        );
+
+        document.getElementById("title").value = "";
+        document.getElementById("className").value = "";
+        document.getElementById("subject").value = "";
+        document.getElementById("totalMarks").value = "";
+        document.getElementById("examDuration").value = "";
+        document.getElementById("assessmentDate").value = "";
+
+        await loadAssessments();
+
+        if (data.assessment) {
+
+            document.getElementById("assessmentSelect").value =
+                data.assessment._id;
+
+            loadStudentsForAssessment();
+
+        }
+
+    } catch (error) {
+
+        showMessage(
+            "createMessage",
+            error.message,
+            "error"
+        );
+
+    } finally {
+
+        button.disabled = false;
+        button.textContent = "Create Assessment";
+
+    }
+
+}
+
+
+// ======================================================
+// LOAD STUDENTS FOR SELECTED ASSESSMENT
+// ======================================================
+
+async function loadStudentsForAssessment() {
+
+    const assessmentId =
+        document.getElementById("assessmentSelect").value;
+
+    const table = document.getElementById("studentTable");
+
+    table.innerHTML = "";
+
+    document.getElementById("studentCount").textContent = "0";
+    document.getElementById("maximumMarks").textContent = "-";
+
+    if (!assessmentId) {
+
+        table.innerHTML = `
+            <tr>
+                <td colspan="5" class="empty">
+                    Please select an assessment.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    selectedAssessment = assessments.find(
+        assessment => assessment._id === assessmentId
+    );
+
+    if (!selectedAssessment) return;
+
+    document.getElementById("maximumMarks").textContent =
+        selectedAssessment.totalMarks;
+
+    try {
+
+        await loadStudents();
+
+        const assessmentClass =
+            String(selectedAssessment.className).trim().toLowerCase();
+
+        const filteredStudents = students.filter(student => {
+
+            return String(student.grade || "")
+                .trim()
+                .toLowerCase() === assessmentClass;
+
+        });
+
+        document.getElementById("studentCount").textContent =
+            filteredStudents.length;
+
+        if (!filteredStudents.length) {
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="5" class="empty">
+                        No students found for this class.
+                        Check that the assessment class matches the
+                        students' grade field.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+        filteredStudents.forEach((student, index) => {
+
+            const row = document.createElement("tr");
+
+            const numberCell = document.createElement("td");
+            numberCell.textContent = index + 1;
+
+            const nameCell = document.createElement("td");
+            nameCell.textContent = student.name || "Unnamed";
+
+            const idCell = document.createElement("td");
+            idCell.textContent = student.studentId || "-";
+
+            const marksCell = document.createElement("td");
+
+            const input = document.createElement("input");
+
+            input.type = "number";
+            input.min = "0";
+            input.max = selectedAssessment.totalMarks;
+            input.step = "0.01";
+            input.placeholder = "Enter marks";
+            input.id = "marks-" + student._id;
+
+            marksCell.appendChild(input);
+
+            const actionCell = document.createElement("td");
+
+            const saveButton = document.createElement("button");
+
+            saveButton.textContent = "Save";
+            saveButton.className = "save-btn";
+
+            saveButton.onclick = () => saveMarks(
+                student._id,
+                saveButton
+            );
+
+            const status = document.createElement("div");
+
+            status.className = "status";
+            status.id = "status-" + student._id;
+
+            actionCell.appendChild(saveButton);
+            actionCell.appendChild(status);
+
+            row.appendChild(numberCell);
+            row.appendChild(nameCell);
+            row.appendChild(idCell);
+            row.appendChild(marksCell);
+            row.appendChild(actionCell);
+
+            table.appendChild(row);
+
+        });
+
+        showMessage(
+            "marksMessage",
+            filteredStudents.length + " students loaded.",
+            "success"
+        );
+
+    } catch (error) {
+
+        showMessage(
+            "marksMessage",
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+// ======================================================
+// SAVE FOUNDER MARKS
+// ======================================================
+
+async function saveMarks(studentId, button) {
+
+    if (!selectedAssessment) return;
+
+    const input = document.getElementById(
+        "marks-" + studentId
+    );
+
+    const value = input.value;
+
+    if (value === "") {
+
+        alert("Please enter marks.");
+        input.focus();
+        return;
+
+    }
+
+    const marksObtained = Number(value);
+
+    if (
+        !Number.isFinite(marksObtained) ||
+        marksObtained < 0 ||
+        marksObtained > Number(selectedAssessment.totalMarks)
+    ) {
+
+        alert(
+            "Marks must be between 0 and " +
+            selectedAssessment.totalMarks
+        );
+
+        input.focus();
+        return;
+
+    }
+
+    const confirmed = confirm(
+        "Save " + marksObtained +
+        " marks for this student?"
+    );
+
+    if (!confirmed) return;
+
+    button.disabled = true;
+    button.textContent = "Saving...";
+
+    const status = document.getElementById(
+        "status-" + studentId
+    );
+
+    try {
+
+        const data = await apiRequest(
+            "/founder/assessments/" +
+            selectedAssessment._id +
+            "/marks",
+            {
+                method: "POST",
+                body: JSON.stringify({
+                    studentId,
+                    marksObtained
+                })
+            }
+        );
+
+        status.textContent = "Saved successfully";
+        status.style.color = "#15803d";
+
+        showMessage(
+            "marksMessage",
+            data.message || "Marks saved successfully.",
+            "success"
+        );
+
+        button.textContent = "Saved";
+
+    } catch (error) {
+
+        status.textContent = error.message;
+        status.style.color = "#dc2626";
+
+        button.textContent = "Retry";
+
+        alert(error.message);
+
+    } finally {
+
+        button.disabled = false;
+
+    }
+
+}
+
+
+// ======================================================
+// START
+// ======================================================
+
+document.addEventListener("DOMContentLoaded", initializePage);
+
+document.getElementById("assessmentSelect")
+    .addEventListener("change", loadStudentsForAssessment);
+
+</script>
+
+</body>
+</html>
