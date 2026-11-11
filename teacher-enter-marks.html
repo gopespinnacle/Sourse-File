@@ -1,204 +1,1097 @@
-<!DOCTYPE html>
 
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Enter Student Marks</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Marks Entry | Gopes Pinnacle Academy</title>
 
 <style>
-
-body{
-font-family:Arial;
-background:#f4f7fb;
-margin:0;
-padding:40px;
+:root {
+    --navy: #123a63;
+    --blue: #1d5b91;
+    --bg: #f3f6fa;
+    --text: #263445;
+    --border: #e2e8f0;
+    --green: #15803d;
+    --red: #dc2626;
+    --orange: #b45309;
 }
 
-.container{
-background:white;
-padding:25px;
-border-radius:10px;
-margin-bottom:30px;
+* {
+    box-sizing: border-box;
 }
 
-select,input{
-width:100%;
-padding:10px;
-margin-top:10px;
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
 }
 
-button{
-margin-top:15px;
-padding:10px 20px;
-background:#123a63;
-color:white;
-border:none;
-border-radius:6px;
-cursor:pointer;
+header {
+    background: var(--navy);
+    color: white;
+    padding: 19px 26px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
-table{
-width:100%;
-border-collapse:collapse;
-background:white;
+header h1 {
+    font-size: 20px;
+    margin: 0;
 }
 
-th{
-background:#123a63;
-color:white;
-padding:10px;
+header a {
+    color: white;
+    text-decoration: none;
+    background: rgba(255,255,255,.15);
+    padding: 10px 14px;
+    border-radius: 7px;
 }
 
-td{
-padding:10px;
-text-align:center;
-border-bottom:1px solid #eee;
+main {
+    max-width: 1200px;
+    margin: 25px auto;
+    padding: 0 17px;
 }
 
+.card {
+    background: white;
+    padding: 22px;
+    border-radius: 12px;
+    margin-bottom: 22px;
+    box-shadow: 0 3px 14px rgba(0,0,0,.05);
+}
+
+h2 {
+    margin: 0 0 18px;
+    font-size: 20px;
+    color: var(--navy);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+select, input {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: white;
+    font-size: 14px;
+}
+
+select:focus, input:focus {
+    outline: 2px solid #bfdbfe;
+    border-color: var(--blue);
+}
+
+button {
+    border: 0;
+    padding: 10px 15px;
+    border-radius: 7px;
+    color: white;
+    background: var(--navy);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+button:hover {
+    background: var(--blue);
+}
+
+button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+.toolbar {
+    display: flex;
+    align-items: end;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+
+.toolbar .field {
+    flex: 1;
+    min-width: 210px;
+}
+
+.stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 18px 0;
+}
+
+.stat {
+    background: #eff6ff;
+    color: var(--navy);
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.message {
+    display: none;
+    padding: 12px;
+    border-radius: 7px;
+    margin: 14px 0;
+    font-size: 14px;
+}
+
+.message.success {
+    display: block;
+    color: #166534;
+    background: #dcfce7;
+}
+
+.message.error {
+    display: block;
+    color: #991b1b;
+    background: #fee2e2;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    min-width: 750px;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 13px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    font-size: 14px;
+}
+
+th {
+    background: #edf3f9;
+    color: var(--navy);
+    font-size: 13px;
+}
+
+td input {
+    max-width: 120px;
+}
+
+.save-btn {
+    background: var(--green);
+}
+
+.request-btn {
+    background: var(--orange);
+    font-size: 12px;
+}
+
+.status {
+    display: block;
+    font-size: 11px;
+    margin-top: 5px;
+    color: #64748b;
+}
+
+.saved {
+    color: var(--green);
+}
+
+.pending {
+    color: var(--orange);
+}
+
+.locked {
+    color: var(--red);
+}
+
+.empty {
+    text-align: center;
+    padding: 30px;
+    color: #64748b;
+}
+
+.note {
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-top: 12px;
+}
+
+@media(max-width: 650px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    main {
+        padding: 0 11px;
+    }
+
+    .card {
+        padding: 16px;
+    }
+
+    header {
+        padding: 16px;
+    }
+}
 </style>
-
 </head>
 
 <body>
 
-<div class="container">
+<header>
+    <h1>Gopes Pinnacle Academy | Teacher Marks Entry</h1>
+    <a href="teacher-dashboard.html">← Teacher Dashboard</a>
+</header>
 
-<h2>Enter Marks</h2>
+<main>
 
-<label>Select Assessment</label> <select id="assessmentSelect"></select>
+    <section class="card">
 
-</div>
+        <h2>Select Your Class and Subject</h2>
 
-<table>
+        <div class="grid">
 
-<thead>
+            <div class="field">
+                <label>Assigned Class</label>
+                <select id="classSelect">
+                    <option value="">Loading assigned classes...</option>
+                </select>
+            </div>
 
-<tr>
-<th>Student</th>
-<th>Marks</th>
-<th>Submit</th>
-</tr>
+            <div class="field">
+                <label>Assigned Subject</label>
+                <select id="subjectSelect" disabled>
+                    <option value="">Select class first</option>
+                </select>
+            </div>
 
-</thead>
+        </div>
 
-<tbody id="studentTable"></tbody>
+        <div class="toolbar">
 
-</table>
+            <div class="field">
+                <label>Assessment</label>
+                <select id="assessmentSelect" disabled>
+                    <option value="">Select class and subject first</option>
+                </select>
+            </div>
+
+            <button id="loadStudentsBtn"
+                onclick="loadStudentsForAssessment()"
+                disabled>
+                Load Students
+            </button>
+
+        </div>
+
+        <div id="mainMessage" class="message"></div>
+
+        <p class="note">
+            Only your assigned classes, subjects and students
+            will be available for marks entry.
+        </p>
+
+    </section>
+
+
+    <section class="card">
+
+        <h2>Student Marks</h2>
+
+        <div class="stats">
+
+            <div class="stat">
+                Students: <span id="studentCount">0</span>
+            </div>
+
+            <div class="stat">
+                Maximum Marks: <span id="maximumMarks">-</span>
+            </div>
+
+            <div class="stat">
+                Saved: <span id="savedCount">0</span>
+            </div>
+
+        </div>
+
+        <div id="marksMessage" class="message"></div>
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>S.No.</th>
+                        <th>Student Name</th>
+                        <th>Student ID</th>
+                        <th>Marks</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="studentTable">
+
+                    <tr>
+                        <td colspan="6" class="empty">
+                            Select your class, subject and assessment.
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</main>
+
 
 <script>
 
+// ======================================================
+// CONFIGURATION
+// ======================================================
+
+const API = "https://academy-backend-eatl.onrender.com/api/marks";
+
 const token = localStorage.getItem("token");
 
+let periods = [];
+let assessments = [];
+let students = [];
+let savedMarks = new Map();
 
-/* LOAD ASSESSMENTS */
+let selectedAssessment = null;
 
-async function loadAssessments(){
 
-const res = await fetch("https://academy-backend-eatl.onrender.com/api/auth/teacher/assessments",{
+// ======================================================
+// AUTHENTICATION
+// ======================================================
 
-headers:{
-"Authorization":"Bearer "+token
-}
+if (!token) {
 
-});
+    alert("Please log in as a teacher.");
 
-const data = await res.json();
-
-const select = document.getElementById("assessmentSelect");
-
-data.assessments.forEach(a=>{
-
-select.innerHTML +=
-`<option value="${a._id}">${a.title} - ${a.className}</option>`;
-
-});
+    window.location.href = "teacher-login.html";
 
 }
 
-loadAssessments();
 
+// ======================================================
+// API REQUEST
+// ======================================================
 
-/* LOAD STUDENTS */
+async function apiRequest(url, options = {}) {
 
-async function loadStudents(){
+    const response = await fetch(API + url, {
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+            ...(options.headers || {})
+        }
+    });
 
-const res = await fetch("https://academy-backend-eatl.onrender.com/api/auth/teacher/students",{
+    const data = await response.json();
 
-headers:{
-"Authorization":"Bearer "+token
+    if (response.status === 401) {
+        throw new Error(
+            "Your login session has expired. Please log in again."
+        );
+    }
+
+    if (!response.ok) {
+        throw new Error(
+            data.message || "Request failed."
+        );
+    }
+
+    return data;
 }
 
-});
 
-const data = await res.json();
+// ======================================================
+// MESSAGE
+// ======================================================
 
-const table = document.getElementById("studentTable");
+function showMessage(id, message, type) {
 
-table.innerHTML="";
+    const element = document.getElementById(id);
 
-data.students.forEach(s=>{
-
-table.innerHTML += `
-
-<tr>
-
-<td>${s.name}</td>
-
-<td>
-<input type="number" id="marks-${s._id}">
-</td>
-
-<td>
-<button onclick="submitMarks('${s._id}')">Save</button>
-</td>
-
-</tr>
-
-`;
-
-});
+    element.textContent = message;
+    element.className = "message " + type;
 
 }
 
-loadStudents();
+
+// ======================================================
+// RESET MARKS TABLE
+// ======================================================
+
+function resetTable(message) {
+
+    document.getElementById("studentTable").innerHTML = `
+        <tr>
+            <td colspan="6" class="empty">
+                ${message}
+            </td>
+        </tr>
+    `;
+
+    document.getElementById("studentCount").textContent = "0";
+    document.getElementById("maximumMarks").textContent = "-";
+    document.getElementById("savedCount").textContent = "0";
+
+    savedMarks.clear();
+}
 
 
-/* SUBMIT MARKS */
+// ======================================================
+// LOAD ASSIGNED PERIODS
+// ======================================================
 
-async function submitMarks(studentId){
+async function loadPeriods() {
 
-const assessmentId = document.getElementById("assessmentSelect").value;
+    const data = await apiRequest("/teacher/periods");
 
-const marks = document.getElementById("marks-"+studentId).value;
+    periods = data.periods || [];
 
-const res = await fetch("https://academy-backend-eatl.onrender.com/api/auth/teacher/submit-marks",{
+    const classSelect =
+        document.getElementById("classSelect");
 
-method:"POST",
+    classSelect.innerHTML = "";
 
-headers:{
-"Content-Type":"application/json",
-"Authorization":"Bearer "+token
-},
+    const first = document.createElement("option");
 
-body:JSON.stringify({
+    first.value = "";
+    first.textContent = "Select Assigned Class";
 
-assessmentId:assessmentId,
-studentId:studentId,
-marksObtained:marks
+    classSelect.appendChild(first);
 
-})
+    const classes = [
+        ...new Set(
+            periods.map(period => period.className).filter(Boolean)
+        )
+    ].sort();
 
-});
+    classes.forEach(className => {
 
-const data = await res.json();
+        const option = document.createElement("option");
 
-alert(data.message);
+        option.value = className;
+        option.textContent = className;
+
+        classSelect.appendChild(option);
+
+    });
+
+    if (!classes.length) {
+
+        showMessage(
+            "mainMessage",
+            "No assigned classes were found.",
+            "error"
+        );
+
+    }
 
 }
+
+
+// ======================================================
+// LOAD SUBJECTS FOR CLASS
+// ======================================================
+
+function loadSubjects() {
+
+    const className =
+        document.getElementById("classSelect").value;
+
+    const subjectSelect =
+        document.getElementById("subjectSelect");
+
+    subjectSelect.innerHTML = "";
+
+    const first = document.createElement("option");
+
+    first.value = "";
+    first.textContent = "Select Assigned Subject";
+
+    subjectSelect.appendChild(first);
+
+    const subjects = [
+        ...new Set(
+            periods
+                .filter(period => period.className === className)
+                .map(period => period.subject)
+                .filter(Boolean)
+        )
+    ].sort();
+
+    subjects.forEach(subject => {
+
+        const option = document.createElement("option");
+
+        option.value = subject;
+        option.textContent = subject;
+
+        subjectSelect.appendChild(option);
+
+    });
+
+    subjectSelect.disabled = !className;
+
+    document.getElementById("assessmentSelect").disabled = true;
+
+    document.getElementById("loadStudentsBtn").disabled = true;
+
+    document.getElementById("assessmentSelect").innerHTML =
+        '<option value="">Select subject first</option>';
+
+    resetTable("Select an assessment to load students.");
+
+}
+
+
+// ======================================================
+// LOAD ASSESSMENTS
+// ======================================================
+
+async function loadAssessments() {
+
+    const className =
+        document.getElementById("classSelect").value;
+
+    const subject =
+        document.getElementById("subjectSelect").value;
+
+    const select =
+        document.getElementById("assessmentSelect");
+
+    select.innerHTML =
+        '<option value="">Loading assessments...</option>';
+
+    select.disabled = true;
+
+    document.getElementById("loadStudentsBtn").disabled = true;
+
+    resetTable("Select an assessment to load students.");
+
+    if (!className || !subject) return;
+
+    try {
+
+        const query = new URLSearchParams({
+            className,
+            subject
+        });
+
+        const data = await apiRequest(
+            "/teacher/assessments?" + query.toString()
+        );
+
+        assessments = data.assessments || [];
+
+        select.innerHTML = "";
+
+        const first = document.createElement("option");
+
+        first.value = "";
+        first.textContent = "Select Assessment";
+
+        select.appendChild(first);
+
+        assessments.forEach(assessment => {
+
+            const option = document.createElement("option");
+
+            option.value = assessment._id;
+
+            option.textContent =
+                assessment.title +
+                " | Maximum: " +
+                assessment.totalMarks;
+
+            select.appendChild(option);
+
+        });
+
+        select.disabled = false;
+
+        if (!assessments.length) {
+
+            showMessage(
+                "mainMessage",
+                "No assessments found for this class and subject.",
+                "error"
+            );
+
+        } else {
+
+            showMessage(
+                "mainMessage",
+                assessments.length + " assessment(s) loaded.",
+                "success"
+            );
+
+        }
+
+    } catch (error) {
+
+        select.innerHTML =
+            '<option value="">Unable to load assessments</option>';
+
+        showMessage(
+            "mainMessage",
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+// ======================================================
+// LOAD STUDENTS AND SAVED MARKS
+// ======================================================
+
+async function loadStudentsForAssessment() {
+
+    const assessmentId =
+        document.getElementById("assessmentSelect").value;
+
+    if (!assessmentId) {
+
+        alert("Please select an assessment.");
+        return;
+
+    }
+
+    selectedAssessment = assessments.find(
+        assessment => assessment._id === assessmentId
+    );
+
+    if (!selectedAssessment) return;
+
+    const button =
+        document.getElementById("loadStudentsBtn");
+
+    button.disabled = true;
+    button.textContent = "Loading...";
+
+    resetTable("Loading students...");
+
+    try {
+
+        const query = new URLSearchParams({
+            className: selectedAssessment.className,
+            subject: selectedAssessment.subject
+        });
+
+        const [studentData, marksData] = await Promise.all([
+
+            apiRequest(
+                "/teacher/students?" + query.toString()
+            ),
+
+            apiRequest(
+                "/teacher/assessments/" +
+                assessmentId +
+                "/marks"
+            )
+
+        ]);
+
+        students = studentData.students || [];
+
+        savedMarks.clear();
+
+        (marksData.marks || []).forEach(mark => {
+
+            if (!mark.studentId) return;
+
+            savedMarks.set(
+                String(mark.studentId._id),
+                mark
+            );
+
+        });
+
+        document.getElementById("studentCount").textContent =
+            students.length;
+
+        document.getElementById("maximumMarks").textContent =
+            selectedAssessment.totalMarks;
+
+        document.getElementById("savedCount").textContent =
+            savedMarks.size;
+
+        renderStudents();
+
+        showMessage(
+            "marksMessage",
+            students.length + " assigned students loaded.",
+            "success"
+        );
+
+    } catch (error) {
+
+        resetTable("Unable to load students.");
+
+        showMessage(
+            "marksMessage",
+            error.message,
+            "error"
+        );
+
+    } finally {
+
+        button.disabled = false;
+        button.textContent = "Load Students";
+
+    }
+
+}
+
+
+// ======================================================
+// RENDER STUDENTS
+// ======================================================
+
+function renderStudents() {
+
+    const table =
+        document.getElementById("studentTable");
+
+    table.innerHTML = "";
+
+    if (!students.length) {
+
+        resetTable("No assigned students found.");
+        return;
+
+    }
+
+    students.forEach((student, index) => {
+
+        const studentId = String(student._id);
+
+        const mark = savedMarks.get(studentId);
+
+        const row = document.createElement("tr");
+
+        const numberCell = document.createElement("td");
+        numberCell.textContent = index + 1;
+
+        const nameCell = document.createElement("td");
+        nameCell.textContent = student.name || "Unnamed";
+
+        const idCell = document.createElement("td");
+        idCell.textContent = student.studentId || "-";
+
+        const marksCell = document.createElement("td");
+
+        const input = document.createElement("input");
+
+        input.type = "number";
+        input.min = "0";
+        input.max = selectedAssessment.totalMarks;
+        input.step = "0.01";
+        input.placeholder = "Enter marks";
+        input.id = "marks-" + studentId;
+
+        const statusCell = document.createElement("td");
+
+        const status = document.createElement("span");
+
+        status.className = "status";
+
+        const actionCell = document.createElement("td");
+
+        const button = document.createElement("button");
+
+        if (!mark) {
+
+            input.disabled = false;
+
+            button.textContent = "Save";
+            button.className = "save-btn";
+
+            status.textContent = "Not submitted";
+
+            button.onclick = () => saveMarks(
+                studentId,
+                button
+            );
+
+        } else {
+
+            input.value = mark.marksObtained;
+
+            if (mark.modificationRequested) {
+
+                input.disabled = true;
+
+                button.textContent = "Request Pending";
+                button.disabled = true;
+
+                status.textContent = "Waiting for Founder";
+                status.className = "status pending";
+
+            } else if (mark.isLocked && !mark.modificationApproved) {
+
+                input.disabled = true;
+
+                button.textContent = "Request Edit";
+                button.className = "request-btn";
+
+                status.textContent = "Locked";
+                status.className = "status locked";
+
+                button.onclick = () => requestModification(
+                    studentId,
+                    button
+                );
+
+            } else {
+
+                input.disabled = false;
+
+                button.textContent = "Update Marks";
+                button.className = "save-btn";
+
+                status.textContent = "Approved for editing";
+                status.className = "status saved";
+
+                button.onclick = () => saveMarks(
+                    studentId,
+                    button
+                );
+
+            }
+
+        }
+
+        marksCell.appendChild(input);
+
+        statusCell.appendChild(status);
+
+        actionCell.appendChild(button);
+
+        row.appendChild(numberCell);
+        row.appendChild(nameCell);
+        row.appendChild(idCell);
+        row.appendChild(marksCell);
+        row.appendChild(statusCell);
+        row.appendChild(actionCell);
+
+        table.appendChild(row);
+
+    });
+
+}
+
+
+// ======================================================
+// SAVE MARKS
+// ======================================================
+
+async function saveMarks(studentId, button) {
+
+    if (!selectedAssessment) return;
+
+    const input = document.getElementById(
+        "marks-" + studentId
+    );
+
+    const value = input.value;
+
+    if (value === "") {
+
+        alert("Please enter marks.");
+        input.focus();
+        return;
+
+    }
+
+    const marksObtained = Number(value);
+
+    const maximum = Number(selectedAssessment.totalMarks);
+
+    if (
+        !Number.isFinite(marksObtained) ||
+        marksObtained < 0 ||
+        marksObtained > maximum
+    ) {
+
+        alert("Marks must be between 0 and " + maximum);
+        input.focus();
+        return;
+
+    }
+
+    if (!confirm("Save " + marksObtained + " marks for this student?")) {
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Saving...";
+
+    try {
+
+        await apiRequest("/teacher/submit", {
+
+            method: "POST",
+
+            body: JSON.stringify({
+                assessmentId: selectedAssessment._id,
+                studentId,
+                marksObtained
+            })
+
+        });
+
+        showMessage(
+            "marksMessage",
+            "Marks saved successfully.",
+            "success"
+        );
+
+        await loadStudentsForAssessment();
+
+    } catch (error) {
+
+        button.disabled = false;
+        button.textContent = "Retry";
+
+        showMessage(
+            "marksMessage",
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+// ======================================================
+// REQUEST FOUNDER APPROVAL
+// ======================================================
+
+async function requestModification(studentId, button) {
+
+    if (!selectedAssessment) return;
+
+    const confirmed = confirm(
+        "Send a request to the Founder for permission " +
+        "to modify this student's marks?"
+    );
+
+    if (!confirmed) return;
+
+    button.disabled = true;
+    button.textContent = "Sending...";
+
+    try {
+
+        const data = await apiRequest(
+            "/teacher/request-modification",
+            {
+                method: "POST",
+                body: JSON.stringify({
+                    assessmentId: selectedAssessment._id,
+                    studentId
+                })
+            }
+        );
+
+        showMessage(
+            "marksMessage",
+            data.message || "Modification request sent.",
+            "success"
+        );
+
+        await loadStudentsForAssessment();
+
+    } catch (error) {
+
+        button.disabled = false;
+        button.textContent = "Request Edit";
+
+        showMessage(
+            "marksMessage",
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+// ======================================================
+// PAGE EVENTS
+// ======================================================
+
+document.getElementById("classSelect")
+    .addEventListener("change", loadSubjects);
+
+document.getElementById("subjectSelect")
+    .addEventListener("change", loadAssessments);
+
+
+// ======================================================
+// INITIALIZE
+// ======================================================
+
+async function initializePage() {
+
+    if (!token) return;
+
+    try {
+
+        await loadPeriods();
+
+    } catch (error) {
+
+        showMessage(
+            "mainMessage",
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+initializePage();
 
 </script>
-
-
 
 </body>
 </html>
