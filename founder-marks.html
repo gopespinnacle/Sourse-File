@@ -256,6 +256,26 @@ td input {
 .delete-btn:hover {
     background: #b91c1c !important;
 }
+
+
+.delete-btn {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.delete-btn:hover {
+    background: #b91c1c;
+}
+
+.delete-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 </style>
 </head>
 
@@ -380,6 +400,13 @@ td input {
                 onclick="loadStudentsForAssessment()">
                 Load Students
             </button>
+
+            <button
+    type="button"
+    class="delete-btn"
+    onclick="deleteAssessment()">
+    Delete Entire Assessment
+</button>
 
         </div>
 
@@ -1127,6 +1154,90 @@ async function deleteMarks(studentId, button) {
 
     }
 }
+
+
+// ======================================================
+// DELETE COMPLETE ASSESSMENT
+// ======================================================
+
+async function deleteAssessment() {
+
+    const assessmentId =
+        document.getElementById("assessmentSelect").value;
+
+    if (!assessmentId) {
+        alert("Please select an assessment first.");
+        return;
+    }
+
+    const assessment = assessments.find(
+        item => item._id === assessmentId
+    );
+
+    if (!assessment) return;
+
+    const confirmed = confirm(
+        "WARNING: You are about to permanently delete:\n\n" +
+        assessment.title + "\n" +
+        assessment.className + "\n" +
+        assessment.subject +
+        "\n\nALL STUDENTS' MARKS FOR THIS ASSESSMENT WILL ALSO BE DELETED.\n\nContinue?"
+    );
+
+    if (!confirmed) return;
+
+    const button = document.querySelector(
+        'button[onclick="deleteAssessment()"]'
+    );
+
+    button.disabled = true;
+    button.textContent = "Deleting...";
+
+    try {
+
+        const data = await apiRequest(
+            "/founder/assessments/" + assessmentId,
+            {
+                method: "DELETE"
+            }
+        );
+
+        selectedAssessment = null;
+
+        document.getElementById("studentTable").innerHTML = `
+            <tr>
+                <td colspan="5" class="empty">
+                    Select an assessment to load students.
+                </td>
+            </tr>
+        `;
+
+        document.getElementById("studentCount").textContent = "0";
+        document.getElementById("maximumMarks").textContent = "-";
+
+        await loadAssessments();
+
+        document.getElementById("assessmentSelect").value = "";
+
+        showMessage(
+            "marksMessage",
+            data.message +
+            " Deleted marks: " + data.deletedMarksCount,
+            "success"
+        );
+
+    } catch (error) {
+
+        alert(error.message);
+
+    } finally {
+
+        button.disabled = false;
+        button.textContent = "Delete Entire Assessment";
+
+    }
+}
+
 
 
 // ======================================================
