@@ -12,6 +12,7 @@ main{max-width:1100px;margin:22px auto;padding:0 16px}.filters,.homework{backgro
 input,select,textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:7px;font:inherit}textarea{min-height:100px}
 button{background:#2563eb;color:#fff;border:0;border-radius:7px;padding:10px 14px;font-weight:700;cursor:pointer}.muted{font-size:13px;color:#64748b}.tag{background:#dbeafe;color:#1d4ed8;border-radius:20px;padding:4px 9px;font-size:12px;font-weight:700}.hwhead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.message{margin-top:10px;font-weight:600}.error{color:#b91c1c}.success{color:#15803d}.attachments a{display:inline-block;margin:5px 8px 5px 0}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
 </head>
 <body>
 <header><h1>Student Homework</h1><button onclick="history.back()">← Back</button></header>
@@ -86,14 +87,205 @@ function renderHomework(){
     : ""}
  <form onsubmit="submitHomework(event,'${h._id}')">
  <label for="answer-${h._id}">Your answer</label><textarea id="answer-${h._id}" placeholder="Type your answer here">${esc(sub?.answerText||"")}</textarea>
- <label for="file-${h._id}">Attach answer file (optional)</label><input id="file-${h._id}" type="file">
+ <label for="file-${h._id}">
+    PDF Convert and Attach answer file (optional)
+</label>
+
+<input
+    id="file-${h._id}"
+    type="file"
+    accept="image/*,.pdf"
+    multiple
+    onchange="showSelectedFiles('${h._id}')"
+>
+
+<p class="muted" id="fileStatus-${h._id}">
+    Select photos of your written answers or an existing PDF.
+    Multiple photos will automatically combine into one PDF.
+</p>
  <p class="muted">You may submit text, a file, or both. Submitting again replaces your previous submission.</p>
  <button type="submit">Submit Homework</button><div class="message" id="message-${h._id}"></div></form></article>`}).join("");
 }
+
+
+
+// ======================================
+// SHOW SELECTED ANSWER FILES
+// ======================================
+
+function showSelectedFiles(id) {
+
+    const input = document.getElementById("file-" + id);
+    const status = document.getElementById("fileStatus-" + id);
+
+    const files = Array.from(input.files);
+
+    if (!files.length) {
+        status.textContent = "No file selected.";
+        return;
+    }
+
+    const hasImages = files.some(f => f.type.startsWith("image/"));
+    const hasPDF = files.some(f => f.type === "application/pdf");
+
+    if (hasImages && hasPDF) {
+        status.textContent = "Please select images or PDF separately.";
+        input.value = "";
+        return;
+    }
+
+    if (hasPDF && files.length > 1) {
+        status.textContent = "Please select only one PDF.";
+        input.value = "";
+        return;
+    }
+
+    if (hasImages) {
+        status.textContent =
+            files.length + " image(s) selected. They will be converted into one PDF automatically.";
+    } else if (hasPDF) {
+        status.textContent = "PDF selected: " + files[0].name;
+    } else {
+        status.textContent = "Unsupported file type.";
+        input.value = "";
+    }
+}
+
+
+// ======================================
+// CONVERT MULTIPLE IMAGES INTO ONE PDF
+// ======================================
+
+async function convertImagesToPDF(files) {
+
+    const { jsPDF } = window.jspdf;
+
+    const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4"
+    });
+
+    for (let i = 0; i < files.length; i++) {
+
+        const file = files[i];
+
+        if (!file.type.startsWith("image/")) {
+            throw new Error("Please select valid image files.");
+        }
+
+        const dataURL = await new Promise((resolve, reject) => {
+
+            const reader = new FileReader();
+
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(
+                new Error("Could not read image: " + file.name)
+            );
+
+            reader.readAsDataURL(file);
+        });
+
+        const image = await new Promise((resolve, reject) => {
+
+            const img = new Image();
+
+            img.onload = () => resolve(img);
+            img.onerror = () => reject(
+                new Error("Could not load image: " + file.name)
+            );
+
+            img.src = dataURL;
+        });
+
+        if (i > 0) {
+            pdf.addPage();
+        }
+
+        const pageWidth = 210;
+        const pageHeight = 297;
+        const margin = 8;
+
+        const maxWidth = pageWidth - margin * 2;
+        const maxHeight = pageHeight - margin * 2;
+
+        const ratio = Math.min(
+            maxWidth / image.width,
+            maxHeight / image.height
+        );
+
+        const width = image.width * ratio;
+        const height = image.height * ratio;
+
+        const x = (pageWidth - width) / 2;
+        const y = (pageHeight - height) / 2;
+
+        const format = file.type === "image/png"
+            ? "PNG"
+            : "JPEG";
+
+        pdf.addImage(
+            dataURL,
+            format,
+            x,
+            y,
+            width,
+            height
+        );
+    }
+
+    return pdf.output("blob");
+}
+
 async function uploadFile(file){const fd=new FormData();fd.append("file",file);const r=await fetch(API+"/upload-file",{method:"POST",headers,body:fd});const j=await r.json();if(!r.ok||!j.url)throw new Error(j.message||"File upload failed");return{name:file.name,url:j.url}}
 async function submitHomework(event,id){
  event.preventDefault();const form=event.currentTarget;const message=document.getElementById("message-"+id);message.className="message";message.textContent="Submitting…";
- try{const answerText=document.getElementById("answer-"+id).value.trim();const file=document.getElementById("file-"+id).files[0];const attachments=[];if(file)attachments.push(await uploadFile(file));
+ try{
+const answerText = document.getElementById("answer-" + id).value.trim();
+
+const input = document.getElementById("file-" + id);
+
+const files = Array.from(input.files);
+
+const attachments = [];
+
+if (files.length) {
+
+    let finalFile;
+
+    const hasImages = files.some(f => f.type.startsWith("image/"));
+    const hasPDF = files.some(f => f.type === "application/pdf");
+
+    if (hasImages && hasPDF) {
+        throw new Error("Select images or PDF separately.");
+    }
+
+    if (hasImages) {
+
+        message.textContent = "Converting images into PDF...";
+
+        const pdfBlob = await convertImagesToPDF(files);
+
+        finalFile = new File(
+            [pdfBlob],
+            "homework-" + id + ".pdf",
+            { type: "application/pdf" }
+        );
+
+    } else if (hasPDF && files.length === 1) {
+
+        finalFile = files[0];
+
+    } else {
+
+        throw new Error("Please select valid images or one PDF.");
+    }
+
+    message.textContent = "Uploading PDF...";
+
+    attachments.push(await uploadFile(finalFile));
+}
+
  const r=await fetch(API+`/api/homework-flow/assignments/${id}/submit`,{method:"POST",headers:{...headers,"Content-Type":"application/json"},body:JSON.stringify({answerText,attachments})});const j=await r.json();if(!r.ok||!j.success)throw new Error(j.message||"Submission failed");
  message.className="message success";message.textContent="Homework submitted successfully.";await loadHomework();
  }catch(e){message.className="message error";message.textContent=e.message}
