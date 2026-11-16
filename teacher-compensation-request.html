@@ -1,0 +1,527 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Request Compensation Class | Gopes Pinnacle Academy</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root {
+    --navy:#061943;
+    --blue:#1265f5;
+    --ink:#102653;
+    --muted:#7082a3;
+    --line:#e2ebfa;
+}
+* { box-sizing:border-box; }
+body {
+    margin:0;
+    font-family:Inter,"Segoe UI",Arial,sans-serif;
+    color:var(--ink);
+    background:linear-gradient(130deg,#edf5ff,#f9fbff 60%,#e7f0ff);
+    min-height:100vh;
+}
+.sidebar {
+    position:fixed; inset:0 auto 0 0; width:250px;
+    padding:22px 14px; color:white;
+    background:linear-gradient(155deg,#041331,#08265d 60%,#0b3987);
+}
+.sidebar-brand {
+    height:150px; display:flex; justify-content:center;
+    align-items:center; border-bottom:1px solid #ffffff30;
+    margin-bottom:18px;
+}
+.sidebar-logo { width:150px;height:150px;object-fit:contain; }
+.sidebar ul { list-style:none;padding:0;margin:0; }
+.sidebar li {
+    display:flex;align-items:center;gap:13px;
+    min-height:44px;padding:0 12px;margin:5px 0;
+    border-radius:12px;color:#e7f0ff;font-size:12px;
+    font-weight:700;cursor:pointer;
+}
+.sidebar li i { width:20px;color:#80d5ff; }
+.sidebar li:hover,.sidebar li.active { background:#ffffff20; }
+.main { margin-left:250px;padding:25px; }
+.page-heading { margin-bottom:20px; }
+.page-heading small {
+    color:var(--blue);font-size:10px;
+    letter-spacing:2px;font-weight:800;
+}
+.page-heading h1 { margin:7px 0;font-size:27px;color:#071b4b; }
+.page-heading p { color:var(--muted);font-size:13px; }
+.panel {
+    max-width:950px;background:white;padding:24px;
+    border:1px solid var(--line);border-radius:20px;
+    box-shadow:0 12px 30px #183b7410;margin-bottom:20px;
+}
+.section-title {
+    font-size:15px;font-weight:850;margin-bottom:18px;
+    color:#102657;
+}
+.form-grid {
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:17px;
+}
+.field { min-width:0; }
+.field.full { grid-column:1/-1; }
+label { display:block;font-size:12px;font-weight:800;margin-bottom:7px; }
+input,select,textarea {
+    width:100%;padding:12px;border:1px solid #dce6f5;
+    border-radius:10px;background:#fbfdff;
+    color:#173360;font:13px inherit;outline:none;
+}
+input:focus,select:focus,textarea:focus {
+    border-color:var(--blue);box-shadow:0 0 0 3px #1265f515;
+}
+textarea { min-height:85px;resize:vertical; }
+.student-list {
+    border:1px solid var(--line);border-radius:10px;
+    padding:12px;max-height:190px;overflow:auto;
+    background:#fbfdff;
+}
+.student-option {
+    display:flex;align-items:center;gap:9px;
+    padding:7px 2px;font-size:12px;
+}
+.student-option input { width:auto; }
+.activity-list {
+    display:flex;flex-wrap:wrap;gap:15px;
+}
+.activity-list label {
+    display:flex;align-items:center;gap:7px;font-weight:600;
+}
+.activity-list input { width:auto; }
+.primary-btn {
+    border:0;border-radius:10px;padding:13px 22px;
+    background:linear-gradient(100deg,#1265f5,#388cff);
+    color:white;font-weight:850;cursor:pointer;
+}
+.primary-btn:disabled { opacity:.6;cursor:not-allowed; }
+.message { font-size:13px;margin-top:12px; }
+.request-card {
+    padding:16px;margin-top:12px;border:1px solid var(--line);
+    border-radius:12px;background:#fbfdff;font-size:12px;
+}
+.status { font-weight:850; }
+.Pending { color:#d97706; }
+.Approved { color:#16a34a; }
+.Rejected { color:#dc2626; }
+.mobile-header { display:none; }
+
+@media(max-width:850px) {
+    .sidebar {
+        width:260px;z-index:50;transform:translateX(-105%);
+        transition:.25s;
+    }
+    .sidebar.show { transform:translateX(0); }
+    .overlay {
+        display:none;position:fixed;inset:0;
+        background:#020e27a0;z-index:40;
+    }
+    .overlay.show { display:block; }
+    .mobile-header {
+        display:flex;align-items:center;gap:12px;
+        padding:12px 15px;background:var(--navy);color:white;
+    }
+    .mobile-header button {
+        background:#ffffff15;border:1px solid #ffffff30;
+        color:white;border-radius:9px;padding:10px;
+    }
+    .main { margin-left:0;padding:16px 12px 35px; }
+    .panel { padding:17px; }
+    .page-heading h1 { font-size:22px; }
+}
+@media(max-width:520px) {
+    .form-grid { grid-template-columns:1fr; }
+    .field.full { grid-column:auto; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="overlay" onclick="closeMenu()"></div>
+
+<header class="mobile-header">
+    <button onclick="toggleMenu()"><i class="fa fa-bars"></i></button>
+    <strong>Gopes Pinnacle Academy</strong>
+</header>
+
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <img src="images/logo.png" class="sidebar-logo" alt="Academy Logo">
+    </div>
+    <ul>
+        <li onclick="location.href='teacher-dashboard.html'"><i class="fa fa-chart-line"></i>Dashboard</li>
+        <li onclick="location.href='teacher-periods.html'"><i class="fa fa-book-open"></i>My Classes</li>
+        <li onclick="location.href='teacher-class-register.html'"><i class="fa fa-clipboard-list"></i>Daily Class Register</li>
+        <li onclick="location.href='teacher-attendance.html'"><i class="fa fa-calendar-check"></i>Attendance</li>
+        <li class="active"><i class="fa fa-calendar-plus"></i>Compensation Request</li>
+        <li onclick="location.href='teacher-leave.html'"><i class="fa fa-calendar"></i>Apply Leave</li>
+        <li onclick="logout()"><i class="fa fa-right-from-bracket"></i>Logout</li>
+    </ul>
+</aside>
+
+<main class="main">
+
+    <div class="page-heading">
+        <small>TEACHER WORKSPACE</small>
+        <h1>Request Compensation Class</h1>
+        <p>Submit a one-time class schedule for Founder approval.</p>
+    </div>
+
+    <section class="panel">
+        <div class="section-title"><i class="fa fa-calendar-plus"></i> Class Details</div>
+
+        <form id="requestForm">
+            <div class="form-grid">
+
+                <div class="field">
+                    <label>Class *</label>
+                    <select id="className" required>
+                        <option value="">Select Class</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>Compensation Date *</label>
+                    <input type="date" id="date" required>
+                </div>
+
+                <div class="field">
+                    <label>Start Time *</label>
+                    <input type="time" id="startTime" required>
+                </div>
+
+                <div class="field">
+                    <label>End Time *</label>
+                    <input type="time" id="endTime" required>
+                </div>
+
+                <div class="field full">
+                    <label>Activities *</label>
+                    <div class="activity-list" id="activityList">
+    Select a class first.
+</div>
+                </div>
+
+                <div class="field full">
+                    <label>Students *</label>
+                    <div class="student-list" id="studentList">
+                        Select a class first.
+                    </div>
+                </div>
+
+                <div class="field full">
+                    <label>Reason for Compensation *</label>
+                    <textarea id="reason" required placeholder="Explain why this compensation class is required..."></textarea>
+                </div>
+
+            </div>
+
+            <p class="message" id="formMessage"></p>
+
+            <button type="submit" class="primary-btn" id="submitBtn">
+                <i class="fa fa-paper-plane"></i> Submit for Approval
+            </button>
+        </form>
+    </section>
+
+    <section class="panel">
+        <div class="section-title"><i class="fa fa-clock"></i> My Compensation Requests</div>
+        <div id="myRequests">Loading requests...</div>
+    </section>
+
+</main>
+
+<script>
+const API = "https://academy-backend-eatl.onrender.com";
+const token = sessionStorage.getItem("token");
+const role = sessionStorage.getItem("role");
+
+if (!token || role !== "teacher") {
+    alert("Please login first.");
+    location.href = "teacher-login.html";
+}
+
+function logout() {
+    sessionStorage.clear();
+    location.href = "teacher-login.html";
+}
+
+function toggleMenu() {
+    document.querySelector(".sidebar").classList.toggle("show");
+    document.querySelector(".overlay").classList.toggle("show");
+}
+
+function closeMenu() {
+    document.querySelector(".sidebar").classList.remove("show");
+    document.querySelector(".overlay").classList.remove("show");
+}
+
+let periods = [];
+
+async function loadClasses() {
+    try {
+        const res = await fetch(`${API}/api/teacher/all-period-assignments`, {
+            headers: { Authorization: "Bearer " + token }
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Unable to load classes");
+
+        periods = Array.isArray(data.data) ? data.data : [];
+
+        const classes = [...new Set(periods.map(p => p.className).filter(Boolean))];
+
+        const select = document.getElementById("className");
+        select.innerHTML = '<option value="">Select Class</option>';
+
+        classes.forEach(name => {
+            const option = document.createElement("option");
+            option.value = name;
+            option.textContent = name;
+            select.appendChild(option);
+        });
+
+    } catch (error) {
+        document.getElementById("formMessage").textContent = error.message;
+    }
+}
+
+document.getElementById("className").addEventListener("change", function() {
+    const selectedClass = this.value;
+
+    const classPeriods = periods.filter(p => p.className === selectedClass);
+
+const activityList = document.getElementById("activityList");
+activityList.innerHTML = "";
+
+const activityCategories = [
+    { title: "Subject", key: "subject" },
+    { title: "Language", key: "language" },
+    { title: "ECA", key: "eca" }
+];
+
+activityCategories.forEach(category => {
+
+    const activities = [
+        ...new Set(
+            classPeriods.flatMap(p =>
+                Array.isArray(p[category.key]) ? p[category.key] : []
+            )
+        )
+    ];
+
+    if (!activities.length) return;
+
+    const heading = document.createElement("strong");
+    heading.textContent = category.title;
+    heading.style.display = "block";
+    heading.style.width = "100%";
+    activityList.appendChild(heading);
+
+    activities.forEach(activity => {
+
+        const label = document.createElement("label");
+        const checkbox = document.createElement("input");
+
+        checkbox.type = "checkbox";
+        checkbox.name = "activity";
+        checkbox.value = activity;
+        checkbox.dataset.category = category.key;
+
+        label.append(checkbox, document.createTextNode(activity));
+        activityList.appendChild(label);
+
+    });
+});
+    const students = new Map();
+
+    periods.filter(p => p.className === selectedClass).forEach(p => {
+        (p.students || []).forEach(student => {
+            if (student && student._id) students.set(student._id, student);
+        });
+    });
+
+    const container = document.getElementById("studentList");
+    container.innerHTML = "";
+
+    if (!students.size) {
+        container.textContent = "No students found for this class.";
+        return;
+    }
+
+    students.forEach(student => {
+        const label = document.createElement("label");
+        label.className = "student-option";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.name = "students";
+        checkbox.value = student._id;
+
+        const span = document.createElement("span");
+        span.textContent = student.name || student.studentName || "Student";
+
+        label.append(checkbox, span);
+        container.appendChild(label);
+    });
+});
+
+document.getElementById("requestForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const message = document.getElementById("formMessage");
+    const button = document.getElementById("submitBtn");
+
+    const className = document.getElementById("className").value;
+    const selectedStudents = [...document.querySelectorAll('input[name="students"]:checked')]
+        .map(input => input.value);
+
+    const selectedActivities = [
+    ...document.querySelectorAll('input[name="activity"]:checked')
+];
+
+const subject = selectedActivities
+    .filter(input => input.dataset.category === "subject")
+    .map(input => input.value);
+
+const language = selectedActivities
+    .filter(input => input.dataset.category === "language")
+    .map(input => input.value);
+
+const eca = selectedActivities
+    .filter(input => input.dataset.category === "eca")
+    .map(input => input.value);
+
+    if (!selectedActivities.length) {
+        message.textContent = "Please select at least one activity.";
+        return;
+    }
+
+    if (!selectedStudents.length) {
+        message.textContent = "Please select at least one student.";
+        return;
+    }
+
+    const date = document.getElementById("date").value;
+    const startTime = document.getElementById("startTime").value;
+    const endTime = document.getElementById("endTime").value;
+
+    if (endTime <= startTime) {
+        message.textContent = "End time must be later than start time.";
+        return;
+    }
+
+    if (date < new Date().toLocaleDateString("en-CA")) {
+        message.textContent = "Please select today or a future date.";
+        return;
+    }
+
+    const payload = {
+        className,
+        subject,
+language,
+eca,
+        date,
+        startTime,
+        endTime,
+        students: selectedStudents,
+        reason: document.getElementById("reason").value.trim()
+    };
+
+    button.disabled = true;
+    message.textContent = "Submitting request...";
+
+    try {
+        const res = await fetch(`${API}/api/teacher/compensation-schedule-request`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Request submission failed");
+
+        message.textContent = "Request submitted successfully for Founder approval.";
+       this.reset();
+
+document.getElementById("activityList").textContent =
+    "Select a class first.";
+
+document.getElementById("studentList").textContent =
+    "Select a class first.";
+
+await loadMyRequests();
+
+    } catch (error) {
+        message.textContent = error.message;
+    } finally {
+        button.disabled = false;
+    }
+});
+
+async function loadMyRequests() {
+    const container = document.getElementById("myRequests");
+
+    try {
+        const res = await fetch(`${API}/api/teacher/my-compensation-schedule-requests`, {
+            headers: { Authorization: "Bearer " + token }
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Unable to load requests");
+
+        const requests = data.requests || [];
+
+        if (!requests.length) {
+            container.textContent = "You have not submitted any compensation requests.";
+            return;
+        }
+
+        container.innerHTML = "";
+
+        requests.forEach(r => {
+            const card = document.createElement("div");
+            card.className = "request-card";
+
+            const date = r.date
+                ? new Date(r.date).toLocaleDateString("en-IN")
+                : "-";
+
+            const status = document.createElement("div");
+            status.className = "status " + r.status;
+            status.textContent = "Status: " + r.status;
+
+            const details = document.createElement("p");
+            details.textContent =
+                `${r.className} | ${date} | ${r.startTime} - ${r.endTime}`;
+
+            card.append(details, status);
+
+            if (r.rejectionReason) {
+                const reason = document.createElement("p");
+                reason.textContent = "Rejection reason: " + r.rejectionReason;
+                card.appendChild(reason);
+            }
+
+            container.appendChild(card);
+        });
+
+    } catch (error) {
+        container.textContent = error.message;
+    }
+}
+
+loadClasses();
+loadMyRequests();
+</script>
+
+</body>
+</html>

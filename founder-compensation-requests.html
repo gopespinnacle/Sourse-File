@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compensation Schedule Requests</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+.request-container {
+    padding: 20px;
+}
+
+.request-card {
+    background: white;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.request-card h3 {
+    margin-top: 0;
+    color: #263b60;
+}
+
+.request-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin: 15px 0;
+}
+
+.request-details p {
+    margin: 5px 0;
+}
+
+.request-status {
+    font-weight: bold;
+}
+
+.status-Pending { color: #d97706; }
+.status-Approved { color: #16a34a; }
+.status-Rejected { color: #dc2626; }
+
+.action-btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    color: white;
+    margin-right: 8px;
+    margin-top: 10px;
+}
+
+.approve-btn { background: #16a34a; }
+.reject-btn { background: #dc2626; }
+
+.action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#message {
+    margin: 15px 0;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body class="dashboard-page">
+
+<div id="sidebar-container"></div>
+
+<script>
+fetch("sidebar.html")
+.then(res => res.text())
+.then(data => {
+    document.getElementById("sidebar-container").innerHTML = data;
+});
+</script>
+
+<div class="main-content request-container">
+
+    <h2>Compensation Schedule Requests</h2>
+    <p>Review and approve one-time compensation classes requested by teachers.</p>
+
+    <div id="message"></div>
+    <div id="requestsList">Loading requests...</div>
+
+</div>
+
+<script>
+
+const API = "https://academy-backend-eatl.onrender.com/api/admin-compensation-schedule";
+
+const token = localStorage.getItem("token");
+
+async function loadRequests() {
+
+    const container = document.getElementById("requestsList");
+
+    if (!token) {
+        container.innerHTML = "Please log in again.";
+        return;
+    }
+
+    try {
+
+        const res = await fetch(`${API}/requests`, {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.message || "Unable to load requests");
+        }
+
+        const requests = data.requests || [];
+
+        if (!requests.length) {
+            container.innerHTML = "<p>No compensation requests found.</p>";
+            return;
+        }
+
+        container.innerHTML = "";
+
+        requests.forEach(r => {
+
+            const teacherName = r.teacher?.name || "Unknown Teacher";
+
+            const activities = [
+                ...(r.subject || []),
+                ...(r.language || []),
+                ...(r.eca || [])
+            ].join(", ") || "Not specified";
+
+            const students = (r.students || [])
+                .map(s => s.name || "Student")
+                .join(", ");
+
+            const date = r.date
+                ? new Date(r.date).toLocaleDateString("en-IN")
+                : "Not specified";
+
+            const card = document.createElement("div");
+            card.className = "request-card";
+
+            card.innerHTML = `
+                <h3>${teacherName}</h3>
+
+                <div class="request-details">
+                    <p><strong>Class:</strong> ${r.className || "-"}</p>
+                    <p><strong>Activities:</strong> ${activities}</p>
+                    <p><strong>Date:</strong> ${date}</p>
+                    <p><strong>Time:</strong> ${r.startTime || "-"} - ${r.endTime || "-"}</p>
+                    <p><strong>Students:</strong> ${students || "Not specified"}</p>
+                    <p><strong>Reason:</strong> ${r.reason || "-"}</p>
+                </div>
+
+                <p class="request-status status-${r.status}">
+                    Status: ${r.status}
+                </p>
+
+                ${
+                    r.status === "Pending"
+                    ? `
+                        <button class="action-btn approve-btn">Approve</button>
+                        <button class="action-btn reject-btn">Reject</button>
+                    `
+                    : ""
+                }
+            `;
+
+            if (r.status === "Pending") {
+
+                card.querySelector(".approve-btn").onclick = () =>
+                    updateRequest(r._id, "approve");
+
+                card.querySelector(".reject-btn").onclick = () =>
+                    updateRequest(r._id, "reject");
+            }
+
+            container.appendChild(card);
+        });
+
+    } catch (error) {
+
+        container.innerHTML = `<p>Unable to load requests: ${error.message}</p>`;
+
+    }
+}
+
+
+async function updateRequest(id, action) {
+
+    let rejectionReason = "";
+
+    if (action === "reject") {
+        rejectionReason = prompt("Enter rejection reason:");
+
+        if (rejectionReason === null) return;
+    }
+
+    if (!confirm(`Are you sure you want to ${action} this request?`)) {
+        return;
+    }
+
+    try {
+
+        const res = await fetch(`${API}/${action}/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({
+                rejectionReason
+            })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.message || "Action failed");
+        }
+
+        document.getElementById("message").textContent =
+            `Request ${action}d successfully.`;
+
+        loadRequests();
+
+    } catch (error) {
+
+        alert(error.message);
+
+    }
+}
+
+loadRequests();
+
+</script>
+
+</body>
+</html>
