@@ -2624,3 +2624,347 @@ background: #2c5282;
     }
 
 }
+
+
+/* =========================================
+   PREMIUM STUDENTS MANAGEMENT - MOBILE ONLY
+========================================= */
+
+@media screen and (max-width: 768px) {
+
+    body.dashboard-page {
+        background: #f3f6fc !important;
+        overflow-x: hidden;
+    }
+
+    /* Hide desktop sidebar */
+    #sidebar-container {
+        display: none !important;
+    }
+
+    .main-content {
+        margin: 0 !important;
+        width: 100% !important;
+        min-height: 100vh;
+        padding: 18px 15px 35px !important;
+        box-sizing: border-box;
+        background: #f3f6fc !important;
+    }
+
+    /* Mobile Header */
+
+    .mobile-students-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 12px 0 22px;
+    }
+
+    .mobile-back-btn {
+        width: 43px;
+        height: 43px;
+        min-width: 43px;
+        border: none;
+        border-radius: 14px;
+        background: #ffffff;
+        color: #173b70;
+        font-size: 18px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+        cursor: pointer;
+    }
+
+    .mobile-header-title span {
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        color: #6482aa;
+    }
+
+    .mobile-header-title h2 {
+        margin: 3px 0;
+        font-size: 20px;
+        font-weight: 800;
+        color: #142d50;
+    }
+
+    .mobile-header-title p {
+        margin: 0;
+        font-size: 12px;
+        color: #8493a8;
+    }
+
+    /* Hide old desktop heading */
+
+    .main-content > h1 {
+        display: none !important;
+    }
+
+    /* Student Summary */
+
+    .mobile-student-summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #102f59, #2465a8);
+        color: white;
+        box-shadow: 0 8px 22px rgba(20,55,100,0.16);
+    }
+
+    .mobile-student-summary span {
+        font-size: 12px;
+        color: #d5e5ff;
+    }
+
+    .mobile-student-summary h2 {
+        margin: 6px 0 0;
+        font-size: 32px;
+        font-weight: 800;
+    }
+
+    .mobile-student-icon {
+        width: 55px;
+        height: 55px;
+        border-radius: 17px;
+        background: rgba(255,255,255,0.15);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 25px;
+    }
+
+    /* Toolbar */
+
+    .student-toolbar {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .student-toolbar .add-btn {
+        width: 100%;
+        min-height: 49px;
+        border: none;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #1761bd, #3288e8);
+        color: white;
+        font-size: 15px;
+        font-weight: 700;
+        box-shadow: 0 5px 15px rgba(35,105,190,0.2);
+    }
+
+    .student-toolbar select {
+        width: 100%;
+        height: 47px;
+        padding: 0 14px;
+        border: 1px solid #e0e7f0;
+        border-radius: 13px;
+        background: white;
+        color: #263d5c;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+
+    /* Student Cards */
+
+    .table-wrapper {
+        width: 100%;
+        overflow: visible !important;
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    #studentTable {
+        width: 100% !important;
+        min-width: 0 !important;
+        border: none !important;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+    }
+
+    #studentTable thead {
+        display: none !important;
+    }
+
+    #studentTable tbody {
+        display: block;
+        width: 100%;
+    }
+
+    #studentTable tbody tr {
+        display: block;
+        width: 100%;
+        margin-bottom: 17px;
+        padding: 15px;
+        box-sizing: border-box;
+        background: #ffffff;
+        border: 1px solid #e9eef5;
+        border-radius: 19px;
+        box-shadow: 0 5px 18px rgba(20,45,80,0.055);
+    }
+
+    #studentTable tbody td {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        width: 100%;
+        padding: 10px 0 !important;
+        border: none !important;
+        border-bottom: 1px solid #f0f2f6 !important;
+        box-sizing: border-box;
+        text-align: right;
+        font-size: 12px;
+        color: #344761;
+        overflow-wrap: anywhere;
+    }
+
+    #studentTable tbody td::before {
+        flex: 0 0 105px;
+        text-align: left;
+        font-size: 11px;
+        font-weight: 700;
+        color: #8291a5;
+    }
+
+    #studentTable tbody td:nth-child(1)::before {
+        content: "Student ID";
+    }
+
+    #studentTable tbody td:nth-child(2)::before {
+        content: "Student Name";
+    }
+
+    #studentTable tbody td:nth-child(3)::before {
+        content: "Grade";
+    }
+
+    #studentTable tbody td:nth-child(4)::before {
+        content: "Monthly Fee";
+    }
+
+    #studentTable tbody td:nth-child(5)::before {
+        content: "Subjects";
+    }
+
+    #studentTable tbody td:nth-child(6)::before {
+        content: "ECA";
+    }
+
+    #studentTable tbody td:nth-child(7)::before {
+        content: "Languages";
+    }
+
+    #studentTable tbody td:nth-child(8)::before {
+        content: "Board";
+    }
+
+    #studentTable tbody td:nth-child(9)::before {
+        content: "Parent Mobile";
+    }
+
+    #studentTable tbody td:nth-child(10)::before {
+        content: "WhatsApp";
+    }
+
+    #studentTable tbody td:nth-child(11)::before {
+        content: "Login ID";
+    }
+
+    #studentTable tbody td:nth-child(12)::before {
+        content: "Password";
+    }
+
+    #studentTable tbody td:nth-child(13)::before {
+        content: "Actions";
+    }
+
+    #studentTable tbody td:nth-child(2) {
+        font-weight: 800;
+        color: #1761bd !important;
+    }
+
+    #studentTable tbody td:last-child {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 8px;
+        border-bottom: none !important;
+        padding-top: 14px !important;
+    }
+
+    #studentTable tbody td:last-child::before {
+        flex-basis: 100%;
+        margin-bottom: 4px;
+    }
+
+    #studentTable button {
+        border: none;
+        border-radius: 9px;
+        padding: 9px 12px !important;
+        font-size: 11px;
+        font-weight: 700;
+        margin: 0 !important;
+    }
+
+    #studentTable .send-whatsapp-btn {
+        background: #e8f8ef !important;
+        color: #16834c !important;
+    }
+
+    /* Mobile Popups */
+
+    #studentPopup,
+    #studentProfilePopup,
+    #schedulePopup {
+        padding: 12px !important;
+        box-sizing: border-box;
+    }
+
+    #studentPopup .popup-content,
+    #studentProfilePopup .popup-content,
+    #schedulePopup {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 88vh;
+        overflow-y: auto;
+        padding: 20px !important;
+        border-radius: 20px !important;
+        box-sizing: border-box;
+    }
+
+    #studentPopup input,
+    #studentPopup select,
+    #schedulePopup input,
+    #schedulePopup select {
+        width: 100%;
+        min-height: 44px;
+        box-sizing: border-box;
+        border-radius: 10px;
+    }
+
+    .popup-buttons {
+        display: flex;
+        gap: 10px;
+    }
+
+    .popup-buttons button {
+        flex: 1;
+        min-height: 45px;
+        border-radius: 11px;
+    }
+
+}
+
+/* Hide mobile-only elements on desktop */
+
+@media screen and (min-width: 769px) {
+    .mobile-students-header,
+    .mobile-student-summary {
+        display: none !important;
+    }
+}

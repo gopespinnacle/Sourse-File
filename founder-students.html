@@ -22,9 +22,37 @@ document.getElementById("sidebar-container").innerHTML = data;
 
 <div class="main-content">
 
+
+<!-- PREMIUM MOBILE HEADER -->
+<div class="mobile-students-header">
+
+    <button class="mobile-back-btn"
+        onclick="window.history.length > 1 ? history.back() : window.location.href='founder-dashboard.html'">
+        <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <div class="mobile-header-title">
+        <span>FOUNDER PANEL</span>
+        <h2>Students Management</h2>
+        <p>Manage your academy students</p>
+    </div>
+
+</div>
+
+
         <h1>Students List</h1>
 
 <div class="student-toolbar">
+
+    <div class="mobile-student-summary">
+    <div>
+        <span>Total Students</span>
+        <h2 id="mobileStudentCount">0</h2>
+    </div>
+    <div class="mobile-student-icon">
+        <i class="fa-solid fa-user-graduate"></i>
+    </div>
+</div>
 
 <button class="add-btn" onclick="editStudentId=null;openStudentForm()">
 + Add Student
@@ -153,6 +181,10 @@ try {
     return;
 }
 students = data.students;
+
+
+document.getElementById("mobileStudentCount").innerText =
+    students.length;
 const select = document.getElementById("studentSelect");
 select.innerHTML = '<option value="">All Students</option>';
 
