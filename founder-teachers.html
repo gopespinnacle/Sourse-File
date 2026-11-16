@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Teachers Management</title>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -130,12 +132,290 @@ color:white;
     background:#888;
     color:white;
 }
+
+
+/* =========================================
+   ELITE TEACHERS MANAGEMENT - MOBILE ONLY
+========================================= */
+
+.mobile-page-icon {
+    font-size: 20px;
+    color: white;
+}
+
+#teacherCards {
+    display: none;
+}
+
+@media screen and (max-width: 768px) {
+
+    body.dashboard-page {
+        display: block !important;
+        min-height: 100vh;
+        height: auto !important;
+        overflow-x: hidden !important;
+        background: #f1f5fb !important;
+    }
+
+    .main-content {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 22px 14px 40px !important;
+        box-sizing: border-box;
+        background: #f1f5fb !important;
+    }
+
+    .main-content h1 {
+        font-size: 23px;
+        font-weight: 800;
+        color: #173b63;
+        margin-bottom: 20px;
+    }
+
+    /* ADD / ASSIGN BUTTONS */
+
+    .main-content .add-btn {
+        min-height: 46px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 13px;
+        margin: 0 0 10px;
+        box-shadow: 0 5px 14px rgba(23,59,99,.10);
+    }
+
+    /* INVOICE AND FILTER PANELS */
+
+    .filter-section {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 16px;
+        border-radius: 17px;
+        background: white;
+        border: 1px solid #e5ebf4;
+        box-shadow: 0 7px 22px rgba(20,50,90,.06);
+        margin-bottom: 17px;
+        box-sizing: border-box;
+    }
+
+    .filter-section select,
+    .filter-section input {
+        width: 100%;
+        min-height: 46px;
+        box-sizing: border-box;
+        padding: 10px 13px;
+        border: 1px solid #dce4ef;
+        border-radius: 11px;
+        background: #f8faff;
+        font-size: 14px;
+    }
+
+    .filter-section button {
+        width: 100%;
+        min-height: 45px;
+        border-radius: 11px;
+        font-weight: 700;
+    }
+
+    /* DESKTOP TABLE HIDDEN */
+
+    #teacherTable {
+        display: none !important;
+    }
+
+    /* MOBILE TEACHER CARDS */
+
+    #teacherCards {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-top: 20px;
+    }
+
+    .mobile-teacher-card {
+        background: white;
+        border: 1px solid #e7edf5;
+        border-radius: 19px;
+        padding: 17px;
+        box-shadow: 0 8px 25px rgba(24,52,90,.07);
+    }
+
+    .teacher-card-top {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        margin-bottom: 15px;
+    }
+
+    .teacher-avatar {
+        width: 47px;
+        height: 47px;
+        flex-shrink: 0;
+        border-radius: 15px;
+        background: linear-gradient(135deg,#173b63,#347dc0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+    }
+
+    .teacher-identity {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .teacher-identity h3 {
+        margin: 0;
+        font-size: 16px;
+        color: #173b63;
+        overflow-wrap: anywhere;
+    }
+
+    .teacher-identity span {
+        display: block;
+        margin-top: 4px;
+        font-size: 11px;
+        color: #8190a5;
+    }
+
+    .teacher-subjects {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 16px;
+    }
+
+    .teacher-subjects span {
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: #edf4ff;
+        color: #225b9a;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .teacher-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+
+    .teacher-info-grid > div {
+        background: #f5f8fc;
+        padding: 12px;
+        border-radius: 11px;
+        min-width: 0;
+    }
+
+    .teacher-info-grid small {
+        display: block;
+        color: #7b8ba1;
+        font-size: 11px;
+        margin-bottom: 6px;
+    }
+
+    .teacher-info-grid strong {
+        color: #173b63;
+        font-size: 14px;
+        overflow-wrap: anywhere;
+    }
+
+    /* TEACHER ACTIONS */
+
+    .teacher-card-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        border-top: 1px solid #edf0f5;
+        padding-top: 14px;
+    }
+
+    .teacher-card-actions button,
+    .teacher-card-actions a {
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        border: none;
+        border-radius: 9px;
+        background: #eaf1fa;
+        color: #173b63;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .teacher-card-actions .teacher-delete {
+        background: #fff0f0;
+        color: #d83232;
+    }
+
+    /* CONSOLIDATED SALARY REPORT */
+
+    #consolidatedTable {
+        min-width: 450px;
+        font-size: 12px;
+    }
+
+    #consolidatedTable th,
+    #consolidatedTable td {
+        padding: 10px 7px;
+    }
+
+    .main-content h2 {
+        font-size: 19px;
+        margin: 25px 0 14px;
+    }
+
+    /* EDIT TEACHER MODAL */
+
+    .edit-modal-box {
+        width: calc(100% - 30px) !important;
+        max-height: 88dvh;
+        box-sizing: border-box;
+        margin: 20px auto;
+        padding: 20px;
+        border-radius: 19px;
+    }
+
+    .edit-modal-box input {
+        box-sizing: border-box;
+        min-height: 45px;
+    }
+
+}
+
 </style>
 </head>
 
 <body class="dashboard-page">
 
 <div id="sidebar-container"></div>
+
+<!-- PREMIUM MOBILE HEADER -->
+<div class="mobile-dashboard-header">
+    <button class="mobile-menu-btn" onclick="toggleFounderMenu()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="mobile-brand">
+        <strong>Gopes Pinnacle</strong>
+        <small>Teachers Management</small>
+    </div>
+
+    <div class="mobile-page-icon">
+        <i class="fas fa-chalkboard-teacher"></i>
+    </div>
+</div>
+
+<div id="sidebarOverlay" onclick="closeFounderMenu()"></div>
+
+
 <script>
 
 fetch("sidebar.html")
@@ -169,6 +449,24 @@ item.classList.add("active-menu");
 function navigate(page){
 window.location.href = page;
 }
+
+
+function toggleFounderMenu() {
+    document.querySelector(".sidebar")
+        ?.classList.toggle("mobile-sidebar-open");
+
+    document.getElementById("sidebarOverlay")
+        .classList.toggle("active");
+}
+
+function closeFounderMenu() {
+    document.querySelector(".sidebar")
+        ?.classList.remove("mobile-sidebar-open");
+
+    document.getElementById("sidebarOverlay")
+        .classList.remove("active");
+}
+
 
 </script>
 
@@ -214,7 +512,8 @@ window.location.href = page;
     <button class="add-btn" onclick="resetFilter()">Reset</button>
 
 </div>
-
+<!-- MOBILE TEACHER CARDS -->
+<div id="teacherCards"></div>
 <table id="teacherTable">
 <thead>
 <tr>
@@ -445,7 +744,9 @@ async function loadTeachers(){
     teachers = data.teachers;
 
     renderTeachers();
-    populateInvoiceDropdown();
+renderTeacherCards(teachers);
+
+populateInvoiceDropdown();
     populateFilters();
     renderConsolidatedReport();
 }
@@ -570,6 +871,117 @@ ${t.mobile ? `
     });
 
 }
+
+function renderTeacherCards(list) {
+
+    const container = document.getElementById("teacherCards");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    list.forEach(t => {
+
+        const subjects = Array.isArray(t.subject)
+            ? t.subject : (t.subject ? [t.subject] : []);
+
+        const eca = Array.isArray(t.eca)
+            ? t.eca : [];
+
+        const languages = Array.isArray(t.language)
+            ? t.language : [];
+
+        container.innerHTML += `
+        <div class="mobile-teacher-card">
+
+            <div class="teacher-card-top">
+
+                <div class="teacher-avatar">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+
+                <div class="teacher-identity">
+                    <h3>${t.name || "Teacher"}</h3>
+                    <span>${t.teacherId || "Teacher"}</span>
+                </div>
+
+            </div>
+
+            <div class="teacher-subjects">
+                ${subjects.map(s => `<span>${s}</span>`).join("")}
+            </div>
+
+            <div class="teacher-info-grid">
+
+                <div>
+                    <small>Experience</small>
+                    <strong>${t.experience || 0} Years</strong>
+                </div>
+
+                <div>
+                    <small>Monthly Salary</small>
+                    <strong>₹${Number(t.salaryMonth || 0).toLocaleString("en-IN")}</strong>
+                </div>
+
+                <div>
+                    <small>Sessions / Week</small>
+                    <strong>${t.sessionsWeek || 0}</strong>
+                </div>
+
+                <div>
+                    <small>Attendance</small>
+                    <strong>${t.attendanceDays || 0} Days</strong>
+                </div>
+
+            </div>
+
+            <div class="teacher-card-actions">
+
+                <button onclick="viewDetails('${t._id}')">
+                    <i class="fas fa-eye"></i> Details
+                </button>
+
+                <button onclick="editTeacher('${t._id}')">
+                    <i class="fas fa-pen"></i> Edit
+                </button>
+
+                <button onclick="updateAttendance('${t._id}')">
+                    <i class="fas fa-calendar-check"></i> Attendance
+                </button>
+
+                <button
+                    style="background:${t.allowScreenShare ? '#16a34a' : '#dc3545'};color:white"
+                    onclick="toggleScreenShare('${t._id}')">
+
+                    <i class="fas fa-desktop"></i>
+                    ${t.allowScreenShare ? "Screen ON" : "Screen OFF"}
+
+                </button>
+
+                <button class="teacher-delete"
+                    onclick="deleteTeacher('${t._id}')">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+
+                ${t.mobile ? `
+                <button onclick="showTeacherCallOptions(
+                    '${String(t.mobile).replace(/[^\d+]/g, '')}',
+                    '${String(t.whatsapp || t.mobile).replace(/[^\d+]/g, '')}'
+                )">
+                    <i class="fas fa-phone"></i> Call
+                </button>
+                ` : ""}
+
+                ${t.meetingLink ? `
+                <a href="${t.meetingLink}" target="_blank" rel="noopener">
+                    <i class="fas fa-video"></i> Meeting
+                </a>
+                ` : ""}
+
+            </div>
+
+        </div>`;
+    });
+}
 function populateInvoiceDropdown(){
 
     const select = document.getElementById("invoiceTeacher");
@@ -591,9 +1003,12 @@ function populateFilters(){
 
     teachers.forEach(t=>{
         nameSelect.innerHTML += `<option value="${t.name}">${t.name}</option>`;
-        if(t.subject){
-            subjects.add(t.subject);
-        }
+        if(Array.isArray(t.subject)){
+    t.subject.forEach(sub => subjects.add(sub));
+}
+else if(t.subject){
+    subjects.add(t.subject);
+}
     });
 
     subjects.forEach(sub=>{
@@ -710,7 +1125,11 @@ filtered = filtered.filter(t => t.name === name);
 }
 
 if(subject){
-filtered = filtered.filter(t => t.subject === subject);
+    filtered = filtered.filter(t =>
+        Array.isArray(t.subject)
+            ? t.subject.includes(subject)
+            : t.subject === subject
+    );
 }
 
 const tbody = document.querySelector("#teacherTable tbody");
@@ -751,7 +1170,7 @@ ${t.mobile ? `
 `;
 
 });
-
+renderTeacherCards(filtered);
 }
 
 
