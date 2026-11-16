@@ -2,8 +2,9 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Students Management</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=students-mobile-2">
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
@@ -42,25 +43,28 @@ document.getElementById("sidebar-container").innerHTML = data;
 
         <h1>Students List</h1>
 
-<div class="student-toolbar">
-
-    <div class="mobile-student-summary">
+<!-- MOBILE SUMMARY -->
+<div class="mobile-student-summary">
     <div>
         <span>Total Students</span>
         <h2 id="mobileStudentCount">0</h2>
     </div>
+
     <div class="mobile-student-icon">
         <i class="fa-solid fa-user-graduate"></i>
     </div>
 </div>
 
-<button class="add-btn" onclick="editStudentId=null;openStudentForm()">
-+ Add Student
-</button>
+<div class="student-toolbar">
 
-<select id="studentSelect" onchange="filterStudentList()">
-<option value="">All Students</option>
-</select>
+    <button class="add-btn"
+        onclick="editStudentId=null;openStudentForm()">
+        + Add Student
+    </button>
+
+    <select id="studentSelect" onchange="filterStudentList()">
+        <option value="">All Students</option>
+    </select>
 
 </div>
 <div id="studentPopup" class="popup-content" style="display:none;">

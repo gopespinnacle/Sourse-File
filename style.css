@@ -2925,9 +2925,9 @@ background: #2c5282;
         box-sizing: border-box;
     }
 
-    #studentPopup .popup-content,
-    #studentProfilePopup .popup-content,
-    #schedulePopup {
+    #studentPopup,
+#studentProfilePopup .popup-content,
+#schedulePopup {
         width: 100% !important;
         max-width: 100% !important;
         max-height: 88vh;
