@@ -137,6 +137,33 @@ function renderHomework(){
         style="width:100%;height:500px;border:1px solid #cbd5e1;border-radius:10px;"
     ></iframe>
 </div>
+
+
+${(sub?.attachments || []).length
+    ? `<div class="pdf-preview">
+        <div class="preview-heading">
+            <strong>Your Submitted Answer</strong>
+            <span>Previously uploaded file</span>
+        </div>
+
+        ${sub.attachments.map(a => `
+            <div style="margin-bottom:15px;">
+                <p>
+                    <a href="${esc(a.url)}" target="_blank" rel="noopener">
+                        ${esc(a.name || "View submitted answer")}
+                    </a>
+                </p>
+
+                <iframe
+                    src="${esc(a.url)}"
+                    title="Submitted homework preview"
+                    style="width:100%;height:500px;border:1px solid #cbd5e1;border-radius:10px;"
+                ></iframe>
+            </div>
+        `).join("")}
+    </div>`
+    : ""}
+
  <p class="muted">You may submit text, a file, or both. Submitting again replaces your previous submission.</p>
  <button type="submit">Submit Homework</button><div class="message" id="message-${h._id}"></div></form></article>`}).join("");
 }
