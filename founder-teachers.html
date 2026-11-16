@@ -1113,10 +1113,22 @@ alert(data.message || "Delete failed");
 </script>
 
 <script>
+
+
+function handleNameFilter() {
+    applyFilter();
+}
+
+function handleSubjectFilter() {
+    applyFilter();
+}
+
 function applyFilter(){
 
 const name = document.getElementById("filterName").value;
 const subject = document.getElementById("filterSubject").value;
+
+const date = document.getElementById("filterDate").value;
 
 let filtered = teachers;
 
@@ -1130,6 +1142,19 @@ if(subject){
             ? t.subject.includes(subject)
             : t.subject === subject
     );
+}
+
+if(date){
+    filtered = filtered.filter(t => {
+        const d = new Date(t.createdAt);
+
+        const teacherDate =
+            d.getFullYear() + "-" +
+            String(d.getMonth() + 1).padStart(2, "0") + "-" +
+            String(d.getDate()).padStart(2, "0");
+
+        return teacherDate === date;
+    });
 }
 
 const tbody = document.querySelector("#teacherTable tbody");
