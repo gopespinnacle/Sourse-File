@@ -11,6 +11,27 @@ main{max-width:1100px;margin:22px auto;padding:0 16px}.filters,.homework{backgro
 .filters{display:flex;gap:14px;flex-wrap:wrap;align-items:end}.field{min-width:180px;flex:1}label{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
 input,select,textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:7px;font:inherit}textarea{min-height:100px}
 button{background:#2563eb;color:#fff;border:0;border-radius:7px;padding:10px 14px;font-weight:700;cursor:pointer}.muted{font-size:13px;color:#64748b}.tag{background:#dbeafe;color:#1d4ed8;border-radius:20px;padding:4px 9px;font-size:12px;font-weight:700}.hwhead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.message{margin-top:10px;font-weight:600}.error{color:#b91c1c}.success{color:#15803d}.attachments a{display:inline-block;margin:5px 8px 5px 0}
+
+.pdf-preview {
+    margin: 15px 0;
+    padding: 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+}
+
+.preview-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.preview-heading span {
+    font-size: 12px;
+    color: #64748b;
+}
 </style>
 <script src="https://unpkg.com/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 </head>
@@ -103,6 +124,19 @@ function renderHomework(){
     Select photos of your written answers or an existing PDF.
     Multiple photos will automatically combine into one PDF.
 </p>
+
+<div id="preview-${h._id}" class="pdf-preview" style="display:none;">
+    <div class="preview-heading">
+        <strong>Answer PDF Preview</strong>
+        <span>Review before submitting</span>
+    </div>
+
+    <iframe
+        id="previewFrame-${h._id}"
+        title="Homework PDF Preview"
+        style="width:100%;height:500px;border:1px solid #cbd5e1;border-radius:10px;"
+    ></iframe>
+</div>
  <p class="muted">You may submit text, a file, or both. Submitting again replaces your previous submission.</p>
  <button type="submit">Submit Homework</button><div class="message" id="message-${h._id}"></div></form></article>`}).join("");
 }
@@ -113,12 +147,25 @@ function renderHomework(){
 // SHOW SELECTED ANSWER FILES
 // ======================================
 
-function showSelectedFiles(id) {
+
+const previewURLs = {};
+
+async function showSelectedFiles(id) {
 
     const input = document.getElementById("file-" + id);
     const status = document.getElementById("fileStatus-" + id);
+    const preview = document.getElementById("preview-" + id);
+    const frame = document.getElementById("previewFrame-" + id);
 
     const files = Array.from(input.files);
+
+    if (previewURLs[id]) {
+        URL.revokeObjectURL(previewURLs[id]);
+        delete previewURLs[id];
+    }
+
+    preview.style.display = "none";
+    frame.src = "about:blank";
 
     if (!files.length) {
         status.textContent = "No file selected.";
@@ -129,7 +176,7 @@ function showSelectedFiles(id) {
     const hasPDF = files.some(f => f.type === "application/pdf");
 
     if (hasImages && hasPDF) {
-        status.textContent = "Please select images or PDF separately.";
+        status.textContent = "Select images or PDF separately.";
         input.value = "";
         return;
     }
@@ -140,17 +187,47 @@ function showSelectedFiles(id) {
         return;
     }
 
-    if (hasImages) {
-        status.textContent =
-            files.length + " image(s) selected. They will be converted into one PDF automatically.";
-    } else if (hasPDF) {
-        status.textContent = "PDF selected: " + files[0].name;
-    } else {
-        status.textContent = "Unsupported file type.";
-        input.value = "";
+    try {
+
+        let pdfBlob;
+
+        if (hasImages) {
+
+            status.textContent = "Converting images into PDF...";
+
+            pdfBlob = await convertImagesToPDF(files);
+
+        } else if (hasPDF) {
+
+            pdfBlob = files[0];
+
+        } else {
+
+            status.textContent = "Unsupported file type.";
+            input.value = "";
+            return;
+        }
+
+        const pdfURL = URL.createObjectURL(pdfBlob);
+
+        previewURLs[id] = pdfURL;
+
+        frame.src = pdfURL;
+
+        preview.style.display = "block";
+
+        status.textContent = hasImages
+            ? files.length + " images converted successfully. Review your PDF below."
+            : "PDF loaded successfully. Review your document below.";
+
+    } catch (error) {
+
+        status.textContent = "PDF preview failed: " + error.message;
+        preview.style.display = "none";
+
+        console.error(error);
     }
 }
-
 
 // ======================================
 // CONVERT MULTIPLE IMAGES INTO ONE PDF
