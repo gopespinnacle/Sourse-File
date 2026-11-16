@@ -759,6 +759,32 @@ function callStudent(studentId) {
 }
 
 
+function filterStudentList() {
+
+    const selectedName = document
+        .getElementById("studentSelect")
+        .value.trim().toLowerCase();
+
+    const rows = document.querySelectorAll(
+        "#studentTable tbody tr"
+    );
+
+    rows.forEach(row => {
+
+        const studentName = row.cells[1]
+            ?.innerText.trim().toLowerCase() || "";
+
+        if (!selectedName || studentName === selectedName) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+
+    });
+
+}
+
+
 </script>
 
 
