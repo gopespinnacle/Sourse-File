@@ -2638,9 +2638,9 @@ background: #2c5282;
     }
 
     /* Hide desktop sidebar */
-    #sidebar-container {
-        display: none !important;
-    }
+    body.founder-students-page #sidebar-container {
+    display: none !important;
+}
 
     .main-content {
         margin: 0 !important;
