@@ -615,17 +615,22 @@ if (pendingRegisterCount > 0) {
             const row = document.createElement("tr");
 
             const cells = [
-                dateText,
-                teacherName,
-                assistantName,
-                schedule.className || "—",
-                activities.join(", ") || "—",
-                `${schedule.startTime || "—"} - ${schedule.endTime || "—"}`,
-                String(studentCount),
-                item.isCompensation
-    ? "N/A"
-    : (item.homeworkDone ? "Submitted" : "Not Submitted")
-            ];
+    dateText,
+    teacherName,
+    assistantName,
+    schedule.className || "—",
+    activities.join(", ") || "—",
+    `${schedule.startTime || "—"} - ${schedule.endTime || "—"}`,
+    String(studentCount),
+
+    // Daily Class Register
+    item.registerDone ? "Entered" : "Not Entered",
+
+    // Schedule's Homework
+    item.isCompensation
+        ? "N/A"
+        : (item.homeworkDone ? "Submitted" : "Not Submitted")
+];
 
             cells.forEach((value, index) => {
                 const cell = document.createElement("td");
