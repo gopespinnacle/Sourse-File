@@ -209,6 +209,11 @@ function openTeacherRegister(scheduleId, date) {
 
     window.location.href = url;
 }
+
+function openTeacherCompensationRegister(sessionId) {
+    window.location.href =
+        `teacher-class-register.html?compensationSessionId=${encodeURIComponent(sessionId)}`;
+}
 function animateNumber(id,number){const el=document.getElementById(id);if(!el)return;if(!number||number<1){el.innerText=0;return;}let count=0;const step=Math.max(1,Math.ceil(number/35));const timer=setInterval(()=>{count=Math.min(number,count+step);el.innerText=count;if(count>=number)clearInterval(timer);},25);}
 function goToClasses(){window.location.href="teacher-classes.html";}
 function goToPeriods(){window.location.href="teacher-periods.html";}
@@ -350,17 +355,27 @@ async function loadTeacherDailySchedule() {
             "Authorization": "Bearer " + token
         };
 
-        const [scheduleResponse, statusResponse] = await Promise.all([
-            fetch(`${TEACHER_API}/api/teacher/leave-periods`, {
-                headers
-            }),
+       const [scheduleResponse, statusResponse, compensationResponse, registerResponse] = await Promise.all([
 
-            fetch(
-                `${TEACHER_API}/api/teacher/daily-schedule-entry-status?month=${monthKey}`,
-                { headers }
-            )
-        ]);
+    fetch(`${TEACHER_API}/api/teacher/leave-periods`, {
+        headers
+    }),
 
+    fetch(
+        `${TEACHER_API}/api/teacher/daily-schedule-entry-status?month=${monthKey}`,
+        { headers }
+    ),
+
+    fetch(`${TEACHER_API}/api/teacher/compensation-sessions`, {
+        headers
+    }),
+
+    fetch(
+        `${TEACHER_API}/api/teacher/daily-class-register?startDate=${monthKey}-01&endDate=${year}-${now.month}-${String(new Date(year, month, 0).getDate()).padStart(2, "0")}`,
+        { headers }
+    )
+
+]);
         if (!scheduleResponse.ok) {
             throw new Error("Unable to load teacher schedules.");
         }
@@ -371,6 +386,30 @@ async function loadTeacherDailySchedule() {
 
         const scheduleData = await scheduleResponse.json();
         const statusData = await statusResponse.json();
+
+        const compensationData = await compensationResponse.json();
+
+if (!compensationResponse.ok) {
+    throw new Error(
+        compensationData.message || "Unable to load compensation classes."
+    );
+}
+
+const compensationSessions = Array.isArray(compensationData.sessions)
+    ? compensationData.sessions
+    : [];
+
+    const registerData = await registerResponse.json();
+
+if (!registerResponse.ok) {
+    throw new Error(
+        registerData.message || "Unable to load register records."
+    );
+}
+
+const savedCompensationRegisters = Array.isArray(registerData.data)
+    ? registerData.data.filter(r => r.registerType === "Compensation")
+    : [];
 
         const schedules = Array.isArray(scheduleData.data)
             ? scheduleData.data
@@ -450,7 +489,57 @@ async function loadTeacherDailySchedule() {
             });
         }
 
+        // ADD COMPENSATION CLASSES
+compensationSessions.forEach(session => {
+
+    const dateKey = getTeacherDateString(new Date(session.date));
+
+    // Show only compensation classes in the current month
+    // whose scheduled date has arrived.
+    if (!dateKey.startsWith(monthKey) || dateKey > todayKey) return;
+
+    // For today, wait until the class has ended.
+    if (dateKey === todayKey) {
+        const endMinutes = getScheduleEndMinutes(session.endTime);
+
+        if (endMinutes === null || endMinutes > currentMinutes) return;
+    }
+
+    const sessionId = String(session._id);
+
+    const registerDone = savedCompensationRegisters.some(
+        r => String(r.compensationSession) === sessionId ||
+             String(r.compensationSession?._id) === sessionId
+    );
+
+    pendingRows.push({
+        date: dateKey,
+
+        schedule: {
+            _id: sessionId,
+            className: session.className,
+            subject: [session.subject],
+            language: [],
+            eca: [],
+            startTime: session.startTime,
+            endTime: session.endTime,
+            teacher: { name: displayName },
+            assistantTeacher: null,
+            assignments: (session.assignedStudents || []).map(student => ({
+                student: student
+            }))
+        },
+
+        registerDone,
+        homeworkDone: true,
+        isCompensation: true,
+        compensationSessionId: sessionId
+    });
+
+});
+
         // Oldest date first, then start time.
+        
         pendingRows.sort((a, b) => {
             const dateCompare = a.date.localeCompare(b.date);
 
@@ -533,8 +622,9 @@ if (pendingRegisterCount > 0) {
                 activities.join(", ") || "—",
                 `${schedule.startTime || "—"} - ${schedule.endTime || "—"}`,
                 String(studentCount),
-                item.registerDone ? "Entered" : "Not Entered",
-                item.homeworkDone ? "Submitted" : "Not Submitted"
+                item.isCompensation
+    ? "N/A"
+    : (item.homeworkDone ? "Submitted" : "Not Submitted")
             ];
 
             cells.forEach((value, index) => {
@@ -556,13 +646,21 @@ if (pendingRegisterCount > 0) {
 
             const actionCell = document.createElement("td");
 
-            actionCell.innerHTML = `
-    <button type="button" class="primary" style="margin:2px;"
-        onclick="openTeacherRegister('${schedule._id}', '${item.date}')">
-        Register
-    </button>
-    
-`;
+if (item.isCompensation) {
+    actionCell.innerHTML = `
+        <button type="button" class="primary" style="margin:2px;"
+            onclick="openTeacherCompensationRegister('${item.compensationSessionId}')">
+            Register
+        </button>
+    `;
+} else {
+    actionCell.innerHTML = `
+        <button type="button" class="primary" style="margin:2px;"
+            onclick="openTeacherRegister('${schedule._id}', '${item.date}')">
+            Register
+        </button>
+    `;
+}
 
             row.appendChild(actionCell);
             tableBody.appendChild(row);
