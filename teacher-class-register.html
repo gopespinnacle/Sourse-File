@@ -728,6 +728,93 @@ let classData = [];
 
 let selectedClass = null;
 
+
+// Compensation class mode
+const pageParams = new URLSearchParams(window.location.search);
+
+const compensationSessionId =
+    pageParams.get("compensationSessionId");
+
+let compensationSession = null;
+
+const isCompensationMode = !!compensationSessionId;
+
+async function loadCompensationSession() {
+
+    try {
+        const response = await fetch(
+            `${API_BASE}/api/teacher/compensation-sessions`,
+            {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                result.message || "Unable to load compensation session."
+            );
+        }
+
+        const sessions = result.sessions || result.data || [];
+
+        compensationSession = sessions.find(
+            session =>
+                String(session._id) === String(compensationSessionId)
+        );
+
+        if (!compensationSession) {
+            throw new Error("Compensation session not found.");
+        }
+
+        selectedClass = {
+            ...compensationSession,
+            periodId: null,
+            students: compensationSession.assignedStudents || []
+        };
+
+        document.getElementById("classDate").value =
+            new Date(compensationSession.date).toISOString().slice(0, 10);
+
+        document.getElementById("grade").value =
+            compensationSession.className || "";
+
+        document.getElementById("startTime").value =
+            compensationSession.startTime || "";
+
+        document.getElementById("endTime").value =
+            compensationSession.endTime || "";
+
+        document.getElementById("classSelect").innerHTML =
+            `<option value="">Compensation Class</option>`;
+
+        populateSubjectOptions({
+            subject: compensationSession.subject,
+            language: [],
+            eca: []
+        });
+
+        document.querySelectorAll(
+            '#subjectCheckboxes input[name="selectedSubjects"]'
+        ).forEach(checkbox => {
+            checkbox.checked = true;
+        });
+
+        renderSubjectTopicInputs();
+
+        renderStudents(selectedClass.students);
+
+        document.getElementById("teacherStatus").value = "Present";
+
+    } catch (error) {
+        console.error("Compensation session loading error:", error);
+        showMessage(error.message, "error");
+    }
+}
+
 /* =====================================================
    REGISTER TYPE SWITCHING
    ===================================================== */
@@ -912,6 +999,12 @@ function dateChanged(){
 async function loadClasses(){
 
     try{
+
+                // Compensation register: load only the selected compensation session.
+        if (isCompensationMode) {
+            await loadCompensationSession();
+            return;
+        }
 
         const response =
             await fetch(
@@ -1816,8 +1909,15 @@ if (registerType === "Holiday") {
 
                 body: JSON.stringify({
 
-                    periodAssignmentId:
-                        selectedClass.periodId,
+                    ...(isCompensationMode
+    ? {
+        compensationSessionId: compensationSessionId,
+        registerType: "Compensation"
+    }
+    : {
+        periodAssignmentId: selectedClass.periodId,
+        registerType: "Class"
+    }),
 
                     date: date,
 

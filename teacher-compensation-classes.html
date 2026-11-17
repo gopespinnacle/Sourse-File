@@ -269,6 +269,21 @@ function renderSessions(sessions) {
             });
         }
 
+
+                // Daily Class Register button
+        const registerButton = document.createElement("button");
+
+        registerButton.className = "join-btn";
+        registerButton.style.background = "#059669";
+        registerButton.textContent = "Daily Class Register";
+
+        registerButton.addEventListener("click", () => {
+            window.location.href =
+                `teacher-class-register.html?compensationSessionId=${encodeURIComponent(session._id)}`;
+        });
+
+        card.appendChild(registerButton);
+
         if (dateKey === todayKey) {
             todayBox.appendChild(card);
             todayCount++;
