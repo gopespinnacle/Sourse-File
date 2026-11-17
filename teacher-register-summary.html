@@ -59,6 +59,21 @@ tbody tr:last-child td{border-bottom:0}
 .student-id{font-size:10px;color:#8490a5;margin-top:4px}
 .status-pill{display:inline-flex;align-items:center;gap:5px;border-radius:30px;padding:6px 9px;font-size:10px;font-weight:800;white-space:nowrap}
 .status-present{background:#e8f7f0;color:#14734f}.status-absent{background:#fff0f0;color:#b63838}.status-neutral{background:#eef1f6;color:#66728a}
+
+.status-compensation {
+    background: #eaf2ff;
+    color: #2454b5;
+}
+
+.status-regular {
+    background: #e8f7f0;
+    color: #14734f;
+}
+
+.status-holiday {
+    background: #fff4df;
+    color: #a36b12;
+}
 .topic{max-width:220px;line-height:1.45;overflow-wrap:anywhere}
 .message-row{text-align:center;padding:36px!important;color:#7d879c!important;font-size:13px!important}
 .message-row i{display:block;font-size:23px;margin-bottom:10px;color:#a0abc0}
@@ -395,6 +410,14 @@ tbody tr:last-child td{border-bottom:0}
         content: "Teacher Status";
     }
 
+    tbody td:nth-child(10) {
+    grid-column: 1 / -1;
+}
+
+tbody td:nth-child(10)::before {
+    content: "Class Type";
+}
+
     .date-main {
         white-space: normal;
         font-size: 12px;
@@ -506,9 +529,18 @@ tbody tr:last-child td{border-bottom:0}
   <div class="table-scroll">
     <table>
       <thead><tr>
-        <th>Date</th><th>Time</th><th>Grade</th><th>Subject</th><th>Student</th><th>Student ID</th><th>Attendance</th><th>Topic Covered</th><th>Teacher Status</th>
+        <th>Date</th>
+<th>Time</th>
+<th>Grade</th>
+<th>Subject</th>
+<th>Student</th>
+<th>Student ID</th>
+<th>Attendance</th>
+<th>Topic Covered</th>
+<th>Teacher Status</th>
+<th>Class Type</th>
       </tr></thead>
-      <tbody id="registerTableBody"><tr><td colspan="9" class="message-row"><i class="fa-solid fa-spinner fa-spin"></i>Loading your register…</td></tr></tbody>
+      <tbody id="registerTableBody"><tr><td colspan="10" class="message-row"><i class="fa-solid fa-spinner fa-spin"></i>Loading your register…</td></tr></tbody>
     </table>
   </div>
   <div class="footer-note">Gopes Pinnacle Academy · Teacher Register Summary</div>
@@ -652,7 +684,7 @@ document.getElementById("conductedCount").textContent = Math.max(
 
   const tbody = document.getElementById("registerTableBody");
   if (!visibleRows.length) {
-    tbody.innerHTML = '<tr><td colspan="9" class="message-row"><i class="fa-regular fa-folder-open"></i>No register records match these filters.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10" class="message-row"><i class="fa-regular fa-folder-open"></i>No register records match these filters.</td></tr>';
     return;
   }
   const sorted = [...visibleRows].sort((a,b) => {
@@ -701,6 +733,21 @@ const subject = register.subject ||
     const teacherClass = teacher === "present" ? "status-present" : teacher === "absent" ? "status-absent" : "status-neutral";
     const isHoliday = register.registerType === "Holiday";
 
+    const isCompensation =
+    register.registerType === "Compensation";
+
+const classType = isHoliday
+    ? "Holiday"
+    : isCompensation
+        ? "Compensation"
+        : "Regular Class";
+
+const classTypeClass = isHoliday
+    ? "status-holiday"
+    : isCompensation
+        ? "status-compensation"
+        : "status-regular";
+
 const holidayLabel =
     register.holidayReason === "Other"
         ? "Other: " + (register.holidayNote || "")
@@ -735,7 +782,12 @@ const statusDisplay = isHoliday
         ${escapeHtml(statusDisplay)}
     </span>
 </td>
-    </tr>`;
+<td>
+    <span class="status-pill ${classTypeClass}">
+        ${classType}
+    </span>
+</td>
+</tr>`;
   }).join("");
 }
 async function loadRegister() {
@@ -745,7 +797,7 @@ async function loadRegister() {
   }
   showNotice("");
   const tbody = document.getElementById("registerTableBody");
-  tbody.innerHTML = '<tr><td colspan="9" class="message-row"><i class="fa-solid fa-spinner fa-spin"></i>Loading your register…</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="10" class="message-row"><i class="fa-solid fa-spinner fa-spin"></i>Loading your register…</td></tr>';
   try {
     const response = await fetch(`${API_BASE}/api/teacher/daily-class-register`, {
       method:"GET",
@@ -762,7 +814,7 @@ async function loadRegister() {
     fillStudentFilter(allRegisters);
     render();
   } catch (error) {
-    tbody.innerHTML = `<tr><td colspan="9" class="message-row"><i class="fa-solid fa-triangle-exclamation"></i>${escapeHtml(error.message || "Unable to load records.")}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="10" class="message-row"><i class="fa-solid fa-triangle-exclamation"></i>${escapeHtml(error.message || "Unable to load records.")}</td></tr>`;
     document.getElementById("sessionCount").textContent = "—";
     document.getElementById("conductedCount").textContent = "—";
     document.getElementById("leaveCount").textContent = "—";
@@ -814,6 +866,23 @@ const subject = scheduleSubjects.length
 
     const isHoliday = register.registerType === "Holiday";
 
+    
+
+    const isCompensation =
+    register.registerType === "Compensation";
+
+const classType = isHoliday
+    ? "Holiday"
+    : isCompensation
+        ? "Compensation"
+        : "Regular Class";
+
+const classTypeClass = isHoliday
+    ? "status-holiday"
+    : isCompensation
+        ? "status-compensation"
+        : "status-regular";
+
 const holidayLabel =
     register.holidayReason === "Other"
         ? "Other: " + (register.holidayNote || "")
@@ -836,12 +905,13 @@ return [
       student?.studentId || "—",
       student?.attendance || "—",
       topicDisplay,
-statusDisplay
-    ];
+statusDisplay,
+classType
+];
   });
   doc.autoTable({
     startY:30,
-    head:[["Date","Time","Grade","Subject","Student","Student ID","Attendance","Topic Covered","Teacher Status"]],
+    head:[["Date","Time","Grade","Subject","Student","Student ID","Attendance","Topic Covered","Teacher Status","Class Type"]],
     body:rows,
     theme:"grid",
     styles:{font:"helvetica",fontSize:7,cellPadding:2.2,overflow:"linebreak",textColor:[42,52,75],lineColor:[225,230,240]},
