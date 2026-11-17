@@ -71,7 +71,9 @@ const r = await fetch(url.toString(), { headers });const j=await r.json();if(!r.
 }
 function renderHomework(){
  const subject=document.getElementById("subjectFilter").value;const status=document.getElementById("statusFilter").value;
- const list=allHomework.filter(h=>(!subject||h.subject===subject)&&(!status||statusOf(h)===status));
+ const list=allHomework
+    .filter(h=>(!subject||h.subject===subject)&&(!status||statusOf(h)===status))
+    .sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
  const box=document.getElementById("homeworkList");
  if(!list.length){box.innerHTML='<section class="homework">No homework assigned to your account yet.</section>';return}
  box.innerHTML=list.map(h=>{const sub=h.submission;return `<article class="homework">
