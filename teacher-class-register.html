@@ -2292,8 +2292,15 @@ if (registerType === "Holiday") {
 
                     body:JSON.stringify({
 
-                        periodAssignmentId:
-                            selectedClass.periodId,
+                       ...(isCompensationMode
+    ? {
+        compensationSessionId: compensationSessionId,
+        registerType: "Compensation"
+    }
+    : {
+        periodAssignmentId: selectedClass.periodId,
+        registerType: "Class"
+    }),
 
                         date:
                             date,
