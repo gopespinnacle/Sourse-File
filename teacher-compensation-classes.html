@@ -1,0 +1,324 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compensation Classes | Gopes Pinnacle Academy</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+body {
+    background:#f1f5fb;
+    font-family:Arial,sans-serif;
+}
+.main-content {
+    margin-left:220px;
+    padding:25px;
+}
+.page-header {
+    background:linear-gradient(120deg,#102d59,#1768d9);
+    color:white;
+    padding:25px;
+    border-radius:16px;
+    margin-bottom:22px;
+}
+.page-header h1 { margin:0 0 8px; }
+.page-header p { margin:0;opacity:.85; }
+
+.section {
+    margin-bottom:28px;
+}
+.section h2 {
+    color:#17365f;
+    font-size:19px;
+    margin-bottom:14px;
+}
+.session-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+    gap:15px;
+}
+.session-card {
+    background:white;
+    border-radius:15px;
+    padding:17px;
+    box-shadow:0 4px 15px #102d5912;
+    border-left:5px solid #2563eb;
+}
+.session-card.live { border-left-color:#10b981; }
+.session-card.completed { border-left-color:#94a3b8;opacity:.75; }
+.session-card h3 { margin:0 0 12px;color:#17365f; }
+.session-info {
+    font-size:13px;
+    color:#475569;
+    line-height:1.9;
+}
+.session-status {
+    display:inline-block;
+    padding:5px 10px;
+    border-radius:20px;
+    background:#e0edff;
+    color:#1756ad;
+    font-size:11px;
+    font-weight:bold;
+    margin-bottom:12px;
+}
+.session-card.live .session-status {
+    background:#d1fae5;color:#047857;
+}
+.session-card.completed .session-status {
+    background:#e2e8f0;color:#475569;
+}
+.join-btn {
+    display:block;
+    width:100%;
+    margin-top:14px;
+    border:0;
+    padding:11px;
+    border-radius:9px;
+    background:#1768df;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+.join-btn:disabled {
+    background:#cbd5e1;
+    cursor:not-allowed;
+}
+.empty-state {
+    background:white;
+    padding:25px;
+    border-radius:13px;
+    color:#64748b;
+    text-align:center;
+}
+@media(max-width:768px) {
+    .main-content {
+        margin-left:0;
+        padding:15px 12px 30px;
+    }
+    .page-header { padding:19px; }
+    .page-header h1 { font-size:21px; }
+    .session-grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+
+<body>
+
+<div id="sidebar-container"></div>
+
+<script>
+fetch("teacher-sidebar.html")
+.then(res => res.text())
+.then(data => {
+    document.getElementById("sidebar-container").innerHTML = data;
+});
+</script>
+
+<main class="main-content">
+
+    <div class="page-header">
+        <h1><i class="fa-solid fa-calendar-check"></i> Compensation Classes</h1>
+        <p>Your approved one-time compensation schedules</p>
+    </div>
+
+    <section class="section">
+        <h2><i class="fa-solid fa-calendar-day"></i> Today's Classes</h2>
+        <div id="todaySessions" class="session-grid">
+            <div class="empty-state">Loading classes...</div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2><i class="fa-solid fa-calendar"></i> Upcoming Classes</h2>
+        <div id="upcomingSessions" class="session-grid">
+            <div class="empty-state">Loading classes...</div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2><i class="fa-solid fa-circle-check"></i> Completed Classes</h2>
+        <div id="completedSessions" class="session-grid">
+            <div class="empty-state">No completed classes</div>
+        </div>
+    </section>
+
+</main>
+
+<script>
+const API = "https://academy-backend-eatl.onrender.com";
+const token = sessionStorage.getItem("token");
+const role = sessionStorage.getItem("role");
+
+if (!token || role !== "teacher") {
+    alert("Please login first");
+    window.location.href = "teacher-login.html";
+}
+
+function formatTime(time) {
+    if (!time) return "—";
+    let [h,m] = time.split(":").map(Number);
+    const ampm = h >= 12 ? "PM" : "AM";
+    h = h % 12 || 12;
+    return `${h}:${String(m).padStart(2,"0")} ${ampm}`;
+}
+
+function sessionDateParts(date) {
+    return new Date(date).toISOString().slice(0,10);
+}
+
+function localDateKey(date) {
+    return [
+        date.getFullYear(),
+        String(date.getMonth()+1).padStart(2,"0"),
+        String(date.getDate()).padStart(2,"0")
+    ].join("-");
+}
+
+function getSessionStatus(session) {
+    const [year,month,day] = sessionDateParts(session.date)
+        .split("-").map(Number);
+
+    const [sh,sm] = session.startTime.split(":").map(Number);
+    const [eh,em] = session.endTime.split(":").map(Number);
+
+    const start = new Date(year,month-1,day,sh,sm);
+    const end = new Date(year,month-1,day,eh,em);
+    const now = new Date();
+
+    if (now < start) return "upcoming";
+    if (now <= end) return "live";
+    return "completed";
+}
+
+function displayDate(date) {
+    return new Date(date).toLocaleDateString("en-IN", {
+        day:"2-digit",
+        month:"short",
+        year:"numeric",
+        timeZone:"UTC"
+    });
+}
+
+function renderSessions(sessions) {
+    const todayBox = document.getElementById("todaySessions");
+    const upcomingBox = document.getElementById("upcomingSessions");
+    const completedBox = document.getElementById("completedSessions");
+
+    todayBox.innerHTML = "";
+    upcomingBox.innerHTML = "";
+    completedBox.innerHTML = "";
+
+    const todayKey = localDateKey(new Date());
+
+    let todayCount = 0;
+    let upcomingCount = 0;
+    let completedCount = 0;
+
+    sessions.forEach(session => {
+        const dateKey = sessionDateParts(session.date);
+        const status = getSessionStatus(session);
+
+        const students = (session.assignedStudents || [])
+            .map(s => s.name || "Student")
+            .join(", ");
+
+        const activities = [
+            ...(session.subject || []),
+            ...(session.language || []),
+            ...(session.eca || [])
+        ].filter(Boolean);
+
+        const card = document.createElement("div");
+        card.className = `session-card ${status}`;
+
+        const statusText = {
+            upcoming:"UPCOMING",
+            live:"LIVE",
+            completed:"COMPLETED"
+        }[status];
+
+        card.innerHTML = `
+            <span class="session-status">${statusText}</span>
+            <h3>${session.className || "Class"}</h3>
+            <div class="session-info">
+                📅 ${displayDate(session.date)}<br>
+                📘 ${activities.join(", ") || session.subject || "—"}<br>
+                ⏰ ${formatTime(session.startTime)} - ${formatTime(session.endTime)}<br>
+                👥 ${students || "Assigned students"}<br>
+            </div>
+            <button class="join-btn"
+                ${status !== "live" ? "disabled" : ""}
+                ${status === "live" ? `data-link="${session.meetingLink || ""}"` : ""}>
+                ${status === "live" ? "Open Class" :
+                  status === "upcoming" ? "Not Started" : "Class Completed"}
+            </button>
+        `;
+
+        const button = card.querySelector("button");
+        if (status === "live") {
+            button.addEventListener("click", () => {
+                if (session.meetingLink) {
+                    window.open(session.meetingLink, "_blank");
+                } else {
+                    alert("Meeting link is not available.");
+                }
+            });
+        }
+
+        if (dateKey === todayKey) {
+            todayBox.appendChild(card);
+            todayCount++;
+        } else if (dateKey > todayKey) {
+            upcomingBox.appendChild(card);
+            upcomingCount++;
+        } else {
+            completedBox.appendChild(card);
+            completedCount++;
+        }
+    });
+
+    if (!todayCount) todayBox.innerHTML =
+        '<div class="empty-state">No compensation classes today.</div>';
+
+    if (!upcomingCount) upcomingBox.innerHTML =
+        '<div class="empty-state">No upcoming compensation classes.</div>';
+
+    if (!completedCount) completedBox.innerHTML =
+        '<div class="empty-state">No completed compensation classes.</div>';
+}
+
+async function loadCompensationSessions() {
+    try {
+        const response = await fetch(
+            `${API}/api/teacher/compensation-sessions`,
+            {
+                headers: {
+                    "Authorization":"Bearer " + token
+                }
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Unable to load compensation classes");
+        }
+
+        const data = await response.json();
+        renderSessions(data.sessions || []);
+
+    } catch (error) {
+        console.error(error);
+        document.getElementById("todaySessions").innerHTML =
+            '<div class="empty-state">Unable to load classes. Please refresh.</div>';
+    }
+}
+
+loadCompensationSessions();
+setInterval(loadCompensationSessions, 30000);
+</script>
+
+</body>
+</html>

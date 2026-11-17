@@ -1,0 +1,436 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compensation Classes</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.sidebar {
+    width: 240px;
+    height: 100vh;
+    background: #0f172a;
+    color: white;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+.sidebar h2 {
+    text-align: center;
+    padding: 20px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    padding: 15px;
+    cursor: pointer;
+}
+
+.sidebar ul li:hover,
+.sidebar ul li.active {
+    background: #1e293b;
+}
+
+.main {
+    margin-left: 240px;
+    padding: 25px;
+}
+
+.page-heading {
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    color: #64748b;
+    margin-bottom: 25px;
+}
+
+.summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.summary-card {
+    background: white;
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+}
+
+.summary-card h3 {
+    margin: 0;
+    font-size: 25px;
+    color: #2563eb;
+}
+
+.summary-card p {
+    margin: 5px 0 0;
+    color: #64748b;
+}
+
+.session-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+}
+
+.session-card {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    border-left: 5px solid #64748b;
+}
+
+.session-card.upcoming {
+    border-left-color: #2563eb;
+}
+
+.session-card.live {
+    border-left-color: #16a34a;
+}
+
+.session-card.completed {
+    border-left-color: #94a3b8;
+}
+
+.session-card h3 {
+    margin: 0 0 12px;
+    font-size: 19px;
+}
+
+.session-info {
+    margin: 9px 0;
+    color: #475569;
+    font-size: 14px;
+}
+
+.status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #e2e8f0;
+    color: #475569;
+    margin-bottom: 12px;
+}
+
+.status.live {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.status.upcoming {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.join-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 9px;
+    background: #2563eb;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.join-btn:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+}
+
+.empty {
+    background: white;
+    padding: 35px;
+    text-align: center;
+    border-radius: 14px;
+    color: #64748b;
+    grid-column: 1 / -1;
+}
+
+@media(max-width: 768px) {
+    .sidebar {
+        width: 65px;
+    }
+
+    .sidebar h2 {
+        font-size: 10px;
+        padding: 12px 3px;
+    }
+
+    .sidebar ul li {
+        font-size: 11px;
+        padding: 12px 5px;
+        text-align: center;
+    }
+
+    .main {
+        margin-left: 65px;
+        padding: 15px;
+    }
+
+    .session-list {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2>Student ERP</h2>
+    <ul>
+        <li onclick="go('student-dashboard.html')">🏠 Dashboard</li>
+        <li onclick="go('student-class.html')">📅 My Classes</li>
+        <li class="active">🔄 Compensation</li>
+        <li onclick="go('student-homework.html')">📘 Homework</li>
+        <li onclick="go('student-results.html')">📊 Results</li>
+        <li onclick="logout()">🚪 Logout</li>
+    </ul>
+</div>
+
+<div class="main">
+
+    <h2 class="page-heading">My Compensation Classes</h2>
+    <p class="subtitle">View and join your specially scheduled classes.</p>
+
+    <div class="summary">
+        <div class="summary-card">
+            <h3 id="totalCount">0</h3>
+            <p>Total Classes</p>
+        </div>
+
+        <div class="summary-card">
+            <h3 id="upcomingCount">0</h3>
+            <p>Upcoming</p>
+        </div>
+
+        <div class="summary-card">
+            <h3 id="completedCount">0</h3>
+            <p>Completed</p>
+        </div>
+    </div>
+
+    <div id="sessionList" class="session-list">
+        <div class="empty">Loading compensation classes...</div>
+    </div>
+
+</div>
+
+<script>
+const API = "https://academy-backend-eatl.onrender.com";
+const token = localStorage.getItem("token");
+
+if (!token) {
+    window.location.href = "student-login.html";
+}
+
+function go(page) {
+    window.location.href = page;
+}
+
+function logout() {
+    localStorage.clear();
+    window.location.href = "student-login.html";
+}
+
+function getSessionStatus(session) {
+    const now = new Date();
+    const start = new Date(session.date);
+    const end = new Date(session.date);
+
+    const [sh, sm] = session.startTime.split(":").map(Number);
+    const [eh, em] = session.endTime.split(":").map(Number);
+
+    start.setHours(sh, sm, 0, 0);
+    end.setHours(eh, em, 0, 0);
+
+    if (now < start) return "upcoming";
+    if (now <= end) return "live";
+    return "completed";
+}
+
+function formatDate(date) {
+    return new Date(date).toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    });
+}
+
+function formatTime(time) {
+    let [hour, minute] = time.split(":").map(Number);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    hour = hour % 12 || 12;
+    return `${hour}:${String(minute).padStart(2, "0")} ${ampm}`;
+}
+
+async function joinClass(sessionId, button) {
+    button.disabled = true;
+    button.textContent = "Connecting...";
+
+    try {
+        const res = await fetch(`${API}/api/student/join-class`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({ sessionId })
+        });
+
+        const data = await res.json();
+
+        if (data.allowed && data.meetingLink) {
+            window.open(data.meetingLink, "_blank");
+            button.textContent = "Class Opened";
+        } else {
+            alert(data.message || "You cannot join this class yet.");
+            button.disabled = false;
+            button.textContent = "Join Class";
+        }
+
+    } catch (error) {
+        console.error("Join class error:", error);
+        alert("Unable to join the class. Please try again.");
+        button.disabled = false;
+        button.textContent = "Join Class";
+    }
+}
+
+async function loadCompensationClasses() {
+    try {
+        const res = await fetch(`${API}/api/student/compensation-sessions`, {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+            throw new Error(data.message || "Unable to load classes");
+        }
+
+        renderSessions(data.sessions || []);
+
+    } catch (error) {
+        console.error(error);
+        document.getElementById("sessionList").innerHTML =
+            '<div class="empty">Unable to load compensation classes. Please refresh.</div>';
+    }
+}
+
+function renderSessions(sessions) {
+    const container = document.getElementById("sessionList");
+
+    let upcoming = 0;
+    let completed = 0;
+
+    document.getElementById("totalCount").textContent = sessions.length;
+
+    if (!sessions.length) {
+        document.getElementById("upcomingCount").textContent = 0;
+        document.getElementById("completedCount").textContent = 0;
+
+        container.innerHTML = `
+            <div class="empty">
+                <i class="fa-solid fa-calendar-xmark" style="font-size:35px;"></i>
+                <h3>No Compensation Classes</h3>
+                <p>Your assigned compensation classes will appear here.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = "";
+
+    sessions.forEach(session => {
+        const status = getSessionStatus(session);
+
+        if (status === "upcoming") upcoming++;
+        if (status === "completed") completed++;
+
+        const card = document.createElement("div");
+        card.className = `session-card ${status}`;
+
+        const activities = session.subject || "General";
+
+        card.innerHTML = `
+            <span class="status ${status}">
+                ${status.toUpperCase()}
+            </span>
+
+            <h3>${session.className || "Class"}</h3>
+
+            <div class="session-info">
+                <i class="fa-solid fa-book"></i>
+                ${activities}
+            </div>
+
+            <div class="session-info">
+                <i class="fa-solid fa-calendar"></i>
+                ${formatDate(session.date)}
+            </div>
+
+            <div class="session-info">
+                <i class="fa-solid fa-clock"></i>
+                ${formatTime(session.startTime)} - ${formatTime(session.endTime)}
+            </div>
+
+            <div class="session-info">
+                <i class="fa-solid fa-chalkboard-user"></i>
+                Teacher: ${session.teacher?.name || "Assigned Teacher"}
+            </div>
+
+            <button class="join-btn"
+                ${status === "completed" ? "disabled" : ""}>
+                ${status === "completed" ? "Class Completed" : "Join Class"}
+            </button>
+        `;
+
+        const button = card.querySelector(".join-btn");
+
+        if (status !== "completed") {
+            button.onclick = () => joinClass(session._id, button);
+        }
+
+        container.appendChild(card);
+    });
+
+    document.getElementById("upcomingCount").textContent = upcoming;
+    document.getElementById("completedCount").textContent = completed;
+}
+
+loadCompensationClasses();
+setInterval(loadCompensationClasses, 30000);
+</script>
+
+</body>
+</html>
