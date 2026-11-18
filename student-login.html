@@ -495,11 +495,20 @@ async function loginStudent() {
 
 
             /* =================================================
-               GO TO STUDENT DASHBOARD
-               ================================================= */
+   REDIRECT BASED ON ACCOUNT TYPE
+   ================================================= */
 
-            window.location.href =
-                "student-dashboard.html";
+if (data.user.accountType === "championship") {
+
+    window.location.href =
+        "championship-dashboard.html";
+
+} else {
+
+    window.location.href =
+        "student-dashboard.html";
+
+}
 
 
         }
