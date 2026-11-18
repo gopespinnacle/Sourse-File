@@ -1,0 +1,491 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pinnacle Star Championship 2026 | Registration</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            color: #172033;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #101d48, #263f82);
+            color: white;
+            text-align: center;
+            padding: 38px 20px;
+        }
+
+        .hero h1 {
+            margin: 0 0 10px;
+            font-size: 30px;
+        }
+
+        .hero p {
+            margin: 7px 0;
+            color: #e1e8ff;
+        }
+
+        .container {
+            width: min(760px, 94%);
+            margin: 28px auto;
+            background: white;
+            padding: 28px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.07);
+        }
+
+        h2 {
+            font-size: 19px;
+            margin: 0 0 20px;
+            color: #172b59;
+        }
+
+        .section {
+            margin-bottom: 28px;
+        }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #d8deea;
+            border-radius: 9px;
+            font-size: 15px;
+            background: white;
+        }
+
+        .competition {
+            border: 1px solid #dce2ed;
+            border-radius: 11px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .competition-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .competition-top input {
+            width: 19px;
+            height: 19px;
+        }
+
+        .competition-name {
+            font-weight: 700;
+            flex: 1;
+        }
+
+        .fee {
+            font-weight: 700;
+            color: #172b59;
+        }
+
+        .category {
+            margin-top: 13px;
+        }
+
+        .category[hidden] {
+            display: none;
+        }
+
+        .total-box {
+            background: #f0f5ff;
+            border-radius: 12px;
+            padding: 18px;
+            margin-top: 20px;
+        }
+
+        .total-amount {
+            font-size: 27px;
+            font-weight: 800;
+            color: #087b3d;
+            margin-top: 8px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            border: 0;
+            border-radius: 10px;
+            background: #172b59;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        @media(max-width: 600px) {
+            .container {
+                padding: 20px 16px;
+            }
+
+            .hero h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="hero">
+        <h1>Pinnacle Star Championship 2026</h1>
+        <p>Gopes Pinnacle Academy</p>
+        <p>27 December 2026</p>
+        <p>Participant Registration</p>
+    </header>
+
+    <main class="container">
+
+        <form id="championshipForm">
+
+            <section class="section">
+                <h2>Parent / Guardian Details</h2>
+
+                <div class="field">
+                    <label for="parentName">Parent Name *</label>
+                    <input type="text" id="parentName"
+                        name="parentName" required>
+                </div>
+
+                <div class="field">
+                    <label for="parentPhone">Mobile Number *</label>
+                    <input type="tel" id="parentPhone"
+                        name="parentPhone"
+                        placeholder="10-digit mobile number"
+                        pattern="[6-9][0-9]{9}" required>
+                </div>
+
+                <div class="field">
+                    <label for="parentEmail">Email Address</label>
+                    <input type="email" id="parentEmail"
+                        name="parentEmail" placeholder="Parent email">
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>Student Details</h2>
+
+                <div class="field">
+                    <label for="studentName">Student Name *</label>
+                    <input type="text" id="studentName"
+                        name="studentName" required>
+                </div>
+
+                <div class="field">
+                    <label for="dateOfBirth">Date of Birth *</label>
+                    <input type="date" id="dateOfBirth"
+                        name="dateOfBirth" required>
+                </div>
+
+                <div class="field">
+                    <label for="grade">Current Grade *</label>
+                    <select id="grade" name="grade" required>
+                        <option value="">Select Grade</option>
+                        <option>Grade 1</option>
+                        <option>Grade 2</option>
+                        <option>Grade 3</option>
+                        <option>Grade 4</option>
+                        <option>Grade 5</option>
+                        <option>Grade 6</option>
+                        <option>Grade 7</option>
+                        <option>Grade 8</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="schoolName">School Name</label>
+                    <input type="text" id="schoolName"
+                        name="schoolName">
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>Choose Competitions</h2>
+
+                <div class="competition">
+                    <div class="competition-top">
+                        <input type="checkbox" class="competition-check"
+                            id="science" value="Science">
+                        <label class="competition-name" for="science">
+                            Science Intellectual Hunt
+                        </label>
+                        <span class="fee">₹199</span>
+                    </div>
+
+                    <div class="category" id="scienceCategory" hidden>
+                        <label for="scienceGrade">Category</label>
+                        <select id="scienceGrade">
+                            <option value="">Select Grade</option>
+                            <option>Grade 1</option>
+                            <option>Grade 2</option>
+                            <option>Grade 3</option>
+                            <option>Grade 4</option>
+                            <option>Grade 5</option>
+                            <option>Grade 6</option>
+                            <option>Grade 7</option>
+                            <option>Grade 8</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="competition">
+                    <div class="competition-top">
+                        <input type="checkbox" class="competition-check"
+                            id="abacus" value="Abacus">
+                        <label class="competition-name" for="abacus">
+                            Global Abacus Challenge
+                        </label>
+                        <span class="fee">₹199</span>
+                    </div>
+
+                    <div class="category" id="abacusCategory" hidden>
+                        <label for="abacusLevel">Category</label>
+                        <select id="abacusLevel">
+                            <option value="">Select Level</option>
+                            <option>Beginner</option>
+                            <option>Intermediate</option>
+                            <option>Advanced</option>
+                        </select>
+                    </div>
+                </div>
+
+
+<div class="section">
+    <h2>Payment Details</h2>
+
+    <div class="competition">
+        <h3>Pay using UPI</h3>
+
+        <p><strong>UPI ID:</strong> svgopeka19@oksbi</p>
+
+        <p><strong>Account Name:</strong>
+            Vishnu Gopeka Sowbarnik</p>
+
+        <p><strong>Bank:</strong>
+            State Bank of India (Account ending 0193)</p>
+
+        <button type="button"
+            onclick="navigator.clipboard.writeText('svgopeka19@oksbi').then(() => alert('UPI ID copied'))">
+            Copy UPI ID
+        </button>
+    </div>
+
+    <div class="field">
+        <label for="paymentMethod">Payment Method *</label>
+        <select id="paymentMethod" name="paymentMethod" required>
+            <option value="">Select Payment Method</option>
+            <option value="UPI">UPI</option>
+            <option value="Bank Transfer">Bank Transfer</option>
+        </select>
+    </div>
+
+    <div class="field">
+        <label for="transactionReference">
+            Transaction ID / UTR Number *
+        </label>
+        <input type="text"
+            id="transactionReference"
+            name="transactionReference"
+            placeholder="Enter payment reference number"
+            required>
+    </div>
+
+    <div class="field">
+        <label for="paymentProof">
+            Upload Payment Screenshot / Receipt *
+        </label>
+        <input type="file"
+            id="paymentProof"
+            name="paymentProof"
+            accept=".jpg,.jpeg,.png,.webp,.pdf"
+            required>
+        <small>Maximum file size: 5 MB</small>
+    </div>
+</div>
+
+
+                <div class="total-box">
+                    <strong>Registration Amount</strong>
+                    <div class="total-amount" id="totalAmount">₹0</div>
+                    <p id="totalDescription">
+                        Select competitions to calculate the fee.
+                    </p>
+                </div>
+            </section>
+
+            <button type="submit" class="submit-btn">
+                Continue to Payment
+            </button>
+
+        </form>
+
+    </main>
+
+<script>
+    const competitionFee = 199;
+
+    const scienceCheckbox = document.getElementById("science");
+    const abacusCheckbox = document.getElementById("abacus");
+
+    const scienceCategory = document.getElementById("scienceCategory");
+    const abacusCategory = document.getElementById("abacusCategory");
+
+    const scienceGrade = document.getElementById("scienceGrade");
+    const abacusLevel = document.getElementById("abacusLevel");
+
+    const totalAmount = document.getElementById("totalAmount");
+    const totalDescription = document.getElementById("totalDescription");
+
+    function updateCompetitionSelection() {
+
+        // Show or hide Science category
+        scienceCategory.hidden = !scienceCheckbox.checked;
+        scienceGrade.required = scienceCheckbox.checked;
+
+        // Show or hide Abacus category
+        abacusCategory.hidden = !abacusCheckbox.checked;
+        abacusLevel.required = abacusCheckbox.checked;
+
+        // Calculate total
+        let count = 0;
+
+        if (scienceCheckbox.checked) count++;
+        if (abacusCheckbox.checked) count++;
+
+        const total = count * competitionFee;
+
+        totalAmount.textContent = "₹" + total;
+
+        totalDescription.textContent =
+            count === 0
+                ? "Select competitions to calculate the fee."
+                : count + " competition(s) selected × ₹199";
+    }
+
+    scienceCheckbox.addEventListener("change", updateCompetitionSelection);
+    abacusCheckbox.addEventListener("change", updateCompetitionSelection);
+
+    // Initial calculation
+    updateCompetitionSelection();
+
+    
+// Submit Championship Registration
+document.getElementById("championshipForm")
+    .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        const form = this;
+        const submitButton = form.querySelector(".submit-btn");
+
+        if (!scienceCheckbox.checked && !abacusCheckbox.checked) {
+            alert("Please select at least one competition.");
+            return;
+        }
+
+        // Prepare competition selections
+        const competitions = [];
+
+        if (scienceCheckbox.checked) {
+            competitions.push({
+                competition: "Science",
+                category: scienceGrade.value
+            });
+        }
+
+        if (abacusCheckbox.checked) {
+            competitions.push({
+                competition: "Abacus",
+                category: abacusLevel.value
+            });
+        }
+
+        if (!form.reportValidity()) {
+            return;
+        }
+
+        // Prepare form data, including payment proof
+        const formData = new FormData(form);
+
+        formData.append(
+            "competitions",
+            JSON.stringify(competitions)
+        );
+
+        submitButton.disabled = true;
+        submitButton.textContent = "Submitting Registration...";
+
+        try {
+
+            const response = await fetch(
+                "https://academy-backend-eatl.onrender.com/api/championship/register",
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error(
+                    result.message || "Registration failed"
+                );
+            }
+
+            alert(
+                "Registration submitted successfully!\n\n" +
+                "Amount: ₹" + result.totalAmount +
+                "\n\nPayment verification is pending."
+            );
+
+            form.reset();
+            updateCompetitionSelection();
+
+        } catch (error) {
+
+            console.error("Championship Registration Error:", error);
+
+            alert(
+                error.message ||
+                "Unable to submit registration. Please try again."
+            );
+
+        } finally {
+
+            submitButton.disabled = false;
+            submitButton.textContent = "Continue to Payment";
+
+        }
+
+    });
+
+</script>
+</body>
+</html>
+
+</body>
+</html>
