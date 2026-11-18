@@ -498,7 +498,16 @@ async function loginStudent() {
    REDIRECT BASED ON ACCOUNT TYPE
    ================================================= */
 
-if (data.user.accountType === "championship") {
+
+if (
+    data.user.accountType === "championship" &&
+    data.user.mustChangePassword === true
+) {
+
+    window.location.href =
+        "championship-change-password.html";
+
+} else if (data.user.accountType === "championship") {
 
     window.location.href =
         "championship-dashboard.html";
@@ -509,6 +518,7 @@ if (data.user.accountType === "championship") {
         "student-dashboard.html";
 
 }
+
 
 
         }
