@@ -145,6 +145,372 @@
                 font-size: 24px;
             }
         }
+
+
+/* ==========================================
+   PINNACLE STAR CHAMPIONSHIP 2026
+   PREMIUM DESIGN UPGRADE
+========================================== */
+
+:root {
+    --psc-navy: #101b3d;
+    --psc-blue: #1d3268;
+    --psc-gold: #d9ad45;
+    --psc-gold-light: #f8e5ad;
+    --psc-text: #18233d;
+    --psc-muted: #68738a;
+    --psc-border: #e4e8f0;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f3f5fa;
+    color: var(--psc-text);
+}
+
+/* PREMIUM CHAMPIONSHIP HERO */
+
+.hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: 75px 20px 85px;
+    background:
+        radial-gradient(circle at 15% 20%, rgba(217,173,69,.20), transparent 28%),
+        radial-gradient(circle at 85% 80%, rgba(87,117,190,.30), transparent 32%),
+        linear-gradient(135deg, #0a1430, #182b59 55%, #101b3d);
+    color: white;
+    text-align: center;
+}
+
+.hero::before,
+.hero::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    border: 1px solid rgba(248,229,173,.22);
+    border-radius: 50%;
+    width: 330px;
+    height: 330px;
+    pointer-events: none;
+}
+
+.hero::before {
+    top: -210px;
+    left: -100px;
+}
+
+.hero::after {
+    bottom: -230px;
+    right: -90px;
+}
+
+.hero h1 {
+    max-width: 900px;
+    margin: 18px auto;
+    font-size: clamp(30px, 5vw, 52px);
+    line-height: 1.18;
+    font-weight: 800;
+    letter-spacing: -.8px;
+    color: #fff;
+    text-shadow: 0 4px 20px rgba(0,0,0,.25);
+}
+
+.hero p {
+    color: #e5eaf6;
+    font-size: 16px;
+    margin: 9px 0;
+}
+
+.hero p:first-of-type {
+    color: var(--psc-gold-light);
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 13px;
+}
+
+.hero p:nth-of-type(2) {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 9px 22px;
+    border: 1px solid rgba(248,229,173,.55);
+    border-radius: 30px;
+    color: #ffe7ad;
+    font-weight: 700;
+    background: rgba(255,255,255,.07);
+}
+
+.hero p:last-child {
+    margin-top: 16px;
+    color: white;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+/* FORM MAIN CARD */
+
+.container {
+    position: relative;
+    width: min(850px, 94%);
+    margin: -30px auto 55px;
+    padding: 38px;
+    border: 1px solid rgba(255,255,255,.9);
+    border-radius: 22px;
+    background: #fff;
+    box-shadow:
+        0 25px 70px rgba(16,27,61,.10),
+        0 4px 15px rgba(16,27,61,.04);
+}
+
+/* SECTION HEADINGS */
+
+.section {
+    margin-bottom: 35px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid #edf0f5;
+}
+
+.section h2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--psc-navy);
+    font-size: 21px;
+    font-weight: 800;
+    margin-bottom: 24px;
+}
+
+.section h2::before {
+    content: "";
+    width: 5px;
+    height: 25px;
+    border-radius: 5px;
+    background: var(--psc-gold);
+}
+
+/* INPUT FIELDS */
+
+.field {
+    margin-bottom: 20px;
+}
+
+label {
+    color: #303c56;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 9px;
+}
+
+input:not([type="checkbox"]):not([type="file"]),
+select {
+    width: 100%;
+    min-height: 49px;
+    padding: 13px 15px;
+    border: 1px solid #dce2ed;
+    border-radius: 10px;
+    background: #fbfcfe;
+    color: var(--psc-text);
+    font-family: inherit;
+    font-size: 15px;
+    outline: none;
+    transition: .2s ease;
+}
+
+input:focus,
+select:focus {
+    border-color: var(--psc-blue);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(29,50,104,.09);
+}
+
+/* COMPETITION CARDS */
+
+.competition {
+    position: relative;
+    padding: 21px;
+    margin-bottom: 15px;
+    border: 1px solid var(--psc-border);
+    border-radius: 15px;
+    background: linear-gradient(145deg,#fff,#fafbfe);
+    transition: .25s ease;
+}
+
+.competition:hover {
+    border-color: var(--psc-gold);
+    box-shadow: 0 10px 28px rgba(16,27,61,.07);
+    transform: translateY(-2px);
+}
+
+.competition-top {
+    align-items: center;
+    gap: 14px;
+}
+
+.competition-top input[type="checkbox"] {
+    width: 21px;
+    height: 21px;
+    accent-color: var(--psc-navy);
+    cursor: pointer;
+}
+
+.competition-name {
+    color: var(--psc-navy);
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.fee {
+    color: #98701f;
+    font-size: 16px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.category {
+    padding-top: 15px;
+    margin-top: 17px;
+    border-top: 1px solid #e9edf4;
+}
+
+/* PAYMENT SECTION */
+
+.competition h3 {
+    color: var(--psc-navy);
+    margin-bottom: 13px;
+}
+
+.competition p {
+    color: #526078;
+    font-size: 14px;
+    margin: 9px 0;
+    line-height: 1.6;
+}
+
+.competition button {
+    margin-top: 14px;
+    padding: 11px 19px;
+    border: 1px solid var(--psc-navy);
+    border-radius: 9px;
+    background: white;
+    color: var(--psc-navy);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.competition button:hover {
+    background: var(--psc-navy);
+    color: white;
+}
+
+/* TOTAL AMOUNT */
+
+.total-box {
+    margin-top: 24px;
+    padding: 24px;
+    border: 1px solid #ead8a9;
+    border-radius: 16px;
+    background:
+        linear-gradient(120deg,#fffaf0,#fff);
+}
+
+.total-box strong {
+    color: var(--psc-navy);
+    font-size: 15px;
+}
+
+.total-amount {
+    color: #98701f;
+    font-size: 36px;
+    font-weight: 900;
+    margin: 8px 0;
+}
+
+#totalDescription {
+    color: var(--psc-muted);
+    font-size: 13px;
+}
+
+/* SUBMIT BUTTON */
+
+.submit-btn {
+    min-height: 56px;
+    border-radius: 12px;
+    background: linear-gradient(110deg,#b8892e,#e4bd62);
+    color: #101b3d;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: .3px;
+    box-shadow: 0 8px 20px rgba(184,137,46,.22);
+    transition: .25s ease;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(184,137,46,.30);
+}
+
+.submit-btn:disabled {
+    opacity: .65;
+    cursor: wait;
+    transform: none;
+}
+
+/* PAYMENT FILE INPUT */
+
+input[type="file"] {
+    width: 100%;
+    padding: 14px;
+    border: 1px dashed #b9c3d5;
+    border-radius: 10px;
+    background: #fafbfe;
+    font-size: 13px;
+}
+
+/* MOBILE EXPERIENCE */
+
+@media(max-width:600px) {
+
+    .hero {
+        padding: 58px 18px 65px;
+    }
+
+    .hero h1 {
+        font-size: 30px;
+    }
+
+    .hero p {
+        font-size: 14px;
+    }
+
+    .container {
+        width: 94%;
+        margin-top: -22px;
+        padding: 23px 17px;
+        border-radius: 17px;
+    }
+
+    .section h2 {
+        font-size: 18px;
+    }
+
+    .competition {
+        padding: 16px;
+    }
+
+    .competition-name {
+        font-size: 14px;
+    }
+
+    .total-amount {
+        font-size: 32px;
+    }
+
+    .submit-btn {
+        font-size: 15px;
+    }
+}
+
     </style>
 </head>
 
