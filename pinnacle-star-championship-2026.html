@@ -248,20 +248,136 @@ body {
     letter-spacing: 1px;
 }
 
-/* FORM MAIN CARD */
 
 .container {
     position: relative;
-    width: min(850px, 94%);
+    width: min(1450px, 96%);
     margin: -30px auto 55px;
-    padding: 38px;
-    border: 1px solid rgba(255,255,255,.9);
-    border-radius: 22px;
-    background: #fff;
-    box-shadow:
-        0 25px 70px rgba(16,27,61,.10),
-        0 4px 15px rgba(16,27,61,.04);
+    padding: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    align-items: start;
+    gap: 25px;
+    background: transparent;
+    box-shadow: none;
+    border: none;
 }
+
+#championshipForm {
+    min-width: 0;
+    padding: 34px;
+    background: #fff;
+    border: 1px solid #e7eaf1;
+    border-radius: 20px;
+    box-shadow: 0 20px 55px rgba(16,27,61,.10);
+}
+
+.academy-showcase {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.flyer-card {
+    padding: 25px;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(16,27,61,.09);
+}
+
+.flyer-card h2 {
+    font-size: 21px;
+    margin-bottom: 12px;
+}
+
+.flyer-card p {
+    line-height: 1.8;
+    font-size: 14px;
+}
+
+.flyer-academic {
+    background: linear-gradient(135deg,#101b3d,#294b82);
+    color: white;
+}
+
+.flyer-academic h2,
+.flyer-teaching h2 {
+    color: #f8e5ad;
+}
+
+.flyer-languages {
+    background: #fff9ed;
+    border: 1px solid #f0dfb8;
+    color: #493719;
+}
+
+.flyer-eca {
+    background: #edf3ff;
+    border: 1px solid #dce6fa;
+    color: #1b3260;
+}
+
+.flyer-teaching {
+    background: linear-gradient(135deg,#101b3d,#203967);
+    color: white;
+}
+
+.flyer-tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.flyer-tag {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 20px;
+    background: rgba(255,255,255,.14);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.flyer-languages .flyer-tag,
+.flyer-eca .flyer-tag {
+    background: white;
+    border: 1px solid rgba(30,50,90,.12);
+}
+
+.classroom-visual {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+    margin-top: 18px;
+}
+
+.classroom-tile {
+    min-height: 85px;
+    padding: 13px;
+    border-radius: 12px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.16);
+    text-align: center;
+}
+
+.classroom-tile strong {
+    display: block;
+    margin-top: 7px;
+    font-size: 12px;
+}
+
+@media(max-width:900px) {
+    .container {
+        grid-template-columns: 1fr;
+        width: 94%;
+    }
+
+    #championshipForm {
+        padding: 23px 17px;
+    }
+}
+
 
 /* SECTION HEADINGS */
 
@@ -707,6 +823,122 @@ input[type="file"] {
             </button>
 
         </form>
+
+
+<!-- ACADEMY ADVERTISEMENT SHOWCASE -->
+<aside class="academy-showcase">
+
+    <!-- ACADEMIC PROGRAMMES -->
+    <div class="flyer-card flyer-academic">
+
+        <h2>🎓 Academic Excellence</h2>
+
+        <p>
+            Strong academic foundations with structured
+            teaching and individual attention.
+        </p>
+
+        <div class="flyer-tag-list">
+            <span class="flyer-tag">Science</span>
+            <span class="flyer-tag">Mathematics</span>
+            <span class="flyer-tag">CBSE</span>
+            <span class="flyer-tag">ICSE</span>
+            <span class="flyer-tag">School Academic Support</span>
+        </div>
+
+        <p>
+            Academic programmes for school students,
+            with concept learning, revision and assessments.
+        </p>
+
+    </div>
+
+
+    <!-- LANGUAGES -->
+    <div class="flyer-card flyer-languages">
+
+        <h2>🌍 Language & Communication</h2>
+
+        <p>
+            Build confidence in communication through
+            guided learning, speaking practice and vocabulary.
+        </p>
+
+        <div class="flyer-tag-list">
+            <span class="flyer-tag">Spoken English</span>
+        </div>
+
+    </div>
+
+
+    <!-- ECA AND SKILL DEVELOPMENT -->
+    <div class="flyer-card flyer-eca">
+
+        <h2>🏆 Beyond Academics</h2>
+
+        <p>
+            Discover creativity, confidence and
+            practical skills through enrichment programmes.
+        </p>
+
+        <div class="flyer-tag-list">
+            <span class="flyer-tag">Abacus</span>
+            <span class="flyer-tag">Drawing</span>
+            <span class="flyer-tag">Essay Writing</span>
+            <span class="flyer-tag">Vocal Activities</span>
+        </div>
+
+    </div>
+
+
+    <!-- LIVE ONLINE TEACHING -->
+    <div class="flyer-card flyer-teaching">
+
+        <h2>💻 Experience Our Live Classes</h2>
+
+        <p>
+            Interactive online learning with live teacher
+            interaction, student participation and
+            digital classroom tools.
+        </p>
+
+        <div class="classroom-visual">
+
+            <div class="classroom-tile">
+                <div style="font-size:30px;">👩‍🏫</div>
+                <strong>Live Teacher</strong>
+            </div>
+
+            <div class="classroom-tile">
+                <div style="font-size:30px;">👨‍🎓</div>
+                <strong>Student Interaction</strong>
+            </div>
+
+            <div class="classroom-tile">
+                <div style="font-size:30px;">🖥️</div>
+                <strong>Digital Whiteboard</strong>
+            </div>
+
+            <div class="classroom-tile">
+                <div style="font-size:30px;">📚</div>
+                <strong>Shared Learning</strong>
+            </div>
+
+        </div>
+
+        <div class="flyer-tag-list">
+            <span class="flyer-tag">One Teacher – One Student</span>
+            <span class="flyer-tag">Small Groups – Maximum 4</span>
+            <span class="flyer-tag">Daily Oral Tests</span>
+            <span class="flyer-tag">Homework Tracking</span>
+            <span class="flyer-tag">Weekly & Monthly Assessments</span>
+        </div>
+
+    </div>
+
+</aside>
+<!-- END ACADEMY ADVERTISEMENT SHOWCASE -->
+
 
     </main>
 
