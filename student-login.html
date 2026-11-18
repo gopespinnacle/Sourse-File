@@ -345,6 +345,22 @@ body{
 
     </div>
 
+    <div style="text-align:right; margin-bottom:20px;">
+
+    <a
+        href="#"
+        onclick="showForgotPassword(); return false;"
+        style="
+            color:#1e045c;
+            text-decoration:none;
+            font-weight:bold;
+        "
+    >
+        Forgot Password?
+    </a>
+
+</div>
+
 
     <button
         type="button"
@@ -355,6 +371,127 @@ body{
 
     </button>
 
+
+</div>
+
+<!-- CHAMPIONSHIP PASSWORD RECOVERY -->
+
+<div
+    id="forgotPasswordBox"
+    class="login-box"
+    style="display:none;"
+>
+
+    <h2>Password Recovery</h2>
+
+    <p style="text-align:center;color:#666;">
+        Recover your Pinnacle Star Championship account.
+    </p>
+
+    <!-- STEP 1: PARTICIPANT ID -->
+
+    <div id="recoveryStep1">
+
+        <div class="input-box">
+
+            <input
+                type="text"
+                id="recoveryParticipantId"
+                placeholder="Participant ID (PSC26-0001)"
+            >
+
+        </div>
+
+        <button
+            type="button"
+            class="login-btn"
+            onclick="sendRecoveryOTP()"
+        >
+            Send WhatsApp OTP
+        </button>
+
+    </div>
+
+
+    <!-- STEP 2: OTP -->
+
+    <div id="recoveryStep2" style="display:none;">
+
+        <div class="input-box">
+
+            <input
+                type="text"
+                id="recoveryOTP"
+                placeholder="Enter 6-digit OTP"
+                maxlength="6"
+                inputmode="numeric"
+            >
+
+        </div>
+
+        <button
+            type="button"
+            class="login-btn"
+            onclick="verifyRecoveryOTP()"
+        >
+            Verify OTP
+        </button>
+
+    </div>
+
+
+    <!-- STEP 3: NEW PASSWORD -->
+
+    <div id="recoveryStep3" style="display:none;">
+
+        <div class="input-box">
+
+            <input
+                type="password"
+                id="recoveryNewPassword"
+                placeholder="New Password"
+            >
+
+        </div>
+
+        <div class="input-box">
+
+            <input
+                type="password"
+                id="recoveryConfirmPassword"
+                placeholder="Confirm New Password"
+            >
+
+        </div>
+
+        <button
+            type="button"
+            class="login-btn"
+            onclick="resetRecoveryPassword()"
+        >
+            Reset Password
+        </button>
+
+    </div>
+
+
+    <p
+        id="recoveryMessage"
+        style="text-align:center;margin-top:20px;"
+    ></p>
+
+
+    <div style="text-align:center;margin-top:20px;">
+
+        <a
+            href="#"
+            onclick="showLogin(); return false;"
+            style="color:#1e045c;text-decoration:none;font-weight:bold;"
+        >
+            Back to Login
+        </a>
+
+    </div>
 
 </div>
 
@@ -546,6 +683,215 @@ if (
     }
 
 }
+
+
+let championshipResetToken = null;
+
+
+// SHOW FORGOT PASSWORD
+function showForgotPassword() {
+
+    document.querySelector(".login-box").style.display = "none";
+
+    document.getElementById("forgotPasswordBox").style.display = "block";
+
+}
+
+
+// BACK TO LOGIN
+function showLogin() {
+
+    document.getElementById("forgotPasswordBox").style.display = "none";
+
+    document.querySelector(".login-box").style.display = "block";
+
+}
+
+
+// STEP 1: SEND OTP
+async function sendRecoveryOTP() {
+
+    const participantId =
+        document.getElementById("recoveryParticipantId").value.trim();
+
+    const message =
+        document.getElementById("recoveryMessage");
+
+    if (!participantId) {
+        message.innerText = "Please enter your Participant ID.";
+        return;
+    }
+
+    message.innerText = "Processing your request...";
+
+    try {
+
+        const response = await fetch(
+            "https://academy-backend-eatl.onrender.com/api/championship/participant/forgot-password",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ participantId })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            message.innerText = data.message || "Unable to process request.";
+            return;
+        }
+
+        document.getElementById("recoveryStep1").style.display = "none";
+        document.getElementById("recoveryStep2").style.display = "block";
+
+        message.innerText =
+            "If your Participant ID is valid, an OTP has been sent to the registered WhatsApp number.";
+
+    } catch (error) {
+
+        console.error(error);
+        message.innerText = "Server connection failed. Please try again.";
+
+    }
+
+}
+
+
+// STEP 2: VERIFY OTP
+async function verifyRecoveryOTP() {
+
+    const participantId =
+        document.getElementById("recoveryParticipantId").value.trim();
+
+    const otp =
+        document.getElementById("recoveryOTP").value.trim();
+
+    const message =
+        document.getElementById("recoveryMessage");
+
+    if (!/^\d{6}$/.test(otp)) {
+        message.innerText = "Please enter a valid 6-digit OTP.";
+        return;
+    }
+
+    message.innerText = "Verifying OTP...";
+
+    try {
+
+        const response = await fetch(
+            "https://academy-backend-eatl.onrender.com/api/championship/participant/verify-otp",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    participantId,
+                    otp
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            message.innerText = data.message || "OTP verification failed.";
+            return;
+        }
+
+        championshipResetToken = data.resetToken;
+
+        document.getElementById("recoveryStep2").style.display = "none";
+        document.getElementById("recoveryStep3").style.display = "block";
+
+        message.innerText = "OTP verified successfully. Create your new password.";
+
+    } catch (error) {
+
+        console.error(error);
+        message.innerText = "Server connection failed. Please try again.";
+
+    }
+
+}
+
+
+// STEP 3: RESET PASSWORD
+async function resetRecoveryPassword() {
+
+    const newPassword =
+        document.getElementById("recoveryNewPassword").value;
+
+    const confirmPassword =
+        document.getElementById("recoveryConfirmPassword").value;
+
+    const message =
+        document.getElementById("recoveryMessage");
+
+    if (!newPassword || !confirmPassword) {
+        message.innerText = "Please fill both password fields.";
+        return;
+    }
+
+    if (newPassword.length < 8) {
+        message.innerText = "Password must contain at least 8 characters.";
+        return;
+    }
+
+    if (newPassword !== confirmPassword) {
+        message.innerText = "Passwords do not match.";
+        return;
+    }
+
+    if (!championshipResetToken) {
+        message.innerText = "Your recovery session has expired. Please start again.";
+        return;
+    }
+
+    message.innerText = "Updating your password...";
+
+    try {
+
+        const response = await fetch(
+            "https://academy-backend-eatl.onrender.com/api/championship/participant/reset-password",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    resetToken: championshipResetToken,
+                    newPassword,
+                    confirmPassword
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            message.innerText = data.message || "Password reset failed.";
+            return;
+        }
+
+        championshipResetToken = null;
+
+        alert("Password changed successfully! Please login using your new password.");
+
+        window.location.reload();
+
+    } catch (error) {
+
+        console.error(error);
+        message.innerText = "Server connection failed. Please try again.";
+
+    }
+
+}
+
 
 </script>
 
