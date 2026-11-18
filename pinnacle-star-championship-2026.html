@@ -778,10 +778,71 @@ input[type="file"] {
     <div class="field">
         <label for="paymentMethod">Payment Method *</label>
         <select id="paymentMethod" name="paymentMethod" required>
+
+
             <option value="">Select Payment Method</option>
             <option value="UPI">UPI</option>
             <option value="Bank Transfer">Bank Transfer</option>
         </select>
+        <div id="upiQrPayment" style="display:none; text-align:center; margin-top:20px; padding:20px; border:1px solid #ddd; border-radius:12px;">
+
+    <h3>Scan & Pay using Google Pay</h3>
+
+    <p>Scan this QR code using GPay or any UPI app.</p>
+
+    <div id="upiQrCode" style="display:flex; justify-content:center; margin:15px auto;"></div>
+
+    <h2 id="upiQrAmount">₹0</h2>
+
+    <p><strong>UPI ID:</strong> svgopeka19@oksbi</p>
+
+    <p style="font-size:13px; color:#666;">
+        The amount will be pre-filled. Please approve the payment in your UPI app.
+    </p>
+
+</div>
+
+
+<div id="upiPaymentBox" hidden style="
+    margin-top:15px;
+    padding:18px;
+    border-radius:14px;
+    background:#eef5ff;
+    border:1px solid #cbdcf8;
+">
+
+    <p style="font-weight:700;color:#172b59;">
+        Pay securely using UPI
+    </p>
+
+    <p style="font-size:14px;">
+        Amount to pay:
+        <strong id="upiPayAmount">₹0</strong>
+    </p>
+
+    <button type="button"
+        id="openUpiPayment"
+        style="
+            width:100%;
+            padding:15px;
+            border:0;
+            border-radius:10px;
+            background:#087b3d;
+            color:white;
+            font-size:16px;
+            font-weight:700;
+            cursor:pointer;
+        ">
+        Open UPI App & Pay
+    </button>
+
+    <p style="font-size:12px;color:#526078;margin-top:10px;">
+        After payment, return here and upload your payment
+        screenshot and enter the transaction reference.
+    </p>
+
+</div>
+
     </div>
 
     <div class="field">
@@ -942,6 +1003,8 @@ input[type="file"] {
 
     </main>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <script>
     const competitionFee = 199;
 
@@ -956,6 +1019,106 @@ input[type="file"] {
 
     const totalAmount = document.getElementById("totalAmount");
     const totalDescription = document.getElementById("totalDescription");
+
+    
+
+// UPI Payment Integration
+const paymentMethod = document.getElementById("paymentMethod");
+
+const upiPaymentBox = document.getElementById("upiPaymentBox");
+const upiPayAmount = document.getElementById("upiPayAmount");
+const openUpiPayment = document.getElementById("openUpiPayment");
+
+const upiQrPayment = document.getElementById("upiQrPayment");
+const upiQrCode = document.getElementById("upiQrCode");
+const upiQrAmount = document.getElementById("upiQrAmount");
+
+let currentQrAmount = 0;
+
+const isMobilePhone = window.matchMedia("(max-width: 600px)");
+
+
+function updateUpiPayment() {
+
+    const amount = Number(
+        totalAmount.textContent.replace(/[^\d.]/g, "")
+    );
+
+    const isUpi = paymentMethod.value === "UPI";
+
+    // Existing UPI payment button
+    upiPaymentBox.hidden =
+    !isUpi || amount <= 0 || !isMobilePhone.matches;
+    upiPayAmount.textContent = "₹" + amount;
+
+    openUpiPayment.textContent =
+        "Open UPI App & Pay ₹" + amount;
+
+    // Dynamic QR display
+    upiQrPayment.style.display =
+    isUpi && amount > 0 && !isMobilePhone.matches
+        ? "block"
+        : "none";
+
+    if (!isUpi || amount <= 0) {
+        upiQrCode.innerHTML = "";
+        currentQrAmount = 0;
+        return;
+    }
+
+    upiQrAmount.textContent = "₹" + amount;
+
+    // Generate a new QR only when the amount changes
+    if (currentQrAmount === amount) {
+        return;
+    }
+
+    currentQrAmount = amount;
+    upiQrCode.innerHTML = "";
+
+    const upiLink = "upi://pay?" + new URLSearchParams({
+        pa: "svgopeka19@oksbi",
+        pn: "Vishnu Gopeka Sowbarnik",
+        am: amount.toFixed(2),
+        cu: "INR",
+        tn: "Pinnacle Star Championship 2026"
+    }).toString();
+
+    new QRCode(upiQrCode, {
+        text: upiLink,
+        width: 220,
+        height: 220,
+        correctLevel: QRCode.CorrectLevel.H
+    });
+}
+
+paymentMethod.addEventListener("change", updateUpiPayment);
+
+isMobilePhone.addEventListener("change", updateUpiPayment);
+
+openUpiPayment.addEventListener("click", function() {
+
+    const amount = Number(
+        totalAmount.textContent.replace(/[^\d.]/g, "")
+    );
+
+    if (amount <= 0) {
+        alert("Please select a competition first.");
+        return;
+    }
+
+    const params = new URLSearchParams({
+        pa: "svgopeka19@oksbi",
+        pn: "Vishnu Gopeka Sowbarnik",
+        am: amount.toFixed(2),
+        cu: "INR",
+        tn: "Pinnacle Star Championship 2026"
+    });
+
+    window.location.href = "upi://pay?" + params.toString();
+
+});
+
 
     function updateCompetitionSelection() {
 
@@ -981,6 +1144,7 @@ input[type="file"] {
             count === 0
                 ? "Select competitions to calculate the fee."
                 : count + " competition(s) selected × ₹199";
+                updateUpiPayment();
     }
 
     scienceCheckbox.addEventListener("change", updateCompetitionSelection);
