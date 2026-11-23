@@ -99,9 +99,23 @@ function closeFounderMenu() {
 <!-- MAIN CONTENT -->
 <div class="main-content">
 
-    <h1>Welcome Founder</h1>
-<button onclick="generateSessions()">Generate Today's Sessions</button>
-<a href="founder-compensation.html">Teacher Compensation</a>
+    <div style="display:flex; gap:12px; flex-wrap:wrap; margin:15px 0;">
+
+    <button onclick="generateSessions()">
+        Generate Today's Sessions
+    </button>
+
+    <a href="founder-compensation.html"
+       style="text-decoration:none; padding:10px 16px; background:#2563eb; color:white; border-radius:8px; font-weight:bold;">
+        <i class="fa fa-clock"></i> Teacher Compensation
+    </a>
+
+    <a href="founder-compensation-requests.html"
+       style="text-decoration:none; padding:10px 16px; background:#7c3aed; color:white; border-radius:8px; font-weight:bold;">
+        <i class="fa fa-file-alt"></i> Compensation Requests
+    </a>
+
+</div>
     
 <div class="dashboard-cards">
 
