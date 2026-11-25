@@ -1037,6 +1037,21 @@ padding-top:3px;
 
                 </select>
 
+                <!-- BOARD / CURRICULUM -->
+                <h3>Board / Curriculum</h3>
+                <select id="board" required>
+                    <option value="">Select Board / Curriculum</option>
+                    <option value="CBSE">CBSE</option>
+                    <option value="ICSE">ICSE</option>
+                    <option value="ISC">ISC</option>
+                    <option value="State Boards">State Boards</option>
+                    <option value="All Engineering Subjects">All Engineering Subjects</option>
+                    <option value="IGCSE">IGCSE</option>
+                    <option value="IB">IB</option>
+                    <option value="Cambridge">Cambridge</option>
+                    <option value="NIOS Coaching (Secondary & Senior Secondary)">NIOS Coaching (Secondary & Senior Secondary)</option>
+                </select>
+
                 <h3>
                     Subjects
                 </h3>
@@ -1854,6 +1869,12 @@ function nextPage(page){
             return;
         }
 
+        const board = document.getElementById("board").value;
+        if(!board){
+            alert("Please select Board / Curriculum");
+            return;
+        }
+
         if(subjects.length === 0){
 
             alert("Please select at least one subject");
@@ -2208,6 +2229,9 @@ async function submitApplication(){
             "grade"
         ).value,
 
+        board:
+        document.getElementById("board").value,
+
         subjects,
 
         selectedPlan,
@@ -2251,6 +2275,9 @@ if(!utr){
 
         grade:
         document.getElementById("grade").value,
+
+        board:
+        document.getElementById("board").value,
 
         mobile:
         document.getElementById("parentMobile").value,
