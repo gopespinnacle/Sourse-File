@@ -1,411 +1,131 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-  <title>Enquiries</title>
-
-  <style>
-
-    body{
-      font-family:Arial;
-      padding:20px;
-      background:#f5f7fb;
-    }
-
-    h2{
-      margin-top:40px;
-      margin-bottom:20px;
-    }
-
-    table{
-      width:100%;
-      border-collapse:collapse;
-      background:#fff;
-      margin-bottom:40px;
-    }
-
-    th,td{
-      padding:12px;
-      border:1px solid #ccc;
-      text-align:left;
-    }
-
-    th{
-      background:#333;
-      color:#fff;
-    }
-
-    button{
-      padding:8px 14px;
-      border:none;
-      background:#ffcc00;
-      cursor:pointer;
-      border-radius:6px;
-      font-weight:bold;
-    }
-
-    .course-badge{
-      display:inline-block;
-      background:#e6ecf5;
-      color:#123a63;
-      padding:4px 8px;
-      margin:2px;
-      border-radius:6px;
-      font-size:12px;
-    }
-
-  </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Founder - Enquiries & Admissions</title>
+<style>
+  *{box-sizing:border-box}
+  body{font-family:Arial,sans-serif;padding:20px;background:#f5f7fb;color:#172033;margin:0}
+  h2{margin:35px 0 18px}
+  .table-wrap{width:100%;overflow-x:auto;background:#fff;border-radius:10px;margin-bottom:35px}
+  table{width:100%;border-collapse:collapse;background:#fff;min-width:750px}
+  th,td{padding:12px;border:1px solid #d5d9e0;text-align:left;vertical-align:middle}
+  th{background:#333;color:#fff;white-space:nowrap}
+  button{padding:8px 14px;border:none;background:#ffcc00;cursor:pointer;border-radius:6px;font-weight:bold}
+  button:hover{filter:brightness(.96)}
+  .course-badge{display:inline-block;background:#e6ecf5;color:#123a63;padding:4px 8px;margin:2px;border-radius:6px;font-size:12px}
+  .view-btn{background:#2563eb;color:#fff;margin-right:6px}
+  .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(12,20,35,.65);z-index:999;align-items:center;justify-content:center;padding:15px}
+  .modal-backdrop.open{display:flex}
+  .modal{width:min(900px,100%);max-height:92vh;overflow-y:auto;background:white;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+  .modal-header{position:sticky;top:0;background:#102033;color:white;padding:17px 20px;display:flex;justify-content:space-between;align-items:center;gap:10px;z-index:2}
+  .modal-header h3{margin:0;font-size:20px}
+  .close-btn{background:#fff;color:#102033;padding:7px 12px;font-size:20px}
+  .modal-body{padding:20px}
+  .detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .detail-card{border:1px solid #e1e5ec;border-radius:10px;padding:13px;min-width:0}
+  .detail-card.full{grid-column:1/-1}
+  .detail-label{font-size:12px;color:#64748b;font-weight:bold;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+  .detail-value{font-size:15px;color:#172033;overflow-wrap:anywhere;white-space:pre-wrap}
+  .plan-card{background:#fff9df;border-color:#f0d35c}
+  .amount{font-size:22px;font-weight:bold;color:#146c43}
+  @media(max-width:650px){body{padding:12px}h2{margin-top:26px}.detail-grid{grid-template-columns:1fr}.detail-card.full{grid-column:auto}.modal-body{padding:13px}.modal-header{padding:14px}.modal-header h3{font-size:18px}}
+</style>
 </head>
-
 <body>
-
-<!-- ================================================= -->
-<!-- NEW ENQUIRIES -->
-<!-- ================================================= -->
-
 <h2>New Enquiries</h2>
-
-<table>
-
-  <thead>
-
-    <tr>
-
-      <th>Student Name</th>
-      <th>Parent Name</th>
-      <th>Grade</th>
-      <th>Mobile</th>
-      <th>Date</th>
-      <th>Courses</th>
-      <th>Action</th>
-
-    </tr>
-
-  </thead>
-
-  <tbody id="enquiryTable"></tbody>
-
-</table>
-
-
-<!-- ================================================= -->
-<!-- NEW ADMISSIONS -->
-<!-- ================================================= -->
-
+<div class="table-wrap"><table><thead><tr><th>Student Name</th><th>Parent Name</th><th>Grade</th><th>Mobile</th><th>Date</th><th>Courses</th><th>Action</th></tr></thead><tbody id="enquiryTable"></tbody></table></div>
 <h2>New Admissions</h2>
+<div class="table-wrap"><table><thead><tr><th>Student Name</th><th>Parent Name</th><th>Grade</th><th>Board</th><th>Mobile</th><th>Date</th><th>Subjects</th><th>Action</th></tr></thead><tbody id="dataTable"></tbody></table></div>
 
-<table>
-
-  <thead>
-
-    <tr>
-
-      <th>Student Name</th>
-      <th>Parent Name</th>
-      <th>Grade</th>
-      <th>Mobile</th>
-      <th>Date</th>
-      <th>Subjects</th>
-      <th>Action</th>
-
-    </tr>
-
-  </thead>
-
-  <tbody id="dataTable"></tbody>
-
-</table>
-
-
+<div id="admissionModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle" onclick="backdropClose(event)">
+  <div class="modal"><div class="modal-header"><h3 id="modalTitle">Admission Details</h3><button class="close-btn" onclick="closeAdmissionModal()" aria-label="Close">&times;</button></div><div class="modal-body"><div id="admissionDetails" class="detail-grid"></div></div></div>
+</div>
 
 <script>
+const API_BASE = "https://academy-backend-eatl.onrender.com/api/founder";
+let admissionRecords = [];
 
-/////////////////////////////////////////////////////////
-// LOAD DATA
-/////////////////////////////////////////////////////////
-
-async function loadData() {
-
-  try {
-
-    /////////////////////////////////////////////////////////
-    // ENQUIRIES
-    /////////////////////////////////////////////////////////
-
-    const enquiryRes = await fetch(
-      "https://academy-backend-eatl.onrender.com/api/founder/enquiries"
-    );
-
-    const enquiryResult =
-      await enquiryRes.json();
-
-    const enquiryData =
-      enquiryResult.enquiries;
-
-    const enquiryTable =
-      document.getElementById("enquiryTable");
-
-    enquiryTable.innerHTML = "";
-
-    enquiryData.forEach(item => {
-
-      const tr =
-        document.createElement("tr");
-
-      const date =
-        new Date(item.createdAt);
-
-      tr.innerHTML = `
-
-<td>${item.studentName}</td>
-
-<td>${item.parentName}</td>
-
-<td>${item.grade}</td>
-
-<td>${item.mobile}</td>
-
-<td>${date.toLocaleString()}</td>
-
-<td>
-
-${
-item.courses && item.courses.length > 0
-
-? item.courses.map(
-c => `<span class="course-badge">${c}</span>`
-).join("")
-
-: "-"
+function escapeHTML(value){
+  return String(value ?? "-").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]));
+}
+function displayList(value){
+  if(Array.isArray(value)) return value.length ? value.map(v=>`<span class="course-badge">${escapeHTML(v)}</span>`).join(" ") : "-";
+  return value ? escapeHTML(value) : "-";
+}
+function detail(label,value,full=false,extraClass=""){
+  return `<div class="detail-card ${full?'full':''} ${extraClass}"><div class="detail-label">${escapeHTML(label)}</div><div class="detail-value">${value ?? "-"}</div></div>`;
 }
 
-</td>
-
-<td>
-
-<button
-onclick="viewEnquiry('${item._id}')"
-style="background:#2563eb;color:white;margin-right:6px;"
->
-
-View
-
-</button>
-
-<button onclick="deleteEnquiry('${item._id}')">
-
-Delete
-
-</button>
-
-</td>
-
-`;
-
+async function loadData(){
+  try{
+    const enquiryRes=await fetch(`${API_BASE}/enquiries`);
+    if(!enquiryRes.ok) throw new Error("Could not load enquiries");
+    const enquiryResult=await enquiryRes.json();
+    const enquiryTable=document.getElementById("enquiryTable");
+    enquiryTable.innerHTML="";
+    (enquiryResult.enquiries||[]).forEach(item=>{
+      const date=item.createdAt?new Date(item.createdAt).toLocaleString():"-";
+      const tr=document.createElement("tr");
+      tr.innerHTML=`<td>${escapeHTML(item.studentName)}</td><td>${escapeHTML(item.parentName)}</td><td>${escapeHTML(item.grade)}</td><td>${escapeHTML(item.mobile)}</td><td>${escapeHTML(date)}</td><td>${displayList(item.courses)}</td><td><button class="view-btn" onclick="viewEnquiry('${escapeHTML(item._id)}')">View</button><button onclick="deleteEnquiry('${escapeHTML(item._id)}')">Delete</button></td>`;
       enquiryTable.appendChild(tr);
-
     });
 
-
-
-    /////////////////////////////////////////////////////////
-    // ADMISSIONS
-    /////////////////////////////////////////////////////////
-
-    const res = await fetch(
-      "https://academy-backend-eatl.onrender.com/api/founder/admissions"
-    );
-
-    const result =
-      await res.json();
-
-    const data =
-      result.admissions;
-
-    const table =
-      document.getElementById("dataTable");
-
-    table.innerHTML = "";
-
-    data.forEach(item => {
-
-      const tr =
-        document.createElement("tr");
-
-      const date =
-        new Date(item.createdAt);
-
-      tr.innerHTML = `
-
-<td>${item.studentName}</td>
-
-<td>${item.parentName}</td>
-
-<td>${item.grade}</td>
-
-<td>${item.mobile}</td>
-
-<td>${date.toLocaleString()}</td>
-
-<td>
-
-${
-item.subjects && item.subjects.length > 0
-
-? item.subjects.map(
-c => `<span class="course-badge">${c}</span>`
-).join("")
-
-: "-"
-}
-
-</td>
-
-<td>
-
-<button
-onclick="viewAdmission('${item._id}')"
-style="background:#2563eb;color:white;margin-right:6px;"
->
-
-View
-
-</button>
-
-<button onclick="deleteItem('${item._id}')">
-
-Delete
-
-</button>
-
-</td>
-
-`;
-
+    const res=await fetch(`${API_BASE}/admissions`);
+    if(!res.ok) throw new Error("Could not load admissions");
+    const result=await res.json();
+    admissionRecords=result.admissions||[];
+    const table=document.getElementById("dataTable");table.innerHTML="";
+    admissionRecords.forEach(item=>{
+      const date=item.createdAt?new Date(item.createdAt).toLocaleString():"-";
+      const tr=document.createElement("tr");
+      tr.innerHTML=`<td>${escapeHTML(item.studentName)}</td><td>${escapeHTML(item.parentName)}</td><td>${escapeHTML(item.grade)}</td><td>${escapeHTML(item.board)}</td><td>${escapeHTML(item.mobile)}</td><td>${escapeHTML(date)}</td><td>${displayList(item.subjects)}</td><td><button class="view-btn" onclick="viewAdmission('${escapeHTML(item._id)}')">View Details</button><button onclick="deleteItem('${escapeHTML(item._id)}')">Delete</button></td>`;
       table.appendChild(tr);
-
     });
-
-  }
-
-  catch (err) {
-
-    console.log(err);
-
-  }
-
+  }catch(err){console.error(err);}
 }
-
-loadData();
-
-
-
-/////////////////////////////////////////////////////////
-// DELETE ADMISSION
-/////////////////////////////////////////////////////////
-
-async function deleteItem(id) {
-
-  const confirmDelete =
-    confirm("Are you sure?");
-
-  if (!confirmDelete) return;
-
-  try {
-
-    await fetch(
-
-      `https://academy-backend-eatl.onrender.com/api/founder/admission/${id}`,
-
-      {
-        method: "DELETE"
-      }
-
-    );
-
-    alert("Deleted successfully");
-
-    loadData();
-
-  }
-
-  catch (err) {
-
-    console.log(err);
-
-    alert("Delete failed");
-
-  }
-
-}
-
-
-
-/////////////////////////////////////////////////////////
-// DELETE ENQUIRY
-/////////////////////////////////////////////////////////
-
-async function deleteEnquiry(id) {
-
-  const confirmDelete =
-    confirm("Are you sure?");
-
-  if (!confirmDelete) return;
-
-  try {
-
-    await fetch(
-
-      `https://academy-backend-eatl.onrender.com/api/founder/enquiry/${id}`,
-
-      {
-        method: "DELETE"
-      }
-
-    );
-
-    alert("Deleted successfully");
-
-    loadData();
-
-  }
-
-  catch (err) {
-
-    console.log(err);
-
-    alert("Delete failed");
-
-  }
-
-}
-
-/////////////////////////////////////////////////////////
-// VIEW ADMISSION
-/////////////////////////////////////////////////////////
 
 function viewAdmission(id){
-
-window.location.href =
-`view-admission.html?id=${id}`;
-
+  const item=admissionRecords.find(x=>String(x._id)===String(id));
+  if(!item){alert("Admission details could not be found. Please refresh the page.");return;}
+  const date=item.createdAt?new Date(item.createdAt).toLocaleString():"-";
+  let html="";
+  html+=detail("Student Name",escapeHTML(item.studentName));
+  html+=detail("Parent Name",escapeHTML(item.parentName));
+  html+=detail("Grade / Class",escapeHTML(item.grade));
+  html+=detail("Board / Curriculum",escapeHTML(item.board));
+  html+=detail("Student Mobile",escapeHTML(item.mobile));
+  html+=detail("Student Date of Birth",escapeHTML(item.studentDOB));
+  html+=detail("Parent Mobile",escapeHTML(item.parentMobile));
+  html+=detail("Parent WhatsApp",escapeHTML(item.parentWhatsapp));
+  html+=detail("Parent Email",escapeHTML(item.parentEmail));
+  html+=detail("Address",escapeHTML(item.address),true);
+  html+=detail("Courses",displayList(item.courses),true);
+  html+=detail("Subjects",displayList(item.subjects),true);
+  html+=detail("Selected Plan",escapeHTML(item.selectedPlan),true,"plan-card");
+  html+=detail("Total Amount",`<span class="amount">Rs ${escapeHTML(item.totalAmount)}</span>`,false,"plan-card");
+  html+=detail("UTR / Payment Reference",escapeHTML(item.utr));
+  html+=detail("Admission Date",escapeHTML(date));
+  document.getElementById("admissionDetails").innerHTML=html;
+  document.getElementById("admissionModal").classList.add("open");
 }
+function closeAdmissionModal(){document.getElementById("admissionModal").classList.remove("open");}
+function backdropClose(event){if(event.target.id==="admissionModal")closeAdmissionModal();}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeAdmissionModal();});
 
-
-/////////////////////////////////////////////////////////
-// VIEW ENQUIRY
-/////////////////////////////////////////////////////////
-
-function viewEnquiry(id){
-
-window.location.href =
-`view-enquiry.html?id=${id}`;
-
+async function deleteItem(id){
+  if(!confirm("Are you sure you want to delete this admission?"))return;
+  try{const res=await fetch(`${API_BASE}/admission/${id}`,{method:"DELETE"});if(!res.ok)throw new Error();alert("Deleted successfully");loadData();}
+  catch(err){console.error(err);alert("Delete failed");}
 }
-
-
+async function deleteEnquiry(id){
+  if(!confirm("Are you sure you want to delete this enquiry?"))return;
+  try{const res=await fetch(`${API_BASE}/enquiry/${id}`,{method:"DELETE"});if(!res.ok)throw new Error();alert("Deleted successfully");loadData();}
+  catch(err){console.error(err);alert("Delete failed");}
+}
+function viewEnquiry(id){window.location.href=`view-enquiry.html?id=${encodeURIComponent(id)}`;}
+loadData();
 </script>
-
 </body>
 </html>
