@@ -1,0 +1,260 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abacus Question Import | Pinnacle Star Championship</title>
+
+<link rel="stylesheet"
+ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f3f5fb;
+    color: #17213b;
+}
+
+.container {
+    max-width: 750px;
+    margin: 40px auto;
+    padding: 25px;
+}
+
+.card {
+    background: white;
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 5px 25px rgba(0,0,0,.06);
+}
+
+h1 {
+    color: #173f83;
+}
+
+input[type="file"] {
+    width: 100%;
+    padding: 15px;
+    border: 2px dashed #aab7d0;
+    border-radius: 12px;
+    margin: 20px 0;
+    background: #f8faff;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(120deg, #100b3d, #173f83);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+#status {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    display: none;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.success {
+    background: #e8f7ed;
+    color: #17653b;
+}
+
+.error {
+    background: #fff0f0;
+    color: #a12626;
+}
+
+.preview {
+    background: #f5f7fc;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 15px 0;
+}
+
+@media(max-width:600px) {
+    .container {
+        margin: 10px;
+        padding: 10px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>
+            <i class="fa-solid fa-calculator"></i>
+            Abacus Question Import
+        </h1>
+
+        <p>
+            Pinnacle Star Championship 2026
+        </p>
+
+        <p>
+            Import the Level 1 Abacus question bank into the database.
+        </p>
+
+        <div class="preview">
+            <strong>Level:</strong> Level 1<br>
+            <strong>Expected questions:</strong> 100<br>
+            <strong>File format:</strong> JSON
+        </div>
+
+        <label for="jsonFile">
+            Select your question JSON file:
+        </label>
+
+        <input
+            type="file"
+            id="jsonFile"
+            accept=".json,application/json">
+
+        <button id="importButton" onclick="importQuestions()">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            Import Questions
+        </button>
+
+        <div id="status"></div>
+
+    </div>
+
+</div>
+
+<script>
+
+const API_BASE =
+    "https://academy-backend-eatl.onrender.com/api/championship-abacus";
+
+async function importQuestions() {
+
+    const fileInput = document.getElementById("jsonFile");
+    const importButton = document.getElementById("importButton");
+    const statusBox = document.getElementById("status");
+
+    statusBox.style.display = "none";
+    statusBox.className = "";
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        showStatus("Please login first.", false);
+        return;
+    }
+
+    if (!fileInput.files || fileInput.files.length === 0) {
+        showStatus("Please select your JSON file.", false);
+        return;
+    }
+
+    importButton.disabled = true;
+    importButton.innerHTML = "Importing...";
+
+    try {
+
+        const file = fileInput.files[0];
+        const text = await file.text();
+
+        let payload;
+
+        try {
+            payload = JSON.parse(text);
+        } catch {
+            throw new Error("The selected file is not valid JSON.");
+        }
+
+        if (
+            !payload ||
+            !Array.isArray(payload.questions) ||
+            payload.questions.length === 0
+        ) {
+            throw new Error("The file does not contain a valid questions array.");
+        }
+
+        if (payload.questions.length !== 100) {
+            throw new Error(
+                "Expected 100 questions, but found " +
+                payload.questions.length +
+                "."
+            );
+        }
+
+        const response = await fetch(API_BASE + "/import", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(
+                data.message || "Question import failed."
+            );
+        }
+
+        showStatus(
+            "Import successful!\n\n" +
+            "Questions in file: " + payload.questions.length +
+            "\nNew questions: " + data.imported +
+            "\nUpdated questions: " + data.updated,
+            true
+        );
+
+    } catch (error) {
+
+        showStatus(error.message, false);
+
+    } finally {
+
+        importButton.disabled = false;
+        importButton.innerHTML =
+            '<i class="fa-solid fa-cloud-arrow-up"></i> Import Questions';
+
+    }
+}
+
+function showStatus(message, success) {
+
+    const statusBox = document.getElementById("status");
+
+    statusBox.style.display = "block";
+    statusBox.className = success ? "success" : "error";
+    statusBox.textContent = message;
+
+}
+
+</script>
+
+</body>
+</html>
