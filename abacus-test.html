@@ -1,0 +1,855 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abacus Level 1 | Pinnacle Star Championship 2026</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root {
+    --olive-dark: #242500;
+    --olive: #414200;
+    --olive-light: #666000;
+    --gold: #c99a12;
+    --gold-light: #f5d55e;
+    --cream: #fff7df;
+    --cream-dark: #f3e5b7;
+    --text: #292600;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background:
+        radial-gradient(circle at top, #575300, #262700 65%);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+/* TOP HEADER */
+
+.top-header {
+    width: 100%;
+    min-height: 78px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 5%;
+    background: linear-gradient(90deg, #252600, #414100, #252600);
+    border-bottom: 2px solid #d9ad24;
+    color: #fff5c9;
+}
+
+.academy-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.academy-brand img {
+    width: 250px;
+    height: 100px;
+    object-fit: contain;
+}
+
+.academy-brand h1 {
+    font-family: Georgia, serif;
+    font-size: 25px;
+    margin: 0;
+}
+
+.header-title {
+    font-family: Georgia, serif;
+    font-size: 24px;
+    color: #fff0bd;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-title i {
+    color: #d6a920;
+}
+
+/* MAIN LAYOUT */
+
+.page-container {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 35px 4%;
+}
+
+.main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 35px;
+    align-items: center;
+}
+
+/* LEFT PANEL */
+
+.welcome-panel {
+    text-align: center;
+    color: #f9e8a3;
+    padding: 30px 20px;
+    position: relative;
+}
+
+.crown {
+    font-size: 75px;
+    color: #f2c43b;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px #d6a52b;
+}
+
+.welcome-script {
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 43px;
+    margin: 0 0 10px;
+    color: #fff2bd;
+}
+
+.championship-title {
+    font-family: Georgia, serif;
+    font-size: 48px;
+    line-height: 1.08;
+    font-weight: bold;
+    color: #e8bb39;
+    text-shadow: 0 2px 10px rgba(0,0,0,.4);
+}
+
+.laurel-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.laurel-title i {
+    color: #e8bd42;
+    font-size: 35px;
+}
+
+.gold-divider {
+    color: #e4bd40;
+    margin: 18px 0;
+    letter-spacing: 8px;
+    font-size: 24px;
+}
+
+.abacus-ribbon {
+    margin: 20px auto 10px;
+    max-width: 540px;
+    background: linear-gradient(
+        180deg,
+        #ffdf6b,
+        #c9900b,
+        #e4b839
+    );
+    color: #302600;
+    padding: 15px;
+    font-family: Georgia, serif;
+    font-size: 42px;
+    font-weight: bold;
+    border: 2px solid #ffe38a;
+    box-shadow: 0 8px 20px rgba(0,0,0,.3);
+    border-radius: 12px;
+}
+
+.level-badge {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 12px 35px;
+    border: 3px solid #d8a91d;
+    border-radius: 35px;
+    color: #ffe9a4;
+    font-family: Georgia, serif;
+    font-size: 30px;
+    font-weight: bold;
+    background: rgba(0,0,0,.25);
+}
+
+.abacus-illustration {
+    margin: 25px auto 0;
+    max-width: 460px;
+    font-size: 180px;
+    color: #e8b82e;
+    filter: drop-shadow(0 10px 12px rgba(0,0,0,.4));
+}
+
+.abacus-illustration img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* RIGHT TEST INFORMATION */
+
+.info-card {
+    background: linear-gradient(
+        135deg,
+        #fff9e7,
+        #f5e3ad,
+        #fff6d8
+    );
+    border: 3px solid #d6a624;
+    border-radius: 30px;
+    padding: 35px;
+    box-shadow:
+        0 15px 45px rgba(0,0,0,.35),
+        inset 0 0 0 5px rgba(255,255,255,.3);
+    position: relative;
+}
+
+.info-heading {
+    text-align: center;
+    margin: -5px auto 30px;
+}
+
+.info-heading h2 {
+    display: inline-block;
+    background: linear-gradient(180deg, #5a5800, #323300);
+    color: #fff3c7;
+    padding: 13px 45px;
+    border-radius: 50px;
+    border: 2px solid #d4a51d;
+    font-family: Georgia, serif;
+    font-size: 30px;
+    margin: 0;
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+
+/* TEST METRICS */
+
+.metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid #d8bc65;
+    padding-bottom: 25px;
+    margin-bottom: 25px;
+}
+
+.metric {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.metric:first-child {
+    border-right: 1px solid #cda849;
+}
+
+.metric-icon {
+    font-size: 55px;
+    color: #a17b12;
+}
+
+.metric-number {
+    font-size: 55px;
+    font-weight: bold;
+    color: #353400;
+}
+
+.metric-label {
+    font-size: 22px;
+    color: #292600;
+}
+
+/* PARTICIPANT DETAILS */
+
+.details-list {
+    margin-bottom: 30px;
+}
+
+.detail-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 1fr;
+    align-items: center;
+    gap: 15px;
+    padding: 20px 8px;
+    border-bottom: 1px solid #d8bc65;
+}
+
+.detail-icon {
+    font-size: 32px;
+    color: #a17b12;
+    text-align: center;
+}
+
+.detail-label {
+    font-size: 20px;
+}
+
+.detail-value {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: right;
+    color: #302900;
+    overflow-wrap: anywhere;
+}
+
+.participant-id {
+    background: #f0d17b;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+/* START BUTTON */
+
+.start-area {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.start-button {
+    width: 100%;
+    max-width: 530px;
+    padding: 22px 25px;
+    border: 3px solid #b7860a;
+    border-radius: 70px;
+    background: linear-gradient(
+        180deg,
+        #ffdf65,
+        #dca316,
+        #b98106
+    );
+    color: #302500;
+    font-family: Georgia, serif;
+    font-size: 35px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow:
+        0 8px 15px rgba(0,0,0,.25),
+        inset 0 2px 5px rgba(255,255,255,.5);
+    transition: .25s;
+}
+
+.start-button:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.08);
+}
+
+.start-button i {
+    margin-right: 12px;
+}
+
+.start-note {
+    color: #655000;
+    font-size: 14px;
+    margin-top: 15px;
+}
+
+/* LOADING */
+
+.loading-text {
+    color: #fff0be;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.error-message {
+    color: #8b2020;
+    text-align: center;
+    padding: 10px;
+}
+
+/* MOBILE */
+
+@media (max-width: 900px) {
+
+    .top-header {
+        padding: 15px 4%;
+    }
+
+    .header-title {
+        font-size: 17px;
+    }
+
+    .academy-brand h1 {
+        font-size: 20px;
+    }
+
+    .main-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .welcome-panel {
+        padding: 15px 10px;
+    }
+
+    .crown {
+        font-size: 60px;
+    }
+
+    .welcome-script {
+        font-size: 30px;
+    }
+
+    .championship-title {
+        font-size: 35px;
+    }
+
+    .abacus-ribbon {
+        font-size: 32px;
+        max-width: 400px;
+    }
+
+    .level-badge {
+        font-size: 24px;
+    }
+
+    .abacus-illustration {
+        font-size: 120px;
+        max-width: 320px;
+    }
+
+    .info-card {
+        padding: 25px 18px;
+    }
+
+    .info-heading h2 {
+        font-size: 24px;
+        padding: 12px 25px;
+    }
+
+    .metric-icon {
+        font-size: 40px;
+    }
+
+    .metric-number {
+        font-size: 42px;
+    }
+
+    .metric-label {
+        font-size: 18px;
+    }
+
+    .detail-row {
+        grid-template-columns: 45px 1fr 1fr;
+        gap: 10px;
+        padding: 16px 5px;
+    }
+
+    .detail-icon {
+        font-size: 25px;
+    }
+
+    .detail-label,
+    .detail-value {
+        font-size: 17px;
+    }
+
+    .start-button {
+        font-size: 28px;
+        padding: 20px 15px;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .top-header {
+        min-height: 65px;
+    }
+
+    .academy-brand {
+        gap: 8px;
+    }
+
+    .academy-brand img {
+    width: 200px;
+    height: 70px;
+    object-fit: contain;
+}
+
+    .academy-brand h1 {
+        font-size: 17px;
+    }
+
+    .header-title {
+        display: none;
+    }
+
+    .page-container {
+        padding: 15px 12px 30px;
+    }
+
+    .welcome-panel {
+        padding: 15px 5px 5px;
+    }
+
+    .crown {
+        font-size: 48px;
+        margin-bottom: 4px;
+    }
+
+    .welcome-script {
+        font-size: 26px;
+    }
+
+    .championship-title {
+        font-size: 30px;
+    }
+
+    .laurel-title i {
+        font-size: 23px;
+    }
+
+    .gold-divider {
+        margin: 10px 0;
+        font-size: 18px;
+    }
+
+    .abacus-ribbon {
+        font-size: 28px;
+        padding: 12px;
+        margin: 12px auto 8px;
+    }
+
+    .level-badge {
+        font-size: 22px;
+        padding: 10px 28px;
+        margin-top: 8px;
+    }
+
+    .abacus-illustration {
+        font-size: 100px;
+        max-width: 250px;
+        margin-top: 15px;
+    }
+
+    .info-card {
+        border-radius: 22px;
+        padding: 20px 13px;
+    }
+
+    .info-heading {
+        margin-bottom: 20px;
+    }
+
+    .info-heading h2 {
+        font-size: 21px;
+        padding: 11px 20px;
+    }
+
+    .metrics {
+        padding-bottom: 20px;
+        margin-bottom: 15px;
+    }
+
+    .metric {
+        gap: 10px;
+    }
+
+    .metric-icon {
+        font-size: 30px;
+    }
+
+    .metric-number {
+        font-size: 35px;
+    }
+
+    .metric-label {
+        font-size: 15px;
+    }
+
+    .detail-row {
+        grid-template-columns: 35px 1fr;
+        gap: 8px;
+        padding: 14px 3px;
+    }
+
+    .detail-icon {
+        font-size: 24px;
+    }
+
+    .detail-label {
+        font-size: 16px;
+    }
+
+    .detail-value {
+        grid-column: 2;
+        text-align: left;
+        font-size: 17px;
+        padding-top: 4px;
+    }
+
+    .participant-id {
+        display: inline-block;
+        width: fit-content;
+        max-width: 100%;
+        padding: 9px 12px;
+    }
+
+    .start-button {
+        font-size: 25px;
+        padding: 18px 12px;
+    }
+
+    .start-note {
+        font-size: 12px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="top-header">
+
+    <div class="academy-brand">
+    <img src="images/logo.png" alt="Gopes Pinnacle Academy Logo">
+    
+</div>
+
+    <div class="header-title">
+        <i class="fa-solid fa-award"></i>
+        Pinnacle Star Championship 2026
+        <i class="fa-solid fa-award"></i>
+    </div>
+
+</header>
+
+<main class="page-container">
+
+    <div class="main-grid">
+
+        <!-- LEFT PANEL -->
+
+        <section class="welcome-panel">
+
+            <div class="crown">
+                <i class="fa-solid fa-crown"></i>
+            </div>
+
+            <p class="welcome-script">
+                Welcome to
+            </p>
+
+            <div class="laurel-title">
+
+                <i class="fa-solid fa-leaf"></i>
+
+                <div class="championship-title">
+                    PINNACLE STAR<br>
+                    CHAMPIONSHIP
+                </div>
+
+                <i class="fa-solid fa-leaf"></i>
+
+            </div>
+
+            <div class="gold-divider">
+                ───── ✦ ★ ✦ ─────
+            </div>
+
+            <div class="abacus-ribbon">
+                Abacus
+            </div>
+
+            <div class="level-badge">
+                Level 1
+            </div>
+
+            <div class="abacus-illustration">
+                <i class="fa-solid fa-calculator"></i>
+            </div>
+
+        </section>
+
+
+        <!-- RIGHT PANEL -->
+
+        <section class="info-card">
+
+            <div class="info-heading">
+                <h2>Test Information</h2>
+            </div>
+
+            <div class="metrics">
+
+                <div class="metric">
+
+                    <i class="fa-solid fa-calculator metric-icon"></i>
+
+                    <div>
+                        <div class="metric-number">100</div>
+                        <div class="metric-label">Questions</div>
+                    </div>
+
+                </div>
+
+                <div class="metric">
+
+                    <i class="fa-solid fa-stopwatch metric-icon"></i>
+
+                    <div>
+                        <div class="metric-number">30</div>
+                        <div class="metric-label">Minutes</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="details-list">
+
+                <div class="detail-row">
+
+                    <i class="fa-solid fa-user detail-icon"></i>
+
+                    <div class="detail-label">
+                        Participant ID
+                    </div>
+
+                    <div class="detail-value participant-id"
+                         id="participantId">
+                        Loading...
+                    </div>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <i class="fa-solid fa-graduation-cap detail-icon"></i>
+
+                    <div class="detail-label">
+                        Competition
+                    </div>
+
+                    <div class="detail-value">
+                        Abacus
+                    </div>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <i class="fa-solid fa-layer-group detail-icon"></i>
+
+                    <div class="detail-label">
+                        Level
+                    </div>
+
+                    <div class="detail-value">
+                        Level 1
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="start-area">
+
+                <button class="start-button" id="startButton">
+                    <i class="fa-solid fa-play"></i>
+                    Start Test
+                </button>
+
+                <div class="start-note">
+                    Make sure you are ready before starting.
+                    The timer will begin once the test starts.
+                </div>
+
+            </div>
+
+            <div id="loadingMessage" class="loading-text"></div>
+
+        </section>
+
+    </div>
+
+</main>
+
+
+<script>
+
+const API_BASE =
+    "https://academy-backend-eatl.onrender.com";
+
+async function loadParticipantDetails() {
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+
+        alert("Please login first.");
+
+        window.location.href = "student-login.html";
+
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            API_BASE + "/api/championship/participant/me",
+            {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+
+            throw new Error(
+                data.message || "Unable to load participant details."
+            );
+
+        }
+
+        const participant = data.participant;
+
+        document.getElementById("participantId").textContent =
+            participant.participantId || "-";
+
+    } catch (error) {
+
+        console.error("Participant loading error:", error);
+
+        document.getElementById("participantId").textContent =
+            "Unable to load";
+
+        document.getElementById("loadingMessage").textContent =
+            error.message;
+
+    }
+
+}
+
+
+// TEMPORARY BUTTON
+// Test-start functionality will be connected in the next step.
+
+document.getElementById("startButton").addEventListener("click", function () {
+
+    alert("The Abacus test start functionality will be connected in the next step.");
+
+});
+
+
+loadParticipantDetails();
+
+</script>
+
+</body>
+</html>
