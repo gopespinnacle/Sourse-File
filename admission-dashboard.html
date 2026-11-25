@@ -864,6 +864,7 @@ padding-top:3px;
 }
 </style>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 
 <body>
@@ -1233,7 +1234,7 @@ padding-top:3px;
                 <ul>
 
                     <li>
-                        5 classes/week (40 mins)
+                        2 classes/week (60 mins)
                     </li>
 
                     <li>
@@ -1242,6 +1243,10 @@ padding-top:3px;
 
                     <li>
                         Unit Worksheets
+                    </li>
+
+                    <li>
+                        Weekly Assessments
                     </li>
 
                     <li>
@@ -1319,7 +1324,7 @@ padding-top:3px;
 
             <div class="plan-body">
 
-                <select id="otherPlan">
+                <select id="otherPlan" onclick="event.stopPropagation()" onchange="handleOtherPlanChange()">
 
                     <option value="">
                         Select Custom Plan
@@ -1331,15 +1336,20 @@ padding-top:3px;
                         ₹250 Per Day
                     </option>
 
+                    
                     <option>
-                        40 mins Duration -
+                        5 Days/week -
+                        Same teacher for all subjects -
+                        90 mins Duration -
                         3 Subjects -
-                        ₹200 Per Session
+                        ₹300 Per Session
                     </option>
 
                     <option>
+                        6 Days/week -
+                        Individual teacher for subjects -
                         60 mins Duration -
-                        3 Subjects -
+                        2 Subjects -
                         ₹300 Per Session
                     </option>
 
@@ -1492,14 +1502,8 @@ BEST VALUE
                     Plan Confirmation
                 </h2>
 
-                <div class="summary-box">
-
-                    <p>
-                        Selected Plan :
-                        <span id="selectedPlanText">
-                        </span>
-                    </p>
-
+                <div class="summary-box" id="planSummaryBox">
+                    <div id="selectedPlanText"></div>
                 </div>
                 <div id="abroadClassSelector" style="display:none; margin-top:25px;">
 
@@ -1562,14 +1566,22 @@ font-size:20px;
 font-weight:bold;
 margin-top:10px;
 "></p>
-                <div class="button-row payment-row">
+                <div id="dynamicPaymentQR" style="display:none; margin:22px 0; padding:20px; background:#fff; border:1px solid #ddd; border-radius:12px; text-align:center;">
+  <h3>Scan to Pay</h3>
+  <p id="qrAmountLabel" style="font-size:20px;font-weight:bold;"></p>
+  <div id="upiQRCode" style="display:flex;justify-content:center;margin:15px auto;"></div>
+  <p>Scan this QR code using GPay, PhonePe or any UPI app. The amount is pre-filled.</p>
+  <p><strong>UPI ID:</strong> svgopeka19@oksbi</p>
+</div>
+
+<div class="button-row payment-row">
 
     <button onclick="prevPage(3)">
         Back
     </button>
 
     <button onclick="payNow()">
-        Proceed Payment
+        Refresh Payment QR
     </button>
 
     <input
@@ -1638,6 +1650,54 @@ required>
 
 </div>
 
+
+<!-- HOMEWORK TRACKING DAYS POPUP -->
+<style>
+#homeworkDaysModal{display:none;position:fixed;inset:0;background:rgba(8,20,35,.62);z-index:9999;align-items:center;justify-content:center;padding:18px;}
+#homeworkDaysModal .modal-card{background:#fff;width:min(420px,100%);padding:26px;border-radius:14px;box-shadow:0 18px 55px rgba(0,0,0,.25);font-family:Segoe UI,sans-serif;}
+#homeworkDaysModal h3{margin:0 0 10px;color:#102033;}
+#homeworkDaysModal input{box-sizing:border-box;width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:8px;font-size:16px;margin:10px 0;}
+#homeworkDaysModal .modal-total{font-weight:700;color:#087f5b;margin:8px 0 18px;}
+#homeworkDaysModal .modal-actions{display:flex;gap:10px;justify-content:flex-end;}
+#homeworkDaysModal button{border:0;border-radius:8px;padding:11px 18px;cursor:pointer;font-weight:600;}
+#homeworkDaysModal .confirm-btn{background:#ffc300;color:#111;}
+#homeworkDaysModal .cancel-btn{background:#e9eef5;color:#263445;}
+
+/* MOBILE PLAN CONFIRMATION POLISH */
+@media (max-width: 768px) {
+  html, body { width:100%; max-width:100%; overflow-x:hidden; }
+  .dashboard { width:100%; min-width:0; }
+  .main-content { width:100%; min-width:0; padding:20px 14px 28px !important; box-sizing:border-box; }
+  #academySection h1 { font-size:26px; line-height:1.25; margin:12px 0 18px; }
+  .step-bar { gap:8px; margin:18px 0 24px; justify-content:space-between; }
+  .step { width:34px; height:34px; min-width:34px; font-size:14px; }
+  .form-page h2 { font-size:21px; line-height:1.3; margin:0 0 18px; }
+  .summary-box { padding:18px 16px !important; border-radius:14px; width:100%; box-sizing:border-box; overflow-wrap:anywhere; }
+  #selectedPlanText { font-size:15px; line-height:1.75; word-break:break-word; }
+  #selectedPlanText strong { display:inline-block; margin-top:6px; font-size:17px; }
+  #dynamicPaymentQR { padding:16px 12px !important; margin:18px 0 !important; box-sizing:border-box; width:100%; }
+  #upiQRCode { max-width:100%; overflow:hidden; }
+  #upiQRCode img, #upiQRCode canvas { max-width:100%; height:auto !important; }
+  .button-row, .payment-row { display:flex; flex-direction:column; align-items:stretch; gap:10px; width:100%; }
+  .button-row button { width:100%; min-height:46px; }
+  #couponInput { width:100% !important; box-sizing:border-box; margin-bottom:10px; }
+  .main-content input, .main-content select, .main-content textarea { box-sizing:border-box; max-width:100%; }
+}
+</style>
+<div id="homeworkDaysModal" role="dialog" aria-modal="true" aria-labelledby="homeworkModalTitle">
+  <div class="modal-card">
+    <h3 id="homeworkModalTitle">Homework Tracking Plan</h3>
+    <p>Enter the number of days for which you need homework tracking.</p>
+    <label for="homeworkDaysInput">Number of days</label>
+    <input type="number" id="homeworkDaysInput" min="1" step="1" placeholder="Enter number of days" oninput="updateHomeworkEstimate()">
+    <div class="modal-total" id="homeworkEstimate">Rs 250 × 0 days = Rs 0</div>
+    <div class="modal-actions">
+      <button type="button" class="cancel-btn" onclick="cancelHomeworkPlan()">Cancel</button>
+      <button type="button" class="confirm-btn" onclick="confirmHomeworkPlan()">Confirm</button>
+    </div>
+  </div>
+</div>
+
 <script>
    let selectedPlan = "";
 
@@ -1647,6 +1707,8 @@ let pricePerClass = 0;
 let finalAmount = 0;
 
 let appliedDiscount = 0;
+let otherPlanType = "";
+let homeworkDays = 0;
 
 /* NEW */
 let applicationType = "Indian";
@@ -1740,7 +1802,9 @@ function showSection(type){
 selectedPlan = "";
 selectedAmount = 0;
 pricePerClass = 0;
-
+otherPlanType = "";
+homeworkDays = 0;
+if(document.getElementById("otherPlan")) document.getElementById("otherPlan").selectedIndex = 0;
 document.querySelectorAll(".plan-card").forEach(card=>{
     card.classList.remove("active");
 });
@@ -1803,10 +1867,20 @@ function nextPage(page){
     if(page === 4){
 
         if(!selectedPlan){
-
             alert("Please select a plan");
-
             return;
+        }
+
+        if(applicationType === "Indian" && selectedPlan === "Others") {
+            if(document.getElementById("otherPlan").selectedIndex === 0) {
+                alert("Please select a custom plan under Others");
+                return;
+            }
+            if(!otherPlanType || (otherPlanType === "homework" && homeworkDays < 1)) {
+                if(otherPlanType === "homework") openHomeworkDaysModal();
+                else alert("Please select and confirm your custom plan details");
+                return;
+            }
         }
 
     }
@@ -1822,6 +1896,11 @@ function nextPage(page){
     .classList.add("active-page");
 
     updateSteps(page);
+
+    // Automatically generate the dynamic UPI QR when Plan Confirmation opens.
+    if(page === 4){
+        setTimeout(() => payNow(), 100);
+    }
 
 }
 
@@ -1880,6 +1959,17 @@ function selectPlan(plan, amount, el){
 
     el.classList.add("active");
 
+    if(plan === "Others") {
+        selectedAmount = 0;
+        finalAmount = 0;
+        otherPlanType = "";
+        homeworkDays = 0;
+        document.getElementById("selectedPlanText").innerHTML = "Selected Plan : Others<br>Please select a custom plan.";
+        localStorage.setItem("selectedPlan", "Others");
+        localStorage.setItem("totalAmount", "0");
+        return;
+    }
+
     const subjectCount =
 document.querySelectorAll(
 'input[name="subjects"]:checked'
@@ -1930,6 +2020,89 @@ if(applicationType === "Abroad"){
 }
 }
 
+function handleOtherPlanChange(){
+    const select = document.getElementById("otherPlan");
+    const card = select.closest(".plan-card");
+    if(selectedPlan !== "Others") selectPlan("Others", 0, card);
+    const choice = select.selectedIndex;
+    otherPlanType = "";
+    homeworkDays = 0;
+    selectedAmount = 0;
+    finalAmount = 0;
+
+    if(choice === 0){
+        document.getElementById("selectedPlanText").innerHTML = "Selected Plan : Others<br>Please select a custom plan.";
+        localStorage.setItem("totalAmount", "0");
+        return;
+    }
+
+    if(choice === 1){
+        otherPlanType = "homework";
+        openHomeworkDaysModal();
+        return;
+    }
+
+    if(choice === 2 || choice === 3){
+        const daysPerWeek = choice === 2 ? 5 : 6;
+        const sessionRate = 300;
+        const weeksPerMonth = 4;
+        const monthly = sessionRate * daysPerWeek * weeksPerMonth;
+        otherPlanType = choice === 2 ? "fiveDay" : "sixDay";
+        selectedAmount = monthly;
+        finalAmount = monthly;
+        const details = choice === 2
+          ? "5 Days/week – Same teacher for all subjects – 90 mins – 3 Subjects"
+          : "6 Days/week – Individual teachers for subjects – 60 mins – 2 Subjects";
+        showOtherPlanSummary(details, `${sessionRate} × ${daysPerWeek} days × ${weeksPerMonth} weeks`, monthly, `${daysPerWeek} days/week; 4 weeks/month`);
+    }
+}
+
+function openHomeworkDaysModal(){
+    const modal = document.getElementById("homeworkDaysModal");
+    modal.style.display = "flex";
+    const input = document.getElementById("homeworkDaysInput");
+    input.value = homeworkDays || "";
+    updateHomeworkEstimate();
+    setTimeout(()=>input.focus(), 50);
+}
+
+function updateHomeworkEstimate(){
+    const days = Math.max(0, parseInt(document.getElementById("homeworkDaysInput").value,10) || 0);
+    document.getElementById("homeworkEstimate").innerText = `Rs 250 × ${days} days = Rs ${(250*days).toLocaleString("en-IN")}`;
+}
+
+function cancelHomeworkPlan(){
+    document.getElementById("homeworkDaysModal").style.display = "none";
+    document.getElementById("otherPlan").selectedIndex = 0;
+    otherPlanType = "";
+    homeworkDays = 0;
+    selectedAmount = 0;
+    finalAmount = 0;
+    document.getElementById("selectedPlanText").innerHTML = "Selected Plan : Others<br>Please select a custom plan.";
+}
+
+function confirmHomeworkPlan(){
+    const days = parseInt(document.getElementById("homeworkDaysInput").value,10);
+    if(!Number.isInteger(days) || days < 1){
+        alert("Please enter a valid number of days (minimum 1).");
+        return;
+    }
+    homeworkDays = days;
+    selectedAmount = 250 * days;
+    finalAmount = selectedAmount;
+    document.getElementById("homeworkDaysModal").style.display = "none";
+    showOtherPlanSummary("2 Hrs Duration – Homework Tracking", `250 × ${days} days`, selectedAmount, `${days} days`);
+}
+
+function showOtherPlanSummary(details, calculation, amount, schedule){
+    selectedPlan = "Others";
+    document.getElementById("selectedPlanText").innerHTML =
+      `Selected Plan : Others<br>Plan Category : ${details}<br>Schedule / Duration : ${schedule}<br>Calculation : Rs ${calculation}<br><strong>Total Amount : Rs ${amount.toLocaleString("en-IN")}</strong>`;
+    localStorage.setItem("selectedPlan", `Others - ${details}`);
+    localStorage.setItem("totalAmount", String(amount));
+    localStorage.setItem("otherPlanDetails", JSON.stringify({details, schedule, calculation, amount, homeworkDays}));
+}
+
 function calculateMonthlyFee(){
 
     const classes =
@@ -1959,41 +2132,25 @@ classes * pricePerClass;
 /* PAYMENT */
 
 function payNow(){
-
-    const amount =
-    localStorage.getItem(
-        "totalAmount"
-    );
-
-    const upiLink =
-`upi://pay?pa=svgopeka19@oksbi&pn=GopesPinnacle&am=${amount}&cu=INR`;
-
-    alert(
-
-`Open GPay / PhonePe.
-
-Amount: ₹${amount}
-
-UPI ID:
-svgopeka19@oksbi
-
-Account Number : 35511200193
-Account Holder’s Name : S Vishnu Gopeka
-Account Type : Savings Account
-Bank Name : SBI
-Bank Branch : BALASAMUDRAM
-IFSC : SBIN0007560
-
-After payment,
-enter UTR number.`
-
-    );
-
-    // MOBILE → opens GPay automatically
-    // DESKTOP → harmless
-    window.location.href = upiLink;
-
+    const amount = Number(localStorage.getItem("totalAmount") || selectedAmount || finalAmount);
+    if(!amount || amount <= 0){
+        alert("Please select a plan and confirm the fee before payment.");
+        return;
+    }
+    const upiLink = `upi://pay?pa=svgopeka19@oksbi&pn=GopesPinnacle&am=${amount.toFixed(2)}&cu=INR`;
+    const qrSection = document.getElementById("dynamicPaymentQR");
+    const qrTarget = document.getElementById("upiQRCode");
+    document.getElementById("qrAmountLabel").textContent = `Amount: Rs ${amount.toLocaleString("en-IN")}`;
+    qrTarget.innerHTML = "";
+    if(typeof QRCode === "undefined"){
+        alert("QR generator failed to load. Please check your internet connection and refresh.");
+        return;
+    }
+    new QRCode(qrTarget, {text:upiLink, width:220, height:220, correctLevel:QRCode.CorrectLevel.H});
+    qrSection.style.display = "block";
+    qrSection.scrollIntoView({behavior:"smooth",block:"center"});
 }
+
 /* FINAL SUBMIT */
 
 async function submitApplication(){
