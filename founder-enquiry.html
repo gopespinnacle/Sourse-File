@@ -89,10 +89,56 @@ async function loadData(){
 
 
 async function approveAdmission(id){
-  const item=admissionRecords.find(x=>String(x._id)===String(id));
-  if(!item){alert("Admission record could not be found.");return;}
-  if(!confirm(`Approve admission for ${item.studentName || "this student"}?`)) return;
-  alert("Approval button is ready. The backend approval action/status update still needs to be connected.");
+
+  const item = admissionRecords.find(x => String(x._id) === String(id));
+
+  if(!item){
+    alert("Admission record could not be found.");
+    return;
+  }
+
+  if(item.approved){
+    alert("This admission has already been approved.");
+    return;
+  }
+
+  if(!confirm(`Approve admission for ${item.studentName || "this student"}?`)){
+    return;
+  }
+
+  try{
+
+    const res = await fetch(`${API_BASE}/admission/${id}/approve`,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      }
+    });
+
+    const result = await res.json();
+
+    if(!res.ok){
+      throw new Error(result.message || "Approval failed");
+    }
+
+    alert(
+      "ADMISSION APPROVED SUCCESSFULLY!\n\n" +
+      "Student Name: " + result.student.name + "\n" +
+      "Student ID: " + result.student.studentId + "\n" +
+      "Login Email: " + result.student.email + "\n" +
+      "Temporary Password: " + result.student.temporaryPassword + "\n\n" +
+      "Please save these login credentials."
+    );
+
+    await loadData();
+
+  }catch(error){
+
+    alert("Approval failed: " + error.message);
+    console.error("Admission approval error:",error);
+
+  }
+
 }
 
 function viewAdmission(id){
