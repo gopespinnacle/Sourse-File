@@ -16,6 +16,7 @@
   button:hover{filter:brightness(.96)}
   .course-badge{display:inline-block;background:#e6ecf5;color:#123a63;padding:4px 8px;margin:2px;border-radius:6px;font-size:12px}
   .view-btn{background:#2563eb;color:#fff;margin-right:6px}
+  .approve-btn{background:#16a34a;color:#fff;margin-right:6px}
   .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(12,20,35,.65);z-index:999;align-items:center;justify-content:center;padding:15px}
   .modal-backdrop.open{display:flex}
   .modal{width:min(900px,100%);max-height:92vh;overflow-y:auto;background:white;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
@@ -80,10 +81,18 @@ async function loadData(){
     admissionRecords.forEach(item=>{
       const date=item.createdAt?new Date(item.createdAt).toLocaleString():"-";
       const tr=document.createElement("tr");
-      tr.innerHTML=`<td>${escapeHTML(item.studentName)}</td><td>${escapeHTML(item.parentName)}</td><td>${escapeHTML(item.grade)}</td><td>${escapeHTML(item.board)}</td><td>${escapeHTML(item.mobile)}</td><td>${escapeHTML(date)}</td><td>${displayList(item.subjects)}</td><td><button class="view-btn" onclick="viewAdmission('${escapeHTML(item._id)}')">View Details</button><button onclick="deleteItem('${escapeHTML(item._id)}')">Delete</button></td>`;
+      tr.innerHTML=`<td>${escapeHTML(item.studentName)}</td><td>${escapeHTML(item.parentName)}</td><td>${escapeHTML(item.grade)}</td><td>${escapeHTML(item.board)}</td><td>${escapeHTML(item.mobile)}</td><td>${escapeHTML(date)}</td><td>${displayList(item.subjects)}</td><td><button class="view-btn" onclick="viewAdmission('${escapeHTML(item._id)}')">View Details</button><button class="approve-btn" onclick="approveAdmission('${escapeHTML(item._id)}')">Approve</button><button onclick="deleteItem('${escapeHTML(item._id)}')">Delete</button></td>`;
       table.appendChild(tr);
     });
   }catch(err){console.error(err);}
+}
+
+
+async function approveAdmission(id){
+  const item=admissionRecords.find(x=>String(x._id)===String(id));
+  if(!item){alert("Admission record could not be found.");return;}
+  if(!confirm(`Approve admission for ${item.studentName || "this student"}?`)) return;
+  alert("Approval button is ready. The backend approval action/status update still needs to be connected.");
 }
 
 function viewAdmission(id){
