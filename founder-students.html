@@ -67,12 +67,18 @@ document.getElementById("sidebar-container").innerHTML = data;
     </select>
 
 </div>
-<div id="studentPopup" class="popup-content" style="display:none;">
+<div id="studentPopup" class="popup-content" style="display:none; max-width:700px; width:95%; max-height:85vh; overflow-y:auto;">
 
 <h2 id="popupTitle">Add Student</h2>
 
+<hr>
+<h3>Student Details</h3>
+
 <label>Name</label>
 <input type="text" id="studentName">
+
+<label>Student ID</label>
+<input type="text" id="studentIDDisplay" disabled>
 
 <label>Grade</label>
 <input type="text" id="studentGrade">
@@ -80,16 +86,30 @@ document.getElementById("sidebar-container").innerHTML = data;
 <label>Board</label>
 <input type="text" id="studentBoard">
 
-<label>Parent WhatsApp</label>
+<label>Date of Birth</label>
+<input type="date" id="studentDOB">
+
+<label>Address</label>
+<textarea id="studentAddress"></textarea>
+
+<hr>
+<h3>Parent Details</h3>
+
+<label>Parent Name</label>
+<input type="text" id="studentParentName">
+
+<label>Parent Mobile</label>
 <input type="text" id="studentMobile">
 
-<label>Monthly Fee</label>
-<input
-    type="number"
-    id="studentMonthlyFee"
-    placeholder="Enter monthly fee"
-    min="0"
->
+<label>Parent WhatsApp</label>
+<input type="text" id="studentWhatsapp">
+
+<label>Parent Email</label>
+<input type="email" id="studentParentEmail">
+
+<hr>
+<h3>Academic Details</h3>
+
 <label>Select Subjects</label>
 <div id="studentSubjects" class="tag-container"></div>
 
@@ -98,9 +118,40 @@ document.getElementById("sidebar-container").innerHTML = data;
 
 <label>Select Languages</label>
 <div id="studentLanguages" class="tag-container"></div>
+
+<label>Courses</label>
+<textarea id="studentCourses" placeholder="Enter courses, separated by commas"></textarea>
+
+<hr>
+<h3>Fees & Admission Details</h3>
+
+<label>Monthly Fee</label>
+<input type="number" id="studentMonthlyFee" min="0">
+
+<label>Selected Plan</label>
+<input type="text" id="studentSelectedPlan">
+
+<label>Total Amount</label>
+<input type="text" id="studentTotalAmount">
+
+<label>Payment UTR</label>
+<input type="text" id="studentUTR">
+
+<hr>
+<h3>Login Details</h3>
+
+<label>Login ID</label>
+<input type="text" id="studentLoginEmail">
+
+<label>New Password (Leave blank to keep existing password)</label>
+<input type="password" id="studentLoginPassword">
+
 <div class="popup-buttons">
-<button onclick="saveStudent()">Save</button>
+
+<button onclick="saveStudent()">Save Changes</button>
+
 <button type="button" onclick="closeStudentForm()">Cancel</button>
+
 </div>
 
 </div>
@@ -302,17 +353,34 @@ ${student.name}
 
 function openStudentForm(){
 
-document.getElementById("popupTitle").innerText="Add Student";
+    editStudentId = null;
 
-document.getElementById("studentName").value="";
-document.getElementById("studentGrade").value="";
-document.getElementById("studentBoard").value="";
-document.getElementById("studentMobile").value="";
-document.getElementById("studentMonthlyFee").value="";
+    document.getElementById("popupTitle").innerText = "Add Student";
 
-loadCategoriesForStudent();
+    document.getElementById("studentName").value = "";
+    document.getElementById("studentIDDisplay").value = "";
+    document.getElementById("studentGrade").value = "";
+    document.getElementById("studentBoard").value = "";
+    document.getElementById("studentDOB").value = "";
+    document.getElementById("studentAddress").value = "";
 
-document.getElementById("studentPopup").style.display="flex";
+    document.getElementById("studentParentName").value = "";
+    document.getElementById("studentMobile").value = "";
+    document.getElementById("studentWhatsapp").value = "";
+    document.getElementById("studentParentEmail").value = "";
+
+    document.getElementById("studentMonthlyFee").value = "";
+    document.getElementById("studentSelectedPlan").value = "";
+    document.getElementById("studentTotalAmount").value = "";
+    document.getElementById("studentUTR").value = "";
+
+    document.getElementById("studentCourses").value = "";
+    document.getElementById("studentLoginEmail").value = "";
+    document.getElementById("studentLoginPassword").value = "";
+
+    loadCategoriesForStudent();
+
+    document.getElementById("studentPopup").style.display = "flex";
 
 }
 function closeStudentForm(){
@@ -321,97 +389,147 @@ document.getElementById("studentPopup").style.display="none";
 
 async function saveStudent(){
 
-console.log("SAVE CLICKED");
+    // GET SELECTED TAGS
+    const selectedSubjects = [];
+    document.querySelectorAll('#studentSubjects .tag.active').forEach(tag=>{
+        selectedSubjects.push(tag.innerText.trim());
+    });
 
-let selectedSubjects = [];
-document.querySelectorAll('#studentSubjects .tag.active').forEach(tag=>{
-selectedSubjects.push(tag.innerText.trim());
-});
+    const selectedECA = [];
+    document.querySelectorAll('#studentECA .tag.active').forEach(tag=>{
+        selectedECA.push(tag.innerText.trim());
+    });
 
-let selectedECA = [];
-document.querySelectorAll('#studentECA .tag.active').forEach(tag=>{
-selectedECA.push(tag.innerText.trim());
-});
+    const selectedLanguages = [];
+    document.querySelectorAll('#studentLanguages .tag.active').forEach(tag=>{
+        selectedLanguages.push(tag.innerText.trim());
+    });
 
-let selectedLanguages = [];
-document.querySelectorAll('#studentLanguages .tag.active').forEach(tag=>{
-selectedLanguages.push(tag.innerText.trim());
-});
+    // GET FORM VALUES
+    const name = document.getElementById("studentName").value.trim();
+    const grade = document.getElementById("studentGrade").value.trim();
+    const board = document.getElementById("studentBoard").value.trim();
 
-console.log("Subjects:", selectedSubjects);
-console.log("ECA:", selectedECA);
-console.log("Languages:", selectedLanguages);
+    const mobile = document.getElementById("studentMobile").value.trim();
+    const whatsapp = document.getElementById("studentWhatsapp").value.trim();
 
-let name = document.getElementById("studentName").value;
-let grade = document.getElementById("studentGrade").value;
-let board = document.getElementById("studentBoard").value;
-let mobile = document.getElementById("studentMobile").value;
+    const parentName = document.getElementById("studentParentName").value.trim();
+    const parentEmail = document.getElementById("studentParentEmail").value.trim();
 
-let monthlyFee =
-    document.getElementById("studentMonthlyFee").value;
+    const studentDOB = document.getElementById("studentDOB").value;
+    const address = document.getElementById("studentAddress").value.trim();
 
-if(!name){
-alert("Enter student name");
-return;
-}
+    const monthlyFee = document.getElementById("studentMonthlyFee").value;
+    const selectedPlan = document.getElementById("studentSelectedPlan").value.trim();
+    const totalAmount = document.getElementById("studentTotalAmount").value.trim();
+    const utr = document.getElementById("studentUTR").value.trim();
 
-const token = localStorage.getItem("token");
+    const coursesText = document.getElementById("studentCourses").value.trim();
 
-console.log("TOKEN:", token);
+    const courses = coursesText
+        ? coursesText.split(",").map(c=>c.trim()).filter(Boolean)
+        : [];
 
-try{
+    const loginEmail = document.getElementById("studentLoginEmail").value.trim();
+    const password = document.getElementById("studentLoginPassword").value;
 
-let url = "";
-let method = "";
+    if(!name){
+        alert("Enter student name");
+        return;
+    }
 
-if(editStudentId){
-url = `https://academy-backend-eatl.onrender.com/api/founder/student/${editStudentId}`;
-method = "PUT";
-}else{
-url = "https://academy-backend-eatl.onrender.com/api/founder/student";
-method = "POST";
-}
+    const token = localStorage.getItem("token");
 
-console.log("API URL:", url);
+    const payload = {
 
-const res = await fetch(url,{
-method: method,
-headers:{
-"Content-Type":"application/json",
-"Authorization":"Bearer " + token
-},
-body: JSON.stringify({
-    name,
-    grade,
-    board,
-    mobile,
+        name,
+        grade,
+        board,
 
-    monthlyFee: Number(monthlyFee) || 0,
+        mobile,
+        whatsapp,
 
-    subject: selectedSubjects,
-    eca: selectedECA,
-    language: selectedLanguages
-})
-});
+        parentName,
+        parentMobile: mobile,
+        parentWhatsapp: whatsapp,
+        parentEmail,
 
-console.log("POST STATUS:", res.status);
+        studentDOB,
+        address,
 
-let data;
+        monthlyFee: Number(monthlyFee) || 0,
 
-try {
-    data = await res.json();
-} catch (error) {
-    console.log("❌ Not JSON response");
-    return;
-}
-console.log("RESPONSE:", data);
+        subject: selectedSubjects,
+        eca: selectedECA,
+        language: selectedLanguages,
+        courses,
 
-closeStudentForm();
-loadStudents();
+        selectedPlan,
+        totalAmount,
+        utr,
 
-}catch(err){
-console.log("FETCH ERROR:", err);
-}
+        loginEmail
+
+    };
+
+    // SEND PASSWORD ONLY IF ENTERED
+    if(password.trim() !== ""){
+        payload.password = password;
+    }
+
+    try{
+
+        let url;
+        let method;
+
+        if(editStudentId){
+
+            url = `https://academy-backend-eatl.onrender.com/api/founder/student/${editStudentId}`;
+            method = "PUT";
+
+        }else{
+
+            url = "https://academy-backend-eatl.onrender.com/api/founder/student";
+            method = "POST";
+
+        }
+
+        const res = await fetch(url,{
+            method:method,
+            headers:{
+                "Content-Type":"application/json",
+                "Authorization":"Bearer "+token
+            },
+            body:JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if(!res.ok){
+
+            alert(data.message || "Failed to save student.");
+            return;
+
+        }
+
+        alert(editStudentId
+            ? "Student details updated successfully!"
+            : "Student added successfully!"
+        );
+
+        closeStudentForm();
+
+        await loadStudents();
+
+        editStudentId = null;
+
+    }catch(error){
+
+        console.error("STUDENT SAVE ERROR:",error);
+
+        alert("Error saving student details.");
+
+    }
 
 }
 async function deleteStudent(index){
@@ -433,48 +551,77 @@ loadStudents();
 
 }
 loadStudents();
-function editStudent(index){
+async function editStudent(index){
 
-let student = students[index];
+    const student = students[index];
 
-editStudentId = student._id;
+    if(!student){
+        alert("Student not found.");
+        return;
+    }
 
-document.getElementById("popupTitle").innerText="Edit Student";
+    editStudentId = student._id;
 
-document.getElementById("studentName").value = student.name;
-document.getElementById("studentGrade").value = student.grade;
-document.getElementById("studentBoard").value = student.board || "";
-document.getElementById("studentMobile").value = student.mobile || "";
-document.getElementById("studentMonthlyFee").value =
-    student.monthlyFee || 0;
+    document.getElementById("popupTitle").innerText = "Edit Student";
 
-/* LOAD TAGS */
-loadCategoriesForStudent().then(()=>{
+    // STUDENT DETAILS
+    document.getElementById("studentName").value = student.name || "";
+    document.getElementById("studentIDDisplay").value = student.studentId || "";
+    document.getElementById("studentGrade").value = student.grade || "";
+    document.getElementById("studentBoard").value = student.board || "";
+    document.getElementById("studentDOB").value = student.studentDOB || "";
+    document.getElementById("studentAddress").value = student.address || "";
 
-// SUBJECT
-document.querySelectorAll("#studentSubjects .tag").forEach(tag=>{
-if(student.subject?.includes(tag.innerText)){
-tag.classList.add("active");
-}
-});
+    // PARENT DETAILS
+    document.getElementById("studentParentName").value = student.parentName || "";
+    document.getElementById("studentMobile").value = student.parentMobile || student.mobile || "";
+    document.getElementById("studentWhatsapp").value = student.parentWhatsapp || student.whatsapp || "";
+    document.getElementById("studentParentEmail").value = student.parentEmail || "";
 
-// ECA
-document.querySelectorAll("#studentECA .tag").forEach(tag=>{
-if(student.eca?.includes(tag.innerText)){
-tag.classList.add("active");
-}
-});
+    // FEES & ADMISSION
+    document.getElementById("studentMonthlyFee").value = student.monthlyFee || 0;
+    document.getElementById("studentSelectedPlan").value = student.selectedPlan || "";
+    document.getElementById("studentTotalAmount").value = student.totalAmount || "";
+    document.getElementById("studentUTR").value = student.utr || "";
 
-// LANGUAGE
-document.querySelectorAll("#studentLanguages .tag").forEach(tag=>{
-if(student.language?.includes(tag.innerText)){
-tag.classList.add("active");
-}
-});
+    // COURSES
+    document.getElementById("studentCourses").value =
+        Array.isArray(student.courses)
+        ? student.courses.join(", ")
+        : student.courses || "";
 
-});
+    // LOGIN
+    document.getElementById("studentLoginEmail").value =
+        student.loginEmail || student.email || "";
 
-document.getElementById("studentPopup").style.display="flex";
+    document.getElementById("studentLoginPassword").value = "";
+
+    // LOAD SUBJECT / ECA / LANGUAGE TAGS
+    await loadCategoriesForStudent();
+
+    // SUBJECTS
+    document.querySelectorAll("#studentSubjects .tag").forEach(tag=>{
+        if((student.subject || []).includes(tag.innerText.trim())){
+            tag.classList.add("active");
+        }
+    });
+
+    // ECA
+    document.querySelectorAll("#studentECA .tag").forEach(tag=>{
+        if((student.eca || []).includes(tag.innerText.trim())){
+            tag.classList.add("active");
+        }
+    });
+
+    // LANGUAGES
+    document.querySelectorAll("#studentLanguages .tag").forEach(tag=>{
+        if((student.language || []).includes(tag.innerText.trim())){
+            tag.classList.add("active");
+        }
+    });
+
+    // OPEN EDIT FORM
+    document.getElementById("studentPopup").style.display = "flex";
 
 }
 function showStudentProfile(index){
