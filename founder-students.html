@@ -133,25 +133,58 @@ document.getElementById("sidebar-container").innerHTML = data;
 </div>
 <div id="studentProfilePopup" class="popup">
 
-<div class="popup-content">
+    <div class="popup-content" style="max-width:700px; width:95%; max-height:85vh; overflow-y:auto;">
 
-<h2>Student Profile</h2>
+        <h2>Complete Student Profile</h2>
 
-<p><b>Name:</b> <span id="profileName"></span></p>
-<p><b>Grade:</b> <span id="profileGrade"></span></p>
-<p><b>Board:</b> <span id="profileBoard"></span></p>
-<p><b>Parent Mobile:</b> <span id="profileMobile"></span></p>
+        <h3>Student Details</h3>
 
-<hr>
+        <p><b>Name:</b> <span id="profileName"></span></p>
+        <p><b>Student ID:</b> <span id="profileStudentId"></span></p>
+        <p><b>Grade:</b> <span id="profileGrade"></span></p>
+        <p><b>Board:</b> <span id="profileBoard"></span></p>
+        <p><b>Date of Birth:</b> <span id="profileDOB"></span></p>
+        <p><b>Address:</b> <span id="profileAddress"></span></p>
 
-<p><b>Login ID:</b> <span id="profileLogin"></span></p>
-<p><b>Password:</b> <span id="profilePassword"></span></p>
+        <hr>
 
-<div style="margin-top:15px">
-<button onclick="closeStudentProfile()">Close</button>
-</div>
+        <h3>Parent Details</h3>
 
-</div>
+        <p><b>Parent Name:</b> <span id="profileParentName"></span></p>
+        <p><b>Parent Mobile:</b> <span id="profileMobile"></span></p>
+        <p><b>Parent WhatsApp:</b> <span id="profileWhatsapp"></span></p>
+        <p><b>Parent Email:</b> <span id="profileParentEmail"></span></p>
+
+        <hr>
+
+        <h3>Academic Details</h3>
+
+        <p><b>Subjects:</b> <span id="profileSubjects"></span></p>
+        <p><b>ECA:</b> <span id="profileECA"></span></p>
+        <p><b>Languages:</b> <span id="profileLanguages"></span></p>
+        <p><b>Courses:</b> <span id="profileCourses"></span></p>
+
+        <hr>
+
+        <h3>Admission & Fee Details</h3>
+
+        <p><b>Selected Plan:</b> <span id="profilePlan"></span></p>
+        <p><b>Total Amount:</b> ₹ <span id="profileAmount"></span></p>
+        <p><b>Monthly Fee:</b> ₹ <span id="profileFee"></span></p>
+        <p><b>Payment UTR:</b> <span id="profileUTR"></span></p>
+
+        <hr>
+
+        <h3>Login Details</h3>
+
+        <p><b>Login ID:</b> <span id="profileLogin"></span></p>
+        <p><b>Password:</b> <span id="profilePassword"></span></p>
+
+        <div style="margin-top:15px">
+            <button onclick="closeStudentProfile()">Close</button>
+        </div>
+
+    </div>
 
 </div>
 <script>
@@ -240,6 +273,7 @@ ${student.name}
 <td>${student.loginPassword || "-"}</td>
 
 <td>
+<button onclick="showStudentProfile(${index})">Details</button>
     <button onclick="editStudent(${index})">Edit</button>
 
     <button onclick="deleteStudent(${index})">Delete</button>
@@ -445,19 +479,55 @@ document.getElementById("studentPopup").style.display="flex";
 }
 function showStudentProfile(index){
 
-const student = students[index];
+    const student = students[index];
 
-document.getElementById("profileName").innerText = student.name;
-document.getElementById("profileGrade").innerText = student.grade;
-document.getElementById("profileBoard").innerText = student.board || "-";
-document.getElementById("profileMobile").innerText = student.mobile || "-";
-document.getElementById("profileLogin").innerText = student.loginEmail || "-";
-document.getElementById("profilePassword").innerText = student.loginPassword || "-";
+    if(!student){
+        alert("Student not found.");
+        return;
+    }
 
-document.getElementById("studentProfilePopup").style.display="flex";
+    // STUDENT DETAILS
+    document.getElementById("profileName").innerText = student.name || "-";
+    document.getElementById("profileStudentId").innerText = student.studentId || "-";
+    document.getElementById("profileGrade").innerText = student.grade || "-";
+    document.getElementById("profileBoard").innerText = student.board || "-";
+    document.getElementById("profileDOB").innerText = student.studentDOB || "-";
+    document.getElementById("profileAddress").innerText = student.address || "-";
+
+    // PARENT DETAILS
+    document.getElementById("profileParentName").innerText = student.parentName || "-";
+    document.getElementById("profileMobile").innerText = student.parentMobile || student.mobile || "-";
+    document.getElementById("profileWhatsapp").innerText = student.parentWhatsapp || student.whatsapp || "-";
+    document.getElementById("profileParentEmail").innerText = student.parentEmail || "-";
+
+    // ACADEMIC DETAILS
+    document.getElementById("profileSubjects").innerText =
+        Array.isArray(student.subject) ? student.subject.join(", ") || "-" : student.subject || "-";
+
+    document.getElementById("profileECA").innerText =
+        Array.isArray(student.eca) ? student.eca.join(", ") || "-" : student.eca || "-";
+
+    document.getElementById("profileLanguages").innerText =
+        Array.isArray(student.language) ? student.language.join(", ") || "-" : student.language || "-";
+
+    document.getElementById("profileCourses").innerText =
+        Array.isArray(student.courses) ? student.courses.join(", ") || "-" : student.courses || "-";
+
+    // ADMISSION & FEE DETAILS
+    document.getElementById("profilePlan").innerText = student.selectedPlan || "-";
+    document.getElementById("profileAmount").innerText = student.totalAmount || "-";
+    document.getElementById("profileFee").innerText =
+        Number(student.monthlyFee || 0).toLocaleString("en-IN");
+    document.getElementById("profileUTR").innerText = student.utr || "-";
+
+    // LOGIN DETAILS
+    document.getElementById("profileLogin").innerText = student.loginEmail || student.email || "-";
+    document.getElementById("profilePassword").innerText = student.loginPassword || "-";
+
+    // OPEN POPUP
+    document.getElementById("studentProfilePopup").style.display = "flex";
 
 }
-
 function closeStudentProfile(){
 document.getElementById("studentProfilePopup").style.display="none";
 }
