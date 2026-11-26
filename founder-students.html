@@ -616,11 +616,11 @@ async function editStudent(index){
     });
 
     // LANGUAGES
-    document.querySelectorAll("#studentLanguages .tag").forEach(tag=>{
-        if((student.language || []).includes(tag.innerText.trim())){
-            tag.classList.add("active");
-        }
-    });
+document.querySelectorAll("#studentLanguages .tag").forEach(tag=>{
+    if((student.language || []).includes(tag.innerText.trim())){
+        tag.classList.add("active");
+    }
+});
 
     // OPEN EDIT FORM
     document.getElementById("studentPopup").style.display = "flex";
