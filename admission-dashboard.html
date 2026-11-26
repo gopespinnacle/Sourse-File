@@ -1757,55 +1757,86 @@ document.querySelectorAll(".plan-card").forEach(card=>{
 
 /* LOAD SUBJECTS FROM DATABASE */
 
-async function loadAdmissionSubjects(){
+/* LOAD SUBJECTS, ECA AND LANGUAGES FROM DATABASE */
 
-    const container = document.getElementById("subjectsContainer");
+async function loadAdmissionCategories(){
 
-    container.innerHTML = "<p>Loading subjects...</p>";
-
-    try{
-
-        const res = await fetch(
-            "https://academy-backend-eatl.onrender.com/api/founder/categories/subject"
-        );
-
-        if(!res.ok){
-            throw new Error("Failed to load subjects");
+    const categories = [
+        {
+            type: "subject",
+            containerId: "subjectsContainer",
+            name: "subjects",
+            loadingText: "Loading subjects..."
+        },
+        {
+            type: "eca",
+            containerId: "ecaContainer",
+            name: "eca",
+            loadingText: "Loading ECA..."
+        },
+        {
+            type: "language",
+            containerId: "languageContainer",
+            name: "languages",
+            loadingText: "Loading languages..."
         }
+    ];
 
-        const data = await res.json();
+    for(const category of categories){
 
-        container.innerHTML = "";
+        const container = document.getElementById(category.containerId);
 
-        data.data.forEach(subject => {
+        if(!container) continue;
 
-            container.innerHTML += `
-                <label>
-                    <input
-                        type="checkbox"
-                        name="subjects"
-                        value="${subject.name}">
-                    ${subject.name}
-                </label>
+        container.innerHTML = `<p>${category.loadingText}</p>`;
+
+        try{
+
+            const res = await fetch(
+                `https://academy-backend-eatl.onrender.com/api/founder/categories/${category.type}`
+            );
+
+            if(!res.ok){
+                throw new Error(`Failed to load ${category.type}`);
+            }
+
+            const data = await res.json();
+
+            container.innerHTML = "";
+
+            data.data.forEach(item => {
+
+                container.innerHTML += `
+                    <label>
+                        <input
+                            type="checkbox"
+                            name="${category.name}"
+                            value="${item.name}">
+                        ${item.name}
+                    </label>
+                `;
+
+            });
+
+        }catch(error){
+
+            console.error(
+                `${category.type.toUpperCase()} LOADING ERROR:`,
+                error
+            );
+
+            container.innerHTML = `
+                <p style="color:red;">
+                    Unable to load ${category.type}.
+                </p>
             `;
 
-        });
-
-    }catch(error){
-
-        console.error("SUBJECT LOADING ERROR:", error);
-
-        container.innerHTML = `
-            <p style="color:red;">
-                Unable to load subjects. Please refresh the page.
-            </p>
-        `;
+        }
 
     }
 
 }
-
-loadAdmissionSubjects();
+loadAdmissionCategories();
 
 
 /* NEXT PAGE */
