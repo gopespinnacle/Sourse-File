@@ -1054,88 +1054,9 @@ padding-top:3px;
 
                 <h3>
                     Subjects
-                </h3>
-
-                <div class="subjects" >
-
-                    <label>
-                        <input type="checkbox"
-                         name="subjects"
-                               value="English Reading">
-                        English Reading
-                    </label>
-
-                    <label>
-                        <input type="checkbox"
-                         name="subjects"
-                               value="Grammar">
-                        Grammar
-                    </label>
-
-                    <label>
-                        <input type="checkbox"
-                         name="subjects"
-                               value="Phonics">
-                        Phonics
-                    </label>
-
-                    <label>
-                        <input type="checkbox"
-                         name="subjects"
-                               value="Tamil">
-                        Tamil
-                    </label>
-
-                    <label>
-                        <input type="checkbox"
-                         name="subjects"
-                               value="Hindi">
-                        Hindi
-                    </label>
-
-                    <label>
-                        <input type="checkbox"
-                         name="subjects"
-                               value="French">
-                        French
-                    </label>
-
-                    <label>
-                        <input type="checkbox"
-                         name="subjects"
-                               value="Maths">
-                        Maths
-                    </label>
-
-                    <label>
-                        <input type="checkbox"
-                         name="subjects"
-                               value="Science">
-                        Science
-                    </label>
-
-                    <label>
-                        <input type="checkbox"
-                         name="subjects"
-                               value="Social Science">
-                        Social Science
-                    </label>
-
-                    <label>
-                        <input type="checkbox"
-                         name="subjects"
-                               value="Science Stream">
-                        Science Stream
-                    </label>
-
-                    <label>
-                        <input type="checkbox"
-                         name="subjects"
-                               value="Arts Stream">
-                        Arts Stream
-                    </label>
-
-                </div>
+                </h3><div class="subjects" id="subjectsContainer">
+    <p>Loading subjects...</p>
+</div>
 
                 <div class="button-row">
 
@@ -1825,6 +1746,57 @@ document.querySelectorAll(".plan-card").forEach(card=>{
 });
 }
 
+/* LOAD SUBJECTS FROM DATABASE */
+
+async function loadAdmissionSubjects(){
+
+    const container = document.getElementById("subjectsContainer");
+
+    container.innerHTML = "<p>Loading subjects...</p>";
+
+    try{
+
+        const res = await fetch(
+            "https://academy-backend-eatl.onrender.com/api/founder/categories/subject"
+        );
+
+        if(!res.ok){
+            throw new Error("Failed to load subjects");
+        }
+
+        const data = await res.json();
+
+        container.innerHTML = "";
+
+        data.data.forEach(subject => {
+
+            container.innerHTML += `
+                <label>
+                    <input
+                        type="checkbox"
+                        name="subjects"
+                        value="${subject.name}">
+                    ${subject.name}
+                </label>
+            `;
+
+        });
+
+    }catch(error){
+
+        console.error("SUBJECT LOADING ERROR:", error);
+
+        container.innerHTML = `
+            <p style="color:red;">
+                Unable to load subjects. Please refresh the page.
+            </p>
+        `;
+
+    }
+
+}
+
+loadAdmissionSubjects();
 
 
 /* NEXT PAGE */
