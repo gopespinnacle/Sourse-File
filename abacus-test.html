@@ -779,24 +779,20 @@ body {
 
 <script>
 
-const API_BASE =
-    "https://academy-backend-eatl.onrender.com";
+const API_BASE = "https://academy-backend-eatl.onrender.com";
+
+/* ================= PARTICIPANT DETAILS ================= */
 
 async function loadParticipantDetails() {
-
     const token = localStorage.getItem("token");
 
     if (!token) {
-
         alert("Please login first.");
-
         window.location.href = "student-login.html";
-
         return;
     }
 
     try {
-
         const response = await fetch(
             API_BASE + "/api/championship/participant/me",
             {
@@ -810,11 +806,9 @@ async function loadParticipantDetails() {
         const data = await response.json();
 
         if (!response.ok || !data.success) {
-
             throw new Error(
                 data.message || "Unable to load participant details."
             );
-
         }
 
         const participant = data.participant;
@@ -823,7 +817,6 @@ async function loadParticipantDetails() {
             participant.participantId || "-";
 
     } catch (error) {
-
         console.error("Participant loading error:", error);
 
         document.getElementById("participantId").textContent =
@@ -831,20 +824,26 @@ async function loadParticipantDetails() {
 
         document.getElementById("loadingMessage").textContent =
             error.message;
-
     }
-
 }
 
 
-// ABACUS TEST FUNCTIONALITY
+/* ================= ABACUS TEST ENGINE ================= */
 
 let abacusAttemptId = null;
 let abacusRemainingSeconds = 1800;
 let abacusTimerInterval = null;
 let abacusTestFinished = false;
+let abacusSubmitting = false;
+
+
+/* ================= START / RESUME TEST ================= */
 
 async function startAbacusTest() {
+
+    if (abacusSubmitting) return;
+
+    abacusSubmitting = true;
 
     const token = localStorage.getItem("token");
     const button = document.getElementById("startButton");
@@ -870,28 +869,51 @@ async function startAbacusTest() {
         const data = await response.json();
 
         if (!response.ok || !data.success) {
-            throw new Error(data.message || "Unable to start test.");
+            throw new Error(
+                data.message || "Unable to start test."
+            );
+        }
+
+        if (!data.attemptId) {
+            throw new Error("Test attempt ID was not received.");
         }
 
         abacusAttemptId = data.attemptId;
-        abacusRemainingSeconds = data.remainingSeconds;
+
+        abacusRemainingSeconds =
+            Number(data.remainingSeconds) || 1800;
+
+        abacusTestFinished = false;
 
         await loadAbacusQuestion();
 
     } catch (error) {
 
+        console.error("Start test error:", error);
+
         alert(error.message);
 
         button.disabled = false;
-        button.innerHTML = '<i class="fa-solid fa-play"></i> Start Test';
+        button.innerHTML =
+            '<i class="fa-solid fa-play"></i> Start Test';
+
+    } finally {
+
+        abacusSubmitting = false;
 
     }
 }
 
 
+/* ================= LOAD CURRENT QUESTION ================= */
+
 async function loadAbacusQuestion() {
 
     const token = localStorage.getItem("token");
+
+    if (!abacusAttemptId) {
+        throw new Error("Test attempt is missing.");
+    }
 
     const response = await fetch(
         API_BASE + "/api/championship-abacus/current-question",
@@ -911,13 +933,17 @@ async function loadAbacusQuestion() {
 
     if (!response.ok || !data.success) {
 
-        if (data.message && data.message.toLowerCase().includes("expired")) {
+        if (
+            data.message &&
+            data.message.toLowerCase().includes("expired")
+        ) {
             await finishAbacusTest();
             return;
         }
 
-        throw new Error(data.message || "Unable to load question.");
-
+        throw new Error(
+            data.message || "Unable to load question."
+        );
     }
 
     displayAbacusQuestion(data);
@@ -927,6 +953,8 @@ async function loadAbacusQuestion() {
     }
 }
 
+
+/* ================= DISPLAY QUESTION ================= */
 
 function displayAbacusQuestion(data) {
 
@@ -997,15 +1025,15 @@ function displayAbacusQuestion(data) {
                 justify-content:center;
                 align-items:center;
             ">
-
                 ${data.questionText}
-
             </div>
 
             <input
                 type="number"
                 id="abacusAnswer"
                 placeholder="Enter your answer"
+                inputmode="numeric"
+                autocomplete="off"
                 style="
                     width:100%;
                     max-width:400px;
@@ -1018,9 +1046,7 @@ function displayAbacusQuestion(data) {
                 "
             >
 
-            <div style="
-                margin-top:35px;
-            ">
+            <div style="margin-top:35px;">
 
                 <button
                     id="nextAbacusButton"
@@ -1057,11 +1083,25 @@ function displayAbacusQuestion(data) {
 }
 
 
+/* ================= TIMER ================= */
+
 function startAbacusTimer(seconds) {
 
-    abacusRemainingSeconds = seconds;
+    if (abacusTimerInterval) {
+        clearInterval(abacusTimerInterval);
+    }
+
+    abacusRemainingSeconds = Math.max(
+        0,
+        Math.floor(Number(seconds) || 0)
+    );
 
     updateAbacusTimerDisplay();
+
+    if (abacusRemainingSeconds <= 0) {
+        finishAbacusTest();
+        return;
+    }
 
     abacusTimerInterval = setInterval(function() {
 
@@ -1089,7 +1129,10 @@ function updateAbacusTimerDisplay() {
 
     if (!timer) return;
 
-    const minutes = Math.floor(abacusRemainingSeconds / 60);
+    const minutes = Math.floor(
+        abacusRemainingSeconds / 60
+    );
+
     const seconds = abacusRemainingSeconds % 60;
 
     timer.textContent =
@@ -1100,12 +1143,21 @@ function updateAbacusTimerDisplay() {
 }
 
 
+/* ================= SUBMIT & LOCK ANSWER ================= */
+
 async function submitAbacusNext() {
 
-    if (abacusTestFinished) return;
+    if (abacusTestFinished || abacusSubmitting) return;
+
+    abacusSubmitting = true;
 
     const button = document.getElementById("nextAbacusButton");
     const answerInput = document.getElementById("abacusAnswer");
+
+    if (!button || !answerInput) {
+        abacusSubmitting = false;
+        return;
+    }
 
     button.disabled = true;
     button.textContent = "Saving...";
@@ -1147,6 +1199,7 @@ async function submitAbacusNext() {
 
         if (data.testFinished) {
 
+            abacusSubmitting = false;
             await finishAbacusTest();
             return;
 
@@ -1156,6 +1209,8 @@ async function submitAbacusNext() {
 
     } catch (error) {
 
+        console.error("Answer submission error:", error);
+
         alert(error.message);
 
         if (button) {
@@ -1163,25 +1218,33 @@ async function submitAbacusNext() {
             button.textContent = "Lock Answer & Next";
         }
 
+    } finally {
+
+        abacusSubmitting = false;
+
     }
 
 }
 
 
+/* ================= FINISH TEST ================= */
+
 async function finishAbacusTest() {
 
-    if (abacusTestFinished) return;
+    if (abacusTestFinished || !abacusAttemptId) return;
 
     abacusTestFinished = true;
 
     if (abacusTimerInterval) {
+
         clearInterval(abacusTimerInterval);
         abacusTimerInterval = null;
+
     }
 
-    try {
+    const token = localStorage.getItem("token");
 
-        const token = localStorage.getItem("token");
+    try {
 
         const response = await fetch(
             API_BASE + "/api/championship-abacus/finish",
@@ -1200,7 +1263,11 @@ async function finishAbacusTest() {
         const data = await response.json();
 
         if (!response.ok || !data.success) {
-            throw new Error(data.message || "Unable to finish test.");
+
+            throw new Error(
+                data.message || "Unable to finish test."
+            );
+
         }
 
         const results = data.results;
@@ -1241,20 +1308,36 @@ async function finishAbacusTest() {
                     margin-top:30px;
                 ">
 
-                    <div>Total Questions: ${results.totalQuestions}</div>
-
-                    <div>Correct: ${results.correctCount}</div>
-
-                    <div>Wrong: ${results.wrongCount}</div>
-
-                    <div>Unanswered: ${results.unansweredCount}</div>
-
                     <div>
-                        <strong>Marks: ${results.totalMarks}</strong>
+                        Total Questions:
+                        ${results.totalQuestions}
                     </div>
 
                     <div>
-                        <strong>Duration: ${results.durationFormatted}</strong>
+                        Correct:
+                        ${results.correctCount}
+                    </div>
+
+                    <div>
+                        Wrong:
+                        ${results.wrongCount}
+                    </div>
+
+                    <div>
+                        Unanswered:
+                        ${results.unansweredCount}
+                    </div>
+
+                    <div>
+                        <strong>
+                            Marks: ${results.totalMarks}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <strong>
+                            Duration: ${results.durationFormatted}
+                        </strong>
                     </div>
 
                 </div>
@@ -1273,20 +1356,32 @@ async function finishAbacusTest() {
 
     } catch (error) {
 
+        console.error("Finish test error:", error);
+
         abacusTestFinished = false;
 
-        alert(error.message);
+        alert(
+            "Unable to submit the test right now. " +
+            error.message +
+            " Please retry."
+        );
+
+        // Restart the local timer only if the test is still active
+        if (abacusRemainingSeconds > 0 && !abacusTimerInterval) {
+            startAbacusTimer(abacusRemainingSeconds);
+        }
 
     }
 
 }
 
 
+/* ================= INITIALIZE ================= */
+
 document.getElementById("startButton").addEventListener(
     "click",
     startAbacusTest
 );
-
 
 loadParticipantDetails();
 
